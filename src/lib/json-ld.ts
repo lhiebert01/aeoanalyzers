@@ -8,7 +8,7 @@ export function getOrganizationJsonLd() {
     name: 'AEO Analyzers',
     url: SITE_URL,
     logo: `${SITE_URL}/aeo-og-preview.jpg`,
-    description: 'AEO Analyzers is the world\'s first AI Simulation Engine designed to close the "AI Search Gap." Stop guessing and start winning with our proprietary Citation Probability metric and Competitive Duel engine.',
+    description: 'AEO Analyzers simulates multiple AI engines to show how Gemini, ChatGPT, and Perplexity perceive your brand. What takes web teams hundreds of hours, we deliver in 90 seconds.',
     sameAs: [
       'https://www.linkedin.com/company/aeo-analyzers',
       'https://twitter.com/aeoanalyzers',
@@ -29,7 +29,7 @@ export function getWebSiteJsonLd() {
     '@type': 'WebSite',
     name: 'AEO Analyzers',
     url: SITE_URL,
-    description: 'The world\'s first AI Simulation Engine for Answer Engine Optimization. Secure your citation and dominate the future of search.',
+    description: 'Multi-engine AI simulation for Answer Engine Optimization. Multiple AI models. Real-world results. 90 seconds.',
   };
 }
 
@@ -42,7 +42,7 @@ export function getSoftwareApplicationJsonLd() {
     url: SITE_URL,
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
-    description: 'AEO Analyzers is the world\'s first AI Simulation Engine designed to close the "AI Search Gap." Stop guessing and start winning with our proprietary Citation Probability metric and Competitive Duel engine.',
+    description: 'AEO Analyzers simulates multiple AI engines to show how Gemini, ChatGPT, and Perplexity perceive your brand. What takes web teams hundreds of hours, we deliver in 90 seconds.',
     offers: {
       '@type': 'AggregateOffer',
       priceCurrency: 'USD',

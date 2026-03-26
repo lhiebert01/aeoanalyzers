@@ -14,8 +14,8 @@ interface SEOProps {
 }
 
 const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://aeoanalyzers.com';
-const DEFAULT_TITLE = 'AEO Analyzers - The World\'s First AI Simulation Engine for AEO';
-const DEFAULT_DESCRIPTION = 'AEO Analyzers is the world\'s first AI Simulation Engine designed to close the "AI Search Gap." Stop guessing and start winning with our proprietary Citation Probability metric and Competitive Duel engine. See exactly how AI agents like Gemini and ChatGPT perceive your brand compared to your rivals. Secure your citation and dominate the future of search today.';
+const DEFAULT_TITLE = 'AEO Analyzers - Multiple AI Engines. One Score. 90 Seconds.';
+const DEFAULT_DESCRIPTION = 'AEO Analyzers simulates multiple AI engines — Gemini, ChatGPT, Perplexity — to show exactly how they perceive your brand. What takes web teams hundreds of hours, we deliver in 90 seconds. Get your Citation Probability score, competitive benchmarks, and an actionable roadmap to dominate AI search.';
 const DEFAULT_AUTHOR = 'Lindsay Hiebert';
 
 const SEO: React.FC<SEOProps> = ({

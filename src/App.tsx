@@ -868,7 +868,7 @@ export default function App() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="inline-block px-4 py-1.5 bg-zinc-100 text-zinc-600 rounded-full text-xs font-bold mb-6 uppercase tracking-wider"
                   >
-                    The Future of Search is Answers
+                    Multiple AI Engines. One Score. 90 Seconds.
                   </motion.div>
                   <motion.h1 
                     initial={{ opacity: 0, y: 20 }}
@@ -883,7 +883,7 @@ export default function App() {
                     transition={{ delay: 0.1 }}
                     className="text-zinc-500 text-lg max-w-2xl mx-auto mb-10"
                   >
-                    Stop guessing. See exactly how Gemini and GPT perceive your site compared to your competitors.
+                    We simulate how Gemini, ChatGPT, and Perplexity perceive your site — delivering insights that would take a web team hundreds of hours, in 90 seconds.
                   </motion.p>
 
                   <motion.form 
