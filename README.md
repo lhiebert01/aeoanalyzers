@@ -123,10 +123,13 @@ The app is deployed on **Vercel** with automatic builds on push:
 
 ## Documentation
 
-- [Admin Guide](./docs/admin-guide.md)
-- [User Guide](./docs/user-guide.md)
-- [Executive Summary](./docs/executive-summary.md)
-- [Personas & FAQ](./docs/personas-and-faq.md)
+- [Admin Guide](./docs/admin-guide.md) -- Deployment, management, and operations
+- [User Guide](./docs/user-guide.md) -- End-user guide for AEO analysis features
+- [Executive Summary](./docs/executive-summary.md) -- Business case, ROI, and cost analysis
+- [Launch Plan](./docs/launch-plan.md) -- Launch checklist and marketing plan
+- [Hosting Setup](./docs/SETUP-HOSTING-INSTRUCTIONS.md) -- Vercel deployment and domain configuration
+- [Domain & SSL Guide](./docs/CLOUD-RUN-SSL-DOMAIN-FIX-GUIDE.md) -- Vercel domain/SSL troubleshooting
+- [Personas & FAQ](./docs/personas-and-faq.md) -- Target audience and frequently asked questions
 
 ## Author
 

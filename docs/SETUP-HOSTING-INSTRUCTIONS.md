@@ -1,71 +1,126 @@
-# AEO Analyzer: Cloud Run & Custom Domain Setup
+# AEO Analyzer: Vercel Hosting & Custom Domain Setup
 
-This guide provides instructions for deploying the **AEO Analyzer** on your own domain while keeping the hosting on **Google Cloud Run**.
-
----
-
-## 1. Recommended Domain Names (GoDaddy)
-For a professional and authoritative AEO tool, consider these domains:
-
-*   **Brand Focused:** `aeoanalyzer.com`, `aeo-analyzer.com`, `getaeo.com`
-*   **AI & Tech Focused:** `aeoanalyzer.ai`, `brandcitations.ai`, `aeo-score.ai`
-*   **Action Oriented:** `aeo-audit.com`, `aeo-report.com`, `aeo-check.com`
-*   **Enterprise Focused:** `aeo-platform.com`, `aeo-suite.com`, `aeo-pro.com`
+This guide provides instructions for deploying the **AEO Analyzer** on Vercel with a custom domain managed through **Network Solutions**.
 
 ---
 
-## 2. Cloud Run Custom Domain Mapping
+## 1. Domain Configuration
 
-To map your custom domain to your Cloud Run service:
+The production domain is **aeoanalyzers.com**, registered and managed through **Network Solutions**.
 
-1.  **Open Google Cloud Console:** Go to the [Cloud Run](https://console.cloud.google.com/run) page.
-2.  **Select Service:** Click on your service name (e.g., `aeo-analyzer`).
-3.  **Manage Custom Domains:** Click on **Manage Custom Domains** in the top navigation bar.
-4.  **Add Mapping:**
-    *   Click **Add Mapping**.
-    *   Select the service you want to map.
-    *   Select **Verified Domain** (you may need to verify ownership via Google Search Console first).
-    *   Enter the subdomain (e.g., `www.aeoanalyzer.com` or leave empty for the root domain).
-    *   **Troubleshooting:** If your domain is stuck in "Provisioning" or "Waiting for Certificate", see the [Cloud Run SSL Validation & Domain Fix Guide](./CLOUD-RUN-SSL-DOMAIN-FIX-GUIDE.md).
-5.  **Update DNS in GoDaddy:**
-    *   Google Cloud will provide **A** and **AAAA** records (or a **CNAME** record for subdomains).
-    *   Log in to your **GoDaddy** account.
-    *   Navigate to **DNS Management** for your domain.
-    *   Add the provided records.
-    *   *Note: DNS propagation can take up to 24-48 hours.*
+- **Production URL**: https://www.aeoanalyzers.com
+- **Vercel Default URL**: https://aeo-app1.vercel.app
+- **DNS Provider**: Network Solutions
+- **Registrar**: Network Solutions
 
 ---
 
-## 3. Required Code & Configuration Changes
+## 2. Vercel Deployment Setup
 
-When moving to a custom domain, you must update these settings to ensure security and functionality:
+### A. Connect GitHub Repository
 
-### A. Firebase Authentication (Authorized Domains)
-Firebase will block login attempts from your new domain until it is authorized.
-1.  Go to the [Firebase Console](https://console.firebase.google.com/).
-2.  Navigate to **Authentication** > **Settings** > **Authorized Domains**.
-3.  Add your new domain (e.g., `aeoanalyzer.com`) to the list.
+1. Log in to [Vercel](https://vercel.com/).
+2. Click **Add New Project**.
+3. Import the GitHub repository: `https://github.com/lhiebert01/aeoanalyzers`.
+4. Vercel will auto-detect the Vite framework and configure build settings.
+5. Deploy.
 
-### B. OAuth Redirect URIs
-If you use Google or other third-party login providers:
-1.  Go to the [Google Cloud Console Credentials](https://console.cloud.google.com/apis/credentials) page.
-2.  Find your **OAuth 2.0 Client ID**.
-3.  Add `https://your-new-domain.com/__/auth/handler` to the **Authorized redirect URIs**.
+### B. Build Configuration
+
+Vercel should auto-detect these, but verify in **Project Settings > General**:
+
+| Setting | Value |
+| :--- | :--- |
+| **Framework Preset** | Vite |
+| **Build Command** | `npm run build` |
+| **Output Directory** | `dist` |
+| **Install Command** | `npm install` |
+| **Node.js Version** | 18.x or 20.x |
 
 ### C. Environment Variables
-Update your application's environment variables in the **AI Studio Settings** or your deployment configuration:
-1.  `APP_URL`: Set to `https://www.your-new-domain.com`.
-2.  `SHARED_APP_URL`: Set to `https://www.your-new-domain.com`.
 
-### D. Firebase Config (`firebase-applet-config.json`)
-You can optionally update the `authDomain` in `firebase-applet-config.json` to your custom domain once it is fully connected and verified.
+Set these in **Vercel Dashboard > Project Settings > Environment Variables**:
+
+| Variable | Description | Required |
+| :--- | :--- | :--- |
+| `VITE_SUPABASE_URL` | Supabase project URL | Yes |
+| `VITE_SUPABASE_ANON_KEY` | Supabase anon/public key | Yes |
+| `GEMINI_API_KEY` | Google Gemini API key | Yes |
+| `STRIPE_SECRET_KEY` | Stripe secret key | For payments |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | For payments |
+| `VITE_STRIPE_PRICE_ID_PRO` | Stripe Pro plan price ID | For payments |
+| `VITE_STRIPE_PRICE_ID_BUSINESS` | Stripe Business plan price ID | For payments |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | For payments |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side only) | For webhooks |
+| `VITE_APP_URL` | `https://www.aeoanalyzers.com` | Yes |
 
 ---
 
-## 4. Summary Checklist
-- [ ] Buy domain on **GoDaddy**.
-- [ ] Map domain in **Google Cloud Run** console.
-- [ ] Update **DNS records** in GoDaddy.
-- [ ] Authorize domain in **Firebase Auth** settings.
-- [ ] Update **OAuth Redirect URIs** in Google Cloud Console.
-- [ ] Update **Environment Variables** in AI Studio.
+## 3. Custom Domain Mapping (Network Solutions DNS)
+
+### A. Add Domain in Vercel
+
+1. Go to **Vercel Dashboard > Project > Settings > Domains**.
+2. Add `aeoanalyzers.com`.
+3. Add `www.aeoanalyzers.com`.
+4. Vercel will provide the required DNS records.
+
+### B. Update DNS Records in Network Solutions
+
+1. Log in to your **Network Solutions** account.
+2. Navigate to **DNS Management** for `aeoanalyzers.com`.
+3. Add the following records:
+
+| Type | Host | Value | TTL |
+| :--- | :--- | :--- | :--- |
+| **A** | `@` | `76.76.21.21` (Vercel IP) | 3600 |
+| **CNAME** | `www` | `cname.vercel-dns.com` | 3600 |
+
+4. DNS propagation typically completes within minutes, but can take up to 24-48 hours.
+
+### C. SSL Certificate
+
+Vercel **automatically provisions and renews** SSL certificates via Let's Encrypt once DNS records are verified. No manual SSL configuration is required.
+
+---
+
+## 4. Supabase Auth Configuration
+
+Ensure your custom domain is authorized in Supabase:
+
+1. Go to the [Supabase Dashboard](https://supabase.com/dashboard).
+2. Navigate to **Authentication > URL Configuration**.
+3. Set the **Site URL** to `https://www.aeoanalyzers.com`.
+4. Add redirect URLs:
+   - `https://www.aeoanalyzers.com/**`
+   - `https://aeoanalyzers.com/**`
+   - `https://aeo-app1.vercel.app/**` (for preview deployments)
+   - `http://localhost:5173/**` (for local development)
+
+---
+
+## 5. Serverless API Routes
+
+The Vercel deployment includes serverless API routes in the `/api` directory:
+
+| Route | Purpose |
+| :--- | :--- |
+| `/api/fetch-site` | HTML proxy with spoofed User-Agent for AEO analysis |
+| `/api/create-checkout-session` | Stripe checkout session creation |
+| `/api/create-portal-session` | Stripe billing portal access |
+| `/api/webhook` | Stripe webhook handler (updates Supabase via service role key) |
+
+These are automatically deployed as serverless functions by Vercel.
+
+---
+
+## 6. Summary Checklist
+
+- [ ] Connect GitHub repo (`lhiebert01/aeoanalyzers`) to Vercel.
+- [ ] Set all **environment variables** in Vercel dashboard.
+- [ ] Add custom domain `aeoanalyzers.com` and `www.aeoanalyzers.com` in Vercel.
+- [ ] Update **DNS records** in Network Solutions.
+- [ ] Verify **SSL certificate** is provisioned (automatic).
+- [ ] Configure **redirect URLs** in Supabase Auth settings.
+- [ ] Set **Site URL** in Supabase to `https://www.aeoanalyzers.com`.
+- [ ] Verify Stripe webhook endpoint points to `https://www.aeoanalyzers.com/api/webhook`.

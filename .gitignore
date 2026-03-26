@@ -7,3 +7,4 @@ dist/
 .DS_Store
 temp-clone/
 .vercel/
+.vercel

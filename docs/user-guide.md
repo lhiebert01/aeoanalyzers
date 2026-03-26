@@ -25,11 +25,17 @@ After every analysis, we generate a custom **JSON-LD Schema** snippet.
 - **What to do**: Copy the code and paste it into the `<head>` section of your website.
 - **Why**: This provides a "machine-readable" layer that AI agents prioritize over standard HTML.
 
-### 5. Best Practices for AEO
+### 5. Managing Your Account
+- **Sign Up / Log In**: Create an account using email or Google OAuth via our secure authentication system powered by Supabase.
+- **Subscription Tiers**: Upgrade from Free to Pro ($49/mo) or Business ($199/mo) to unlock more analyses, historical tracking, and advanced features.
+- **Analysis History**: All your past analyses are saved and accessible from your dashboard, so you can track AEO score improvements over time.
+- **Billing Management**: Access the Stripe billing portal from your account settings to manage your subscription, update payment methods, or view invoices.
+
+### 6. Best Practices for AEO
 - **Direct Answers**: Structure your content with clear headings (H1, H2) and direct answers to common questions.
 - **Structured Data**: Always use Schema.org (Article, FAQ, Organization).
 - **Authoritative Tone**: AI models favor content that sounds expert and objective.
 - **Mobile Speed**: AI crawlers prioritize fast-loading sites.
 
 ---
-*For support, please visit the dashboard or contact our automated help system.*
+*For support, visit your dashboard at [aeoanalyzers.com](https://www.aeoanalyzers.com) or contact our support team.*
