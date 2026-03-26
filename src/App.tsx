@@ -398,14 +398,12 @@ export default function App() {
     }
   };
 
-  const handleSignOut = async () => {
+  const handleSignOut = () => {
     setUser(null);
     setUserProfile(null);
-    try {
-      await supabase.auth.signOut();
-    } catch (err) {
-      console.error('Sign out error:', err);
-    }
+    supabase.auth.signOut().catch(() => {});
+    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = '/';
   };
 
