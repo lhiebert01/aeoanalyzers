@@ -166,33 +166,42 @@ export default function App() {
   }, [user]);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // Safety timeout: if auth check takes more than 3 seconds, show the app anyway
+    const timeout = setTimeout(() => {
+      setIsAuthReady(true);
+    }, 3000);
+
+    const handleSession = async (session: any) => {
       if (session?.user) {
         const appUser: AppUser = { id: session.user.id, email: session.user.email || '' };
         setUser(appUser);
 
-        // Fetch or create user profile
-        const { data: profile, error: profileError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+        try {
+          // Fetch or create user profile
+          const { data: profile, error: profileError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
 
-        if (profileError && profileError.code === 'PGRST116') {
-          // No profile exists yet (e.g. Google OAuth first login) — create one
-          const email = session.user.email || '';
-          const isAdminEmail = email.toLowerCase() === 'lindsay.hiebert@gmail.com' ||
-                               email.toLowerCase() === 'liindsay.hiebert@gmail.com';
-          const { data: newProfile } = await supabase.from('users').insert({
-            id: session.user.id,
-            email,
-            display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || email.split('@')[0],
-            role: isAdminEmail ? 'admin' : 'user',
-            subscription_status: 'free',
-          }).select().single();
-          if (newProfile) setUserProfile(newProfile);
-        } else if (profile) {
-          setUserProfile(profile);
+          if (profileError && profileError.code === 'PGRST116') {
+            // No profile exists yet (e.g. Google OAuth first login) — create one
+            const email = session.user.email || '';
+            const isAdminEmail = email.toLowerCase() === 'lindsay.hiebert@gmail.com' ||
+                                 email.toLowerCase() === 'liindsay.hiebert@gmail.com';
+            const { data: newProfile } = await supabase.from('users').insert({
+              id: session.user.id,
+              email,
+              display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || email.split('@')[0],
+              role: isAdminEmail ? 'admin' : 'user',
+              subscription_status: 'free',
+            }).select().single();
+            if (newProfile) setUserProfile(newProfile);
+          } else if (profile) {
+            setUserProfile(profile);
+          }
+        } catch (err) {
+          console.error('Error loading profile:', err);
         }
 
         trackEvent('login', { method: 'Supabase' });
@@ -207,8 +216,24 @@ export default function App() {
         }
       }
       setIsAuthReady(true);
+    };
+
+    // Check existing session immediately
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSession(session);
+    }).catch(() => {
+      setIsAuthReady(true);
     });
-    return () => subscription.unsubscribe();
+
+    // Listen for future auth changes (login, logout, token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      await handleSession(session);
+    });
+
+    return () => {
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchHistory = async () => {
