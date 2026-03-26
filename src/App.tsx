@@ -399,7 +399,13 @@ export default function App() {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
+    setUser(null);
+    setUserProfile(null);
     navigateTo('landing');
   };
 
