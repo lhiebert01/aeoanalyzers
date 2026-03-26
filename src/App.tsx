@@ -212,7 +212,10 @@ export default function App() {
   }, []);
 
   const fetchHistory = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoadingHistory(false);
+      return;
+    }
     setLoadingHistory(true);
     try {
       const { data, error: fetchError } = await supabase
@@ -225,14 +228,17 @@ export default function App() {
       setHistory(data || []);
     } catch (err) {
       console.error('Error fetching history:', err);
-    } finally {
-      setLoadingHistory(false);
+      setHistory([]);
     }
+    setLoadingHistory(false);
   };
 
   useEffect(() => {
     if (view === 'history' && user) {
       fetchHistory();
+    } else if (view === 'history' && !user) {
+      setLoadingHistory(false);
+      setHistory([]);
     }
   }, [view, user]);
 
@@ -323,7 +329,8 @@ export default function App() {
         ]);
         const duel = await performCompetitiveDuel(url, html1, competitorUrl, html2);
         setDuelResult(duel);
-        
+        setLoading(false);
+
         // Update free uses if not pro
         if (!isPro) {
           const newCount = freeUses + 1;
@@ -331,22 +338,24 @@ export default function App() {
           localStorage.setItem('aeo_free_uses', newCount.toString());
         }
 
+        // Save to DB in background (don't block UI)
         if (user) {
-          await saveToHistory(
+          saveToHistory(
             {
               ...duel.user,
               competitorScore: duel.competitor.score
             },
             url,
             competitorUrl
-          );
-          await updateUsageCount();
+          ).catch(console.error);
+          updateUsageCount().catch(console.error);
         }
         trackEvent('analysis_complete', { type: 'duel', winner: duel.winner });
       } else {
         const html = await fetchHtml(url);
         const analysis = await analyzeWebsite(url, html);
         setResult(analysis);
+        setLoading(false);
 
         // Update free uses if not pro
         if (!isPro) {
@@ -355,16 +364,16 @@ export default function App() {
           localStorage.setItem('aeo_free_uses', newCount.toString());
         }
 
+        // Save to DB in background (don't block UI)
         if (user) {
-          await saveToHistory(analysis, url);
-          await updateUsageCount();
+          saveToHistory(analysis, url).catch(console.error);
+          updateUsageCount().catch(console.error);
         }
         trackEvent('analysis_complete', { type: 'single', score: analysis.score });
       }
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'An unexpected error occurred');
-    } finally {
       setLoading(false);
     }
   };

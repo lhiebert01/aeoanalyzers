@@ -7,9 +7,11 @@ import {
   Check, 
   Lock, 
   ArrowRight, 
-  Layout, 
-  ShoppingBag, 
+  Layout,
+  ShoppingBag,
   Code,
+  Globe,
+  Palette,
   Info,
   ExternalLink,
   ChevronRight,
@@ -31,7 +33,7 @@ interface ImplementationRoadmapProps {
 export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, analysisResult }: ImplementationRoadmapProps) {
   const [copied, setCopied] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'summary' | 'handoff' | 'platforms'>('summary');
-  const [platform, setPlatform] = useState<'wordpress' | 'shopify' | 'custom'>('wordpress');
+  const [platform, setPlatform] = useState<'wordpress' | 'shopify' | 'hubspot' | 'wix' | 'custom'>('wordpress');
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -202,6 +204,18 @@ Best regards,
                 {copied === 'email' ? 'Copied!' : 'Copy Template'}
               </button>
             </div>
+            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 space-y-3">
+              <h4 className="font-bold text-sm text-blue-900 flex items-center gap-2">
+                <Code className="w-4 h-4" />
+                What is JSON-LD?
+              </h4>
+              <p className="text-sm text-blue-700 leading-relaxed">
+                <strong>JSON-LD</strong> (JavaScript Object Notation for Linked Data) is a small block of code that you paste into your website's <code className="bg-blue-100 px-1 rounded">&lt;head&gt;</code> section. It tells AI agents and search engines <em>what</em> your business is, <em>what</em> you offer, and <em>how</em> to cite you — in a language machines can read. Think of it as a "business card" for AI.
+              </p>
+              <p className="text-sm text-blue-700 leading-relaxed">
+                <strong>How to add it:</strong> Copy the generated snippet from the Summary tab and paste it into your site's header. In <strong>WordPress</strong>, use the "Insert Headers and Footers" plugin. In <strong>Shopify</strong>, edit <code className="bg-blue-100 px-1 rounded">theme.liquid</code>. In <strong>HubSpot</strong>, go to Settings &gt; Website &gt; Pages &gt; Site Header HTML. In <strong>Wix</strong>, go to Settings &gt; Custom Code &gt; Head. For <strong>custom sites</strong>, paste it directly into your HTML <code className="bg-blue-100 px-1 rounded">&lt;head&gt;</code> tag.
+              </p>
+            </div>
             <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 flex gap-4">
               <Info className="w-6 h-6 text-amber-500 shrink-0" />
               <p className="text-sm text-amber-700 leading-relaxed">
@@ -213,9 +227,11 @@ Best regards,
 
         {activeTab === 'platforms' && (
           <div className="space-y-12">
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-3">
               <PlatformButton active={platform === 'wordpress'} onClick={() => setPlatform('wordpress')} icon={<Layout className="w-5 h-5" />} label="WordPress" />
               <PlatformButton active={platform === 'shopify'} onClick={() => setPlatform('shopify')} icon={<ShoppingBag className="w-5 h-5" />} label="Shopify" />
+              <PlatformButton active={platform === 'hubspot'} onClick={() => setPlatform('hubspot')} icon={<Globe className="w-5 h-5" />} label="HubSpot" />
+              <PlatformButton active={platform === 'wix'} onClick={() => setPlatform('wix')} icon={<Palette className="w-5 h-5" />} label="Wix" />
               <PlatformButton active={platform === 'custom'} onClick={() => setPlatform('custom')} icon={<Code className="w-5 h-5" />} label="Custom Code" />
             </div>
 
@@ -246,6 +262,32 @@ Best regards,
                       </Step>
                       <Step number={3} title="Audit Product Schema">
                         Shopify has built-in schema, but it's often incomplete. Use our snippet to supplement missing fields.
+                      </Step>
+                    </>
+                  )}
+                  {platform === 'hubspot' && (
+                    <>
+                      <Step number={1} title="Open Site Header Settings">
+                        Go to <strong>Settings &gt; Website &gt; Pages</strong>. Scroll to the <strong>Site Header HTML</strong> section.
+                      </Step>
+                      <Step number={2} title="Paste JSON-LD Snippet">
+                        Paste your AEO JSON-LD snippet wrapped in <code>&lt;script type="application/ld+json"&gt;</code> tags into the Site Header HTML box.
+                      </Step>
+                      <Step number={3} title="Add FAQ Schema to Blog Posts">
+                        Use HubSpot's Custom Modules or HubL templates to add FAQ structured data to your knowledge base and blog content.
+                      </Step>
+                    </>
+                  )}
+                  {platform === 'wix' && (
+                    <>
+                      <Step number={1} title="Open Custom Code Settings">
+                        Go to <strong>Settings &gt; Custom Code</strong> (or <strong>Advanced &gt; Custom Code</strong> in the Wix dashboard).
+                      </Step>
+                      <Step number={2} title="Add JSON-LD to Head">
+                        Click <strong>"+ Add Code"</strong>, paste your AEO JSON-LD snippet, set placement to <strong>"Head"</strong> and apply to <strong>"All Pages"</strong>.
+                      </Step>
+                      <Step number={3} title="Enable Wix SEO Tools">
+                        Use Wix's built-in SEO panel on each page to add meta descriptions and structured data markup for individual pages.
                       </Step>
                     </>
                   )}
