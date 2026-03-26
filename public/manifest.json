@@ -1,0 +1,17 @@
+{
+  "name": "AEO Analyzers",
+  "short_name": "AEO Analyzers",
+  "description": "The world's first AI Simulation Engine for Answer Engine Optimization.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/shapes/svg?seed=Analyzers&backgroundColor=000000",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
