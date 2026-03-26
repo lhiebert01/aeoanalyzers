@@ -1,18 +1,25 @@
 # AEO Analyzers
 
-**AEO Analyzers** is a professional-grade AI Simulation Engine that helps brands, businesses, and developers optimize for **Answer Engine Optimization (AEO)**. As search evolves from links to direct AI-generated answers (via Gemini, ChatGPT, Perplexity), this platform shows exactly how AI perceives your website and provides actionable insights to secure your citation.
+**Multiple AI Engines. One Score. 90 Seconds.**
 
-**Live at:** https://aeoanalyzers.com
+AEO Analyzers is a professional-grade AI Simulation Engine that helps brands, businesses, and developers optimize for **Answer Engine Optimization (AEO)**. We simulate how multiple AI engines — Gemini, ChatGPT, Perplexity — perceive your website, delivering insights that would take a web team hundreds of hours, in 90 seconds.
+
+**Live at:** https://www.aeoanalyzers.com
 
 ## Key Features
 
-- **AEO Score Engine:** AI-powered analysis of any website's readiness for answer engine citation
+- **Multi-Engine AI Simulation:** Simulates how multiple AI engines perceive your content — not a single algorithm, real-world results
+- **AEO Score Engine:** AI-powered analysis of any website's readiness for answer engine citation (0-100 score)
 - **Citation Probability:** Proprietary metric showing likelihood of AI attribution
 - **Competitive Duel:** Head-to-head comparison against competitor websites
-- **Implementation Roadmap:** Actionable optimization steps (Pro feature)
-- **Analysis History:** Track your AEO score improvements over time
-- **Admin Dashboard:** User management and growth metrics
-- **Stripe Subscriptions:** Free, Pro ($49/mo), and Business ($199/mo) tiers
+- **Implementation Roadmap:** Actionable optimization steps with platform-specific guides for WordPress, Shopify, HubSpot, Wix, and custom code (Pro feature)
+- **Web Team Handoff:** Copy-paste email template with JSON-LD snippets, findings, and technical instructions
+- **Analysis History:** Track your AEO score improvements over time with full detail view
+- **Google OAuth + Email Auth:** Secure authentication via Supabase with Google sign-in support
+- **Admin Dashboard:** User management, growth metrics, and GA4 analytics link
+- **GA4 Analytics:** Full Google Analytics 4 integration for tracking user behavior and conversions
+- **Stripe Subscriptions:** Free (1 analysis), Pro ($49/mo), and Business ($199/mo) tiers
+- **Free Tier Gate:** 1 free analysis, then upgrade required — usage tracked server-side
 
 ## Tech Stack
 
@@ -23,9 +30,10 @@
 | **Animations** | Motion (Framer Motion) | Page transitions & micro-interactions |
 | **Icons** | Lucide React | Icon library |
 | **Build** | Vite 6 | Dev server & bundler |
-| **Auth & Database** | Supabase (PostgreSQL + Auth) | User accounts, profiles, analysis history |
+| **Auth & Database** | Supabase (PostgreSQL + Auth + RLS) | User accounts, profiles, analysis history |
 | **AI Analysis** | Google Gemini API (free tier) | Website AEO scoring & recommendations |
 | **Payments** | Stripe | Subscription billing |
+| **Analytics** | Google Analytics 4 (GA4) | User tracking & conversion metrics |
 | **Hosting** | Vercel | Static site + serverless API routes |
 | **DNS** | Network Solutions | Domain management for aeoanalyzers.com |
 
@@ -33,11 +41,12 @@
 
 ```
 Browser (React SPA)
-  ├── Supabase Auth (signup, login, Google OAuth)
+  ├── Supabase Auth (email signup, login, Google OAuth)
   ├── Supabase PostgreSQL (users, analysis_history with RLS)
-  ├── Gemini API (AI analysis, client-side)
+  ├── Gemini API (multi-engine AI simulation, client-side)
+  ├── Google Analytics 4 (GA4 event tracking)
   └── Vercel API Routes (serverless)
-        ├── /api/fetch-site (HTML proxy with spoofed User-Agent)
+        ├── /api/fetch-site (HTML proxy with full Chrome browser headers)
         ├── /api/create-checkout-session (Stripe)
         ├── /api/create-portal-session (Stripe billing portal)
         └── /api/webhook (Stripe webhooks → Supabase service role)
@@ -50,6 +59,7 @@ Browser (React SPA)
 - npm
 - A Supabase project (free or paid)
 - A Gemini API key (free tier)
+- A Google Cloud Console project (for Google OAuth)
 
 ### Installation
 
@@ -74,7 +84,12 @@ Browser (React SPA)
    - Open your Supabase SQL Editor
    - Paste and run the contents of `supabase-schema.sql`
 
-5. Start the development server:
+5. Configure Google OAuth:
+   - Create OAuth credentials in Google Cloud Console
+   - Add redirect URI: `https://<your-supabase-project>.supabase.co/auth/v1/callback`
+   - Add Client ID and Secret to Supabase Auth > Providers > Google
+
+6. Start the development server:
    ```bash
    npm run dev
    ```
@@ -108,7 +123,7 @@ Browser (React SPA)
 Two tables with Row Level Security (RLS):
 
 - **`users`** — User profiles (linked to Supabase Auth), subscription status, usage tracking
-- **`analysis_history`** — AEO analysis results, scores, citation probabilities
+- **`analysis_history`** — AEO analysis results, scores, citation probabilities, full AI results stored as JSON
 
 See `supabase-schema.sql` for the full schema including indexes, RLS policies, and triggers.
 
