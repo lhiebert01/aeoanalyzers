@@ -85,7 +85,7 @@ export default function AdminDashboard() {
         </div>
         <div className="flex gap-3">
           <a
-            href="https://analytics.google.com/"
+            href="https://analytics.google.com/analytics/web/#/p14235134644/reports/intelligenthome"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 bg-white border border-zinc-200 rounded-xl text-sm font-bold hover:bg-zinc-50 transition-all"
