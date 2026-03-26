@@ -657,8 +657,8 @@ export default function App() {
               className="max-w-4xl mx-auto px-6 py-12"
             >
               <SEO 
-                title="Privacy Policy - AEO Analyzerss"
-                description="Our commitment to your data privacy and how we handle your information at AEO Analyzerss."
+                title="Privacy Policy - AEO Analyzers"
+                description="Our commitment to your data privacy and how we handle your information at AEO Analyzers."
                 author="Lindsay Hiebert"
                 publishedDate="2026-03-22T00:00:00Z"
               />
@@ -712,8 +712,8 @@ export default function App() {
               className="max-w-4xl mx-auto px-6 py-12"
             >
               <SEO 
-                title="Terms of Service - AEO Analyzerss"
-                description="The rules and guidelines for using the AEO Analyzerss platform."
+                title="Terms of Service - AEO Analyzers"
+                description="The rules and guidelines for using the AEO Analyzers platform."
                 author="Lindsay Hiebert"
                 publishedDate="2026-03-22T00:00:00Z"
               />
@@ -1134,7 +1134,7 @@ export default function App() {
           <button onClick={() => navigateTo('terms')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Terms of Service</button>
         </div>
         <p className="text-zinc-400 text-xs font-mono uppercase tracking-widest">
-          AEO Analyzerss // The Answer Engine
+          AEO Analyzers // The Answer Engine
         </p>
       </footer>
       </div>
