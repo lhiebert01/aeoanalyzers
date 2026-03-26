@@ -399,14 +399,14 @@ export default function App() {
   };
 
   const handleSignOut = async () => {
+    setUser(null);
+    setUserProfile(null);
     try {
       await supabase.auth.signOut();
     } catch (err) {
       console.error('Sign out error:', err);
     }
-    setUser(null);
-    setUserProfile(null);
-    navigateTo('landing');
+    window.location.href = '/';
   };
 
   const copyToClipboard = (text: string) => {
