@@ -19,6 +19,7 @@ import {
 interface ImplementationRoadmapProps {
   isPaid: boolean;
   onUpgrade: () => void;
+  analyzedUrl?: string;
   analysisResult: {
     score: number;
     summary: string;
@@ -27,7 +28,7 @@ interface ImplementationRoadmapProps {
   };
 }
 
-export default function ImplementationRoadmap({ isPaid, onUpgrade, analysisResult }: ImplementationRoadmapProps) {
+export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, analysisResult }: ImplementationRoadmapProps) {
   const [copied, setCopied] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'summary' | 'handoff' | 'platforms'>('summary');
   const [platform, setPlatform] = useState<'wordpress' | 'shopify' | 'custom'>('wordpress');
@@ -38,21 +39,34 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analysisResul
     setTimeout(() => setCopied(null), 2000);
   };
 
-  const emailTemplate = `Subject: Technical Request: AEO Optimization for our Website
+  const siteUrl = analyzedUrl || 'our website';
+  const findings = analysisResult.criteria.filter(c => c.score < 7);
+  const allFindings = findings.length > 0
+    ? findings.map(c => `- ${c.name} (Score: ${c.score}/10): ${c.feedback}`).join('\n')
+    : analysisResult.criteria.slice(0, 3).map(c => `- ${c.name} (Score: ${c.score}/10): ${c.feedback}`).join('\n');
+
+  const emailTemplate = `Subject: Technical Request: AEO Optimization for ${siteUrl}
 
 Dear Web Team,
 
-We recently conducted an Answer Engine Optimization (AEO) audit of our website. To improve our visibility and citation probability in AI agents like Gemini and ChatGPT, we need to implement several technical updates.
+We recently conducted an Answer Engine Optimization (AEO) audit of ${siteUrl} using AEO Analyzers (https://www.aeoanalyzers.com).
+
+Overall AEO Score: ${analysisResult.score}/100
+
+Summary: ${analysisResult.summary}
 
 Key Findings:
-${analysisResult.criteria.filter(c => c.score < 7).map(c => `- ${c.name}: ${c.feedback}`).join('\n')}
+${allFindings}
 
 Required Actions:
-1. Implement Structured Data (JSON-LD): We need specific Schema.org markup to help AI agents parse our content.
+1. Implement Structured Data (JSON-LD): We need specific Schema.org markup to help AI agents parse our content. A generated snippet is included below.
 2. Semantic HTML Updates: Ensure we are using proper <article>, <section>, and <main> tags instead of generic divs.
 3. Metadata Optimization: Update our meta tags to include AI-specific hints.
 
-You can find the specific code snippets and technical roadmap here: [Link to AEO Analyzer Report]
+Generated JSON-LD Snippet:
+${analysisResult.schemaSnippet || 'See the AEO Analyzer report for the generated snippet.'}
+
+You can re-run this analysis at: https://www.aeoanalyzers.com
 
 Please let me know when we can schedule these updates.
 

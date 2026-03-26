@@ -1054,9 +1054,10 @@ export default function App() {
                       />
 
                       {/* Implementation Roadmap (Premium Feature) */}
-                      <ImplementationRoadmap 
+                      <ImplementationRoadmap
                         isPaid={userProfile?.subscription_status?.toLowerCase() === 'pro' || userProfile?.subscription_status?.toLowerCase() === 'business' || isAdmin}
                         onUpgrade={() => setView('payments')}
+                        analyzedUrl={url}
                         analysisResult={result}
                       />
 
