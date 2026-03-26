@@ -379,6 +379,10 @@ export default function App() {
   };
 
   const handleViewHistoryDetail = (item: any) => {
+    if (!item.full_result) {
+      setError('This analysis was saved without detailed results. Please re-run the analysis.');
+      return;
+    }
     try {
       const data = JSON.parse(item.full_result);
       if (item.is_duel) {
@@ -798,6 +802,7 @@ export default function App() {
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Citation Prob.</th>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Date</th>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Type</th>
+                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-100">
@@ -823,6 +828,11 @@ export default function App() {
                           <td className="px-6 py-4">
                             <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-tighter ${item.is_duel ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-500'}`}>
                               {item.is_duel ? 'Duel' : 'Single'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-xs font-bold text-zinc-400 group-hover:text-zinc-900 transition-all flex items-center gap-1">
+                              View <ChevronRight className="w-3 h-3" />
                             </span>
                           </td>
                         </tr>
@@ -853,13 +863,22 @@ export default function App() {
               />
               <div className="max-w-5xl mx-auto px-6">
                 {isViewingHistory && (
-                  <button 
-                    onClick={() => setView('history')}
-                    className="mb-8 flex items-center gap-2 text-zinc-500 hover:text-zinc-900 transition-all font-bold text-sm"
-                  >
-                    <ArrowRight className="w-4 h-4 rotate-180" />
-                    Back to History
-                  </button>
+                  <div className="mb-8 flex items-center justify-between bg-zinc-50 border border-zinc-200 rounded-2xl px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <History className="w-5 h-5 text-zinc-400" />
+                      <div>
+                        <span className="text-sm font-bold text-zinc-900">Viewing Saved Analysis</span>
+                        <span className="text-xs text-zinc-500 ml-2">{url}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setView('history')}
+                      className="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 transition-all font-bold text-sm bg-white border border-zinc-200 px-4 py-2 rounded-xl"
+                    >
+                      <ArrowRight className="w-4 h-4 rotate-180" />
+                      Back to History
+                    </button>
+                  </div>
                 )}
                 {/* Hero Section */}
                 <section className="text-center mb-16">
