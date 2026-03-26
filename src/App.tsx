@@ -437,7 +437,7 @@ export default function App() {
     if (view === 'guide') items.push({ name: 'User Guide', item: '/guide' });
     if (view === 'privacy') items.push({ name: 'Privacy Policy', item: '/privacy' });
     if (view === 'terms') items.push({ name: 'Terms of Service', item: '/terms' });
-    if (view === 'analyzer') items.push({ name: 'AEO Analyzer', item: '/analyzer' });
+    if (view === 'analyzer') items.push({ name: 'AEO Analyzers', item: '/analyzer' });
     return getBreadcrumbJsonLd(items);
   };
 
@@ -466,14 +466,14 @@ export default function App() {
           <div className="flex items-center gap-12">
             <button 
               onClick={() => navigateTo('landing')}
-              aria-label="AEO Analyzer Home"
+              aria-label="AEO Analyzers Home"
               className="flex items-center gap-3 hover:opacity-80 transition-all group"
             >
               <div className="bg-zinc-900 p-2 rounded-xl group-hover:rotate-6 transition-transform">
                 <Cpu className="w-6 h-6 text-white" />
               </div>
               <div className="flex flex-col text-left">
-                <span className="font-black text-xl tracking-tighter leading-none">AEO ANALYZER</span>
+                <span className="font-black text-xl tracking-tighter leading-none">AEO ANALYZERS</span>
                 <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Answer Engine Optimization</span>
               </div>
             </button>
@@ -653,8 +653,8 @@ export default function App() {
               className="max-w-4xl mx-auto px-6 py-12"
             >
               <SEO 
-                title="Privacy Policy - AEO Analyzers"
-                description="Our commitment to your data privacy and how we handle your information at AEO Analyzers."
+                title="Privacy Policy - AEO Analyzerss"
+                description="Our commitment to your data privacy and how we handle your information at AEO Analyzerss."
                 author="Lindsay Hiebert"
                 publishedDate="2026-03-22T00:00:00Z"
               />
@@ -666,7 +666,7 @@ export default function App() {
                   <div>
                     <h2 className="text-2xl font-bold mb-4 text-zinc-900">1. Data Collection & Simulation</h2>
                     <p className="text-zinc-600 leading-relaxed">
-                      AEO Analyzer collects minimal personal data required to provide our simulation services. This includes your email address for account management and the URLs you submit for analysis. We do not store the full HTML content of analyzed sites beyond the duration of the simulation.
+                      AEO Analyzers collects minimal personal data required to provide our simulation services. This includes your email address for account management and the URLs you submit for analysis. We do not store the full HTML content of analyzed sites beyond the duration of the simulation.
                     </p>
                   </div>
 
@@ -680,7 +680,7 @@ export default function App() {
                   <div>
                     <h2 className="text-2xl font-bold mb-4 text-zinc-900">3. Payment Information</h2>
                     <p className="text-zinc-600 leading-relaxed">
-                      All payment processing is handled securely by Stripe. AEO Analyzer does not store your credit card details or sensitive financial information on our servers.
+                      All payment processing is handled securely by Stripe. AEO Analyzers does not store your credit card details or sensitive financial information on our servers.
                     </p>
                   </div>
 
@@ -708,8 +708,8 @@ export default function App() {
               className="max-w-4xl mx-auto px-6 py-12"
             >
               <SEO 
-                title="Terms of Service - AEO Analyzers"
-                description="The rules and guidelines for using the AEO Analyzers platform."
+                title="Terms of Service - AEO Analyzerss"
+                description="The rules and guidelines for using the AEO Analyzerss platform."
                 author="Lindsay Hiebert"
                 publishedDate="2026-03-22T00:00:00Z"
               />
@@ -721,7 +721,7 @@ export default function App() {
                   <div>
                     <h2 className="text-2xl font-bold mb-4 text-zinc-900">1. Acceptance of Terms</h2>
                     <p className="text-zinc-600 leading-relaxed">
-                      By accessing AEO Analyzer, you agree to be bound by these Terms. Our service is provided "as is," and we make no guarantees regarding the absolute accuracy of AI-generated scores, as search algorithms and LLM behaviors change frequently.
+                      By accessing AEO Analyzers, you agree to be bound by these Terms. Our service is provided "as is," and we make no guarantees regarding the absolute accuracy of AI-generated scores, as search algorithms and LLM behaviors change frequently.
                     </p>
                   </div>
 
@@ -735,7 +735,7 @@ export default function App() {
                   <div>
                     <h2 className="text-2xl font-bold mb-4 text-zinc-900">3. Intellectual Property</h2>
                     <p className="text-zinc-600 leading-relaxed">
-                      The AEO Analyzer platform, including its proprietary scoring algorithms and UI design, is the property of AEO Analyzer. You retain all rights to the website content you submit for analysis.
+                      The AEO Analyzers platform, including its proprietary scoring algorithms and UI design, is the property of AEO Analyzers. You retain all rights to the website content you submit for analysis.
                     </p>
                   </div>
 
@@ -846,7 +846,7 @@ export default function App() {
               exit={{ opacity: 0 }}
             >
               <SEO 
-                title="AEO Analyzer - Score Your Website"
+                title="AEO Analyzers - Score Your Website"
                 description="Analyze your website's performance in AI search results and get actionable insights to improve your citations."
                 author="Lindsay Hiebert"
                 publishedDate="2026-03-22T00:00:00Z"
@@ -1115,7 +1115,7 @@ export default function App() {
           <button onClick={() => navigateTo('terms')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Terms of Service</button>
         </div>
         <p className="text-zinc-400 text-xs font-mono uppercase tracking-widest">
-          AEO Analyzers // The Answer Engine
+          AEO Analyzerss // The Answer Engine
         </p>
       </footer>
       </div>

@@ -66,7 +66,7 @@ Required Actions:
 3. Metadata Optimization: Update our meta tags to include AI-specific hints.
 
 Generated JSON-LD Snippet:
-${analysisResult.schemaSnippet || 'See the AEO Analyzer report for the generated snippet.'}
+${analysisResult.schemaSnippet || 'See the AEO Analyzers report for the generated snippet.'}
 
 You can re-run this analysis at: https://www.aeoanalyzers.com
 
@@ -315,7 +315,7 @@ Best regards,
                 <div className="space-y-4">
                   <ValidationLink title="Google Rich Results Test" url="https://search.google.com/test/rich-results" />
                   <ValidationLink title="Schema Markup Validator" url="https://validator.schema.org/" />
-                  <ValidationLink title="AEO Analyzer (Re-run)" url="#" />
+                  <ValidationLink title="AEO Analyzers (Re-run)" url="#" />
                 </div>
               </div>
             </div>

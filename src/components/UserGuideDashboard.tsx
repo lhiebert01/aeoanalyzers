@@ -228,7 +228,7 @@ export default function UserGuideDashboard() {
       {/* Footer */}
       <footer className="text-center pt-16 border-t border-zinc-100">
         <p className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">
-          AEO Analyzer // The Answer Engine Era
+          AEO Analyzers // The Answer Engine Era
         </p>
       </footer>
     </div>

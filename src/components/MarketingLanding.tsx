@@ -54,7 +54,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
       a: "Start by running an analysis here. We'll provide you with the exact JSON-LD code snippets and technical fixes needed to improve your visibility. Most fixes can be implemented in under 30 minutes."
     },
     {
-      q: "Does AEO Analyzer support e-commerce?",
+      q: "Does AEO Analyzers support e-commerce?",
       a: "Yes. AI shopping assistants rely on 'Product' and 'Review' Schema to recommend items. We audit your store to ensure you're not invisible to these new AI buyers."
     },
     {

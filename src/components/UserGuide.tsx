@@ -71,7 +71,7 @@ export default function UserGuide({ isAdmin, initialGuide = 'user' }: UserGuideP
     <div className="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row gap-12">
       <SEO 
         title="User Guide - How to Optimize for AEO"
-        description="Learn how to use AEO Analyzer to improve your website's visibility in AI search results and secure your brand's citations."
+        description="Learn how to use AEO Analyzers to improve your website's visibility in AI search results and secure your brand's citations."
         author="Lindsay Hiebert"
         publishedDate="2026-03-22T00:00:00Z"
         jsonLd={[
