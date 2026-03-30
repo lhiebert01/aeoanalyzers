@@ -169,7 +169,48 @@ The goal is to make each page useful not only for visitors, but also for AI syst
 
 ---
 
-## Recommended rollout order
+${analysisResult.comprehensiveSchema ? `## Comprehensive ready-to-deploy schema
+
+The following JSON-LD covers ALL products, services, and capabilities detected on your site. This replaces the basic snippet above with a complete OfferCatalog that tells AI agents everything your business offers.
+
+\`\`\`
+${analysisResult.comprehensiveSchema}
+\`\`\`
+
+Paste this into your site's <head> section. It is ready to deploy as-is.
+
+---
+
+` : ''}${analysisResult.contentRewrites && analysisResult.contentRewrites.length > 0 ? `## Content rewrite examples (Adjective-to-Metric)
+
+AI engines cite specific, measurable claims over vague marketing language. Here are before/after rewrites from your actual content:
+
+${analysisResult.contentRewrites.map(rw => `**${rw.page}**
+* Current (Low Citation): "${rw.current}"
+* Proposed (High Citation): "${rw.proposed}"`).join('\n\n')}
+
+---
+
+` : ''}${analysisResult.queryContentGap && analysisResult.queryContentGap.generatedQuestions.length > 0 ? `## Knowledge gap FAQ
+
+These are the questions AI agents are most likely to ask about your business. Items marked "Missing" need dedicated content created.
+
+| Question | Status | Action |
+|----------|--------|--------|
+${analysisResult.queryContentGap.generatedQuestions.map(q => {
+    const action = q.answerQuality === 'Missing' ? 'Create dedicated content with specific facts' : q.answerQuality === 'Partial' ? 'Expand with additional details and metrics' : 'No action needed';
+    return `| ${q.question} | ${q.answerQuality} | ${action} |`;
+  }).join('\n')}
+
+---
+
+` : ''}${analysisResult.implementationChecklist && analysisResult.implementationChecklist.length > 0 ? `## Implementation checklist
+
+${analysisResult.implementationChecklist.map(item => `- [ ] [${item.priority.toUpperCase()}] ${item.category}: ${item.action}`).join('\n')}
+
+---
+
+` : ''}## Recommended rollout order
 
 ### Phase 1: High-impact technical changes (1-2 days)
 * Add JSON-LD structured data to priority pages
@@ -305,15 +346,19 @@ Best regards,
               <div className="space-y-6">
                 <h3 className="text-xl font-bold flex items-center gap-2">
                   <Code className="w-5 h-5 text-zinc-400" />
-                  Your AEO Snippet
+                  {analysisResult.comprehensiveSchema ? 'Complete Schema (All Products & Services)' : 'Your AEO Snippet'}
                 </h3>
-                <p className="text-xs text-zinc-500 mb-4">Copy and paste this JSON-LD block into your site's &lt;head&gt; section.</p>
+                <p className="text-xs text-zinc-500 mb-4">
+                  {analysisResult.comprehensiveSchema
+                    ? 'This comprehensive JSON-LD covers every product, service, and capability detected on your site. Paste it into your <head> section.'
+                    : 'Copy and paste this JSON-LD block into your site\'s <head> section.'}
+                </p>
                 <div className="relative group">
                   <pre className="bg-zinc-900 text-zinc-300 p-6 rounded-2xl text-xs overflow-x-auto font-mono leading-relaxed max-h-[300px]">
-                    {analysisResult.schemaSnippet || 'No snippet generated.'}
+                    {analysisResult.comprehensiveSchema || analysisResult.schemaSnippet || 'No snippet generated.'}
                   </pre>
-                  <button 
-                    onClick={() => handleCopy(analysisResult.schemaSnippet || '', 'snippet')}
+                  <button
+                    onClick={() => handleCopy(analysisResult.comprehensiveSchema || analysisResult.schemaSnippet || '', 'snippet')}
                     className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all opacity-0 group-hover:opacity-100"
                   >
                     {copied === 'snippet' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}

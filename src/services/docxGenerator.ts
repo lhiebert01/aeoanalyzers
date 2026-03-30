@@ -440,6 +440,143 @@ export async function generateDocxReport(
     children.push(spacer());
   }
 
+  // --- Appendix Sections ---
+
+  // Appendix A: Comprehensive Schema (Ready to Deploy)
+  if (result.comprehensiveSchema) {
+    children.push(
+      sectionHeading('Appendix A: Comprehensive Schema (Ready to Deploy)'),
+      bodyText(
+        'The following JSON-LD schema covers ALL products, services, and capabilities detected on your website. Unlike the basic snippet above (which addresses a single gap), this comprehensive schema tells AI agents everything your business offers in one structured block. Paste this into your site\'s <head> section to replace any existing basic schema.'
+      ),
+      new Paragraph({
+        children: [new TextRun({ text: result.comprehensiveSchema, size: 16, font: 'Courier New', color: '333333' })],
+        spacing: { after: 200 },
+      }),
+      spacer()
+    );
+  }
+
+  // Appendix B: Content Rewrite Examples
+  if (result.contentRewrites && result.contentRewrites.length > 0) {
+    children.push(
+      sectionHeading('Appendix B: Content Rewrite Examples'),
+      bodyText(
+        'AI engines cite pages with specific, measurable claims over pages with vague marketing language. The table below shows "Adjective-to-Metric" rewrites — replacing low-citation phrases from your actual content with high-citation alternatives that AI systems prefer to quote.'
+      ),
+      new Table({
+        rows: [
+          new TableRow({
+            children: ['Page / Section', 'Current (Low Citation)', 'Proposed (High Citation)'].map(
+              text =>
+                new TableCell({
+                  children: [new Paragraph({ children: [new TextRun({ text, bold: true, size: 18, color: 'ffffff' })] })],
+                  shading: { type: ShadingType.SOLID, color: '1a1a2e' },
+                  width: { size: 33, type: WidthType.PERCENTAGE },
+                })
+            ),
+          }),
+          ...result.contentRewrites.map(
+            rw =>
+              new TableRow({
+                children: [rw.page, rw.current, rw.proposed].map(
+                  text =>
+                    new TableCell({
+                      children: [new Paragraph({ children: [new TextRun({ text, size: 18 })] })],
+                      width: { size: 33, type: WidthType.PERCENTAGE },
+                    })
+                ),
+              })
+          ),
+        ],
+        width: { size: 100, type: WidthType.PERCENTAGE },
+      }),
+      spacer()
+    );
+  }
+
+  // Appendix C: Meta Description Rewrite
+  if (result.metaDescriptionRewrite) {
+    children.push(
+      sectionHeading('Appendix C: Meta Description Rewrite'),
+      bodyText(
+        'Your meta description is the first thing AI agents read when deciding whether to cite your page. A specific, fact-rich meta description dramatically increases citation probability.'
+      ),
+      boldBodyText('Current: ', result.metaDescriptionRewrite.current),
+      boldBodyText('Suggested: ', result.metaDescriptionRewrite.suggested),
+      spacer()
+    );
+  }
+
+  // Appendix D: Knowledge Gap Action Table
+  if (result.queryContentGap && result.queryContentGap.generatedQuestions.length > 0) {
+    children.push(
+      sectionHeading('Appendix D: Knowledge Gap Action Table'),
+      bodyText(
+        'This table maps each question AI agents are likely to ask about your business to its current answer status and the specific action required to close the gap.'
+      ),
+      new Table({
+        rows: [
+          new TableRow({
+            children: ['Question', 'Status', 'Required Action'].map(
+              text =>
+                new TableCell({
+                  children: [new Paragraph({ children: [new TextRun({ text, bold: true, size: 18, color: 'ffffff' })] })],
+                  shading: { type: ShadingType.SOLID, color: '1a1a2e' },
+                  width: { size: 33, type: WidthType.PERCENTAGE },
+                })
+            ),
+          }),
+          ...result.queryContentGap.generatedQuestions.map(q => {
+            const action = q.answerQuality === 'Missing'
+              ? 'Create dedicated content answering this question with specific facts and data'
+              : q.answerQuality === 'Partial'
+              ? 'Expand existing content with additional details, metrics, and examples'
+              : 'No action needed — maintain current content';
+            return new TableRow({
+              children: [q.question, q.answerQuality, action].map(
+                text =>
+                  new TableCell({
+                    children: [new Paragraph({ children: [new TextRun({ text, size: 18 })] })],
+                    width: { size: 33, type: WidthType.PERCENTAGE },
+                  })
+              ),
+            });
+          }),
+        ],
+        width: { size: 100, type: WidthType.PERCENTAGE },
+      }),
+      spacer()
+    );
+  }
+
+  // Appendix E: Implementation Checklist
+  if (result.implementationChecklist && result.implementationChecklist.length > 0) {
+    children.push(
+      sectionHeading('Appendix E: Implementation Checklist'),
+      bodyText(
+        'A prioritized checklist of all actions needed to maximize your AEO score. Work through High priority items first, then Medium, then Low.'
+      ),
+      ...result.implementationChecklist.map(item =>
+        new Paragraph({
+          children: [
+            new TextRun({ text: `[ ] `, size: 22, font: 'Courier New', color: '333333' }),
+            new TextRun({
+              text: `[${item.priority.toUpperCase()}] `,
+              bold: true,
+              size: 22,
+              color: item.priority === 'High' ? 'dc2626' : item.priority === 'Medium' ? 'ca8a04' : '16a34a',
+            }),
+            new TextRun({ text: `${item.category}: `, bold: true, size: 22, color: '1a1a2e' }),
+            new TextRun({ text: item.action, size: 22, color: '333333' }),
+          ],
+          spacing: { after: 80 },
+        })
+      ),
+      spacer()
+    );
+  }
+
   // 12. Footer
   children.push(
     new Paragraph({

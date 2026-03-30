@@ -60,6 +60,11 @@ export interface AnalysisResult {
     longBlocks: { approximateWordCount: number; suggestedHeading: string; context: string }[];
     chunkingScore: number;
   };
+  // Phase 4: Enhanced Actionable Reports
+  comprehensiveSchema?: string;
+  contentRewrites?: { current: string; proposed: string; page: string }[];
+  metaDescriptionRewrite?: { current: string; suggested: string };
+  implementationChecklist?: { category: string; action: string; priority: string }[];
 }
 
 export interface CompetitiveResult {
@@ -135,6 +140,25 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     SEMANTIC CHUNKING (semanticChunking object):
     - longBlocks: Array of {approximateWordCount, suggestedHeading, context} — content blocks >150 words without proper headings
     - chunkingScore (0-100): 100 = perfectly chunked with clear headings, 0 = wall of text
+
+    COMPREHENSIVE SCHEMA (comprehensiveSchema string):
+    Generate a COMPLETE, ready-to-deploy JSON-LD block with @type Organization containing name, url, and a logo placeholder. Include hasOfferCatalog with @type OfferCatalog listing EVERY product, service, and capability detected on the page as individual Offer items. Each offer must have a name using industry-standard terminology (not marketing adjectives) and a description with technical specifics. If the queryContentGap analysis finds "Missing" items, map those into additional schema entries. The output must be a valid JSON-LD string wrapped in <script type="application/ld+json"> tags.
+
+    CONTENT REWRITES (contentRewrites array):
+    Identify 3-5 sentences or phrases from the ACTUAL analyzed content that use vague marketing language ("cutting-edge", "industry-leading", "best-in-class", etc.). For each, provide:
+    - current: The exact text from the page (Low Citation version)
+    - proposed: A rewritten version replacing adjectives with specific metrics, protocols, specs, or measurable claims (High Citation version)
+    - page: The page section or context where this text appears
+
+    META DESCRIPTION REWRITE (metaDescriptionRewrite object):
+    - current: Extract the actual meta description from the page (or note if missing)
+    - suggested: Rewrite it to replace marketing fluff with technical specifics, keeping under 160 characters
+
+    IMPLEMENTATION CHECKLIST (implementationChecklist array):
+    Provide 5-8 specific, actionable items categorized as Technical, Authority, Structural, Editorial, or Coverage. Each item has:
+    - category: One of "Technical", "Authority", "Structural", "Editorial", "Coverage"
+    - action: The specific action to take (e.g., "Paste the comprehensive JSON-LD into the site header")
+    - priority: "High", "Medium", or "Low"
   `;
 
   const response = await ai.models.generateContent({
@@ -272,6 +296,39 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
               chunkingScore: { type: Type.NUMBER }
             },
             required: ["longBlocks", "chunkingScore"]
+          },
+          comprehensiveSchema: { type: Type.STRING },
+          contentRewrites: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                current: { type: Type.STRING },
+                proposed: { type: Type.STRING },
+                page: { type: Type.STRING }
+              },
+              required: ["current", "proposed", "page"]
+            }
+          },
+          metaDescriptionRewrite: {
+            type: Type.OBJECT,
+            properties: {
+              current: { type: Type.STRING },
+              suggested: { type: Type.STRING }
+            },
+            required: ["current", "suggested"]
+          },
+          implementationChecklist: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                category: { type: Type.STRING },
+                action: { type: Type.STRING },
+                priority: { type: Type.STRING }
+              },
+              required: ["category", "action", "priority"]
+            }
           }
         },
         required: ["score", "summary", "criteria", "recommendations", "citationProbability"]

@@ -1,5 +1,54 @@
 # Release Notes
 
+## v1.3.0 — March 30, 2026
+
+### Enhanced Actionable Reports & Comprehensive JSON-LD (Phase 4)
+
+The existing AEO report delivered scores and generic instructions. v1.3 makes every report specific, actionable, and deploy-ready — with comprehensive schema covering ALL detected products/services, before/after content rewrites from the actual page, and a prioritized implementation checklist.
+
+#### Comprehensive Schema (`comprehensiveSchema`)
+- **Full OfferCatalog JSON-LD:** Generates a complete JSON-LD block with `@type Organization` + `hasOfferCatalog` listing EVERY product, service, and capability detected on the page
+- **Industry-Standard Terminology:** Each offer uses technical/industry terms instead of marketing adjectives
+- **Gap-Aware:** "Missing" items from the Query-to-Content Gap analysis are mapped into additional schema entries
+- **Ready to Deploy:** Output is a valid, paste-ready `<script type="application/ld+json">` block
+
+#### Content Rewrite Examples (`contentRewrites`)
+- **Adjective-to-Metric Pivot:** 3-5 before/after rewrites from the ACTUAL analyzed content
+- **"Current (Low Citation)" → "Proposed (High Citation)":** Replaces vague marketing language with specific metrics, protocols, specs, and measurable claims
+- **Page Context:** Each rewrite identifies which page section the text comes from
+
+#### Meta Description Rewrite (`metaDescriptionRewrite`)
+- **Current vs. Suggested:** Extracts the actual meta description and proposes a rewrite replacing marketing fluff with technical specifics
+- **Character Limit Aware:** Suggested rewrite stays under 160 characters
+
+#### Implementation Checklist (`implementationChecklist`)
+- **5-8 Categorized Actions:** Technical, Authority, Structural, Editorial, and Coverage categories
+- **Priority Tags:** Each item marked High, Medium, or Low priority
+- **Specific and Actionable:** Items reference the actual analysis findings (e.g., "Paste the comprehensive JSON-LD into the site header")
+
+### DOCX Report — 5 New Appendix Sections
+- **Appendix A: Comprehensive Schema (Ready to Deploy)** — Full JSON-LD in Courier New with deployment instructions
+- **Appendix B: Content Rewrite Examples** — Table format: Page | Current (Low Citation) | Proposed (High Citation)
+- **Appendix C: Meta Description Rewrite** — Current vs. Suggested with explanation
+- **Appendix D: Knowledge Gap Action Table** — Maps each query gap question to a status and specific required action (Missing → create content, Partial → expand, Strong → no action)
+- **Appendix E: Implementation Checklist** — Color-coded priority tags: `[ ] [HIGH] Technical: ...`
+
+### Implementation Roadmap UI Enhancements
+- **Summary Tab:** Shows comprehensive schema (all products & services) instead of basic snippet when available, with fallback to `schemaSnippet`
+- **Handoff Email Template:** Now includes comprehensive schema block, content rewrite examples, knowledge gap FAQ table, and prioritized implementation checklist
+
+### Backward Compatibility
+- All 4 new `AnalysisResult` fields are optional — old history records unaffected
+- Appendix sections only render when data exists
+- `schemaSnippet` remains as fallback if `comprehensiveSchema` is absent
+
+### Files Changed
+- `src/services/geminiService.ts` — 4 new interface fields, enhanced Gemini prompt, response schema additions
+- `src/services/docxGenerator.ts` — 5 appendix sections before footer
+- `src/components/ImplementationRoadmap.tsx` — Summary tab schema upgrade, handoff template enhancements
+
+---
+
 ## v1.2.0 — March 30, 2026
 
 ### DOCX Report Download (Phase 1)

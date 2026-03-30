@@ -23,10 +23,17 @@ AEO Analyzers is a professional-grade AI Simulation Engine that helps brands, bu
 - **Query-to-Content Gap:** Generates the top 10 questions users would ask in your niche, checks if your content answers them (Strong / Partial / Missing)
 - **Semantic Chunking:** Finds content blocks >150 words without headings. Suggests header improvements. Chunking score (0-100)
 
+### Enhanced Actionable Reports (v1.3)
+- **Comprehensive JSON-LD Schema:** Full OfferCatalog listing ALL detected products, services, and capabilities — not just a single-service snippet. Ready to paste into `<head>`
+- **Content Rewrite Examples:** 3-5 "Adjective-to-Metric" before/after rewrites from the actual analyzed content, showing AI-citable alternatives
+- **Meta Description Rewrite:** Current vs. suggested meta description with marketing fluff replaced by technical specifics
+- **Implementation Checklist:** 5-8 prioritized actions categorized as Technical, Authority, Structural, Editorial, or Coverage with High/Medium/Low priority tags
+- **5 DOCX Appendix Sections:** Comprehensive Schema, Content Rewrites table, Meta Description Rewrite, Knowledge Gap Action Table, and Implementation Checklist — all in the downloadable report
+
 ### Reports & Handoff
-- **DOCX Report Download:** Professional Word document with full analysis, score breakdown, advanced insights, implementation instructions, and rollout plan — signed by the user (Pro feature)
+- **DOCX Report Download:** Professional Word document with full analysis, score breakdown, advanced insights, implementation instructions, appendix sections, and rollout plan — signed by the user (Pro feature)
 - **Implementation Roadmap:** Actionable optimization steps with platform-specific guides for WordPress, Shopify, HubSpot, Wix, and custom code (Pro feature)
-- **Web Team Handoff:** Copy-paste email template with JSON-LD snippets, findings, and technical instructions
+- **Web Team Handoff:** Copy-paste email template with comprehensive JSON-LD, content rewrites, knowledge gap FAQ, implementation checklist, findings, and technical instructions
 
 ### Platform
 - **Analysis History:** Track your AEO score improvements over time with full detail view
@@ -155,6 +162,7 @@ The app is deployed on **Vercel** with automatic builds on push:
 ## Documentation
 
 - [Release Notes](./RELEASE-NOTES.md) -- Full changelog for all versions
+- [v1.3 Release: Enhanced Reports](./docs/blog-v1.3-enhanced-reports.md) -- Enhanced Actionable Reports & Comprehensive JSON-LD announcement
 - [v1.2 Re-Launch Announcement](./docs/blog-v1.2-relaunch-announcement.md) -- Feature announcement, executive summary, and social media posts
 - [Admin Guide](./docs/admin-guide.md) -- Deployment, management, and operations
 - [User Guide](./docs/user-guide.md) -- End-user guide for AEO analysis features
