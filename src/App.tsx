@@ -3,7 +3,7 @@ import ImplementationRoadmap from './components/ImplementationRoadmap';
 import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRight, Loader2, Globe, Cpu, Swords, Copy, Check, User as UserIcon, LogOut, History, CreditCard, LayoutDashboard, Settings, BookOpen, ShieldAlert, BarChart, Lock, Mail, FileText, Layout, ShoppingBag, Code, Info, ExternalLink, ChevronRight, ChevronDown, Share2, Linkedin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HelmetProvider } from 'react-helmet-async';
-import { supabase, supabaseQuery, supabaseInsert, supabaseUpdate } from './supabase';
+import { supabase, supabaseQuery, supabaseInsert, supabaseUpdate, setAccessToken } from './supabase';
 
 interface AppUser {
   id: string;
@@ -17,6 +17,7 @@ import UserGuide from './components/UserGuide';
 import MarketingLanding from './components/MarketingLanding';
 import PressKit from './components/PressKit';
 import SEO from './components/SEO';
+import AdvancedAnalysisCards from './components/AdvancedAnalysisCards';
 import { getOrganizationJsonLd, getWebSiteJsonLd, getBreadcrumbJsonLd } from './lib/json-ld';
 
 type View = 'analyzer' | 'history' | 'payments' | 'settings' | 'auth' | 'admin' | 'guide' | 'landing' | 'privacy' | 'terms' | 'press';
@@ -175,6 +176,8 @@ export default function App() {
     const handleSession = async (session: any) => {
       try {
         if (session?.user) {
+          // Cache the access token so REST helpers never need to call getSession()
+          setAccessToken(session.access_token || null);
           const appUser: AppUser = { id: session.user.id, email: session.user.email || '' };
           setUser(appUser);
 
@@ -214,6 +217,7 @@ export default function App() {
             setView('analyzer');
           }
         } else {
+          setAccessToken(null);
           setUser(null);
           setUserProfile(null);
           if (view !== 'privacy' && view !== 'terms') {
@@ -461,6 +465,7 @@ export default function App() {
   };
 
   const handleSignOut = () => {
+    setAccessToken(null);
     setUser(null);
     setUserProfile(null);
     supabase.auth.signOut().catch(() => {});
@@ -1125,10 +1130,41 @@ export default function App() {
                         </div>
                       </div>
 
-                      <ShareResults 
-                        score={result.score} 
-                        citationProbability={result.citationProbability} 
+                      <ShareResults
+                        score={result.score}
+                        citationProbability={result.citationProbability}
                       />
+
+                      {/* Score Formula Breakdown */}
+                      {result.scoreBreakdown && (
+                        <div className="bg-white border border-zinc-200 rounded-3xl p-8 shadow-sm">
+                          <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+                            <BarChart className="w-5 h-5 text-zinc-900" />
+                            Score Formula
+                          </h3>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                            {([
+                              { label: 'Entity', value: result.scoreBreakdown.entity, weight: '30%', desc: 'Schema.org & Identity' },
+                              { label: 'Density', value: result.scoreBreakdown.density, weight: '30%', desc: 'Facts & Statistics' },
+                              { label: 'Clarity', value: result.scoreBreakdown.clarity, weight: '20%', desc: 'Direct Answerability' },
+                              { label: 'Structure', value: result.scoreBreakdown.structure, weight: '20%', desc: 'Semantic HTML' },
+                            ] as const).map((item) => (
+                              <div key={item.label} className="text-center">
+                                <div className="text-3xl font-bold text-zinc-900">{item.value}</div>
+                                <div className="text-sm font-bold text-zinc-700 mt-1">{item.label}</div>
+                                <div className="text-[10px] text-zinc-400 uppercase tracking-widest">{item.weight} weight</div>
+                                <div className="mt-2 h-2 w-full bg-zinc-100 rounded-full overflow-hidden">
+                                  <div className="h-full bg-zinc-900 rounded-full transition-all" style={{ width: `${item.value}%` }} />
+                                </div>
+                                <div className="text-[10px] text-zinc-400 mt-1">{item.desc}</div>
+                              </div>
+                            ))}
+                          </div>
+                          <p className="text-center text-xs text-zinc-400 font-mono">
+                            Score = E×0.3 + D×0.3 + C×0.2 + S×0.2
+                          </p>
+                        </div>
+                      )}
 
                       {/* Implementation Roadmap (Premium Feature) */}
                       <ImplementationRoadmap
@@ -1136,7 +1172,13 @@ export default function App() {
                         onUpgrade={() => setView('payments')}
                         analyzedUrl={url}
                         analysisResult={result}
+                        displayName={userProfile?.display_name}
+                        citationProbability={result.citationProbability}
+                        recommendations={result.recommendations}
                       />
+
+                      {/* Advanced Analysis Cards */}
+                      <AdvancedAnalysisCards result={result} />
 
                       {/* Detailed Criteria */}
                       <div className="bg-white border border-zinc-200 rounded-3xl overflow-hidden shadow-sm">

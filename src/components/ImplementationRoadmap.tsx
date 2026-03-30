@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { 
-  FileText, 
-  Mail, 
-  Copy, 
-  Check, 
-  Lock, 
-  ArrowRight, 
+import {
+  FileText,
+  Mail,
+  Copy,
+  Check,
+  Lock,
+  ArrowRight,
   Layout,
   ShoppingBag,
   Code,
@@ -15,25 +15,43 @@ import {
   Info,
   ExternalLink,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Download,
+  Loader2
 } from 'lucide-react';
+import type { AnalysisResult } from '../services/geminiService';
 
 interface ImplementationRoadmapProps {
   isPaid: boolean;
   onUpgrade: () => void;
   analyzedUrl?: string;
-  analysisResult: {
-    score: number;
-    summary: string;
-    criteria: { name: string; score: number; feedback: string }[];
-    schemaSnippet?: string;
-  };
+  analysisResult: AnalysisResult;
+  displayName?: string;
+  citationProbability?: number;
+  recommendations?: string[];
 }
 
-export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, analysisResult }: ImplementationRoadmapProps) {
+export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, analysisResult, displayName, citationProbability, recommendations }: ImplementationRoadmapProps) {
   const [copied, setCopied] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'summary' | 'handoff' | 'platforms'>('summary');
   const [platform, setPlatform] = useState<'wordpress' | 'shopify' | 'hubspot' | 'wix' | 'custom'>('wordpress');
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadReport = async () => {
+    setDownloading(true);
+    try {
+      const { generateDocxReport } = await import('../services/docxGenerator');
+      await generateDocxReport(
+        analysisResult,
+        analyzedUrl || 'Unknown URL',
+        displayName || 'AEO Analyzers User'
+      );
+    } catch (err) {
+      console.error('Error generating DOCX report:', err);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -237,10 +255,20 @@ Best regards,
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Implementation Roadmap</h2>
             <p className="text-zinc-500 mt-2">Step-by-step instructions to achieve a perfect 100 AEO score.</p>
           </div>
-          <div className="flex bg-white p-1 rounded-2xl border border-zinc-200 shadow-sm">
-            <TabButton active={activeTab === 'summary'} onClick={() => setActiveTab('summary')} icon={<FileText className="w-4 h-4" />} label="Summary" />
-            <TabButton active={activeTab === 'handoff'} onClick={() => setActiveTab('handoff')} icon={<Mail className="w-4 h-4" />} label="Handoff" />
-            <TabButton active={activeTab === 'platforms'} onClick={() => setActiveTab('platforms')} icon={<Layout className="w-4 h-4" />} label="Platforms" />
+          <div className="flex items-center gap-3">
+            <div className="flex bg-white p-1 rounded-2xl border border-zinc-200 shadow-sm">
+              <TabButton active={activeTab === 'summary'} onClick={() => setActiveTab('summary')} icon={<FileText className="w-4 h-4" />} label="Summary" />
+              <TabButton active={activeTab === 'handoff'} onClick={() => setActiveTab('handoff')} icon={<Mail className="w-4 h-4" />} label="Handoff" />
+              <TabButton active={activeTab === 'platforms'} onClick={() => setActiveTab('platforms')} icon={<Layout className="w-4 h-4" />} label="Platforms" />
+            </div>
+            <button
+              onClick={handleDownloadReport}
+              disabled={downloading}
+              className="flex items-center gap-2 px-5 py-3 bg-zinc-900 text-white rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-lg disabled:opacity-60"
+            >
+              {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              {downloading ? 'Generating...' : 'Download Report'}
+            </button>
           </div>
         </div>
       </div>

@@ -9,12 +9,23 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Cached access token — set during auth initialization so REST helpers
+// never need to call supabase.auth.getSession() (which can hang).
+let cachedAccessToken: string | null = null;
+
+export function setAccessToken(token: string | null) {
+  cachedAccessToken = token;
+}
+
+export function getAccessToken(): string {
+  return cachedAccessToken || supabaseAnonKey;
+}
+
 // Direct REST API helper — bypasses the Supabase client to avoid
-// queuing issues with timed-out requests. Uses the user's JWT for auth.
+// queuing issues with timed-out requests. Uses the cached JWT for auth.
 export async function supabaseQuery(table: string, params: string = '', timeoutMs: number = 10000): Promise<{ data: any; error: any }> {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token || supabaseAnonKey;
+    const token = cachedAccessToken || supabaseAnonKey;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -51,8 +62,7 @@ export async function supabaseQuery(table: string, params: string = '', timeoutM
 // Direct REST INSERT helper
 export async function supabaseInsert(table: string, body: any, timeoutMs: number = 10000): Promise<{ data: any; error: any }> {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token || supabaseAnonKey;
+    const token = cachedAccessToken || supabaseAnonKey;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -89,8 +99,7 @@ export async function supabaseInsert(table: string, body: any, timeoutMs: number
 // Direct REST UPDATE helper
 export async function supabaseUpdate(table: string, params: string, body: any, timeoutMs: number = 10000): Promise<{ data: any; error: any }> {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token || supabaseAnonKey;
+    const token = cachedAccessToken || supabaseAnonKey;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
