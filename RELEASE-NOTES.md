@@ -1,5 +1,67 @@
 # Release Notes
 
+## v1.2.0 — March 30, 2026
+
+### DOCX Report Download (Phase 1)
+- **Professional Word Document:** One-click download of a full AEO Analysis Report as `.docx`, generated entirely in-browser
+- **12-Section Report:** Title page (with user name, AEO Score, Citation Probability), Why This Matters, Executive Summary, Score Breakdown, Areas Needing Improvement, Areas of Strength, Top 3 Priorities, Implementation Instructions (A-D), Platform Instructions, Rollout Plan, Success Criteria, Full Recommendations
+- **Dynamic Import:** DOCX generation uses `await import('docx')` for code-splitting — zero impact on initial page load (~11KB separate chunk)
+- **Advanced Analysis Included:** All Phase 3 advanced features automatically appear in the report when data exists
+- **"Prepared by" Attribution:** Report displays the user's display name from their Supabase profile
+
+### Transparent AEO Score Formula (Phase 2)
+- **Score Breakdown Card:** Visual 4-column grid showing Entity (30%), Density (30%), Clarity (20%), Structure (20%) sub-scores with progress bars
+- **Formula Display:** `Score = E×0.3 + D×0.3 + C×0.2 + S×0.2` shown below the breakdown — fully transparent and verifiable
+- **Gemini Prompt Updated:** AI now computes and returns all four sub-scores; overall score must equal the weighted formula (rounded)
+
+### Advanced Analysis — Citation Hook Density (Phase 3a)
+- **Factual Density Score (0-100):** Measures how rich content is with citable facts
+- **Stats & Percentages Count:** Counts specific data points on the page
+- **Top 3 Citable Sentences:** Surfaces the most quotable sentences from the content
+
+### Advanced Analysis — E-E-A-T Author Audit (Phase 3a)
+- **Author Detection:** Checks for author attribution, Schema.org/Person, LinkedIn links
+- **Generic Author Flag:** Warns when author is "Admin", "Staff", "Team", etc.
+- **Trust Signals & Warnings:** Lists all detected trust signals and flags E-E-A-T issues
+- **E-E-A-T Score (0-100):** Overall trust signal composite
+
+### Advanced Analysis — LLM Summarization Test (Phase 3b)
+- **Metadata vs. Reality:** Compares what meta title/description says the page is about vs. what AI actually understands
+- **Alignment Rating:** Aligned / Vague / Misaligned with explanation
+- **Unique Differentiator:** No other tool tests whether AI "gets" what your page is really about
+
+### Advanced Analysis — Zero-Click Predictor (Phase 3b)
+- **Snippet Opportunities:** Identifies text blocks that should be tables or lists for Featured Snippets
+- **Suggested Formats:** Recommends specific restructuring (table, ordered list, definition list) with reasoning
+- **Featured Snippet Readiness (0-100):** Composite score for snippet optimization
+
+### Advanced Analysis — Query-to-Content Gap (Phase 3c)
+- **Top 10 Niche Questions:** AI generates the questions users in your industry would actually ask
+- **Answer Quality Rating:** Each question rated Strong / Partial / Missing
+- **Gap Score (0-100):** 100 = all questions answered strongly, 0 = none answered
+
+### Advanced Analysis — Semantic Chunking (Phase 3c)
+- **Long Block Detection:** Finds content blocks >150 words without proper headings
+- **Suggested Headings:** AI proposes specific heading text for each long block
+- **Chunking Score (0-100):** 100 = perfectly chunked, 0 = wall of text
+
+### Advanced Analysis UI
+- **New `AdvancedAnalysisCards.tsx` Component:** 6 cards in a responsive 2-column grid, each rendering only when its data exists
+- **Design Consistency:** Matches existing app design (white bg, zinc borders, rounded-3xl, lucide icons, ScoreBadge components)
+- **Backward Compatible:** Old history records render fine — new cards simply don't appear for records without advanced data
+
+### Database Connectivity Fix
+- **Cached Access Token:** REST API helpers (`supabaseQuery`, `supabaseInsert`, `supabaseUpdate`) no longer call `supabase.auth.getSession()` on every request — which was causing hangs in production
+- **Token Set Once:** Access token cached via `setAccessToken()` during auth initialization; cleared on sign-out
+- **Fixes:** History loading, Admin Dashboard user list, save-to-DB, usage count updates — all previously hanging
+
+### Backward Compatibility
+- All new `AnalysisResult` fields are optional (`?`) — old history records stored as JSON continue to render correctly
+- No database schema changes required
+- DOCX generator checks for field existence before adding sections
+
+---
+
 ## v1.1.0 — March 26, 2026
 
 ### Authentication & Security
