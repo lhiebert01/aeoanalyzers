@@ -166,56 +166,66 @@ export default function App() {
   }, [user]);
 
   useEffect(() => {
-    // Safety timeout: if auth check takes more than 3 seconds, show the app anyway
+    // Safety timeout: if auth check takes more than 2 seconds, show the app anyway
     const timeout = setTimeout(() => {
+      console.log('[Auth] Safety timeout fired — forcing app render');
       setIsAuthReady(true);
-    }, 3000);
+    }, 2000);
 
     const handleSession = async (session: any) => {
-      if (session?.user) {
-        const appUser: AppUser = { id: session.user.id, email: session.user.email || '' };
-        setUser(appUser);
+      try {
+        if (session?.user) {
+          const appUser: AppUser = { id: session.user.id, email: session.user.email || '' };
+          setUser(appUser);
 
-        try {
-          // Fetch or create user profile
-          const { data: profile, error: profileError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
+          try {
+            // Fetch profile with 5-second timeout to prevent hanging
+            const profilePromise = supabase
+              .from('users')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+            const timeoutPromise = new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Profile fetch timed out')), 5000)
+            );
+            const { data: profile, error: profileError } = await Promise.race([profilePromise, timeoutPromise]) as any;
 
-          if (profileError && profileError.code === 'PGRST116') {
-            // No profile exists yet (e.g. Google OAuth first login) — create one
-            const email = session.user.email || '';
-            const isAdminEmail = email.toLowerCase() === 'lindsay.hiebert@gmail.com' ||
-                                 email.toLowerCase() === 'liindsay.hiebert@gmail.com';
-            const { data: newProfile } = await supabase.from('users').insert({
-              id: session.user.id,
-              email,
-              display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || email.split('@')[0],
-              role: isAdminEmail ? 'admin' : 'user',
-              subscription_status: 'free',
-            }).select().single();
-            if (newProfile) setUserProfile(newProfile);
-          } else if (profile) {
-            setUserProfile(profile);
+            if (profileError && profileError.code === 'PGRST116') {
+              // No profile exists yet (e.g. Google OAuth first login) — create one
+              const email = session.user.email || '';
+              const isAdminEmail = email.toLowerCase() === 'lindsay.hiebert@gmail.com' ||
+                                   email.toLowerCase() === 'liindsay.hiebert@gmail.com';
+              const { data: newProfile } = await supabase.from('users').insert({
+                id: session.user.id,
+                email,
+                display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || email.split('@')[0],
+                role: isAdminEmail ? 'admin' : 'user',
+                subscription_status: 'free',
+              }).select().single();
+              if (newProfile) setUserProfile(newProfile);
+            } else if (profile) {
+              setUserProfile(profile);
+            }
+          } catch (err) {
+            console.error('[Auth] Error loading profile:', err);
           }
-        } catch (err) {
-          console.error('Error loading profile:', err);
-        }
 
-        trackEvent('login', { method: 'Supabase' });
-        if (view === 'auth') {
-          setView('analyzer');
+          trackEvent('login', { method: 'Supabase' });
+          if (view === 'auth') {
+            setView('analyzer');
+          }
+        } else {
+          setUser(null);
+          setUserProfile(null);
+          if (view !== 'privacy' && view !== 'terms') {
+            setView('landing');
+          }
         }
-      } else {
-        setUser(null);
-        setUserProfile(null);
-        if (view !== 'privacy' && view !== 'terms') {
-          setView('landing');
-        }
+      } catch (err) {
+        console.error('[Auth] Unexpected error in handleSession:', err);
+      } finally {
+        setIsAuthReady(true);
       }
-      setIsAuthReady(true);
     };
 
     // Track if initial session has been handled to prevent double-firing
@@ -224,8 +234,9 @@ export default function App() {
     // Check existing session immediately
     supabase.auth.getSession().then(({ data: { session } }) => {
       initialSessionHandled = true;
-      handleSession(session);
-    }).catch(() => {
+      return handleSession(session);
+    }).catch((err) => {
+      console.error('[Auth] getSession failed:', err);
       initialSessionHandled = true;
       setIsAuthReady(true);
     });
@@ -234,7 +245,10 @@ export default function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       // Skip the INITIAL_SESSION event if we already handled it via getSession()
       if (event === 'INITIAL_SESSION' && initialSessionHandled) return;
-      await handleSession(session);
+      await handleSession(session).catch((err) => {
+        console.error('[Auth] onAuthStateChange error:', err);
+        setIsAuthReady(true);
+      });
     });
 
     return () => {
@@ -546,8 +560,8 @@ export default function App() {
                 <div className="hidden sm:flex flex-col items-end">
                   <span className="text-xs font-black text-zinc-900 uppercase tracking-tight">{userProfile?.display_name || user.email?.split('@')[0]}</span>
                   <div className="flex items-center gap-1.5">
-                    <div className={`w-1.5 h-1.5 rounded-full ${userProfile?.subscription_status?.toLowerCase() === 'pro' || userProfile?.subscription_status?.toLowerCase() === 'business' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-300'}`} />
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{userProfile?.subscription_status || 'Free'}</span>
+                    <div className={`w-1.5 h-1.5 rounded-full ${isAdmin ? 'bg-purple-500 animate-pulse' : userProfile?.subscription_status?.toLowerCase() === 'pro' || userProfile?.subscription_status?.toLowerCase() === 'business' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-300'}`} />
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{isAdmin ? 'Admin' : userProfile?.subscription_status || 'Free'}</span>
                   </div>
                 </div>
                 <button 

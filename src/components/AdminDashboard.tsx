@@ -23,28 +23,41 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
+    setFetchError(null);
     try {
-      const { data, error } = await supabase
+      // Add timeout to prevent infinite hanging
+      const queryPromise = supabase
         .from('users')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Query timed out after 8 seconds. Your Supabase project may be paused or the admin RLS policy is missing.')), 8000)
+      );
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
+
       if (error) throw error;
 
       const userData = data || [];
       setUsers(userData);
 
-      const proCount = userData.filter(u => u.subscription_status?.toLowerCase() === 'pro').length;
+      if (userData.length === 0) {
+        setFetchError('No users returned. The admin RLS policy may not be configured in Supabase. Run the is_admin() function and admin policy SQL in your Supabase SQL Editor.');
+      }
+
+      const proCount = userData.filter((u: any) => u.subscription_status?.toLowerCase() === 'pro').length;
       setStats({
         total: userData.length,
         pro: proCount,
         free: userData.length - proCount
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching users:', err);
+      setFetchError(err.message || 'Failed to fetch users. Check your Supabase connection and RLS policies.');
     } finally {
       setLoading(false);
     }
@@ -101,6 +114,42 @@ export default function AdminDashboard() {
           </button>
         </div>
       </div>
+
+      {/* RLS Error Banner */}
+      {fetchError && (
+        <div className="mb-8 bg-amber-50 border border-amber-200 rounded-2xl p-5">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-bold text-amber-800 mb-2">Admin Dashboard Issue</p>
+              <p className="text-sm text-amber-700 mb-3">{fetchError}</p>
+              <details className="text-xs text-amber-600">
+                <summary className="cursor-pointer font-bold hover:text-amber-800">Fix: Run this SQL in Supabase SQL Editor</summary>
+                <pre className="mt-2 bg-white/60 rounded-xl p-4 font-mono text-[11px] text-zinc-700 overflow-x-auto whitespace-pre">{`-- Step 1: Create the admin detection function
+CREATE OR REPLACE FUNCTION public.is_admin(user_email text)
+RETURNS boolean AS $$
+BEGIN
+  RETURN lower(user_email) IN ('lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com');
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Step 2: Drop existing admin policy if it exists (ignore error if not)
+DROP POLICY IF EXISTS "Admins can read all users" ON public.users;
+
+-- Step 3: Create admin read-all policy
+CREATE POLICY "Admins can read all users"
+  ON public.users FOR SELECT
+  USING (public.is_admin((SELECT auth.jwt() ->> 'email')));
+
+-- Step 4: Update your admin user's subscription_status
+UPDATE public.users
+SET subscription_status = 'admin', role = 'admin'
+WHERE lower(email) = 'lindsay.hiebert@gmail.com';`}</pre>
+              </details>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -162,6 +211,7 @@ export default function AdminDashboard() {
                 <tr>
                   <td colSpan={4} className="px-6 py-20 text-center">
                     <Loader2 className="w-8 h-8 animate-spin text-zinc-200 mx-auto" />
+                    <p className="text-xs text-zinc-400 mt-3">Loading users from Supabase...</p>
                   </td>
                 </tr>
               ) : filteredUsers.length > 0 ? (
@@ -179,8 +229,8 @@ export default function AdminDashboard() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter ${user.subscription_status?.toLowerCase() === 'pro' ? 'bg-emerald-100 text-emerald-600' : 'bg-zinc-100 text-zinc-500'}`}>
-                        {user.subscription_status || 'Free'}
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter ${user.subscription_status?.toLowerCase() === 'pro' ? 'bg-emerald-100 text-emerald-600' : user.role === 'admin' ? 'bg-purple-100 text-purple-600' : 'bg-zinc-100 text-zinc-500'}`}>
+                        {user.role === 'admin' ? 'Admin' : user.subscription_status || 'Free'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-xs text-zinc-500">
