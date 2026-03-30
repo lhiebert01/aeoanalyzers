@@ -218,15 +218,22 @@ export default function App() {
       setIsAuthReady(true);
     };
 
+    // Track if initial session has been handled to prevent double-firing
+    let initialSessionHandled = false;
+
     // Check existing session immediately
     supabase.auth.getSession().then(({ data: { session } }) => {
+      initialSessionHandled = true;
       handleSession(session);
     }).catch(() => {
+      initialSessionHandled = true;
       setIsAuthReady(true);
     });
 
     // Listen for future auth changes (login, logout, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Skip the INITIAL_SESSION event if we already handled it via getSession()
+      if (event === 'INITIAL_SESSION' && initialSessionHandled) return;
       await handleSession(session);
     });
 
@@ -236,19 +243,28 @@ export default function App() {
     };
   }, []);
 
-  const fetchHistory = async () => {
-    if (!user) {
+  const fetchHistory = async (userId?: string) => {
+    const id = userId || user?.id;
+    if (!id) {
       setLoadingHistory(false);
+      setHistory([]);
       return;
     }
     setLoadingHistory(true);
     try {
-      const { data, error: fetchError } = await supabase
+      // Race the query against a timeout to prevent infinite hang
+      const queryPromise = supabase
         .from('analysis_history')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', id)
         .order('created_at', { ascending: false })
         .limit(20);
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('History fetch timed out')), 8000)
+      );
+
+      const { data, error: fetchError } = await Promise.race([queryPromise, timeoutPromise]) as any;
       if (fetchError) throw fetchError;
       setHistory(data || []);
     } catch (err) {
@@ -259,13 +275,13 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (view === 'history' && user) {
-      fetchHistory();
-    } else if (view === 'history' && !user) {
+    if (view === 'history' && user?.id) {
+      fetchHistory(user.id);
+    } else if (view === 'history') {
       setLoadingHistory(false);
       setHistory([]);
     }
-  }, [view, user]);
+  }, [view, user?.id]);
 
   const fetchHtml = async (targetUrl: string) => {
     const response = await fetch('/api/fetch-site', {
@@ -805,7 +821,7 @@ export default function App() {
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-bold tracking-tight">Analysis History</h2>
                 <button 
-                  onClick={fetchHistory}
+                  onClick={() => fetchHistory()}
                   disabled={loadingHistory}
                   className="p-2 hover:bg-zinc-100 rounded-full transition-all"
                 >
