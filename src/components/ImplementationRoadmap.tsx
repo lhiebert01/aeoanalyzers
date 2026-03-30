@@ -42,35 +42,145 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, 
   };
 
   const siteUrl = analyzedUrl || 'our website';
-  const findings = analysisResult.criteria.filter(c => c.score < 7);
-  const allFindings = findings.length > 0
-    ? findings.map(c => `- ${c.name} (Score: ${c.score}/10): ${c.feedback}`).join('\n')
-    : analysisResult.criteria.slice(0, 3).map(c => `- ${c.name} (Score: ${c.score}/10): ${c.feedback}`).join('\n');
+  const weakAreas = analysisResult.criteria.filter(c => c.score < 7);
+  const strongAreas = analysisResult.criteria.filter(c => c.score >= 7);
+  const sortedCriteria = [...analysisResult.criteria].sort((a, b) => a.score - b.score);
+  const topPriorities = sortedCriteria.slice(0, 3);
 
-  const emailTemplate = `Subject: Technical Request: AEO Optimization for ${siteUrl}
+  const findingsSection = analysisResult.criteria
+    .map(c => `### ${c.name}\n\n**Score: ${c.score}/10**\n\n${c.feedback}\n\n**What to do:**\n${c.score < 7 ? '* This is a priority area. See implementation instructions below.' : '* This area is performing well. Maintain current implementation and monitor for changes.'}`)
+    .join('\n\n---\n\n');
 
-Dear Web Team,
+  const emailTemplate = `Dear Web Team,
 
-We recently conducted an Answer Engine Optimization (AEO) audit of ${siteUrl} using AEO Analyzers (https://www.aeoanalyzers.com).
+We recently completed an Answer Engine Optimization (AEO) review of ${siteUrl} using AEO Analyzers.
 
-Overall AEO Score: ${analysisResult.score}/100
+**Current AEO Score:** ${analysisResult.score}/100
+**Citation Probability:** Based on the analysis, this score reflects how likely AI agents are to cite this website when answering questions in your domain.
 
-Summary: ${analysisResult.summary}
+---
 
-Key Findings:
-${allFindings}
+## Why this matters
 
-Required Actions:
-1. Implement Structured Data (JSON-LD): We need specific Schema.org markup to help AI agents parse our content. A generated snippet is included below.
-2. Semantic HTML Updates: Ensure we are using proper <article>, <section>, and <main> tags instead of generic divs.
-3. Metadata Optimization: Update our meta tags to include AI-specific hints.
+AI-powered search engines like Google Gemini, ChatGPT, and Perplexity are replacing traditional search results with direct answers. When a potential customer asks an AI a question about your industry, the AI pulls its answer from websites it considers authoritative and well-structured. If your website is not optimized for these AI engines, your competitors get cited instead — and you lose the customer without ever knowing it.
 
-Generated JSON-LD Snippet:
+This is not about traditional SEO. This is about making your website readable, trustworthy, and citable by AI systems.
+
+---
+
+## Executive summary
+
+${analysisResult.summary}
+
+${weakAreas.length > 0 ? `The main areas that need improvement are:\n\n${weakAreas.map(c => `* **${c.name}** (${c.score}/10): ${c.feedback}`).join('\n')}` : 'The site performs well across most dimensions.'}
+
+${strongAreas.length > 0 ? `\nAreas of strength:\n\n${strongAreas.map(c => `* **${c.name}** (${c.score}/10): ${c.feedback}`).join('\n')}` : ''}
+
+---
+
+## Top priorities
+
+${topPriorities.map((c, i) => `### ${i + 1}) ${c.name} (Score: ${c.score}/10)\n\n${c.feedback}`).join('\n\n')}
+
+---
+
+## Key findings from the audit
+
+${findingsSection}
+
+---
+
+## Specific implementation instructions
+
+### A. Structured data tasks (JSON-LD)
+
+JSON-LD is a small block of code that goes in your website's <head> section. It acts as a "business card" for AI — telling search engines and AI agents exactly what your business does, what you offer, and how to cite you. Without it, AI has to guess, and it usually guesses wrong.
+
+**What to implement:**
+* Service schema on solution and services pages
+* Product schema on product pages
+* FAQPage schema on pages with Q&A content
+* Organization schema with detailed attributes
+* OfferCatalog schema where multiple solutions are grouped
+
+**Generated JSON-LD snippet for ${siteUrl}:**
+
 ${analysisResult.schemaSnippet || 'See the AEO Analyzers report for the generated snippet.'}
 
-You can re-run this analysis at: https://www.aeoanalyzers.com
+This is a starting point. Each major page should have page-specific schema rather than relying on one generic block sitewide.
 
-Please let me know when we can schedule these updates.
+**Where to paste it:**
+* WordPress: Install "Insert Headers and Footers" plugin, paste in Header section
+* Shopify: Edit theme.liquid, paste above </head>
+* HubSpot: Settings > Website > Pages > Site Header HTML
+* Wix: Settings > Custom Code > Add Code > Head > All Pages
+* Custom sites: Paste directly in your HTML <head> tag
+
+### B. Content architecture tasks
+
+AI systems prefer pages that clearly answer questions. For major pages, reorganize content to include:
+
+* A clear H1 heading that defines the offering
+* A concise intro paragraph stating what the page is about
+* Logical H2/H3 subheadings
+* Short sections answering common questions
+* Lists or tables for specifications and capabilities
+* FAQ content near the bottom where appropriate
+
+### C. Semantic HTML tasks
+
+Review your templates and ensure content uses meaningful HTML elements:
+
+* <main> for primary content
+* <article> for self-contained content blocks
+* <section> for thematic groupings
+* <header> and <footer> for page/section headers and footers
+* <nav> for navigation
+
+This helps AI engines understand your content hierarchy and extract information more accurately.
+
+### D. Content guidance
+
+When revising copy, follow this rule:
+
+**Reduce:** broad adjectives, generic claims, purely promotional phrasing
+
+**Increase:** definitions, use cases, technical specifics, measurable facts, supported technologies, deployment context, operational benefits tied to real capabilities
+
+The goal is to make each page useful not only for visitors, but also for AI systems that need explicit, quotable answers.
+
+---
+
+## Recommended rollout order
+
+### Phase 1: High-impact technical changes (1-2 days)
+* Add JSON-LD structured data to priority pages
+* Improve semantic HTML structure
+* Review titles, meta descriptions, and alt text
+
+### Phase 2: Core page rewrites (1-2 weeks)
+* Homepage content optimization
+* Main product and service pages
+* About page with specific company facts
+
+### Phase 3: Citation-building content (ongoing)
+* Publish FAQ pages with structured data
+* Create technical explainer content
+* Add use-case and deployment documentation
+
+---
+
+## Success criteria
+
+This effort is successful when:
+* AI agents can clearly identify your products and services
+* Key pages contain direct, factual answers to common questions
+* Structured data is page-specific and valid
+* Product and service pages are more likely to be cited as primary references
+
+---
+
+You can re-run this audit at any time: https://www.aeoanalyzers.com
 
 Best regards,
 [Your Name]`;
