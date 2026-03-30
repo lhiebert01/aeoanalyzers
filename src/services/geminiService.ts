@@ -76,15 +76,17 @@ export interface CompetitiveResult {
 
 export async function analyzeWebsite(url: string, html: string): Promise<AnalysisResult> {
   const model = "gemini-3-flash-preview";
-  
-  const prompt = `
+  const truncatedHtml = html.substring(0, 15000);
+
+  // --- Call 1: Core analysis + advanced diagnostics (proven v1.2 prompt) ---
+  const corePrompt = `
     Analyze the following website content for "Answer Engine Optimization" (AEO).
     AEO is the practice of making a website the primary "Source of Truth" for AI agents (Gemini, GPT, etc.).
 
     Website URL: ${url}
 
     HTML Content (truncated):
-    ${html.substring(0, 15000)}
+    ${truncatedHtml}
 
     Evaluate based on:
     1. Semantic HTML structure.
@@ -140,12 +142,159 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     SEMANTIC CHUNKING (semanticChunking object):
     - longBlocks: Array of {approximateWordCount, suggestedHeading, context} — content blocks >150 words without proper headings
     - chunkingScore (0-100): 100 = perfectly chunked with clear headings, 0 = wall of text
+  `;
+
+  const coreSchema = {
+    type: Type.OBJECT,
+    properties: {
+      score: { type: Type.NUMBER },
+      summary: { type: Type.STRING },
+      criteria: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            name: { type: Type.STRING },
+            score: { type: Type.NUMBER },
+            feedback: { type: Type.STRING }
+          },
+          required: ["name", "score", "feedback"]
+        }
+      },
+      recommendations: {
+        type: Type.ARRAY,
+        items: { type: Type.STRING }
+      },
+      citationProbability: { type: Type.NUMBER },
+      schemaSnippet: { type: Type.STRING },
+      scoreBreakdown: {
+        type: Type.OBJECT,
+        properties: {
+          entity: { type: Type.NUMBER },
+          density: { type: Type.NUMBER },
+          clarity: { type: Type.NUMBER },
+          structure: { type: Type.NUMBER }
+        },
+        required: ["entity", "density", "clarity", "structure"]
+      },
+      citationHookDensity: {
+        type: Type.OBJECT,
+        properties: {
+          factualDensityScore: { type: Type.NUMBER },
+          statsCount: { type: Type.NUMBER },
+          percentagesCount: { type: Type.NUMBER },
+          exampleHooks: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING }
+          }
+        },
+        required: ["factualDensityScore", "statsCount", "percentagesCount", "exampleHooks"]
+      },
+      eatAudit: {
+        type: Type.OBJECT,
+        properties: {
+          authorFound: { type: Type.BOOLEAN },
+          authorName: { type: Type.STRING, nullable: true },
+          genericAuthorFlag: { type: Type.BOOLEAN },
+          trustSignals: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING }
+          },
+          warnings: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING }
+          },
+          eatScore: { type: Type.NUMBER }
+        },
+        required: ["authorFound", "genericAuthorFlag", "trustSignals", "warnings", "eatScore"]
+      },
+      llmSummarizationTest: {
+        type: Type.OBJECT,
+        properties: {
+          metadataIntent: { type: Type.STRING },
+          aiSummary: { type: Type.STRING },
+          alignment: { type: Type.STRING },
+          explanation: { type: Type.STRING }
+        },
+        required: ["metadataIntent", "aiSummary", "alignment", "explanation"]
+      },
+      zeroClickPredictor: {
+        type: Type.OBJECT,
+        properties: {
+          snippetOpportunities: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                currentText: { type: Type.STRING },
+                suggestedFormat: { type: Type.STRING },
+                reason: { type: Type.STRING }
+              },
+              required: ["currentText", "suggestedFormat", "reason"]
+            }
+          },
+          featuredSnippetReadiness: { type: Type.NUMBER }
+        },
+        required: ["snippetOpportunities", "featuredSnippetReadiness"]
+      },
+      queryContentGap: {
+        type: Type.OBJECT,
+        properties: {
+          generatedQuestions: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                question: { type: Type.STRING },
+                answered: { type: Type.BOOLEAN },
+                answerQuality: { type: Type.STRING }
+              },
+              required: ["question", "answered", "answerQuality"]
+            }
+          },
+          gapScore: { type: Type.NUMBER }
+        },
+        required: ["generatedQuestions", "gapScore"]
+      },
+      semanticChunking: {
+        type: Type.OBJECT,
+        properties: {
+          longBlocks: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                approximateWordCount: { type: Type.NUMBER },
+                suggestedHeading: { type: Type.STRING },
+                context: { type: Type.STRING }
+              },
+              required: ["approximateWordCount", "suggestedHeading", "context"]
+            }
+          },
+          chunkingScore: { type: Type.NUMBER }
+        },
+        required: ["longBlocks", "chunkingScore"]
+      }
+    },
+    required: ["score", "summary", "criteria", "recommendations", "citationProbability"]
+  };
+
+  // --- Call 2: Enhanced report fields (v1.3) — runs in parallel ---
+  const enhancedPrompt = `
+    Analyze the following website content and generate enhanced AEO (Answer Engine Optimization) report data.
+
+    Website URL: ${url}
+
+    HTML Content (truncated):
+    ${truncatedHtml}
+
+    Return a JSON object with ALL of the following fields:
 
     COMPREHENSIVE SCHEMA (comprehensiveSchema string):
-    Generate a COMPLETE, ready-to-deploy JSON-LD block with @type Organization containing name, url, and a logo placeholder. Include hasOfferCatalog with @type OfferCatalog listing EVERY product, service, and capability detected on the page as individual Offer items. Each offer must have a name using industry-standard terminology (not marketing adjectives) and a description with technical specifics. If the queryContentGap analysis finds "Missing" items, map those into additional schema entries. The output must be a valid JSON-LD string wrapped in <script type="application/ld+json"> tags.
+    Generate a COMPLETE, ready-to-deploy JSON-LD block with @type Organization containing name, url, and a logo placeholder. Include hasOfferCatalog with @type OfferCatalog listing EVERY product, service, and capability detected on the page as individual Offer items. Each offer must have a name using industry-standard terminology (not marketing adjectives) and a description with technical specifics. The output must be a valid JSON-LD string (without script tags — just the JSON object).
 
     CONTENT REWRITES (contentRewrites array):
-    Identify 3-5 sentences or phrases from the ACTUAL analyzed content that use vague marketing language ("cutting-edge", "industry-leading", "best-in-class", etc.). For each, provide:
+    Identify 3-5 sentences or phrases from the ACTUAL analyzed content that use vague marketing language ("cutting-edge", "industry-leading", "best-in-class", "dynamic", "fast-growing", etc.). For each, provide:
     - current: The exact text from the page (Low Citation version)
     - proposed: A rewritten version replacing adjectives with specific metrics, protocols, specs, or measurable claims (High Citation version)
     - page: The page section or context where this text appears
@@ -161,184 +310,81 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     - priority: "High", "Medium", or "Low"
   `;
 
-  const response = await ai.models.generateContent({
-    model,
-    contents: prompt,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
+  const enhancedSchema = {
+    type: Type.OBJECT,
+    properties: {
+      comprehensiveSchema: { type: Type.STRING },
+      contentRewrites: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            current: { type: Type.STRING },
+            proposed: { type: Type.STRING },
+            page: { type: Type.STRING }
+          },
+          required: ["current", "proposed", "page"]
+        }
+      },
+      metaDescriptionRewrite: {
         type: Type.OBJECT,
         properties: {
-          score: { type: Type.NUMBER },
-          summary: { type: Type.STRING },
-          criteria: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                name: { type: Type.STRING },
-                score: { type: Type.NUMBER },
-                feedback: { type: Type.STRING }
-              },
-              required: ["name", "score", "feedback"]
-            }
-          },
-          recommendations: {
-            type: Type.ARRAY,
-            items: { type: Type.STRING }
-          },
-          citationProbability: { type: Type.NUMBER },
-          schemaSnippet: { type: Type.STRING },
-          scoreBreakdown: {
-            type: Type.OBJECT,
-            properties: {
-              entity: { type: Type.NUMBER },
-              density: { type: Type.NUMBER },
-              clarity: { type: Type.NUMBER },
-              structure: { type: Type.NUMBER }
-            },
-            required: ["entity", "density", "clarity", "structure"]
-          },
-          citationHookDensity: {
-            type: Type.OBJECT,
-            properties: {
-              factualDensityScore: { type: Type.NUMBER },
-              statsCount: { type: Type.NUMBER },
-              percentagesCount: { type: Type.NUMBER },
-              exampleHooks: {
-                type: Type.ARRAY,
-                items: { type: Type.STRING }
-              }
-            },
-            required: ["factualDensityScore", "statsCount", "percentagesCount", "exampleHooks"]
-          },
-          eatAudit: {
-            type: Type.OBJECT,
-            properties: {
-              authorFound: { type: Type.BOOLEAN },
-              authorName: { type: Type.STRING, nullable: true },
-              genericAuthorFlag: { type: Type.BOOLEAN },
-              trustSignals: {
-                type: Type.ARRAY,
-                items: { type: Type.STRING }
-              },
-              warnings: {
-                type: Type.ARRAY,
-                items: { type: Type.STRING }
-              },
-              eatScore: { type: Type.NUMBER }
-            },
-            required: ["authorFound", "genericAuthorFlag", "trustSignals", "warnings", "eatScore"]
-          },
-          llmSummarizationTest: {
-            type: Type.OBJECT,
-            properties: {
-              metadataIntent: { type: Type.STRING },
-              aiSummary: { type: Type.STRING },
-              alignment: { type: Type.STRING },
-              explanation: { type: Type.STRING }
-            },
-            required: ["metadataIntent", "aiSummary", "alignment", "explanation"]
-          },
-          zeroClickPredictor: {
-            type: Type.OBJECT,
-            properties: {
-              snippetOpportunities: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    currentText: { type: Type.STRING },
-                    suggestedFormat: { type: Type.STRING },
-                    reason: { type: Type.STRING }
-                  },
-                  required: ["currentText", "suggestedFormat", "reason"]
-                }
-              },
-              featuredSnippetReadiness: { type: Type.NUMBER }
-            },
-            required: ["snippetOpportunities", "featuredSnippetReadiness"]
-          },
-          queryContentGap: {
-            type: Type.OBJECT,
-            properties: {
-              generatedQuestions: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    question: { type: Type.STRING },
-                    answered: { type: Type.BOOLEAN },
-                    answerQuality: { type: Type.STRING }
-                  },
-                  required: ["question", "answered", "answerQuality"]
-                }
-              },
-              gapScore: { type: Type.NUMBER }
-            },
-            required: ["generatedQuestions", "gapScore"]
-          },
-          semanticChunking: {
-            type: Type.OBJECT,
-            properties: {
-              longBlocks: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    approximateWordCount: { type: Type.NUMBER },
-                    suggestedHeading: { type: Type.STRING },
-                    context: { type: Type.STRING }
-                  },
-                  required: ["approximateWordCount", "suggestedHeading", "context"]
-                }
-              },
-              chunkingScore: { type: Type.NUMBER }
-            },
-            required: ["longBlocks", "chunkingScore"]
-          },
-          comprehensiveSchema: { type: Type.STRING },
-          contentRewrites: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                current: { type: Type.STRING },
-                proposed: { type: Type.STRING },
-                page: { type: Type.STRING }
-              },
-              required: ["current", "proposed", "page"]
-            }
-          },
-          metaDescriptionRewrite: {
-            type: Type.OBJECT,
-            properties: {
-              current: { type: Type.STRING },
-              suggested: { type: Type.STRING }
-            },
-            required: ["current", "suggested"]
-          },
-          implementationChecklist: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                category: { type: Type.STRING },
-                action: { type: Type.STRING },
-                priority: { type: Type.STRING }
-              },
-              required: ["category", "action", "priority"]
-            }
-          }
+          current: { type: Type.STRING },
+          suggested: { type: Type.STRING }
         },
-        required: ["score", "summary", "criteria", "recommendations", "citationProbability"]
+        required: ["current", "suggested"]
+      },
+      implementationChecklist: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            category: { type: Type.STRING },
+            action: { type: Type.STRING },
+            priority: { type: Type.STRING }
+          },
+          required: ["category", "action", "priority"]
+        }
       }
-    }
-  });
+    },
+    required: ["comprehensiveSchema", "contentRewrites", "metaDescriptionRewrite", "implementationChecklist"]
+  };
 
-  const text = response.text;
-  if (!text) throw new Error("AI failed to generate a response.");
-  return JSON.parse(text);
+  // Run both calls in parallel for no added latency
+  const [coreResponse, enhancedResponse] = await Promise.all([
+    ai.models.generateContent({
+      model,
+      contents: corePrompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: coreSchema
+      }
+    }),
+    ai.models.generateContent({
+      model,
+      contents: enhancedPrompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: enhancedSchema
+      }
+    }).catch(() => null) // Don't fail the whole analysis if enhanced call fails
+  ]);
+
+  const coreText = coreResponse.text;
+  if (!coreText) throw new Error("AI failed to generate a response.");
+  const coreResult = JSON.parse(coreText);
+
+  // Merge enhanced fields if available
+  if (enhancedResponse?.text) {
+    try {
+      const enhanced = JSON.parse(enhancedResponse.text);
+      Object.assign(coreResult, enhanced);
+    } catch {
+      // Enhanced fields are optional — core analysis still works
+    }
+  }
+
+  return coreResult;
 }
 
 export async function performCompetitiveDuel(url1: string, html1: string, url2: string, html2: string): Promise<CompetitiveResult> {
