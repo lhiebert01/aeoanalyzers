@@ -1,4 +1,4 @@
-# AEO Analyzer: Launch Plan
+# AEO Analyzers: Launch Plan
 ## From MVP to Production and Revenue
 
 ### 1. Launch Checklist (CONCISE)
@@ -52,7 +52,7 @@
 - **Email**: Send to your waitlist (if any).
 
 #### Phase 2: The "Hard" Launch (Day 4-7)
-- **Press Release**: "AEO Analyzer Launches to Help Marketers Win the AI Citation Race."
+- **Press Release**: "AEO Analyzers Launches to Help Marketers Win the AI Citation Race."
 - **Product Hunt**: Submit the app on Product Hunt.
 - **Influencers**: Reach out to 5-10 SEO/Marketing influencers for a demo.
 
@@ -61,9 +61,9 @@
 - **Paid Ads**: Targeted LinkedIn ads for "Marketing Directors" and "SEO Agencies."
 
 ### 3. Revenue and Onboarding
-- **Free Tier**: 5 analyses/mo (Hook).
-- **Pro Tier ($49/mo)**: 50 analyses/mo + Schema Generator + Implementation Roadmap (Value).
-- **Business Tier ($199/mo)**: 500 analyses/mo + Competitor Benchmarking + Priority Support (Scale).
+- **Free Tier**: 1 free analysis, then upgrade required. Usage tracked server-side (Hook).
+- **Pro Tier ($49/mo)**: Unlimited analyses + Implementation Roadmap + DOCX Reports + Comprehensive Schema + Content Rewrites + Implementation Checklist (Value).
+- **Business Tier ($199/mo)**: Everything in Pro + Competitor Benchmarking + Priority Support (Scale).
 
 ### 4. Infrastructure Cost Summary
 
@@ -78,5 +78,22 @@
 
 Previous infrastructure cost (Cloud Run): ~$200/day (~$6,000/month).
 
+### 5. Current Product Features (v1.3)
+For reference, the platform now includes:
+- Transparent AEO Score formula with 4-pillar breakdown
+- 6 advanced diagnostics (Citation Hooks, E-E-A-T, Summarization, Snippets, Query Gap, Chunking)
+- Comprehensive JSON-LD schema covering all detected products/services
+- Content rewrite examples (before/after from actual content)
+- Meta description rewrite
+- Prioritized implementation checklist
+- Professional DOCX report with 5 appendix sections
+- Enhanced handoff email template
+- Platform-specific implementation guides
+- Analysis history with full detail view
+- Google OAuth + email authentication
+- Admin dashboard with GA4 integration
+
+See [RELEASE-NOTES.md](../RELEASE-NOTES.md) for the full changelog.
+
 ---
-*Ready for Launch? Let's go!*
+*AEO Analyzers is live at https://www.aeoanalyzers.com*

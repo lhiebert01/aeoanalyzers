@@ -1,4 +1,4 @@
-# AEO Analyzer: User Personas & FAQ
+# AEO Analyzers: User Personas & FAQ
 ## Understanding our Users and Addressing their Questions
 
 ### 👤 User Personas
@@ -7,31 +7,31 @@
 *   **Role**: Senior SEO Strategist at a mid-sized digital marketing agency.
 *   **Goal**: Retain clients by proving her agency is at the forefront of the AI shift.
 *   **Pain Point**: Clients are seeing a drop in organic traffic and are asking, "Why aren't we showing up in ChatGPT or Gemini?"
-*   **How AEO Analyzer Helps**: Sarah uses the platform to provide clients with a "Citation Probability" score and a technical roadmap. It transforms a vague "AI is changing things" conversation into a concrete "Here are the 5 technical fixes we need to implement" strategy.
+*   **How AEO Analyzers Helps**: Sarah uses the platform to provide clients with a "Citation Probability" score and a technical roadmap. It transforms a vague "AI is changing things" conversation into a concrete "Here are the 5 technical fixes we need to implement" strategy.
 
 #### 2. David, the Local Expert (Small Business)
 *   **Role**: Owner of a specialized local service (e.g., Plumbing, Law, or Medical).
 *   **Goal**: To be the "recommended" answer when local users ask AI agents for help.
 *   **Pain Point**: AI agents are citing national chains or generic directories instead of his local business, even though he is the true expert in his area.
-*   **How AEO Analyzer Helps**: David uses the tool to identify missing local Schema.org and semantic clarity issues. It helps him understand that his site is "too complex" for an AI agent to quickly extract his service area and expertise.
+*   **How AEO Analyzers Helps**: David uses the tool to identify missing local Schema.org and semantic clarity issues. It helps him understand that his site is "too complex" for an AI agent to quickly extract his service area and expertise.
 
 #### 3. Elena, the Gov Comms Director
 *   **Role**: Director of Communications for a government agency or large NGO.
 *   **Goal**: Ensure official, accurate information is the primary source for AI-generated answers.
 *   **Pain Point**: AI agents are summarizing third-party blogs or outdated news articles instead of the official, current guidelines.
-*   **How AEO Analyzer Helps**: Elena uses the tool to audit the official site for "AI Readability." It provides the Schema.org fixes to ensure that AI agents recognize the official source as the "Source of Truth" for public queries.
+*   **How AEO Analyzers Helps**: Elena uses the tool to audit the official site for "AI Readability." It provides the Schema.org fixes to ensure that AI agents recognize the official source as the "Source of Truth" for public queries.
 
 #### 4. Marco, the Shopify Store Owner
 *   **Role**: Founder of a niche e-commerce brand (e.g., Sustainable Home Goods).
 *   **Goal**: To have his products recommended by AI shopping assistants.
 *   **Pain Point**: When users ask "What are the best bamboo sheets?", AI agents cite major retailers like Amazon or Target, even though Marco's products have better reviews and sustainability credentials.
-*   **How AEO Analyzer Helps**: Marco uses the tool to audit his product pages. He discovers his Shopify theme is missing critical "Product" and "Review" Schema that AI agents use to verify quality.
+*   **How AEO Analyzers Helps**: Marco uses the tool to audit his product pages. He discovers his Shopify theme is missing critical "Product" and "Review" Schema that AI agents use to verify quality.
 
 #### 5. Alex, the Full-Stack Developer
 *   **Role**: Freelance developer building custom web apps for startups.
 *   **Goal**: To deliver "future-proof" websites that rank well in the AI era.
 *   **Pain Point**: He knows how to build fast, beautiful apps, but he doesn't know the specific Meta Tags or JSON-LD structures required for AEO.
-*   **How AEO Analyzer Helps**: Alex uses the tool as a "QA step" before handover. It tells him exactly what meta-information is missing, allowing him to charge a premium for "AI-Optimized Development."
+*   **How AEO Analyzers Helps**: Alex uses the tool as a "QA step" before handover. It tells him exactly what meta-information is missing, allowing him to charge a premium for "AI-Optimized Development."
 
 ---
 
@@ -43,13 +43,24 @@
 *   **Q: I'm a developer. Why should I care about AEO?**
     *   **A**: Modern web development is no longer just about pixels and performance; it's about **discoverability by machines**. If your app isn't semantically structured, it's invisible to the AI agents that are increasingly becoming the primary way users find services.
 *   **Q: I have a Shopify store. Does this work for me?**
-    *   **A**: Absolutely. Shopify stores often rely on themes that might have outdated or missing Schema.org structures. AEO Analyzer helps you identify these gaps so you can win the "recommendation" in AI shopping assistants.
+    *   **A**: Absolutely. Shopify stores often rely on themes that might have outdated or missing Schema.org structures. AEO Analyzers helps you identify these gaps so you can win the "recommendation" in AI shopping assistants.
 *   **Q: Why do I need a separate tool for this? Can't I just use my SEO tool?**
-    *   **A**: Traditional SEO tools are built to analyze links and keywords for search engines. AEO Analyzer is built to simulate how an AI agent "reasons" through your content to determine its authority and citation likelihood.
+    *   **A**: Traditional SEO tools are built to analyze links and keywords for search engines. AEO Analyzers is built to simulate how an AI agent "reasons" through your content to determine its authority and citation likelihood.
 *   **Q: Is this just for Google Gemini?**
     *   **A**: No. While we use Gemini as our analysis engine, the principles of AEO (Semantic HTML, Schema.org, Content Clarity) are universal across all major LLMs, including ChatGPT and Perplexity.
 *   **Q: How often should I run an analysis?**
     *   **A**: We recommend running an analysis after every major content update or structural change to your website to ensure your "AI Readability" hasn't dropped.
+
+*   **Q: What is the "Comprehensive Schema" in the report?**
+    *   **A**: Unlike the basic JSON-LD snippet (which covers a single service), the Comprehensive Schema generates a full OfferCatalog listing EVERY product, service, and capability detected on your page. It's ready to paste into your site's `<head>` section and replaces any existing basic schema.
+*   **Q: What are the "Content Rewrite Examples"?**
+    *   **A**: These are 3-5 before/after rewrites pulled from YOUR actual content. They show how to replace vague marketing language ("industry-leading solution") with specific, AI-citable claims ("processes 50,000+ queries/day with 99.7% uptime"). AI engines cite specific claims, not adjectives.
+*   **Q: How does the score formula work?**
+    *   **A**: Your AEO Score = Entity × 0.3 + Density × 0.3 + Clarity × 0.2 + Structure × 0.2. Entity measures structured data and identity clarity. Density measures citable facts. Clarity measures how directly you answer questions. Structure measures semantic HTML quality. You can see all four sub-scores with progress bars.
+*   **Q: Can I download the analysis as a document?**
+    *   **A**: Yes. Pro and Business subscribers can download a professional Word document (DOCX) with the full analysis, score breakdown, all 6 advanced diagnostics, implementation instructions, and 5 appendix sections including the comprehensive schema, content rewrites, and a prioritized implementation checklist. The report is generated entirely in your browser.
+*   **Q: What are the six advanced diagnostics?**
+    *   **A**: Citation Hook Density (are your facts quotable?), E-E-A-T Author Audit (does AI trust your content?), LLM Summarization Test (does AI understand your page?), Zero-Click Predictor (will you win the featured snippet?), Query-to-Content Gap (what questions aren't you answering?), and Semantic Chunking (can AI extract your content cleanly?).
 
 #### For Admins (SuperAdmin)
 *   **Q: How do I manage users who have lost their passwords?**
@@ -60,4 +71,4 @@
     *   **A**: The analysis speed depends on the Gemini API. If it's consistently slow, check the "Admin Guide" for instructions on monitoring API quotas and latency in the Google Cloud Console.
 
 ---
-*AEO Analyzer: Bridging the gap between your content and the AI agents that summarize it.*
+*AEO Analyzers: Bridging the gap between your content and the AI agents that summarize it.*
