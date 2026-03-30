@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../supabase';
+import { supabase, supabaseQuery } from '../supabase';
 import {
   Users,
   TrendingUp,
@@ -29,18 +29,14 @@ export default function AdminDashboard() {
     setLoading(true);
     setFetchError(null);
     try {
-      // Add timeout to prevent infinite hanging
-      const queryPromise = supabase
-        .from('users')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Query timed out after 8 seconds. Your Supabase project may be paused or the admin RLS policy is missing.')), 8000)
+      // Use direct REST API to bypass Supabase client issues
+      const { data, error } = await supabaseQuery(
+        'users',
+        'select=*&order=created_at.desc&limit=100',
+        10000
       );
-      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
 
-      if (error) throw error;
+      if (error) throw new Error(error.message);
 
       const userData = data || [];
       setUsers(userData);

@@ -3,7 +3,7 @@ import ImplementationRoadmap from './components/ImplementationRoadmap';
 import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRight, Loader2, Globe, Cpu, Swords, Copy, Check, User as UserIcon, LogOut, History, CreditCard, LayoutDashboard, Settings, BookOpen, ShieldAlert, BarChart, Lock, Mail, FileText, Layout, ShoppingBag, Code, Info, ExternalLink, ChevronRight, ChevronDown, Share2, Linkedin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HelmetProvider } from 'react-helmet-async';
-import { supabase } from './supabase';
+import { supabase, supabaseQuery, supabaseInsert, supabaseUpdate } from './supabase';
 
 interface AppUser {
   id: string;
@@ -179,31 +179,30 @@ export default function App() {
           setUser(appUser);
 
           try {
-            // Fetch profile with 5-second timeout to prevent hanging
-            const profilePromise = supabase
-              .from('users')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-            const timeoutPromise = new Promise((_, reject) =>
-              setTimeout(() => reject(new Error('Profile fetch timed out')), 5000)
+            // Fetch profile using direct REST API (bypasses Supabase client queuing issues)
+            const { data: profiles, error: profileError } = await supabaseQuery(
+              'users',
+              `select=*&id=eq.${session.user.id}`,
+              8000
             );
-            const { data: profile, error: profileError } = await Promise.race([profilePromise, timeoutPromise]) as any;
+            console.log('[Auth] Profile fetch result:', { profiles: profiles?.length, error: profileError });
 
-            if (profileError && profileError.code === 'PGRST116') {
+            const profile = profiles?.[0];
+
+            if (profileError || !profile) {
               // No profile exists yet (e.g. Google OAuth first login) — create one
               const email = session.user.email || '';
               const isAdminEmail = email.toLowerCase() === 'lindsay.hiebert@gmail.com' ||
                                    email.toLowerCase() === 'liindsay.hiebert@gmail.com';
-              const { data: newProfile } = await supabase.from('users').insert({
+              const { data: newProfiles } = await supabaseInsert('users', {
                 id: session.user.id,
                 email,
                 display_name: session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || email.split('@')[0],
                 role: isAdminEmail ? 'admin' : 'user',
                 subscription_status: 'free',
-              }).select().single();
-              if (newProfile) setUserProfile(newProfile);
-            } else if (profile) {
+              });
+              if (newProfiles?.[0]) setUserProfile(newProfiles[0]);
+            } else {
               setUserProfile(profile);
             }
           } catch (err) {
@@ -259,6 +258,7 @@ export default function App() {
 
   const fetchHistory = async (userId?: string) => {
     const id = userId || user?.id;
+    console.log('[History] fetchHistory called with userId:', id);
     if (!id) {
       setLoadingHistory(false);
       setHistory([]);
@@ -266,23 +266,17 @@ export default function App() {
     }
     setLoadingHistory(true);
     try {
-      // Race the query against a timeout to prevent infinite hang
-      const queryPromise = supabase
-        .from('analysis_history')
-        .select('*')
-        .eq('user_id', id)
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('History fetch timed out')), 8000)
+      // Use direct REST API to bypass Supabase client issues
+      const { data, error } = await supabaseQuery(
+        'analysis_history',
+        `select=*&user_id=eq.${id}&order=created_at.desc&limit=20`,
+        10000
       );
-
-      const { data, error: fetchError } = await Promise.race([queryPromise, timeoutPromise]) as any;
-      if (fetchError) throw fetchError;
+      console.log('[History] Query result:', { count: data?.length, error });
+      if (error) throw new Error(error.message);
       setHistory(data || []);
     } catch (err) {
-      console.error('Error fetching history:', err);
+      console.error('[History] Error fetching history:', err);
       setHistory([]);
     }
     setLoadingHistory(false);
@@ -319,13 +313,11 @@ export default function App() {
 
     const newCount = (userProfile.usage_count || 0) + 1;
     try {
-      await supabase
-        .from('users')
-        .update({
-          usage_count: newCount,
-          last_analysis_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
+      // Use direct REST API to bypass Supabase client issues
+      await supabaseUpdate('users', `id=eq.${user.id}`, {
+        usage_count: newCount,
+        last_analysis_at: new Date().toISOString(),
+      });
       setUserProfile({ ...userProfile, usage_count: newCount });
     } catch (err) {
       console.error('Error updating usage count:', err);
@@ -335,7 +327,8 @@ export default function App() {
   const saveToHistory = async (res: any, urlToSave: string, compUrl?: string) => {
     if (!user) return;
     try {
-      const { error: insertError } = await supabase.from('analysis_history').insert({
+      // Use direct REST API to bypass Supabase client issues
+      const { error: insertError } = await supabaseInsert('analysis_history', {
         user_id: user.id,
         url: urlToSave,
         score: res.score,
@@ -345,7 +338,8 @@ export default function App() {
         competitor_url: compUrl || null,
         competitor_score: res.competitorScore || null,
       });
-      if (insertError) throw insertError;
+      if (insertError) throw new Error(insertError.message);
+      console.log('[History] Saved analysis to history');
     } catch (err) {
       console.error('Error saving to history:', err);
     }
