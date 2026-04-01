@@ -72,12 +72,48 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, 
     .map(c => `### ${c.name}\n\n**Score: ${c.score}/10**\n\n${c.feedback}\n\n**What to do:**\n${c.score < 7 ? '* This is a priority area. See implementation instructions below.' : '* This area is performing well. Maintain current implementation and monitor for changes.'}`)
     .join('\n\n---\n\n');
 
+  const getScoreRating = (score: number): { rating: string; description: string } => {
+    if (score <= 30) return { rating: 'Poor', description: 'AI engines will almost never cite this site' };
+    if (score <= 50) return { rating: 'Below Average', description: 'Major gaps — AI may find the site but won\'t trust it as a source' };
+    if (score <= 70) return { rating: 'Okay / Fair', description: 'Foundational elements exist but content lacks the specificity AI needs to cite confidently' };
+    if (score <= 85) return { rating: 'Good', description: 'Strong structure + content — AI will cite this for many relevant queries' };
+    return { rating: 'Excellent', description: 'Source of Truth — AI engines actively prefer this site as a primary reference' };
+  };
+
+  const { rating: scoreRating } = getScoreRating(analysisResult.score);
+
   const emailTemplate = `Dear Web Team,
 
 We recently completed an Answer Engine Optimization (AEO) review of ${siteUrl} using AEO Analyzers.
 
 **Current AEO Score:** ${analysisResult.score}/100
 **Citation Probability:** Based on the analysis, this score reflects how likely AI agents are to cite this website when answering questions in your domain.
+
+---
+
+## What your score means
+
+| Range | Rating | What it means |
+|-------|--------|---------------|
+| 0–30 | Poor | AI engines will almost never cite this site |
+| 31–50 | Below Average | Major gaps — AI may find the site but won't trust it as a source |
+| 51–70 | Okay / Fair | Foundational elements exist but content lacks the specificity AI needs to cite confidently |
+| 71–85 | Good | Strong structure + content — AI will cite this for many relevant queries |
+| 86–100 | Excellent | Source of Truth — AI engines actively prefer this site as a primary reference |
+
+Your score of ${analysisResult.score}/100 with ${analysisResult.citationProbability}% citation probability places you in the **${scoreRating}** range.
+
+---
+
+## What is JSON-LD and why does it matter?
+
+JSON-LD (JavaScript Object Notation for Linked Data) is a small block of structured code placed in your website's <head> section. It acts as a machine-readable "business card" — telling AI engines exactly what your business does, what products and services you offer, and how to cite you.
+
+**How AI Answer Engines use JSON-LD:**
+
+When an AI engine like Google Gemini, ChatGPT, or Perplexity answers a user's question, it scans websites for structured, trustworthy data it can quote. JSON-LD gives the AI a pre-organized summary of your business — no guessing required. Without it, AI has to infer your offerings from unstructured page content, which leads to incomplete or inaccurate citations.
+
+Sites with comprehensive JSON-LD are significantly more likely to be cited as the authoritative source because the AI can extract exact service names, descriptions, and capabilities with high confidence.
 
 ---
 

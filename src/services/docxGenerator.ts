@@ -119,6 +119,70 @@ export async function generateDocxReport(
     })
   );
 
+  // Score Rating Table
+  const scoreRatingTiers: [string, string, string][] = [
+    ['0–30', 'Poor', 'AI engines will almost never cite this site'],
+    ['31–50', 'Below Average', 'Major gaps — AI may find the site but won\'t trust it as a source'],
+    ['51–70', 'Okay / Fair', 'Foundational elements exist but content lacks the specificity AI needs to cite confidently'],
+    ['71–85', 'Good', 'Strong structure + content — AI will cite this for many relevant queries'],
+    ['86–100', 'Excellent', 'Source of Truth — AI engines actively prefer this site as a primary reference'],
+  ];
+  const activeTierIdx = result.score <= 30 ? 0 : result.score <= 50 ? 1 : result.score <= 70 ? 2 : result.score <= 85 ? 3 : 4;
+
+  children.push(
+    sectionHeading('What Your Score Means'),
+    new Table({
+      rows: [
+        new TableRow({
+          children: ['Range', 'Rating', 'What it means'].map(
+            text =>
+              new TableCell({
+                children: [new Paragraph({ children: [new TextRun({ text, bold: true, size: 20, color: 'ffffff' })] })],
+                shading: { type: ShadingType.SOLID, color: '1a1a2e' },
+                width: { size: 33, type: WidthType.PERCENTAGE },
+              })
+          ),
+        }),
+        ...scoreRatingTiers.map(
+          ([range, rating, desc], i) =>
+            new TableRow({
+              children: [range, rating, desc].map(
+                text =>
+                  new TableCell({
+                    children: [new Paragraph({ children: [new TextRun({ text, bold: i === activeTierIdx, size: 20, color: i === activeTierIdx ? '1a1a2e' : '333333' })] })],
+                    width: { size: 33, type: WidthType.PERCENTAGE },
+                    ...(i === activeTierIdx ? { shading: { type: ShadingType.SOLID, color: 'e8e8ee' } } : {}),
+                  })
+              ),
+            })
+        ),
+      ],
+      width: { size: 100, type: WidthType.PERCENTAGE },
+    }),
+    new Paragraph({
+      children: [
+        new TextRun({ text: `Your score of ${result.score}/100 with ${result.citationProbability}% citation probability places you in the `, size: 22, color: '333333' }),
+        new TextRun({ text: scoreRatingTiers[activeTierIdx][1], bold: true, size: 22, color: '1a1a2e' }),
+        new TextRun({ text: ' range.', size: 22, color: '333333' }),
+      ],
+      spacing: { before: 200, after: 200 },
+    }),
+    spacer()
+  );
+
+  // What is JSON-LD?
+  children.push(
+    sectionHeading('What is JSON-LD and Why Does It Matter?'),
+    bodyText(
+      'JSON-LD (JavaScript Object Notation for Linked Data) is a small block of structured code placed in your website\'s <head> section. It acts as a machine-readable "business card" — telling AI engines exactly what your business does, what products and services you offer, and how to cite you.'
+    ),
+    boldBodyText('How AI Answer Engines use JSON-LD: ', 'When an AI engine like Google Gemini, ChatGPT, or Perplexity answers a user\'s question, it scans websites for structured, trustworthy data it can quote. JSON-LD gives the AI a pre-organized summary of your business — no guessing required. Without it, AI has to infer your offerings from unstructured page content, which leads to incomplete or inaccurate citations.'),
+    bodyText(
+      'Sites with comprehensive JSON-LD are significantly more likely to be cited as the authoritative source because the AI can extract exact service names, descriptions, and capabilities with high confidence.'
+    ),
+    spacer()
+  );
+
   // 2. Why This Matters
   children.push(
     sectionHeading('Why This Matters'),

@@ -1144,6 +1144,9 @@ export default function App() {
                         citationProbability={result.citationProbability}
                       />
 
+                      {/* Score Rating Explainer */}
+                      <ScoreRatingExplainer score={result.score} citationProbability={result.citationProbability} />
+
                       {/* Score Formula Breakdown */}
                       {result.scoreBreakdown && (
                         <div className="bg-white border border-zinc-200 rounded-3xl p-8 shadow-sm">
@@ -1305,6 +1308,62 @@ function ScoreCard({ title, result, isWinner }: { title: string, result: Analysi
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ScoreRatingExplainer({ score, citationProbability }: { score: number; citationProbability: number }) {
+  const [open, setOpen] = useState(false);
+
+  const tiers = [
+    { range: '0–30', rating: 'Poor', description: 'AI engines will almost never cite this site' },
+    { range: '31–50', rating: 'Below Average', description: 'Major gaps — AI may find the site but won\'t trust it as a source' },
+    { range: '51–70', rating: 'Okay / Fair', description: 'Foundational elements exist but content lacks the specificity AI needs to cite confidently' },
+    { range: '71–85', rating: 'Good', description: 'Strong structure + content — AI will cite this for many relevant queries' },
+    { range: '86–100', rating: 'Excellent', description: 'Source of Truth — AI engines actively prefer this site as a primary reference' },
+  ];
+
+  const activeTierIndex = score <= 30 ? 0 : score <= 50 ? 1 : score <= 70 ? 2 : score <= 85 ? 3 : 4;
+  const activeRating = tiers[activeTierIndex].rating;
+
+  return (
+    <div className="bg-white border border-zinc-200 rounded-3xl shadow-sm overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full px-8 py-4 flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-all"
+      >
+        <Info className="w-4 h-4" />
+        What does this score mean?
+        <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="px-8 pb-8 space-y-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-zinc-200">
+                <th className="text-left py-2 pr-4 text-xs font-bold uppercase tracking-widest text-zinc-400">Range</th>
+                <th className="text-left py-2 pr-4 text-xs font-bold uppercase tracking-widest text-zinc-400">Rating</th>
+                <th className="text-left py-2 text-xs font-bold uppercase tracking-widest text-zinc-400">What it means</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tiers.map((tier, i) => (
+                <tr
+                  key={tier.range}
+                  className={`border-b border-zinc-100 ${i === activeTierIndex ? 'bg-zinc-900 text-white' : ''}`}
+                >
+                  <td className={`py-3 pr-4 font-mono text-sm ${i === activeTierIndex ? 'font-bold pl-2' : ''}`}>{tier.range}</td>
+                  <td className={`py-3 pr-4 font-bold ${i === activeTierIndex ? '' : ''}`}>{tier.rating}</td>
+                  <td className={`py-3 ${i === activeTierIndex ? 'text-zinc-200' : 'text-zinc-500'}`}>{tier.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="text-sm text-zinc-600">
+            Your score of <strong>{score}/100</strong> with <strong>{citationProbability}%</strong> citation probability places you in the <strong>{activeRating}</strong> range.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
