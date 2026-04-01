@@ -44,7 +44,7 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, 
       await generateDocxReport(
         analysisResult,
         analyzedUrl || 'Unknown URL',
-        displayName || 'AEO Analyzers User'
+        cleanDisplayName
       );
     } catch (err) {
       console.error('Error generating DOCX report:', err);
@@ -58,6 +58,9 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, 
     setCopied(id);
     setTimeout(() => setCopied(null), 2000);
   };
+
+  // Sanitize display name — strip file paths or garbage that may have been appended
+  const cleanDisplayName = (displayName || 'AEO Analyzers User').split(/[&|\\\/]/).map(s => s.trim()).filter(s => s && !s.includes('.docx') && !s.includes('.pdf') && !s.includes(':\\'))[0] || 'AEO Analyzers User';
 
   const siteUrl = analyzedUrl || 'our website';
   const weakAreas = analysisResult.criteria.filter(c => c.score < 7);
@@ -244,7 +247,7 @@ This effort is successful when:
 You can re-run this audit at any time: https://www.aeoanalyzers.com
 
 Best regards,
-${displayName || 'AEO Analyzers User'}`;
+${cleanDisplayName}`;
 
   if (!isPaid) {
     return (

@@ -174,7 +174,7 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     - featuredSnippetReadiness (0-100): How ready the content is for featured snippets
 
     QUERY-TO-CONTENT GAP (queryContentGap object):
-    - generatedQuestions: Array of {question, answered (bool), answerQuality ("Strong"/"Partial"/"Missing")} — top 10 niche questions users would ask, and whether the content answers them
+    - generatedQuestions: Array of EXACTLY 10 objects {question, answered (bool), answerQuality ("Strong"/"Partial"/"Missing")}. Generate exactly 10 specific niche questions that potential customers or AI agents would ask about this business, its products, and its services. Include questions about pricing, technical specs, service areas, certifications, support, comparisons, and use cases. For each question, evaluate whether the page content answers it: "Strong" = clearly answered with specifics, "Partial" = mentioned but vague, "Missing" = not addressed at all. You MUST return exactly 10 questions.
     - gapScore (0-100): 100 = all questions answered strongly, 0 = none answered
 
     SEMANTIC CHUNKING (semanticChunking object):
