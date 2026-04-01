@@ -75,7 +75,10 @@ export interface CompetitiveResult {
 }
 
 // Models in priority order — if the primary is overloaded, fall through to stable alternatives
-const MODELS = ["gemini-2.5-flash-preview-05-20", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
+// gemini-3-flash-preview: Latest preview (best quality, may have capacity spikes)
+// gemini-2.5-flash: Current stable production release (reliable)
+// gemini-2.5-flash-lite: Stable lightweight fallback (always available)
+const MODELS = ["gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.5-flash-lite"];
 
 async function generateWithFallback(prompt: string, schema: any): Promise<string> {
   let lastError: any;
