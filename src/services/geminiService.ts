@@ -103,7 +103,7 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     - criteria: Array of {name, score (0-10), feedback}.
     - recommendations: List of specific, actionable steps.
     - citationProbability: Percentage (0-100) of how likely this site is to be cited for its core topic.
-    - schemaSnippet: A JSON-LD snippet that would fix the most critical missing structured data.
+    - schemaSnippet: A COMPLETE, ready-to-deploy JSON-LD block. Use @type Organization with name, url, and logo (use actual logo URL if found in the HTML, otherwise use a placeholder path). Include hasOfferCatalog with @type OfferCatalog listing EVERY product, service, and capability detected on the page as individual Offer items with @type Offer containing itemOffered with @type Service or @type Product. Each item MUST have a "name" using industry-standard terminology and a "description" with technical specifics (not marketing adjectives). Include areaServed. List at minimum 3-5 offers — more if detected. Output valid JSON only (no script tags).
 
     SCORE BREAKDOWN (scoreBreakdown object):
     - entity (0-100): Schema.org presence, OpenGraph tags, entity identity clarity
@@ -291,7 +291,7 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     Return a JSON object with ALL of the following fields:
 
     COMPREHENSIVE SCHEMA (comprehensiveSchema string):
-    Generate a COMPLETE, ready-to-deploy JSON-LD block with @type Organization containing name, url, and a logo placeholder. Include hasOfferCatalog with @type OfferCatalog listing EVERY product, service, and capability detected on the page as individual Offer items. Each offer must have a name using industry-standard terminology (not marketing adjectives) and a description with technical specifics. The output must be a valid JSON-LD string (without script tags — just the JSON object).
+    Generate a COMPLETE, ready-to-deploy JSON-LD block. Use @type Organization with the actual business name, url, and logo URL (use actual logo from the HTML if found, otherwise a placeholder path). Include hasOfferCatalog with @type OfferCatalog listing EVERY product, service, and capability detected on the page as individual Offer items. Each Offer must contain itemOffered with @type Service or @type Product, a "name" using industry-standard terminology (not marketing adjectives), and a "description" with technical specifics (protocols, specs, measurable capabilities). Include areaServed. List ALL detected offerings — aim for 5-10 items minimum. If the content mentions capabilities that aren't explicitly listed as products (e.g., "network integration", "custom development"), include those too. The output must be valid JSON only (no script tags, no markdown). This schema should be paste-ready for the site's main Services or Solutions page.
 
     CONTENT REWRITES (contentRewrites array):
     Identify 3-5 sentences or phrases from the ACTUAL analyzed content that use vague marketing language ("cutting-edge", "industry-leading", "best-in-class", "dynamic", "fast-growing", etc.). For each, provide:

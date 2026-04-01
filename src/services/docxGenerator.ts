@@ -235,10 +235,13 @@ export async function generateDocxReport(
   );
 
   if (result.schemaSnippet) {
+    let formattedSnippet = result.schemaSnippet;
+    try { formattedSnippet = JSON.stringify(JSON.parse(result.schemaSnippet), null, 2); } catch { /* use as-is */ }
     children.push(
-      boldBodyText('Generated JSON-LD snippet for ', `${analyzedUrl}:`),
+      boldBodyText('Generated JSON-LD for ', `${analyzedUrl}:`),
+      bodyText('Paste this complete schema into your site\'s <head> section on your main Services or Solutions page. It lists all detected products, services, and capabilities.'),
       new Paragraph({
-        children: [new TextRun({ text: result.schemaSnippet, size: 18, font: 'Courier New', color: '333333' })],
+        children: [new TextRun({ text: formattedSnippet, size: 16, font: 'Courier New', color: '333333' })],
         spacing: { after: 200 },
       })
     );
@@ -444,13 +447,16 @@ export async function generateDocxReport(
 
   // Appendix A: Comprehensive Schema (Ready to Deploy)
   if (result.comprehensiveSchema) {
+    let formattedComprehensive = result.comprehensiveSchema;
+    try { formattedComprehensive = JSON.stringify(JSON.parse(result.comprehensiveSchema), null, 2); } catch { /* use as-is */ }
     children.push(
       sectionHeading('Appendix A: Comprehensive Schema (Ready to Deploy)'),
       bodyText(
-        'The following JSON-LD schema covers ALL products, services, and capabilities detected on your website. Unlike the basic snippet above (which addresses a single gap), this comprehensive schema tells AI agents everything your business offers in one structured block. Paste this into your site\'s <head> section to replace any existing basic schema.'
+        'The following JSON-LD schema covers ALL products, services, and capabilities detected on your website. It provides a more detailed version of the schema in Section A above, with additional offerings and technical descriptions. Paste this into your site\'s <head> section on your main Services or Solutions page.'
       ),
+      boldBodyText('Where to use: ', 'Main Services page, Solutions page, or Homepage — whichever page lists your full product/service portfolio.'),
       new Paragraph({
-        children: [new TextRun({ text: result.comprehensiveSchema, size: 16, font: 'Courier New', color: '333333' })],
+        children: [new TextRun({ text: formattedComprehensive, size: 16, font: 'Courier New', color: '333333' })],
         spacing: { after: 200 },
       }),
       spacer()

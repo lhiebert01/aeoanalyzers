@@ -121,11 +121,13 @@ JSON-LD is a small block of code that goes in your website's <head> section. It 
 * Organization schema with detailed attributes
 * OfferCatalog schema where multiple solutions are grouped
 
-**Generated JSON-LD snippet for ${siteUrl}:**
+**Generated JSON-LD for ${siteUrl}:**
 
-${analysisResult.schemaSnippet || 'See the AEO Analyzers report for the generated snippet.'}
+This complete schema lists all detected products, services, and capabilities. Paste it into the <head> section of your main Services or Solutions page.
 
-This is a starting point. Each major page should have page-specific schema rather than relying on one generic block sitewide.
+\`\`\`
+${(() => { const s = analysisResult.schemaSnippet || ''; try { return JSON.stringify(JSON.parse(s), null, 2); } catch { return s || 'See the AEO Analyzers report for the generated snippet.'; } })()}
+\`\`\`
 
 **Where to paste it:**
 * WordPress: Install "Insert Headers and Footers" plugin, paste in Header section
@@ -346,16 +348,18 @@ Best regards,
               <div className="space-y-6">
                 <h3 className="text-xl font-bold flex items-center gap-2">
                   <Code className="w-5 h-5 text-zinc-400" />
-                  {analysisResult.comprehensiveSchema ? 'Complete Schema (All Products & Services)' : 'Your AEO Snippet'}
+                  Complete Schema (All Products & Services)
                 </h3>
                 <p className="text-xs text-zinc-500 mb-4">
-                  {analysisResult.comprehensiveSchema
-                    ? 'This comprehensive JSON-LD covers every product, service, and capability detected on your site. Paste it into your <head> section.'
-                    : 'Copy and paste this JSON-LD block into your site\'s <head> section.'}
+                  This JSON-LD lists every product, service, and capability detected on your site. Paste it into your site's &lt;head&gt; section on your main Services or Solutions page.
                 </p>
                 <div className="relative group">
-                  <pre className="bg-zinc-900 text-zinc-300 p-6 rounded-2xl text-xs overflow-x-auto font-mono leading-relaxed max-h-[300px]">
-                    {analysisResult.comprehensiveSchema || analysisResult.schemaSnippet || 'No snippet generated.'}
+                  <pre className="bg-zinc-900 text-zinc-300 p-6 rounded-2xl text-xs overflow-x-auto font-mono leading-relaxed max-h-[400px]">
+                    {(() => {
+                      const schema = analysisResult.comprehensiveSchema || analysisResult.schemaSnippet || '';
+                      if (!schema) return 'No snippet generated.';
+                      try { return JSON.stringify(JSON.parse(schema), null, 2); } catch { return schema; }
+                    })()}
                   </pre>
                   <button
                     onClick={() => handleCopy(analysisResult.comprehensiveSchema || analysisResult.schemaSnippet || '', 'snippet')}
