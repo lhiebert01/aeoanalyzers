@@ -74,11 +74,17 @@ export interface CompetitiveResult {
   winner: 'user' | 'competitor' | 'tie';
 }
 
-// Models in priority order — if the primary is overloaded, fall through to stable alternatives
-// gemini-3-flash-preview: Latest preview (best quality, may have capacity spikes)
-// gemini-2.5-flash: Current stable production release (reliable)
-// gemini-2.5-flash-lite: Stable lightweight fallback (always available)
-const MODELS = ["gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.5-flash-lite"];
+// Flash models in priority order — best quality first, then stable fallbacks
+// 1. gemini-3-flash-preview:      Latest preview, frontier-class intelligence, fastest (Preview)
+// 2. gemini-3.1-flash-lite-preview: Ultra-fast preview workhorse (Preview)
+// 3. gemini-2.5-flash:            Current stable production release (Stable)
+// 4. gemini-2.5-flash-lite:       Stable lightweight, always available (Stable)
+const MODELS = [
+  "gemini-3-flash-preview",
+  "gemini-3.1-flash-lite-preview",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+];
 
 async function generateWithFallback(prompt: string, schema: any): Promise<string> {
   let lastError: any;
