@@ -1043,13 +1043,22 @@ export default function App() {
                   </motion.form>
 
                   {error && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="mt-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center gap-2 text-red-600 text-sm max-w-lg mx-auto"
+                      className="mt-6 p-4 bg-red-50 border border-red-100 rounded-xl flex flex-col items-center gap-3 text-red-600 text-sm max-w-lg mx-auto"
                     >
-                      <AlertCircle className="w-4 h-4" />
-                      {error}
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 shrink-0" />
+                        {error}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => { setError(null); handleAnalyze(e as any); }}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition-all"
+                      >
+                        Retry Analysis
+                      </button>
                     </motion.div>
                   )}
                 </section>
