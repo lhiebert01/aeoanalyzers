@@ -95,7 +95,8 @@ async function generateWithFallback(prompt: string, schema: any): Promise<string
         contents: prompt,
         config: {
           responseMimeType: "application/json",
-          responseSchema: schema
+          responseSchema: schema,
+          maxOutputTokens: 8192
         }
       });
       if (response.text) return response.text;
@@ -313,7 +314,7 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
         required: ["longBlocks", "chunkingScore"]
       }
     },
-    required: ["score", "summary", "criteria", "recommendations", "citationProbability"]
+    required: ["score", "summary", "criteria", "recommendations", "citationProbability", "schemaSnippet", "scoreBreakdown", "citationHookDensity", "eatAudit", "llmSummarizationTest", "zeroClickPredictor", "queryContentGap", "semanticChunking"]
   };
 
   // --- Call 2: Enhanced report fields (v1.3) — runs in parallel ---

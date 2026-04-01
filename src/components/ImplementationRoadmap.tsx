@@ -244,7 +244,7 @@ This effort is successful when:
 You can re-run this audit at any time: https://www.aeoanalyzers.com
 
 Best regards,
-[Your Name]`;
+${displayName || 'AEO Analyzers User'}`;
 
   if (!isPaid) {
     return (

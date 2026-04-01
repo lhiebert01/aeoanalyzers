@@ -177,19 +177,38 @@ export default function AdvancedAnalysisCards({ result }: Props) {
             <div className="mb-4">
               <ScoreBadge score={result.queryContentGap.gapScore} label="coverage" />
             </div>
-            <div className="space-y-2">
+            <p className="text-xs text-zinc-500 mb-4">
+              Questions AI agents are most likely to ask about your business. Items marked Missing or Partial need attention.
+            </p>
+            <div className="space-y-3">
               {result.queryContentGap.generatedQuestions.map((q, i) => (
-                <div key={i} className="flex items-start gap-3 p-2 rounded-lg hover:bg-zinc-50">
-                  {q.answerQuality === 'Strong' ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                  ) : q.answerQuality === 'Partial' ? (
-                    <Minus className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                  ) : (
-                    <XCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-                  )}
-                  <div className="flex-1">
-                    <p className="text-sm text-zinc-700">{q.question}</p>
-                    <p className="text-[10px] text-zinc-400 uppercase tracking-widest">{q.answerQuality}</p>
+                <div key={i} className={`rounded-xl p-3 ${q.answerQuality === 'Missing' ? 'bg-red-50 border border-red-100' : q.answerQuality === 'Partial' ? 'bg-amber-50 border border-amber-100' : 'bg-emerald-50 border border-emerald-100'}`}>
+                  <div className="flex items-start gap-3">
+                    {q.answerQuality === 'Strong' ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                    ) : q.answerQuality === 'Partial' ? (
+                      <Minus className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                    ) : (
+                      <XCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+                    )}
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-zinc-700">{q.question}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-[10px] font-bold uppercase tracking-widest ${q.answerQuality === 'Strong' ? 'text-emerald-600' : q.answerQuality === 'Partial' ? 'text-amber-600' : 'text-red-500'}`}>
+                          {q.answerQuality}
+                        </span>
+                      </div>
+                      {q.answerQuality === 'Missing' && (
+                        <p className="text-xs text-red-600 mt-1.5 leading-relaxed">
+                          <strong>Action:</strong> Create dedicated content answering this question with specific facts, data, and technical details. Add it as an FAQ entry or a standalone section on a relevant page.
+                        </p>
+                      )}
+                      {q.answerQuality === 'Partial' && (
+                        <p className="text-xs text-amber-700 mt-1.5 leading-relaxed">
+                          <strong>Action:</strong> Expand existing content with additional metrics, specifications, and concrete examples. Replace vague language with measurable claims.
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
