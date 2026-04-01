@@ -74,8 +74,36 @@ export interface CompetitiveResult {
   winner: 'user' | 'competitor' | 'tie';
 }
 
+// Models in priority order — if the primary is overloaded, fall through to stable alternatives
+const MODELS = ["gemini-2.5-flash-preview-05-20", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
+
+async function generateWithFallback(prompt: string, schema: any): Promise<string> {
+  let lastError: any;
+  for (const model of MODELS) {
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: schema
+        }
+      });
+      if (response.text) return response.text;
+    } catch (err: any) {
+      lastError = err;
+      const status = err?.status || err?.code || err?.httpStatusCode;
+      // Only fallback on capacity/rate errors — not on bad request or auth errors
+      if (status === 503 || status === 429 || status === 'UNAVAILABLE' || err?.message?.includes('503') || err?.message?.includes('high demand')) {
+        continue;
+      }
+      throw err; // Non-capacity error — don't retry with a different model
+    }
+  }
+  throw lastError || new Error("All AI models are currently unavailable. Please try again in a few minutes.");
+}
+
 export async function analyzeWebsite(url: string, html: string): Promise<AnalysisResult> {
-  const model = "gemini-3-flash-preview";
   const truncatedHtml = html.substring(0, 15000);
 
   // --- Call 1: Core analysis + advanced diagnostics (proven v1.2 prompt) ---
@@ -351,33 +379,18 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
   };
 
   // Run both calls in parallel for no added latency
-  const [coreResponse, enhancedResponse] = await Promise.all([
-    ai.models.generateContent({
-      model,
-      contents: corePrompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: coreSchema
-      }
-    }),
-    ai.models.generateContent({
-      model,
-      contents: enhancedPrompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: enhancedSchema
-      }
-    }).catch(() => null) // Don't fail the whole analysis if enhanced call fails
+  const [coreText, enhancedText] = await Promise.all([
+    generateWithFallback(corePrompt, coreSchema),
+    generateWithFallback(enhancedPrompt, enhancedSchema).catch(() => null)
   ]);
 
-  const coreText = coreResponse.text;
   if (!coreText) throw new Error("AI failed to generate a response.");
   const coreResult = JSON.parse(coreText);
 
   // Merge enhanced fields if available
-  if (enhancedResponse?.text) {
+  if (enhancedText) {
     try {
-      const enhanced = JSON.parse(enhancedResponse.text);
+      const enhanced = JSON.parse(enhancedText);
       Object.assign(coreResult, enhanced);
     } catch {
       // Enhanced fields are optional — core analysis still works
@@ -393,25 +406,28 @@ export async function performCompetitiveDuel(url1: string, html1: string, url2: 
     analyzeWebsite(url2, html2)
   ]);
 
-  const model = "gemini-3-flash-preview";
   const duelPrompt = `
     Compare these two websites for Answer Engine Optimization (AEO).
     Site A: ${url1} (Score: ${res1.score})
     Site B: ${url2} (Score: ${res2.score})
-    
-    Which site is more likely to be cited by an AI agent as the primary source of truth? 
+
+    Which site is more likely to be cited by an AI agent as the primary source of truth?
     Provide a "Verdict" explaining why one is winning and what the other must do to catch up.
-    
+
     Return JSON: { "verdict": "string", "winner": "user" | "competitor" | "tie" }
   `;
 
-  const response = await ai.models.generateContent({
-    model,
-    contents: duelPrompt,
-    config: { responseMimeType: "application/json" }
-  });
+  const duelSchema = {
+    type: Type.OBJECT,
+    properties: {
+      verdict: { type: Type.STRING },
+      winner: { type: Type.STRING }
+    },
+    required: ["verdict", "winner"]
+  };
 
-  const duelData = JSON.parse(response.text || "{}");
+  const duelText = await generateWithFallback(duelPrompt, duelSchema);
+  const duelData = JSON.parse(duelText || "{}");
 
   return {
     user: res1,
