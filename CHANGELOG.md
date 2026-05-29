@@ -1,6 +1,37 @@
 # Changelog
 
-## [Unreleased] — Accuracy Improvement Pass (2026-05-29)
+## Scoring Isolation — Option C (2026-05-29)
+
+Follow-up to the accuracy pass. The brand/recommendation guidance was sitting in
+the same Gemini call that computes the headline score, so the number could drift
+purely from advice framing (we saw 88 → 84–86). This separates measurement from
+advice while keeping scoring brand-aware *on purpose*.
+
+### Changed
+
+- **Scoring isolated from recommendation framing** (`geminiService.ts`). The core
+  prompt now carries an explicit `SCORING DISCIPLINE` block stating that the
+  site-type notes guide recommendations/diagnostics only and must not move the
+  numeric `score`/`scoreBreakdown`.
+- **Deliberate, principled density calibration.** The one place brand register
+  legitimately belongs in scoring: editorial/news sites are no longer penalized
+  on the density sub-score for an absence of hard statistics when the prose is
+  calibrated and citable (the brief's Part 1 calls "0 stats" a *correct*
+  diagnostic for Macro Lens). Non-editorial sites keep the original
+  substance-based density definition.
+
+### Result (live re-audit, getmacrolens.com)
+
+- Score **89/100** (was 84–86 after the accuracy pass; 88 originally).
+- Breakdown `entity 95 / density 85 / clarity 90 / structure 85` — density rose
+  70 → 85 because calibrated editorial prose is no longer under-counted.
+- All five accuracy fixes still verified: 0 voice rewrites, pricing question →
+  `schema_only`, OfferCatalog ≤ 4, no inferred values in the verified block,
+  no non-capability questions.
+
+---
+
+## Accuracy Improvement Pass (2026-05-29)
 
 Implements Part 3 (Changes 1–6) of `AEOANALYZERS_IMPROVEMENT_BRIEF.md`, derived
 from a real audit of getmacrolens.com. The goal: the tool no longer makes the

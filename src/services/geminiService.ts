@@ -163,15 +163,30 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
   const isEditorial = brand.type === 'editorial' || brand.type === 'news';
 
   // Shared guidance injected into both prompts so every recommendation respects
-  // the detected register and the facts-vs-inferences discipline.
+  // the detected register and the facts-vs-inferences discipline. This is
+  // RECOMMENDATION/DIAGNOSTIC guidance — it must not bias the numeric score
+  // (see scoringDiscipline below, which governs the score/scoreBreakdown call).
   const brandGuidance = `
     DETECTED SITE TYPE: ${brand.type}${isEditorial ? ' (EDITORIAL/NEWS — voice is a moat)' : ''}.
 
-    CRITICAL RULES FOR THIS SITE TYPE:
+    CRITICAL RULES FOR THIS SITE TYPE (these guide RECOMMENDATIONS and DIAGNOSTICS, not the numeric score):
     ${isEditorial ? `- This is an EDITORIAL or NEWS brand. Its prose voice is its primary differentiation. DO NOT propose rewriting taglines, headlines, or hero copy into corporate/SaaS register. Frontier LLMs rank natural editorial prose HIGHER than adjective-to-metric translations for citation quality. The path to higher AEO here is STRUCTURED DATA enrichment (schema), NOT voice translation. Any recommendation that says "rewrite X to sound more data-driven" is WRONG for this site.`
       : `- This is a ${brand.type} site. Conversion-oriented headline/tagline improvements are appropriate where they add specificity.`}
     - FACTS vs INFERENCES: Never state a value (enum, regime label, price, status name) as fact unless that exact string literally appears in the page content. If you must guess, mark it clearly as inferred. Do NOT invent product status names, tiers, or feature names that are not on the page.
     - CAPABILITY SCOPING: Only discuss capabilities the site actually offers. Do NOT recommend creating content about features the site clearly does not have (e.g. a mobile app, international coverage) unless the question is universally useful (pricing, founder, contact, compliance).
+  `;
+
+  // Option C: keep scoring brand-aware ON PURPOSE, but with SCORING-specific
+  // calibration rather than the recommendation preamble above. This isolates the
+  // headline number from advice framing (so the score stays comparable over
+  // time) while still fixing the one place brand register legitimately belongs
+  // in scoring: not penalizing editorial prose for an absence of hard numerals.
+  const scoringDiscipline = `
+    SCORING DISCIPLINE (applies to "score" and "scoreBreakdown" ONLY):
+    The site-type notes above guide recommendations and diagnostics; they must NOT inflate or deflate the numeric score. Score this site on objective AEO merits exactly as you would any site, with ONE deliberate calibration for the density sub-score:
+    ${isEditorial
+      ? '- This is an editorial/news brand. Judge "density" on citable factual SUBSTANCE — specific, quotable, calibrated claims — NOT on the raw count of statistics or percentages. Do NOT penalize density merely because the prose uses few numerals; well-calibrated editorial prose that an AI would readily quote should score well on density.'
+      : '- Judge "density" on citable factual substance: statistics, specifications, named entities, dates, and concrete measurable claims.'}
   `;
 
   // --- Call 1: Core analysis + advanced diagnostics (proven v1.2 prompt) ---
@@ -201,6 +216,8 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     - recommendations: List of specific, actionable steps.
     - citationProbability: Percentage (0-100) of how likely this site is to be cited for its core topic.
     - schemaSnippet: A COMPLETE, ready-to-deploy JSON-LD block using ONLY values that literally appear on the page (no inferred names). Use @type Organization with name, url, and logo (use actual logo URL if found in the HTML, otherwise use a placeholder path). Include hasOfferCatalog with @type OfferCatalog listing ONLY user-facing services — things a customer can actually sign up for, buy, or use (a dedicated page, a CTA, or something the hero says you "get"). DO NOT list internal architecture as services (anything named "...Layer", "...Engine", "...Framework", "...Model", "...Pipeline", "...System" is internal, not a buyable service). List AT MOST 4 offers; if the page has more user-facing services, keep the 4 strongest. Each item MUST have a "name" using industry-standard terminology and a "description" with technical specifics drawn from the page (not marketing adjectives, not invented specs). Include areaServed. Output valid JSON only (no script tags).
+
+    ${scoringDiscipline}
 
     SCORE BREAKDOWN (scoreBreakdown object):
     - entity (0-100): Schema.org presence, OpenGraph tags, entity identity clarity
