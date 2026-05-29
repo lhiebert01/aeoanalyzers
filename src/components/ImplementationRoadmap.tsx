@@ -60,6 +60,22 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, 
       );
     } catch (err) {
       console.error('Error generating DOCX report:', err);
+      // A failed dynamic import is almost always a stale chunk after a deploy
+      // (the old hashed file no longer exists). Recover by reloading once so the
+      // user gets the current build, then they can click again.
+      const msg = String((err as Error)?.message || err);
+      const isChunkError = /dynamically imported module|Failed to fetch|importing a module script|MIME type/i.test(msg);
+      if (isChunkError) {
+        const last = Number(sessionStorage.getItem('aeo-chunk-reload-at') || '0');
+        if (Date.now() - last > 10000) {
+          sessionStorage.setItem('aeo-chunk-reload-at', String(Date.now()));
+          window.location.reload();
+          return;
+        }
+        alert('A new version of the app was just deployed. Please refresh the page (Ctrl/Cmd+Shift+R) and try the download again.');
+      } else {
+        alert('Sorry — the Word report could not be generated. Please try again, or use the "Copy Template" option as a fallback.');
+      }
     } finally {
       setDownloading(false);
     }

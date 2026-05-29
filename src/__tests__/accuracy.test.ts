@@ -15,7 +15,7 @@ import {
   filterCandidateQueries,
   isUniversallyUsefulQuestion,
 } from '../lib/queryGap';
-import { applyAccuracyGuards, type AnalysisResult } from '../services/geminiService';
+import { applyAccuracyGuards, safeJsonParse, type AnalysisResult } from '../services/geminiService';
 import {
   MACROLENS_EDITORIAL_HTML,
   SAAS_HTML,
@@ -162,6 +162,25 @@ describe('Test 4: SCHEMA_MISSING vs CONTENT_MISSING', () => {
     };
     const guarded = applyAccuracyGuards(result, brand);
     expect(guarded.queryContentGap!.generatedQuestions[0].gapCategory).toBe('schema_only');
+  });
+});
+
+// --- Tolerant JSON parsing (model output salvage) --------------------------
+describe('safeJsonParse: salvages malformed model JSON', () => {
+  it('parses clean JSON', () => {
+    expect(safeJsonParse('{"a":1}')).toEqual({ a: 1 });
+  });
+  it('strips trailing commas before } and ]', () => {
+    expect(safeJsonParse('{"a":1,"b":[1,2,],}')).toEqual({ a: 1, b: [1, 2] });
+  });
+  it('strips markdown code fences', () => {
+    expect(safeJsonParse('```json\n{"a":1}\n```')).toEqual({ a: 1 });
+  });
+  it('drops leading/trailing prose around the object', () => {
+    expect(safeJsonParse('Here is your result:\n{"a":1}\nThanks!')).toEqual({ a: 1 });
+  });
+  it('throws on genuinely empty input', () => {
+    expect(() => safeJsonParse('')).toThrow();
   });
 });
 

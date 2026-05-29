@@ -115,17 +115,52 @@ export interface CompetitiveResult {
   winner: 'user' | 'competitor' | 'tie';
 }
 
-// Flash models in priority order — best quality first, then stable fallbacks
-// 1. gemini-3-flash-preview:      Latest preview, frontier-class intelligence, fastest (Preview)
-// 2. gemini-3.1-flash-lite-preview: Ultra-fast preview workhorse (Preview)
-// 3. gemini-2.5-flash:            Current stable production release (Stable)
-// 4. gemini-2.5-flash-lite:       Stable lightweight, always available (Stable)
+// Flash models in priority order — best quality first, then stable fallbacks.
+// Verified against https://ai.google.dev/gemini-api/docs/models (2026-05-29).
+// The previous chain started with gemini-3-flash-preview (now DEPRECATED) and
+// gemini-3.1-flash-lite-preview (wrong ID — the stable one has no "-preview"),
+// which both 503'd and forced every run onto 2.5-flash.
+// 1. gemini-3.5-flash:       Latest stable, most intelligent (Stable)
+// 2. gemini-3.1-flash-lite:  Stable, fast/efficient workhorse (Stable)
+// 3. gemini-2.5-flash:       Stable production fallback (Stable)
+// 4. gemini-2.5-flash-lite:  Stable lightweight, always available (Stable)
 const MODELS = [
-  "gemini-3-flash-preview",
-  "gemini-3.1-flash-lite-preview",
+  "gemini-3.5-flash",
+  "gemini-3.1-flash-lite",
   "gemini-2.5-flash",
   "gemini-2.5-flash-lite",
 ];
+
+// Tolerant JSON parse for model output. Even with responseMimeType:json +
+// responseSchema, the fallback flash models occasionally emit a trailing comma
+// or wrap the object in prose/markdown fences, which crashes JSON.parse with
+// "Expected double-quoted property name...". This salvages those common cases so
+// a single malformed response doesn't fail the whole analysis.
+export function safeJsonParse(raw: string | null | undefined): any {
+  if (raw == null || String(raw).trim() === '') throw new Error('Empty AI response');
+  let s = String(raw).trim();
+
+  // Strip markdown code fences (```json ... ```).
+  if (s.startsWith('```')) {
+    s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+  }
+
+  // Fast path.
+  try { return JSON.parse(s); } catch { /* fall through to salvage */ }
+
+  // Extract the outermost JSON value (drop any leading/trailing prose).
+  const firstObj = s.indexOf('{');
+  const firstArr = s.indexOf('[');
+  let start = firstObj;
+  if (firstArr !== -1 && (firstArr < firstObj || firstObj === -1)) start = firstArr;
+  const end = Math.max(s.lastIndexOf('}'), s.lastIndexOf(']'));
+  if (start !== -1 && end > start) s = s.slice(start, end + 1);
+
+  // Remove trailing commas before a closing } or ] (the common malformation).
+  s = s.replace(/,(\s*[}\]])/g, '$1');
+
+  return JSON.parse(s);
+}
 
 async function generateWithFallback(prompt: string, schema: any): Promise<string> {
   let lastError: any;
@@ -137,7 +172,12 @@ async function generateWithFallback(prompt: string, schema: any): Promise<string
         config: {
           responseMimeType: "application/json",
           responseSchema: schema,
-          maxOutputTokens: 8192
+          // Generous ceiling: the report payload (two JSON-LD blocks, provenance,
+          // gap analysis, checklist) is large, AND Gemini 3.x Flash uses "medium"
+          // thinking by default whose tokens also count against this budget. Too
+          // low a cap truncates the JSON mid-string and breaks parsing. 3.5 Flash
+          // supports up to 65k output tokens; 32k leaves ample headroom.
+          maxOutputTokens: 32768
         }
       });
       if (response.text) return response.text;
@@ -525,12 +565,12 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
   ]);
 
   if (!coreText) throw new Error("AI failed to generate a response.");
-  const coreResult: AnalysisResult = JSON.parse(coreText);
+  const coreResult: AnalysisResult = safeJsonParse(coreText);
 
   // Merge enhanced fields if available
   if (enhancedText) {
     try {
-      const enhanced = JSON.parse(enhancedText);
+      const enhanced = safeJsonParse(enhancedText);
       Object.assign(coreResult, enhanced);
     } catch {
       // Enhanced fields are optional — core analysis still works
@@ -663,7 +703,7 @@ export async function performCompetitiveDuel(url1: string, html1: string, url2: 
   };
 
   const duelText = await generateWithFallback(duelPrompt, duelSchema);
-  const duelData = JSON.parse(duelText || "{}");
+  const duelData = duelText ? safeJsonParse(duelText) : {};
 
   return {
     user: res1,
