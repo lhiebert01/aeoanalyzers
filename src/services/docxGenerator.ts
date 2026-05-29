@@ -1,4 +1,16 @@
 import type { AnalysisResult } from './geminiService';
+import { categoryFromAnswerQuality, type GapCategory } from '../lib/queryGap';
+
+function docxGapAction(cat: GapCategory): string {
+  if (cat === 'strong') return 'No action needed — maintain current content';
+  if (cat === 'schema_only') return 'Answer already on page — wrap it in FAQPage schema (do NOT create new content)';
+  if (cat === 'partial') return 'Expand existing content with additional details, metrics, and examples';
+  return 'Create dedicated content answering this question with specific facts and data';
+}
+
+function docxGapStatus(cat: GapCategory): string {
+  return cat === 'schema_only' ? 'Schema only' : cat.charAt(0).toUpperCase() + cat.slice(1);
+}
 
 export async function generateDocxReport(
   result: AnalysisResult,
@@ -473,7 +485,7 @@ export async function generateDocxReport(
       boldBodyText('Gap Score: ', `${qcg.gapScore}/100`),
       new Paragraph({ children: [new TextRun({ text: 'Generated Questions:', bold: true, size: 22, color: '1a1a2e' })], spacing: { before: 100, after: 80 } }),
       ...qcg.generatedQuestions.map(q =>
-        bulletPoint(`${q.question} — ${q.answerQuality}${q.answered ? '' : ' (NOT answered)'}`)
+        bulletPoint(`${q.question} — ${docxGapStatus(q.gapCategory || categoryFromAnswerQuality(q.answerQuality, !!q.sourceQuote))}${q.answered ? '' : ' (NOT answered)'}`)
       ),
       spacer()
     );
@@ -509,20 +521,52 @@ export async function generateDocxReport(
 
   // --- Appendix Sections ---
 
-  // Appendix A: Comprehensive Schema (Ready to Deploy)
-  if (result.comprehensiveSchema) {
-    let formattedComprehensive = result.comprehensiveSchema;
-    try { formattedComprehensive = JSON.stringify(JSON.parse(result.comprehensiveSchema), null, 2); } catch { /* use as-is */ }
+  // Appendix A: Verified Schema (Safe to Paste) + Candidate Schema (Verify First)
+  const verified = result.verifiedSchema || result.comprehensiveSchema;
+  if (verified) {
+    let formattedVerified = verified;
+    try { formattedVerified = JSON.stringify(JSON.parse(verified), null, 2); } catch { /* use as-is */ }
     children.push(
-      sectionHeading('Appendix A: Comprehensive Schema (Ready to Deploy)'),
+      sectionHeading('Appendix A: Verified Schema (Safe to Paste)'),
       bodyText(
-        'The following JSON-LD schema covers ALL products, services, and capabilities detected on your website. It provides a more detailed version of the schema in Section A above, with additional offerings and technical descriptions. Paste this into your site\'s <head> section on your main Services or Solutions page.'
+        'The following JSON-LD contains ONLY values detected on your page, and only user-facing services (internal architecture modules excluded). Every value here is supported by content on your site, so it is safe to paste into your <head> section as-is.'
       ),
       boldBodyText('Where to use: ', 'Main Services page, Solutions page, or Homepage — whichever page lists your full product/service portfolio.'),
       new Paragraph({
-        children: [new TextRun({ text: formattedComprehensive, size: 16, font: 'Courier New', color: '333333' })],
+        children: [new TextRun({ text: formattedVerified, size: 16, font: 'Courier New', color: '333333' })],
         spacing: { after: 200 },
       }),
+      spacer()
+    );
+  }
+
+  // Inferred fields are quarantined into a clearly-labeled, verify-first block.
+  if (result.candidateSchema && result.candidateSchema.trim()) {
+    let formattedCandidate = result.candidateSchema;
+    try { formattedCandidate = JSON.stringify(JSON.parse(result.candidateSchema), null, 2); } catch { /* use as-is */ }
+    children.push(
+      sectionHeading('Appendix A2: Candidate Schema (Verify Before Pasting)'),
+      bodyText(
+        'WARNING: The fields below were inferred, not detected on your page. Confirm each value is accurate before publishing. Pasting unverified values can teach AI engines incorrect facts about your business.'
+      ),
+      new Paragraph({
+        children: [new TextRun({ text: formattedCandidate, size: 16, font: 'Courier New', color: '8a5a00' })],
+        spacing: { after: 200 },
+      }),
+      spacer()
+    );
+  }
+
+  // Schema-density opportunities (editorial sites get this instead of voice rewrites).
+  if (result.schemaDensityRecommendations && result.schemaDensityRecommendations.length > 0) {
+    children.push(
+      sectionHeading('Appendix A3: Schema-Density Opportunities'),
+      bodyText(
+        'Your brand voice is an asset. Rather than rewriting prose, raise your AEO score by adding the structured data below — it enriches metadata without touching your content.'
+      ),
+      ...result.schemaDensityRecommendations.map(rec =>
+        bulletPoint(`${rec.schemaType}: ${rec.reason} (${rec.benefit})`)
+      ),
       spacer()
     );
   }
@@ -598,13 +642,10 @@ export async function generateDocxReport(
             ),
           }),
           ...result.queryContentGap.generatedQuestions.map(q => {
-            const action = q.answerQuality === 'Missing'
-              ? 'Create dedicated content answering this question with specific facts and data'
-              : q.answerQuality === 'Partial'
-              ? 'Expand existing content with additional details, metrics, and examples'
-              : 'No action needed — maintain current content';
+            const cat = q.gapCategory || categoryFromAnswerQuality(q.answerQuality, !!q.sourceQuote);
+            const action = docxGapAction(cat);
             return new TableRow({
-              children: [q.question, q.answerQuality, action].map(
+              children: [q.question, docxGapStatus(cat), action].map(
                 text =>
                   new TableCell({
                     children: [new Paragraph({ children: [new TextRun({ text, size: 18 })] })],

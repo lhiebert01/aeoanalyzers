@@ -1,5 +1,13 @@
 /// <reference types="vite/client" />
 import { GoogleGenAI, Type } from "@google/genai";
+import { classifySiteType, type SiteType } from "../lib/brandType";
+import { filterOfferCatalogString, type OfferFilterResult } from "../lib/offerCatalog";
+import {
+  categoryFromAnswerQuality,
+  filterCandidateQueries,
+  recommendationFor,
+  type GapCategory,
+} from "../lib/queryGap";
 
 const apiKey = (import.meta.env.VITE_DEV_GEMINI_KEY as string) || (process.env.GEMINI_API_KEY as string) || "";
 const ai = new GoogleGenAI({ apiKey });
@@ -52,8 +60,18 @@ export interface AnalysisResult {
   };
   // Phase 3c: Query-to-Content Gap
   queryContentGap?: {
-    generatedQuestions: { question: string; answered: boolean; answerQuality: string }[];
+    generatedQuestions: {
+      question: string;
+      answered: boolean;
+      answerQuality: string;
+      // Change 4: distinguishes "content missing" from "present in prose but not
+      // in FAQ schema". When present in prose, sourceQuote shows the exact text.
+      gapCategory?: GapCategory;
+      sourceQuote?: string;
+    }[];
     gapScore: number;
+    // Change 5: capabilities the site actually offers, used to scope queries.
+    detectedCapabilities?: string[];
   };
   // Phase 3c: Semantic Chunking
   semanticChunking?: {
@@ -65,6 +83,29 @@ export interface AnalysisResult {
   contentRewrites?: { current: string; proposed: string; page: string }[];
   metaDescriptionRewrite?: { current: string; suggested: string };
   implementationChecklist?: { category: string; action: string; priority: string }[];
+
+  // Change 1: detected brand/register type. Gates voice recommendations.
+  siteType?: SiteType;
+  brandTypeSignals?: Record<string, number>;
+
+  // Change 2: provenance-tagged schema. The "paste into <head>" block must only
+  // contain detected values; inferred values go in the candidate block.
+  verifiedSchema?: string;   // detected-only — safe to paste
+  candidateSchema?: string;  // inferred fields — verify before pasting
+  schemaProvenance?: {
+    field: string;
+    value: string;
+    provenance: 'detected' | 'inferred' | 'user_required';
+    sourceQuote?: string;  // exact page text supporting a detected value
+    confidence: number;    // 0.0–1.0
+  }[];
+
+  // Change 3: offers stripped from the catalog (architecture terms / over cap).
+  offerCatalogRemoved?: { name: string; reason: string }[];
+
+  // Change 6: for editorial/news sites, replaces voice rewrites with structured
+  // data suggestions (the path to higher AEO for editorial brands).
+  schemaDensityRecommendations?: { schemaType: string; reason: string; benefit: string }[];
 }
 
 export interface CompetitiveResult {
@@ -116,12 +157,30 @@ async function generateWithFallback(prompt: string, schema: any): Promise<string
 export async function analyzeWebsite(url: string, html: string): Promise<AnalysisResult> {
   const truncatedHtml = html.substring(0, 15000);
 
+  // --- Change 1: classify the brand/register type BEFORE generating any
+  // recommendations. This gates whether voice rewrites are allowed. ---
+  const brand = classifySiteType(html);
+  const isEditorial = brand.type === 'editorial' || brand.type === 'news';
+
+  // Shared guidance injected into both prompts so every recommendation respects
+  // the detected register and the facts-vs-inferences discipline.
+  const brandGuidance = `
+    DETECTED SITE TYPE: ${brand.type}${isEditorial ? ' (EDITORIAL/NEWS — voice is a moat)' : ''}.
+
+    CRITICAL RULES FOR THIS SITE TYPE:
+    ${isEditorial ? `- This is an EDITORIAL or NEWS brand. Its prose voice is its primary differentiation. DO NOT propose rewriting taglines, headlines, or hero copy into corporate/SaaS register. Frontier LLMs rank natural editorial prose HIGHER than adjective-to-metric translations for citation quality. The path to higher AEO here is STRUCTURED DATA enrichment (schema), NOT voice translation. Any recommendation that says "rewrite X to sound more data-driven" is WRONG for this site.`
+      : `- This is a ${brand.type} site. Conversion-oriented headline/tagline improvements are appropriate where they add specificity.`}
+    - FACTS vs INFERENCES: Never state a value (enum, regime label, price, status name) as fact unless that exact string literally appears in the page content. If you must guess, mark it clearly as inferred. Do NOT invent product status names, tiers, or feature names that are not on the page.
+    - CAPABILITY SCOPING: Only discuss capabilities the site actually offers. Do NOT recommend creating content about features the site clearly does not have (e.g. a mobile app, international coverage) unless the question is universally useful (pricing, founder, contact, compliance).
+  `;
+
   // --- Call 1: Core analysis + advanced diagnostics (proven v1.2 prompt) ---
   const corePrompt = `
     Analyze the following website content for "Answer Engine Optimization" (AEO).
     AEO is the practice of making a website the primary "Source of Truth" for AI agents (Gemini, GPT, etc.).
 
     Website URL: ${url}
+    ${brandGuidance}
 
     HTML Content (truncated):
     ${truncatedHtml}
@@ -141,7 +200,7 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     - criteria: Array of {name, score (0-10), feedback}.
     - recommendations: List of specific, actionable steps.
     - citationProbability: Percentage (0-100) of how likely this site is to be cited for its core topic.
-    - schemaSnippet: A COMPLETE, ready-to-deploy JSON-LD block. Use @type Organization with name, url, and logo (use actual logo URL if found in the HTML, otherwise use a placeholder path). Include hasOfferCatalog with @type OfferCatalog listing EVERY product, service, and capability detected on the page as individual Offer items with @type Offer containing itemOffered with @type Service or @type Product. Each item MUST have a "name" using industry-standard terminology and a "description" with technical specifics (not marketing adjectives). Include areaServed. List at minimum 3-5 offers — more if detected. Output valid JSON only (no script tags).
+    - schemaSnippet: A COMPLETE, ready-to-deploy JSON-LD block using ONLY values that literally appear on the page (no inferred names). Use @type Organization with name, url, and logo (use actual logo URL if found in the HTML, otherwise use a placeholder path). Include hasOfferCatalog with @type OfferCatalog listing ONLY user-facing services — things a customer can actually sign up for, buy, or use (a dedicated page, a CTA, or something the hero says you "get"). DO NOT list internal architecture as services (anything named "...Layer", "...Engine", "...Framework", "...Model", "...Pipeline", "...System" is internal, not a buyable service). List AT MOST 4 offers; if the page has more user-facing services, keep the 4 strongest. Each item MUST have a "name" using industry-standard terminology and a "description" with technical specifics drawn from the page (not marketing adjectives, not invented specs). Include areaServed. Output valid JSON only (no script tags).
 
     SCORE BREAKDOWN (scoreBreakdown object):
     - entity (0-100): Schema.org presence, OpenGraph tags, entity identity clarity
@@ -174,7 +233,18 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     - featuredSnippetReadiness (0-100): How ready the content is for featured snippets
 
     QUERY-TO-CONTENT GAP (queryContentGap object):
-    - generatedQuestions: Array of EXACTLY 10 objects {question, answered (bool), answerQuality ("Strong"/"Partial"/"Missing")}. Generate exactly 10 specific niche questions that potential customers or AI agents would ask about this business, its products, and its services. Include questions about pricing, technical specs, service areas, certifications, support, comparisons, and use cases. For each question, evaluate whether the page content answers it: "Strong" = clearly answered with specifics, "Partial" = mentioned but vague, "Missing" = not addressed at all. You MUST return exactly 10 questions.
+    - detectedCapabilities: Array of short strings naming the capabilities/services/features this site ACTUALLY offers (e.g. "daily email brief", "interactive diagnostic tool"). Derive these only from the page — do not invent.
+    - generatedQuestions: Array of 8-10 objects {question, answered (bool), answerQuality, gapCategory, sourceQuote}. TWO-PASS GENERATION:
+        Pass 1 — generate candidate questions a customer or AI agent would ask about THIS business.
+        Pass 2 — keep ONLY questions that (a) reference a capability in detectedCapabilities, OR (b) are universally useful (pricing, "is it free", founder/who-is-behind, how to contact, update frequency, compliance/regulation, how to sign up/cancel, refunds, support). DROP questions about features the site clearly does NOT offer (e.g. "is there a mobile app?", "do you cover international markets?") — asking these only produces content-bloat recommendations. Better to return 8 relevant questions than 10 with irrelevant ones. NEVER invent a question about a non-existent feature just to reach a count.
+      For each kept question set:
+        - answerQuality: "Strong" (clearly answered with specifics, in prose AND structured/FAQ format), "Partial" (mentioned but vague/incomplete), "Missing" (not addressed anywhere on the page).
+        - gapCategory: ONE OF "strong", "schema_only", "partial", "missing".
+            * "schema_only" = the answer IS present in the page prose, but NOT wrapped in FAQPage/structured schema. This is the key distinction: do NOT mark something "missing" just because it lacks FAQ schema. Example: a page that says "Free. Forever. No paywall." answers a pricing question in prose → gapCategory "schema_only", NOT "missing".
+            * "missing" = the answer is genuinely nowhere on the page.
+            * "strong" = answered in both prose and structured format.
+            * "partial" = incomplete.
+        - sourceQuote: For "schema_only" and "strong", include the EXACT text from the page that answers the question (so the user can verify). Empty string for "missing".
     - gapScore (0-100): 100 = all questions answered strongly, 0 = none answered
 
     SEMANTIC CHUNKING (semanticChunking object):
@@ -285,10 +355,16 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
               properties: {
                 question: { type: Type.STRING },
                 answered: { type: Type.BOOLEAN },
-                answerQuality: { type: Type.STRING }
+                answerQuality: { type: Type.STRING },
+                gapCategory: { type: Type.STRING },
+                sourceQuote: { type: Type.STRING }
               },
-              required: ["question", "answered", "answerQuality"]
+              required: ["question", "answered", "answerQuality", "gapCategory"]
             }
+          },
+          detectedCapabilities: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING }
           },
           gapScore: { type: Type.NUMBER }
         },
@@ -322,36 +398,61 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     Analyze the following website content and generate enhanced AEO (Answer Engine Optimization) report data.
 
     Website URL: ${url}
+    ${brandGuidance}
 
     HTML Content (truncated):
     ${truncatedHtml}
 
     Return a JSON object with ALL of the following fields:
 
-    COMPREHENSIVE SCHEMA (comprehensiveSchema string):
-    Generate a COMPLETE, ready-to-deploy JSON-LD block. Use @type Organization with the actual business name, url, and logo URL (use actual logo from the HTML if found, otherwise a placeholder path). Include hasOfferCatalog with @type OfferCatalog listing EVERY product, service, and capability detected on the page as individual Offer items. Each Offer must contain itemOffered with @type Service or @type Product, a "name" using industry-standard terminology (not marketing adjectives), and a "description" with technical specifics (protocols, specs, measurable capabilities). Include areaServed. List ALL detected offerings — aim for 5-10 items minimum. If the content mentions capabilities that aren't explicitly listed as products (e.g., "network integration", "custom development"), include those too. The output must be valid JSON only (no script tags, no markdown). This schema should be paste-ready for the site's main Services or Solutions page.
+    PROVENANCE-TAGGED SCHEMA (Change 2 — the most important discipline here):
+    You will produce TWO separate JSON-LD blocks. NEVER mix detected and inferred values in the same block.
 
-    CONTENT REWRITES (contentRewrites array):
-    Identify 3-5 sentences or phrases from the ACTUAL analyzed content that use vague marketing language ("cutting-edge", "industry-leading", "best-in-class", "dynamic", "fast-growing", etc.). For each, provide:
-    - current: The exact text from the page (Low Citation version)
-    - proposed: A rewritten version replacing adjectives with specific metrics, protocols, specs, or measurable claims (High Citation version)
-    - page: The page section or context where this text appears
+    - verifiedSchema (string): A COMPLETE, paste-ready JSON-LD block containing ONLY values that literally appear in the page content. Use @type Organization with the actual business name, url, and logo (actual logo URL if present, else a placeholder path). Include hasOfferCatalog listing ONLY user-facing services a customer can actually sign up for / buy / use. EXCLUDE internal architecture (names containing Layer/Engine/Framework/Model/Pipeline/System/Architecture/Algorithm/Module are internal modules, NOT buyable services). List AT MOST 4 offers (keep the strongest if more). Every "name" and "description" must use terminology and specifics drawn from the page — NO invented status names, enums, tiers, prices, or specs. If you cannot verify a value on the page, it does NOT belong in this block. Valid JSON only, no script tags, no markdown.
+
+    - candidateSchema (string): A SEPARATE JSON-LD block (or "" if none) containing fields you believe are plausible but could NOT verify on the page — inferred service names, inferred descriptions, inferred enums. Each inferred itemOffered should carry a "_meta": {"provenance":"inferred","warning":"Inferred, not detected on the page. Verify before publishing."}. This block is explicitly labeled "verify before pasting" in the report. If everything was detected, return "".
+
+    - schemaProvenance (array): For each significant field you put in EITHER block, an object {field, value, provenance ("detected"|"inferred"|"user_required"), sourceQuote (exact page text supporting a detected value, else ""), confidence (0.0-1.0)}. This lets the user audit the schema.
 
     META DESCRIPTION REWRITE (metaDescriptionRewrite object):
     - current: Extract the actual meta description from the page (or note if missing)
     - suggested: Rewrite it to replace marketing fluff with technical specifics, keeping under 160 characters
 
+    ${isEditorial ? `SCHEMA-DENSITY RECOMMENDATIONS (schemaDensityRecommendations array) — REQUIRED for this editorial/news site:
+    This site's voice is a moat. DO NOT propose prose rewrites. Instead, recommend 4-6 STRUCTURED DATA additions that raise AEO without touching the prose. Each item: {schemaType (e.g. "FAQPage", "NewsArticle", "Person", "ProfilePage", "BreadcrumbList"), reason (why it helps for this specific site), benefit (the concrete AEO outcome)}. Return contentRewrites as an EMPTY array — voice rewrites are forbidden for editorial brands.`
+      : `CONTENT REWRITES (contentRewrites array):
+    Identify 3-5 sentences or phrases from the ACTUAL analyzed content that use vague marketing language ("cutting-edge", "industry-leading", "best-in-class", "dynamic", "fast-growing", etc.). For each, provide:
+    - current: The exact text from the page (Low Citation version)
+    - proposed: A rewritten version replacing adjectives with specific metrics, protocols, specs, or measurable claims (High Citation version)
+    - page: The page section or context where this text appears
+    Return schemaDensityRecommendations as an empty array.`}
+
     IMPLEMENTATION CHECKLIST (implementationChecklist array):
     Provide 5-8 specific, actionable items categorized as Technical, Authority, Structural, Editorial, or Coverage. Each item has:
     - category: One of "Technical", "Authority", "Structural", "Editorial", "Coverage"
-    - action: The specific action to take (e.g., "Paste the comprehensive JSON-LD into the site header")
+    - action: The specific action to take (e.g., "Paste the VERIFIED JSON-LD into the site header")
     - priority: "High", "Medium", or "Low"
   `;
 
   const enhancedSchema = {
     type: Type.OBJECT,
     properties: {
-      comprehensiveSchema: { type: Type.STRING },
+      verifiedSchema: { type: Type.STRING },
+      candidateSchema: { type: Type.STRING },
+      schemaProvenance: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            field: { type: Type.STRING },
+            value: { type: Type.STRING },
+            provenance: { type: Type.STRING },
+            sourceQuote: { type: Type.STRING },
+            confidence: { type: Type.NUMBER }
+          },
+          required: ["field", "value", "provenance", "confidence"]
+        }
+      },
       contentRewrites: {
         type: Type.ARRAY,
         items: {
@@ -362,6 +463,18 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
             page: { type: Type.STRING }
           },
           required: ["current", "proposed", "page"]
+        }
+      },
+      schemaDensityRecommendations: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            schemaType: { type: Type.STRING },
+            reason: { type: Type.STRING },
+            benefit: { type: Type.STRING }
+          },
+          required: ["schemaType", "reason", "benefit"]
         }
       },
       metaDescriptionRewrite: {
@@ -385,7 +498,7 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
         }
       }
     },
-    required: ["comprehensiveSchema", "contentRewrites", "metaDescriptionRewrite", "implementationChecklist"]
+    required: ["verifiedSchema", "metaDescriptionRewrite", "implementationChecklist"]
   };
 
   // Run both calls in parallel for no added latency
@@ -395,7 +508,7 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
   ]);
 
   if (!coreText) throw new Error("AI failed to generate a response.");
-  const coreResult = JSON.parse(coreText);
+  const coreResult: AnalysisResult = JSON.parse(coreText);
 
   // Merge enhanced fields if available
   if (enhancedText) {
@@ -407,8 +520,104 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     }
   }
 
-  return coreResult;
+  return applyAccuracyGuards(coreResult, brand);
 }
+
+/**
+ * Deterministic post-processing that enforces the Part-3 accuracy rules in code,
+ * regardless of what the model returned. The prompts ask for the right behavior;
+ * these guards guarantee it (the LLM is not trusted to be perfectly compliant).
+ */
+export function applyAccuracyGuards(
+  result: AnalysisResult,
+  brand: ReturnType<typeof classifySiteType>
+): AnalysisResult {
+  const isEditorial = brand.type === 'editorial' || brand.type === 'news';
+
+  // Change 1: record the detected brand type for the UI/report.
+  result.siteType = brand.type;
+  result.brandTypeSignals = brand.signals;
+
+  // Change 3: strip internal-architecture offers and cap the catalog at 4 on
+  // EVERY generated JSON-LD block. Disclose what was removed.
+  const removed: { name: string; reason: string }[] = [];
+  const collectRemoved = (r: OfferFilterResult['removed']) =>
+    r.forEach((x) =>
+      removed.push({
+        name: x.name,
+        reason: x.reason === 'architecture' ? 'internal architecture, not a user-facing service' : 'over the 4-service cap',
+      })
+    );
+
+  if (result.schemaSnippet) {
+    const { schema, removed: r } = filterOfferCatalogString(result.schemaSnippet);
+    result.schemaSnippet = schema;
+    collectRemoved(r);
+  }
+  if (result.verifiedSchema) {
+    const { schema, removed: r } = filterOfferCatalogString(result.verifiedSchema);
+    result.verifiedSchema = schema;
+    collectRemoved(r);
+  }
+  // Back-compat: existing UI/DOCX read comprehensiveSchema. Point it at the
+  // verified (safe-to-paste) block so nothing downstream ships inferred values.
+  if (result.verifiedSchema) {
+    result.comprehensiveSchema = result.verifiedSchema;
+  } else if (result.comprehensiveSchema) {
+    const { schema, removed: r } = filterOfferCatalogString(result.comprehensiveSchema);
+    result.comprehensiveSchema = schema;
+    collectRemoved(r);
+  }
+  if (removed.length > 0) {
+    // De-dupe by name.
+    const seen = new Set<string>();
+    result.offerCatalogRemoved = removed.filter((x) => {
+      const k = x.name.toLowerCase();
+      if (!x.name || seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }
+
+  // Change 6: voice rewrites are forbidden for editorial/news brands. Even if the
+  // model returned them, drop them so a brand owner never sees a wrong rewrite.
+  if (isEditorial && result.contentRewrites && result.contentRewrites.length > 0) {
+    result.contentRewrites = [];
+  }
+
+  // Change 4 + 5: normalize the query gap.
+  if (result.queryContentGap) {
+    const qcg = result.queryContentGap;
+    const capabilities = qcg.detectedCapabilities || [];
+
+    // Change 5: drop questions about features the site doesn't offer (unless
+    // universally useful). Belt-and-suspenders over the prompt's two-pass scoping.
+    if (capabilities.length > 0 && Array.isArray(qcg.generatedQuestions)) {
+      const questionStrings = qcg.generatedQuestions.map((q) => q.question);
+      const keep = new Set(filterCandidateQueries(questionStrings, capabilities));
+      const filtered = qcg.generatedQuestions.filter((q) => keep.has(q.question));
+      // Never blank the section entirely if the filter is too aggressive.
+      if (filtered.length >= 3) qcg.generatedQuestions = filtered;
+    }
+
+    // Change 4: ensure every question has a gapCategory (back-fill legacy/missing).
+    for (const q of qcg.generatedQuestions || []) {
+      if (!q.gapCategory) {
+        q.gapCategory = categoryFromAnswerQuality(q.answerQuality, !!q.sourceQuote);
+      }
+      // If the model marked something "missing" but gave a source quote, it is
+      // actually present in prose → schema_only, not content-missing.
+      if (q.gapCategory === 'missing' && q.sourceQuote && q.sourceQuote.trim().length > 0) {
+        q.gapCategory = 'schema_only';
+      }
+    }
+  }
+
+  return result;
+}
+
+/** Exposed for the UI/DOCX so recommendation copy lives in one place. */
+export { recommendationFor };
 
 export async function performCompetitiveDuel(url1: string, html1: string, url2: string, html2: string): Promise<CompetitiveResult> {
   const [res1, res2] = await Promise.all([
