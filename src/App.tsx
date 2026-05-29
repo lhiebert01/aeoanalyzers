@@ -995,17 +995,20 @@ export default function App() {
                       )}
                     </div>
 
-                    {/* Usage Progress for Free Users */}
-                    {user && userProfile?.subscription_status?.toLowerCase() !== 'pro' && userProfile?.subscription_status?.toLowerCase() !== 'business' && (
+                    {/* Usage Progress for Free Users only — hidden for admins and
+                        Pro/Business (who are exempt from the limit). The count is
+                        clamped to the limit so it never shows a nonsensical value
+                        like "15 / 1" for exempt/grandfathered accounts. */}
+                    {user && !isAdmin && userProfile?.subscription_status?.toLowerCase() !== 'pro' && userProfile?.subscription_status?.toLowerCase() !== 'business' && (
                       <div className="max-w-xs mx-auto">
                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">
                           <span>Free Usage</span>
-                          <span>{userProfile?.usage_count || 0} / {FREE_LIMIT}</span>
+                          <span>{Math.min(userProfile?.usage_count || 0, FREE_LIMIT)} / {FREE_LIMIT}</span>
                         </div>
                         <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
-                          <motion.div 
+                          <motion.div
                             initial={{ width: 0 }}
-                            animate={{ width: `${((userProfile?.usage_count || 0) / FREE_LIMIT) * 100}%` }}
+                            animate={{ width: `${Math.min(((userProfile?.usage_count || 0) / FREE_LIMIT) * 100, 100)}%` }}
                             className="h-full bg-zinc-900"
                           />
                         </div>
@@ -1190,7 +1193,11 @@ export default function App() {
                       />
 
                       {/* Advanced Analysis Cards */}
-                      <AdvancedAnalysisCards result={result} />
+                      <AdvancedAnalysisCards
+                        result={result}
+                        isPaid={userProfile?.subscription_status?.toLowerCase() === 'pro' || userProfile?.subscription_status?.toLowerCase() === 'business' || isAdmin}
+                        onUpgrade={() => setView('payments')}
+                      />
 
                       {/* Detailed Criteria */}
                       <div className="bg-white border border-zinc-200 rounded-3xl overflow-hidden shadow-sm">
