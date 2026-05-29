@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   XCircle,
   Minus,
+  Lock,
+  ArrowRight,
 } from 'lucide-react';
 import type { AnalysisResult } from '../services/geminiService';
 import { recommendationFor } from '../services/geminiService';
@@ -17,6 +19,25 @@ import { categoryFromAnswerQuality, type GapCategory } from '../lib/queryGap';
 
 interface Props {
   result: AnalysisResult;
+  /** Pro/Business/admin. Free users see the diagnosis (scores) but the
+      actionable fixes inside each card are locked. */
+  isPaid?: boolean;
+  onUpgrade?: () => void;
+}
+
+// Inline lock used to gate the "cure" (specific actions, source quotes, fixes)
+// for free users while keeping the diagnostic scores visible.
+function LockedFix({ label, onUpgrade }: { label: string; onUpgrade?: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onUpgrade}
+      className="w-full flex items-center justify-center gap-2 text-xs font-bold text-zinc-500 bg-zinc-50 border border-dashed border-zinc-300 rounded-xl py-3 px-3 hover:bg-zinc-100 hover:text-zinc-700 transition-all"
+    >
+      <Lock className="w-3.5 h-3.5" /> {label}
+      <span className="text-zinc-400 font-semibold">— Unlock</span>
+    </button>
+  );
 }
 
 const GAP_LABEL: Record<GapCategory, string> = {
@@ -56,7 +77,7 @@ function AlignmentBadge({ alignment }: { alignment: string }) {
   return <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700"><Minus className="w-3 h-3" /> Vague</span>;
 }
 
-export default function AdvancedAnalysisCards({ result }: Props) {
+export default function AdvancedAnalysisCards({ result, isPaid = true, onUpgrade }: Props) {
   const hasAnyAdvanced = result.citationHookDensity || result.eatAudit || result.llmSummarizationTest ||
     result.zeroClickPredictor || result.queryContentGap || result.semanticChunking;
 
@@ -80,6 +101,29 @@ export default function AdvancedAnalysisCards({ result }: Props) {
         </p>
       )}
 
+      {/* Free-tier value gate: diagnosis (scores) is shown; the specific fixes
+          inside each card are locked for non-paying users. */}
+      {!isPaid && (
+        <div className="bg-zinc-900 text-white rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <Lock className="w-5 h-5 mt-0.5 shrink-0 text-amber-300" />
+            <div>
+              <p className="font-bold">Your diagnosis is below. The fixes are locked.</p>
+              <p className="text-sm text-zinc-300">
+                You can see every score and where your gaps are. Unlock to get the exact actions, the on-page
+                quotes to wrap in schema, the snippet rewrites, and the paste-ready JSON-LD.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onUpgrade}
+            className="shrink-0 bg-white text-zinc-900 px-5 py-2.5 rounded-xl font-bold hover:bg-zinc-100 transition-all flex items-center justify-center gap-2"
+          >
+            Unlock fixes <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Change 6: schema-density recommendations replace voice rewrites for editorial sites */}
       {result.schemaDensityRecommendations && result.schemaDensityRecommendations.length > 0 && (
         <CardWrapper icon={<Layers className="w-5 h-5 text-zinc-900" />} title="Schema-Density Opportunities">
@@ -91,12 +135,15 @@ export default function AdvancedAnalysisCards({ result }: Props) {
               <div key={i} className="bg-zinc-50 border border-zinc-100 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[10px] font-bold text-zinc-900 bg-zinc-200 px-2 py-0.5 rounded">{rec.schemaType}</span>
-                  <span className="text-xs text-emerald-600 font-medium">{rec.benefit}</span>
+                  {isPaid && <span className="text-xs text-emerald-600 font-medium">{rec.benefit}</span>}
                 </div>
-                <p className="text-sm text-zinc-600">{rec.reason}</p>
+                {isPaid
+                  ? <p className="text-sm text-zinc-600">{rec.reason}</p>
+                  : <p className="text-sm text-zinc-400 italic">Why this helps and the exact benefit are in the full report.</p>}
               </div>
             ))}
           </div>
+          {!isPaid && <div className="mt-3"><LockedFix label="See why each schema helps + how to add it" onUpgrade={onUpgrade} /></div>}
         </CardWrapper>
       )}
 
@@ -130,11 +177,14 @@ export default function AdvancedAnalysisCards({ result }: Props) {
             </div>
             <div className="space-y-3">
               <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Top Citable Sentences</p>
-              {result.citationHookDensity.exampleHooks.map((hook, i) => (
+              {(isPaid ? result.citationHookDensity.exampleHooks : result.citationHookDensity.exampleHooks.slice(0, 1)).map((hook, i) => (
                 <div key={i} className="bg-zinc-50 border border-zinc-100 rounded-xl p-3 text-sm text-zinc-600 italic">
                   "{hook}"
                 </div>
               ))}
+              {!isPaid && result.citationHookDensity.exampleHooks.length > 1 && (
+                <LockedFix label={`See all ${result.citationHookDensity.exampleHooks.length} citable sentences`} onUpgrade={onUpgrade} />
+              )}
             </div>
           </CardWrapper>
         )}
@@ -211,6 +261,7 @@ export default function AdvancedAnalysisCards({ result }: Props) {
               <ScoreBadge score={result.zeroClickPredictor.featuredSnippetReadiness} label="snippet ready" />
             </div>
             {result.zeroClickPredictor.snippetOpportunities.length > 0 ? (
+              isPaid ? (
               <div className="space-y-3">
                 <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Snippet Opportunities</p>
                 {result.zeroClickPredictor.snippetOpportunities.map((opp, i) => (
@@ -223,6 +274,14 @@ export default function AdvancedAnalysisCards({ result }: Props) {
                   </div>
                 ))}
               </div>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-sm text-zinc-500">
+                    {result.zeroClickPredictor.snippetOpportunities.length} text block{result.zeroClickPredictor.snippetOpportunities.length === 1 ? '' : 's'} could be reformatted to win featured snippets.
+                  </p>
+                  <LockedFix label="See which blocks & the exact format to use" onUpgrade={onUpgrade} />
+                </div>
+              )
             ) : (
               <p className="text-sm text-zinc-400">No snippet opportunities identified — content is well-formatted.</p>
             )}
@@ -270,12 +329,12 @@ export default function AdvancedAnalysisCards({ result }: Props) {
                             {GAP_LABEL[cat]}
                           </span>
                         </div>
-                        {cat === 'schema_only' && q.sourceQuote && (
+                        {isPaid && cat === 'schema_only' && q.sourceQuote && (
                           <p className="text-xs text-blue-800/70 mt-1.5 italic border-l-2 border-blue-200 pl-2">
                             Found on page: "{q.sourceQuote}"
                           </p>
                         )}
-                        {action && (
+                        {isPaid && action && (
                           <p className={`text-xs mt-1.5 leading-relaxed ${actionColor}`}>
                             <strong>Action:</strong> {action}
                           </p>
@@ -285,6 +344,9 @@ export default function AdvancedAnalysisCards({ result }: Props) {
                   </div>
                 );
               })}
+              {!isPaid && (
+                <LockedFix label="See the exact fix for each gap (and on-page quotes to reuse)" onUpgrade={onUpgrade} />
+              )}
             </div>
           </CardWrapper>
         )}
@@ -296,6 +358,7 @@ export default function AdvancedAnalysisCards({ result }: Props) {
               <ScoreBadge score={result.semanticChunking.chunkingScore} label="chunked" />
             </div>
             {result.semanticChunking.longBlocks.length > 0 ? (
+              isPaid ? (
               <div className="space-y-3">
                 <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Long Blocks Without Headings</p>
                 {result.semanticChunking.longBlocks.map((block, i) => (
@@ -310,6 +373,14 @@ export default function AdvancedAnalysisCards({ result }: Props) {
                   </div>
                 ))}
               </div>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-sm text-zinc-500">
+                    {result.semanticChunking.longBlocks.length} long block{result.semanticChunking.longBlocks.length === 1 ? '' : 's'} need clearer headings so AI can parse them.
+                  </p>
+                  <LockedFix label="See the blocks & suggested headings" onUpgrade={onUpgrade} />
+                </div>
+              )
             ) : (
               <p className="text-sm text-zinc-400">Content is well-chunked with appropriate headings.</p>
             )}
