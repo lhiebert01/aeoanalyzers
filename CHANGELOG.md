@@ -1,5 +1,45 @@
 # Changelog
 
+## Hotfixes — DOCX download + resilient AI parsing (2026-05-29)
+
+Two production issues surfaced after the accuracy release.
+
+### Fixed: Word report download failed silently
+
+- **Cause:** stale-chunk-after-deploy. `vercel.json`'s catch-all rewrite
+  (`/(.*) → /index.html`) also caught missing `/assets/*.js`, so a browser
+  running a previous build that lazy-loaded a now-deleted chunk (the code-split
+  DOCX generator) received `index.html` (text/html) instead of a 404 — a MIME
+  error that aborted the dynamic import. The DOCX code itself was fine (verified
+  end-to-end in Node).
+- **Fixes:**
+  - `vercel.json` rewrite now excludes `/assets/` (`/((?!assets/).*)`), so
+    missing chunks 404 cleanly instead of returning HTML.
+  - `main.tsx` listens for Vite's `vite:preloadError` and reloads once
+    (time-guarded against loops) so a stale tab auto-recovers after any deploy.
+  - The download handler detects a chunk-load failure, reloads once, and
+    otherwise shows a clear message instead of failing silently.
+
+### Fixed: "Expected double-quoted property name in JSON" on analysis
+
+- **Cause:** the model fallback chain started with `gemini-3-flash-preview` (now
+  **deprecated** → 503) and `gemini-3.1-flash-lite-preview` (**wrong ID** — the
+  stable model has no `-preview` suffix → 503), so every run fell through to
+  `gemini-2.5-flash`, whose response occasionally contained a trailing comma or
+  wrapping prose/markdown that crashed `JSON.parse`.
+- **Fixes:**
+  - Updated the model chain to current stable IDs (verified against
+    ai.google.dev/gemini-api/docs/models, 2026-05-29):
+    `gemini-3.5-flash` → `gemini-3.1-flash-lite` → `gemini-2.5-flash` →
+    `gemini-2.5-flash-lite`.
+  - Added `safeJsonParse` (strips fences, extracts the outermost JSON value,
+    removes trailing commas) at every model-output parse site.
+  - Raised `maxOutputTokens` 8192 → 32768 (3.5 Flash supports 65k; default
+    "medium" thinking also draws from this budget) so large reports aren't
+    truncated mid-JSON.
+
+---
+
 ## Scoring Isolation — Option C (2026-05-29)
 
 Follow-up to the accuracy pass. The brand/recommendation guidance was sitting in
