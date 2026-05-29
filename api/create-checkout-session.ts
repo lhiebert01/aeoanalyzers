@@ -21,8 +21,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const stripe = new Stripe(stripeKey);
 
   try {
-    const priceId =
-      planId === 'business'
+    // 'report' is the one-time Day Pass (24h access); everything else is a subscription.
+    const isDayPass = planId === 'report';
+
+    const priceId = isDayPass
+      ? process.env.VITE_STRIPE_PRICE_ID_REPORT
+      : planId === 'business'
         ? process.env.VITE_STRIPE_PRICE_ID_BUSINESS
         : process.env.VITE_STRIPE_PRICE_ID_PRO;
 
@@ -35,13 +39,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
-      mode: 'subscription',
+      mode: isDayPass ? 'payment' : 'subscription',
       success_url: `${appUrl}/?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/payments`,
       customer_email: email,
-      subscription_data: {
-        metadata: { userId, planId },
-      },
+      // subscription_data is only valid in subscription mode; use payment_intent_data for one-time.
+      ...(isDayPass
+        ? { payment_intent_data: { metadata: { userId, planId } } }
+        : { subscription_data: { metadata: { userId, planId } } }),
       metadata: { userId, planId },
     });
 

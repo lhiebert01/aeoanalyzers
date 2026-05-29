@@ -119,6 +119,43 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
         )}
       </div>
 
+      {/* One-time Day Pass — perfect for users with a single site who won't
+          subscribe. Only shown once the one-time price is configured in env. */}
+      {import.meta.env.VITE_STRIPE_PRICE_ID_REPORT && (
+        <div className="max-w-4xl mx-auto mb-8">
+          <div className="relative bg-zinc-900 text-white rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
+            <div className="flex items-start gap-5">
+              <div className="bg-white/10 p-4 rounded-2xl shrink-0">
+                <Zap className="w-8 h-8 text-amber-300" />
+              </div>
+              <div>
+                <div className="flex items-center gap-3 mb-1">
+                  <h3 className="text-xl font-bold">Day Pass</h3>
+                  <span className="text-[10px] font-bold bg-amber-300 text-zinc-900 px-2 py-0.5 rounded-full uppercase tracking-widest">One-time</span>
+                </div>
+                <p className="text-zinc-300 text-sm max-w-md leading-relaxed">
+                  Just need to fix one site? Unlock <strong className="text-white">every fix and download for 24 hours</strong> — the
+                  full implementation roadmap, paste-ready JSON-LD, content rewrites, and the Word report. No subscription.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-2 shrink-0">
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-bold">$24</span>
+                <span className="text-zinc-400 text-sm">/ 24h</span>
+              </div>
+              <button
+                onClick={() => handleSubscribe('report')}
+                disabled={loading !== null}
+                className="bg-white text-zinc-900 px-8 py-3 rounded-xl font-bold hover:bg-zinc-100 transition-all flex items-center justify-center gap-2 whitespace-nowrap"
+              >
+                {loading === 'report' ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Get Day Pass <ArrowRight className="w-4 h-4" /></>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {PLANS.map((plan) => (
           <motion.div 

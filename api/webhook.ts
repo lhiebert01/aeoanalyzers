@@ -54,7 +54,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const userId = session.metadata?.userId;
       const planId = session.metadata?.planId;
 
-      if (userId) {
+      if (userId && planId === 'report') {
+        // One-time Day Pass: grant 24h of full access. Does NOT touch
+        // subscription_status (so a free user stays "free" after the pass expires).
+        if (session.payment_status === 'paid' || session.status === 'complete') {
+          const passUntil = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+          await supabaseAdmin
+            .from('users')
+            .update({
+              report_pass_until: passUntil,
+              stripe_customer_id: session.customer,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', userId);
+          console.log(`Granted 24h Day Pass to user ${userId} until ${passUntil}`);
+        }
+      } else if (userId) {
         const status =
           session.status === 'complete' || session.status === 'active'
             ? planId === 'business'
