@@ -104,8 +104,17 @@ export default function App() {
 
   const FREE_LIMIT = 1; // Changed from 3 to 1 as per user request to protect value
 
-  const isAdmin = user?.email?.toLowerCase() === 'lindsay.hiebert@gmail.com' || 
+  const isAdmin = user?.email?.toLowerCase() === 'lindsay.hiebert@gmail.com' ||
                   user?.email?.toLowerCase() === 'liindsay.hiebert@gmail.com';
+
+  // Stage 2: a one-time Day Pass grants 24h of full access without changing
+  // subscription_status. hasActivePass is true while the pass is unexpired.
+  const hasActivePass = !!userProfile?.report_pass_until &&
+    new Date(userProfile.report_pass_until).getTime() > Date.now();
+  // Single source of truth for "can see the paid cure".
+  const isPaidUser = userProfile?.subscription_status?.toLowerCase() === 'pro' ||
+                     userProfile?.subscription_status?.toLowerCase() === 'business' ||
+                     isAdmin || hasActivePass;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -353,10 +362,8 @@ export default function App() {
     e.preventDefault();
     if (!url) return;
 
-    // Check Free Tier Limit
-    const isPro = userProfile?.subscription_status?.toLowerCase() === 'pro' ||
-                 userProfile?.subscription_status?.toLowerCase() === 'business' ||
-                 isAdmin;
+    // Check Free Tier Limit (Day Pass also grants full access during its 24h window)
+    const isPro = isPaidUser;
 
     // Check both local storage and database usage count for logged in users
     const effectiveUsageCount = user ? (userProfile?.usage_count || 0) : freeUses;
@@ -999,7 +1006,7 @@ export default function App() {
                         Pro/Business (who are exempt from the limit). The count is
                         clamped to the limit so it never shows a nonsensical value
                         like "15 / 1" for exempt/grandfathered accounts. */}
-                    {user && !isAdmin && userProfile?.subscription_status?.toLowerCase() !== 'pro' && userProfile?.subscription_status?.toLowerCase() !== 'business' && (
+                    {user && !isPaidUser && (
                       <div className="max-w-xs mx-auto">
                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">
                           <span>Free Usage</span>
@@ -1183,7 +1190,7 @@ export default function App() {
 
                       {/* Implementation Roadmap (Premium Feature) */}
                       <ImplementationRoadmap
-                        isPaid={userProfile?.subscription_status?.toLowerCase() === 'pro' || userProfile?.subscription_status?.toLowerCase() === 'business' || isAdmin}
+                        isPaid={isPaidUser}
                         onUpgrade={() => setView('payments')}
                         analyzedUrl={url}
                         analysisResult={result}
