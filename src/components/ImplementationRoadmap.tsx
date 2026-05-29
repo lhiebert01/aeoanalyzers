@@ -20,6 +20,18 @@ import {
   Loader2
 } from 'lucide-react';
 import type { AnalysisResult } from '../services/geminiService';
+import { categoryFromAnswerQuality, type GapCategory } from '../lib/queryGap';
+
+function gapStatusLabel(cat: GapCategory): string {
+  return cat === 'schema_only' ? 'Schema only' : cat.charAt(0).toUpperCase() + cat.slice(1);
+}
+
+function gapAction(cat: GapCategory): string {
+  if (cat === 'strong') return 'No action needed';
+  if (cat === 'schema_only') return 'Wrap the existing on-page answer in FAQPage schema — do NOT write new content';
+  if (cat === 'partial') return 'Expand with additional details and metrics';
+  return 'Create dedicated content with specific facts';
+}
 
 interface ImplementationRoadmapProps {
   isPaid: boolean;
@@ -210,15 +222,31 @@ The goal is to make each page useful not only for visitors, but also for AI syst
 
 ---
 
-${analysisResult.comprehensiveSchema ? `## Comprehensive ready-to-deploy schema
+${(analysisResult.verifiedSchema || analysisResult.comprehensiveSchema) ? `## Verified schema — safe to paste
 
-The following JSON-LD covers ALL products, services, and capabilities detected on your site. This replaces the basic snippet above with a complete OfferCatalog that tells AI agents everything your business offers.
+The following JSON-LD contains ONLY values detected on your page, and only user-facing services (internal modules excluded). It is ready to deploy as-is — paste it into your site's <head> section.
 
 \`\`\`
-${analysisResult.comprehensiveSchema}
+${analysisResult.verifiedSchema || analysisResult.comprehensiveSchema}
 \`\`\`
 
-Paste this into your site's <head> section. It is ready to deploy as-is.
+---
+
+` : ''}${analysisResult.candidateSchema && analysisResult.candidateSchema.trim() ? `## Candidate schema — VERIFY BEFORE PASTING
+
+These fields were inferred, not detected on your page. Confirm every value is accurate before publishing — pasting unverified values can teach AI engines wrong facts about your business.
+
+\`\`\`
+${analysisResult.candidateSchema}
+\`\`\`
+
+---
+
+` : ''}${analysisResult.schemaDensityRecommendations && analysisResult.schemaDensityRecommendations.length > 0 ? `## Schema-density opportunities
+
+Your brand voice is an asset — keep it. Raise your AEO score by adding structured data instead of rewriting prose:
+
+${analysisResult.schemaDensityRecommendations.map(rec => `* **${rec.schemaType}** — ${rec.reason} (${rec.benefit})`).join('\n')}
 
 ---
 
@@ -234,13 +262,14 @@ ${analysisResult.contentRewrites.map(rw => `**${rw.page}**
 
 ` : ''}${analysisResult.queryContentGap && analysisResult.queryContentGap.generatedQuestions.length > 0 ? `## Knowledge gap FAQ
 
-These are the questions AI agents are most likely to ask about your business. Items marked "Missing" need dedicated content created.
+These are the questions AI agents are most likely to ask about your business. "Schema only" means the answer is already on your page and just needs FAQPage schema — do NOT write new content for those.
 
 | Question | Status | Action |
 |----------|--------|--------|
 ${analysisResult.queryContentGap.generatedQuestions.map(q => {
-    const action = q.answerQuality === 'Missing' ? 'Create dedicated content with specific facts' : q.answerQuality === 'Partial' ? 'Expand with additional details and metrics' : 'No action needed';
-    return `| ${q.question} | ${q.answerQuality} | ${action} |`;
+    const cat = q.gapCategory || categoryFromAnswerQuality(q.answerQuality, !!q.sourceQuote);
+    const action = gapAction(cat);
+    return `| ${q.question} | ${gapStatusLabel(cat)} | ${action} |`;
   }).join('\n')}
 
 ---
@@ -387,26 +416,53 @@ ${cleanDisplayName}`;
               <div className="space-y-6">
                 <h3 className="text-xl font-bold flex items-center gap-2">
                   <Code className="w-5 h-5 text-zinc-400" />
-                  Complete Schema (All Products & Services)
+                  Verified Schema <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Safe to paste</span>
                 </h3>
                 <p className="text-xs text-zinc-500 mb-4">
-                  This JSON-LD lists every product, service, and capability detected on your site. Paste it into your site's &lt;head&gt; section on your main Services or Solutions page.
+                  This JSON-LD contains only values detected on your page and only user-facing services (internal modules excluded). Paste it into your site's &lt;head&gt; section.
                 </p>
                 <div className="relative group">
                   <pre className="bg-zinc-900 text-zinc-300 p-6 rounded-2xl text-xs overflow-x-auto font-mono leading-relaxed max-h-[400px]">
                     {(() => {
-                      const schema = analysisResult.comprehensiveSchema || analysisResult.schemaSnippet || '';
+                      const schema = analysisResult.verifiedSchema || analysisResult.comprehensiveSchema || analysisResult.schemaSnippet || '';
                       if (!schema) return 'No snippet generated.';
                       try { return JSON.stringify(JSON.parse(schema), null, 2); } catch { return schema; }
                     })()}
                   </pre>
                   <button
-                    onClick={() => handleCopy(analysisResult.comprehensiveSchema || analysisResult.schemaSnippet || '', 'snippet')}
+                    onClick={() => handleCopy(analysisResult.verifiedSchema || analysisResult.comprehensiveSchema || analysisResult.schemaSnippet || '', 'snippet')}
                     className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all opacity-0 group-hover:opacity-100"
                   >
                     {copied === 'snippet' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
+
+                {/* Change 2: inferred fields are quarantined into a separate, clearly-labeled block. */}
+                {analysisResult.candidateSchema && analysisResult.candidateSchema.trim() && (
+                  <div>
+                    <h4 className="text-base font-bold flex items-center gap-2 text-amber-700">
+                      <Code className="w-4 h-4" />
+                      Candidate Schema <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Verify before pasting</span>
+                    </h4>
+                    <p className="text-xs text-zinc-500 my-2">
+                      These fields were <strong>inferred</strong>, not detected on your page. Confirm each value is accurate before publishing — do not paste blind.
+                    </p>
+                    <div className="relative group">
+                      <pre className="bg-amber-950/90 text-amber-100 p-6 rounded-2xl text-xs overflow-x-auto font-mono leading-relaxed max-h-[300px]">
+                        {(() => {
+                          const schema = analysisResult.candidateSchema || '';
+                          try { return JSON.stringify(JSON.parse(schema), null, 2); } catch { return schema; }
+                        })()}
+                      </pre>
+                      <button
+                        onClick={() => handleCopy(analysisResult.candidateSchema || '', 'candidate')}
+                        className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                      >
+                        {copied === 'candidate' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

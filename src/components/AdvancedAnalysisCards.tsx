@@ -12,10 +12,19 @@ import {
   Minus,
 } from 'lucide-react';
 import type { AnalysisResult } from '../services/geminiService';
+import { recommendationFor } from '../services/geminiService';
+import { categoryFromAnswerQuality, type GapCategory } from '../lib/queryGap';
 
 interface Props {
   result: AnalysisResult;
 }
+
+const GAP_LABEL: Record<GapCategory, string> = {
+  strong: 'Strong',
+  schema_only: 'Schema only',
+  partial: 'Partial',
+  missing: 'Missing',
+};
 
 function ScoreBadge({ score, label }: { score: number; label?: string }) {
   const color =
@@ -58,7 +67,56 @@ export default function AdvancedAnalysisCards({ result }: Props) {
       <h2 className="text-2xl font-bold tracking-tight flex items-center gap-3">
         <Brain className="w-6 h-6 text-zinc-900" />
         Advanced Analysis
+        {result.siteType && (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-zinc-100 text-zinc-600 capitalize">
+            {result.siteType.replace('_', ' ')} site
+          </span>
+        )}
       </h2>
+      {(result.siteType === 'editorial' || result.siteType === 'news') && (
+        <p className="text-sm text-zinc-500 -mt-2">
+          Detected as an editorial brand — your voice is treated as an asset. Recommendations focus on
+          structured-data enrichment, not prose rewrites.
+        </p>
+      )}
+
+      {/* Change 6: schema-density recommendations replace voice rewrites for editorial sites */}
+      {result.schemaDensityRecommendations && result.schemaDensityRecommendations.length > 0 && (
+        <CardWrapper icon={<Layers className="w-5 h-5 text-zinc-900" />} title="Schema-Density Opportunities">
+          <p className="text-xs text-zinc-500 mb-4">
+            Raise your AEO score by adding structured data — no changes to your prose. This is the right path for editorial brands.
+          </p>
+          <div className="space-y-3">
+            {result.schemaDensityRecommendations.map((rec, i) => (
+              <div key={i} className="bg-zinc-50 border border-zinc-100 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-bold text-zinc-900 bg-zinc-200 px-2 py-0.5 rounded">{rec.schemaType}</span>
+                  <span className="text-xs text-emerald-600 font-medium">{rec.benefit}</span>
+                </div>
+                <p className="text-sm text-zinc-600">{rec.reason}</p>
+              </div>
+            ))}
+          </div>
+        </CardWrapper>
+      )}
+
+      {/* Change 3: disclose offers stripped from the catalog */}
+      {result.offerCatalogRemoved && result.offerCatalogRemoved.length > 0 && (
+        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 text-sm text-amber-800">
+          <p className="font-semibold mb-1 flex items-center gap-1.5">
+            <AlertTriangle className="w-4 h-4" /> Trimmed the OfferCatalog
+          </p>
+          <p className="text-xs text-amber-700 mb-2">
+            We list only services a customer can actually use. These were removed because they looked like internal
+            architecture or exceeded the 4-service cap:
+          </p>
+          <ul className="text-xs space-y-0.5">
+            {result.offerCatalogRemoved.map((o, i) => (
+              <li key={i}>• <strong>{o.name}</strong> — {o.reason}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Citation Hook Density */}
@@ -181,37 +239,52 @@ export default function AdvancedAnalysisCards({ result }: Props) {
               Questions AI agents are most likely to ask about your business. Items marked Missing or Partial need attention.
             </p>
             <div className="space-y-3">
-              {result.queryContentGap.generatedQuestions.map((q, i) => (
-                <div key={i} className={`rounded-xl p-3 ${q.answerQuality === 'Missing' ? 'bg-red-50 border border-red-100' : q.answerQuality === 'Partial' ? 'bg-amber-50 border border-amber-100' : 'bg-emerald-50 border border-emerald-100'}`}>
-                  <div className="flex items-start gap-3">
-                    {q.answerQuality === 'Strong' ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                    ) : q.answerQuality === 'Partial' ? (
-                      <Minus className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-                    )}
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-zinc-700">{q.question}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className={`text-[10px] font-bold uppercase tracking-widest ${q.answerQuality === 'Strong' ? 'text-emerald-600' : q.answerQuality === 'Partial' ? 'text-amber-600' : 'text-red-500'}`}>
-                          {q.answerQuality}
-                        </span>
+              {result.queryContentGap.generatedQuestions.map((q, i) => {
+                // Change 4: prefer the explicit gapCategory; back-fill for legacy records.
+                const cat: GapCategory = q.gapCategory || categoryFromAnswerQuality(q.answerQuality, !!q.sourceQuote);
+                const style =
+                  cat === 'strong' ? { box: 'bg-emerald-50 border-emerald-100', accent: 'text-emerald-600' } :
+                  cat === 'schema_only' ? { box: 'bg-blue-50 border-blue-100', accent: 'text-blue-600' } :
+                  cat === 'partial' ? { box: 'bg-amber-50 border-amber-100', accent: 'text-amber-600' } :
+                  { box: 'bg-red-50 border-red-100', accent: 'text-red-500' };
+                const action = recommendationFor(cat, q.sourceQuote);
+                const actionColor =
+                  cat === 'schema_only' ? 'text-blue-700' :
+                  cat === 'partial' ? 'text-amber-700' : 'text-red-600';
+                return (
+                  <div key={i} className={`rounded-xl p-3 border ${style.box}`}>
+                    <div className="flex items-start gap-3">
+                      {cat === 'strong' ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                      ) : cat === 'schema_only' ? (
+                        <Layers className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                      ) : cat === 'partial' ? (
+                        <Minus className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
+                      ) : (
+                        <XCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+                      )}
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-zinc-700">{q.question}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`text-[10px] font-bold uppercase tracking-widest ${style.accent}`}>
+                            {GAP_LABEL[cat]}
+                          </span>
+                        </div>
+                        {cat === 'schema_only' && q.sourceQuote && (
+                          <p className="text-xs text-blue-800/70 mt-1.5 italic border-l-2 border-blue-200 pl-2">
+                            Found on page: "{q.sourceQuote}"
+                          </p>
+                        )}
+                        {action && (
+                          <p className={`text-xs mt-1.5 leading-relaxed ${actionColor}`}>
+                            <strong>Action:</strong> {action}
+                          </p>
+                        )}
                       </div>
-                      {q.answerQuality === 'Missing' && (
-                        <p className="text-xs text-red-600 mt-1.5 leading-relaxed">
-                          <strong>Action:</strong> Create dedicated content answering this question with specific facts, data, and technical details. Add it as an FAQ entry or a standalone section on a relevant page.
-                        </p>
-                      )}
-                      {q.answerQuality === 'Partial' && (
-                        <p className="text-xs text-amber-700 mt-1.5 leading-relaxed">
-                          <strong>Action:</strong> Expand existing content with additional metrics, specifications, and concrete examples. Replace vague language with measurable claims.
-                        </p>
-                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardWrapper>
         )}
