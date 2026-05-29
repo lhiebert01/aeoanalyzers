@@ -1,5 +1,43 @@
 # Release Notes
 
+## v1.4.0 — May 29, 2026
+
+### Trustworthy AEO: Brand-Aware Analysis, Provenance-Safe Schema & Accurate Scoring
+
+v1.3 made reports actionable. v1.4 makes them **trustworthy** — the kind of report you can hand straight to your web team without re-checking it. Driven by a real audit that exposed five accuracy failures, this release rebuilds the recommendation pipeline so a sophisticated brand owner won't catch it making basic errors. The architecture pairs each prompt-level instruction with a deterministic guard (`applyAccuracyGuards`) that enforces the rule in code regardless of model output, backed by a `vitest` regression suite.
+
+#### Brand-type classifier (`siteType`)
+- New `src/lib/brandType.ts` classifies a site as editorial / news / SaaS / ecommerce / service before any recommendation runs, and selects the right voice rules.
+- **Editorial/news voice protection:** suppresses "adjective-to-metric" rewrites entirely (frontier LLMs prefer natural editorial prose for citation) and replaces them with **Schema-Density Opportunities**.
+
+#### Provenance-tagged schema (`verifiedSchema` / `candidateSchema` / `schemaProvenance`)
+- JSON-LD is split into **Verified — safe to paste** (detected values only, with source quotes) and **Candidate — verify before pasting** (inferred values, flagged with a warning). Inferred values can never reach the paste-into-`<head>` target.
+
+#### Honest OfferCatalog (`offerCatalogRemoved`)
+- New `src/lib/offerCatalog.ts` strips internal architecture terms (Layer/Engine/Framework/Model/Pipeline/System/…) and caps the catalog at the 4 strongest user-facing services; removed items are disclosed.
+
+#### "Schema only" gap category (`gapCategory`)
+- New `src/lib/queryGap.ts` adds a fourth category distinguishing genuinely missing content from content present in prose but not in FAQ schema. The latter recommends *wrapping existing content* (with the on-page source quote), not writing duplicates.
+
+#### Capability-scoped questions
+- Two-pass query generation keeps only questions matching detected capabilities or universally-useful topics (pricing, founder, contact, compliance); drops advice about features the site doesn't offer.
+
+#### Scoring isolation & calibration
+- The numeric score is isolated from recommendation framing so it stays comparable run-over-run; editorial prose is no longer penalized on density for low statistic counts.
+
+#### Reliability hardening
+- **Model chain corrected to current stable IDs:** `gemini-3.5-flash` → `gemini-3.1-flash-lite` → `gemini-2.5-flash` → `gemini-2.5-flash-lite` (the old preview IDs were deprecated/incorrect and 503'd).
+- **`safeJsonParse`** salvages trailing-comma/fenced/prose-wrapped model output at every parse site; `maxOutputTokens` raised 8192 → 32768.
+- **DOCX download fix:** stale-chunk-after-deploy resolved — `vercel.json` no longer rewrites `/assets/*` to `index.html`; a `vite:preloadError` listener auto-reloads stale tabs; the download handler recovers gracefully.
+
+#### UI / report surfaces updated
+- Advanced Analysis cards (brand-type badge, schema-density card, OfferCatalog disclosure, new gap copy with source quotes), web-team handoff template, and DOCX appendices all reflect the verified/candidate split and new gap categories.
+
+#### Self-audit
+- Live re-audit of getmacrolens.com on `gemini-3.5-flash`: **91/100** with all five accuracy failures resolved.
+
+---
+
 ## v1.3.0 — March 30, 2026
 
 ### Enhanced Actionable Reports & Comprehensive JSON-LD (Phase 4)
