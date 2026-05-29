@@ -30,6 +30,16 @@ AEO Analyzers is a professional-grade AI Simulation Engine that helps brands, bu
 - **Implementation Checklist:** 5-8 prioritized actions categorized as Technical, Authority, Structural, Editorial, or Coverage with High/Medium/Low priority tags
 - **5 DOCX Appendix Sections:** Comprehensive Schema, Content Rewrites table, Meta Description Rewrite, Knowledge Gap Action Table, and Implementation Checklist — all in the downloadable report
 
+### Trust & Accuracy (v1.4)
+- **Brand-Type Detection:** Classifies the site (editorial / news / SaaS / ecommerce / service) and applies the right playbook before generating any recommendation
+- **Voice Protection for Editorial Brands:** Never proposes corporate "adjective-to-metric" rewrites for editorial/news sites — their voice is treated as a moat; they get schema-density recommendations instead
+- **Provenance-Tagged Schema:** Splits JSON-LD into a **Verified — safe to paste** block (detected values only, with source quotes) and a **Candidate — verify before pasting** block (inferred values, flagged) so you never paste an invented fact into your `<head>`
+- **Honest OfferCatalog:** Lists only user-facing services; filters out internal architecture terms (Layer/Engine/Framework/…) and caps at the strongest 4
+- **"Schema Only" Gap Category:** Distinguishes content that's genuinely missing from content that exists in prose but lacks FAQ schema — recommends *wrapping* existing content instead of writing duplicates (shows the on-page source quote)
+- **Capability-Scoped Questions:** Drops questions about features the site doesn't offer; keeps capability-matched + universally-useful ones
+- **Calibrated, Isolated Scoring:** The numeric score reflects objective AEO merit and stays comparable run-over-run; editorial prose is no longer penalized for low statistic counts
+- **Regression-Tested:** A `vitest` suite (`npm test`) pins the accuracy rules; resilient `safeJsonParse` + raised token ceiling harden model-response handling
+
 ### Reports & Handoff
 - **DOCX Report Download:** Professional Word document with full analysis, score breakdown, advanced insights, implementation instructions, appendix sections, and rollout plan — signed by the user (Pro feature)
 - **Implementation Roadmap:** Actionable optimization steps with platform-specific guides for WordPress, Shopify, HubSpot, Wix, and custom code (Pro feature)
@@ -53,7 +63,7 @@ AEO Analyzers is a professional-grade AI Simulation Engine that helps brands, bu
 | **Icons** | Lucide React | Icon library |
 | **Build** | Vite 6 | Dev server & bundler |
 | **Auth & Database** | Supabase (PostgreSQL + Auth + RLS) | User accounts, profiles, analysis history |
-| **AI Analysis** | Google Gemini API (gemini-3-flash-preview) | Website AEO scoring, advanced analysis & recommendations |
+| **AI Analysis** | Google Gemini API (gemini-3.5-flash → 3.1-flash-lite → 2.5-flash → 2.5-flash-lite fallback chain) | Website AEO scoring, advanced analysis & recommendations |
 | **Reports** | docx (in-browser generation) | Professional DOCX report download with code-splitting |
 | **Payments** | Stripe | Subscription billing |
 | **Analytics** | Google Analytics 4 (GA4) | User tracking & conversion metrics |
@@ -162,6 +172,9 @@ The app is deployed on **Vercel** with automatic builds on push:
 ## Documentation
 
 - [Release Notes](./RELEASE-NOTES.md) -- Full changelog for all versions
+- [v1.4 Launch: Trustworthy AEO](./docs/blog-v1.4-trustworthy-aeo-launch.md) -- Brand-aware analysis, provenance-safe schema, accurate scoring (launch announcement)
+- [v1.4 Launch Plan & Messaging](./docs/launch-plan-v1.4.md) -- Positioning, audience hooks, ready-to-use copy, channel sequence
+- [v1.4 Image Prompts](./docs/image-prompts-v1.4.md) -- Hero & in-article image generation prompts + asset-folder guide
 - [v1.3 Release: Enhanced Reports](./docs/blog-v1.3-enhanced-reports.md) -- Enhanced Actionable Reports & Comprehensive JSON-LD announcement
 - [v1.2 Re-Launch Announcement](./docs/blog-v1.2-relaunch-announcement.md) -- Feature announcement, executive summary, and social media posts
 - [Admin Guide](./docs/admin-guide.md) -- Deployment, management, and operations
