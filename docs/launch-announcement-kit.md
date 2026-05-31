@@ -132,6 +132,56 @@ The founder line below is literally true and is your strongest honest proof.
 
 ---
 
+# Article visuals — coherent, stat-driven (hero + embedded)
+
+A matched set for the re-launch article (`blog-relaunch-2026.md`): one hero + five
+embedded images that carry a benefit/stat and build toward the CTA. People act on
+visuals + "what's in it for me," so each image pairs a concept with ONE honest
+stat chip and (on hero/CTA) an action line.
+
+**⚠️ Honesty guardrail (read first):** we have **no customer-outcome stats yet** —
+do NOT put invented numbers like "+47% traffic" on any image. Use only:
+(a) **true product facts** — "90 seconds", "0–100 AEO score", "3 AI engines:
+Gemini · ChatGPT · Perplexity", "Citation Probability", "Free audit", "$24 Day
+Pass · no subscription", "hundreds of hours → 90 seconds"; or
+(b) **cited market facts** (only if you have a real source to footnote, e.g. the
+rise of AI search/AI Overviews). When in doubt, frame as the shift ("1 AI answer
+replaces 10 blue links"), not a performance claim.
+
+**Shared visual system (use on ALL six for coherence):**
+- Palette: deep ink-navy `#1a1a2e` / near-black bg; ONE accent — emerald `#16a34a`
+  (positive) or amber `#f59e0b` (energy/CTA); crisp white type; generous negative space.
+- Recurring motif: a single glowing **"answer card"** + a small rounded **"stat chip"**
+  (emerald) in a consistent corner. Same font, same chip style, same margins on every image.
+- Style: premium editorial-SaaS, soft depth, no clutter, ≤8 words of on-image text
+  (use Ideogram/DALL·E for accurate text).
+
+### HERO-A — article hero / OG (1200×630) · maps to: top of article
+> Ink-navy hero. Center: one glowing "answer card" emerging from a row of faded blue search links behind it (one AI answer replacing ten), small emerald check on the card. Emerald stat chip top-right: "90 seconds". Headline space left: "Be the answer AI gives." Small amber CTA pill bottom-left: "Run your free audit →". Premium, minimal. 1.91:1.
+
+### EMB-1 — the invisible loss (1600×900) · maps to: "AI search is zero-sum" intro
+> Ink-navy. A single emerald spotlight from an AI-assistant icon lands on ONE brand card; competitor cards sit unlit in the dark. Stat chip: "1 answer · 1 cited source". Caption space: "If it's not you, the loss never shows in your analytics." No CTA. 16:9.
+
+### EMB-2 — never paste a lie (1600×900) · maps to: differentiator #1 (verified vs candidate schema)
+> Two code cards side by side: left green "Verified — safe to paste" with a source-quote callout; right amber "Verify first" with a warning icon. Emerald stat chip: "0 invented facts". 16:9.
+
+### EMB-3 — what you get / the score (1600×900) · maps to: "what you get" + 90-seconds claim
+> Abstracted product dashboard: big "91 / 100" gauge, four sub-bars (Entity, Density, Clarity, Structure), a "Citation Probability" chip, a small "editorial site" tag. Stat chip: "3 AI engines simulated". Soft shadow, SaaS screenshot style. 16:9. (Or use the real screenshot `section-hero.png`.)
+> NOTE: prefer the REAL screenshots in `images/marketing/` for product shots — more credible than a render.
+
+### EMB-4 — hours → seconds (1600×900) · maps to: the speed/value line
+> Split: faded stack of "100s of hours" timesheets on one side; a nearly-complete emerald progress ring with "90s" on the other. Stat chip: "hundreds of hours → 90 seconds". 16:9.
+
+### CTA-Z — closing call to action (1200×630) · maps to: end of article
+> Ink-navy, the glowing answer card centered, confident. Big line: "Be the answer AI gives." Amber CTA pill: "Free audit → aeoanalyzers.com". Small emerald row of chips: "Free · $24 Day Pass · no subscription". 1.91:1.
+
+**Placement recap in the article:** HERO-A (top) → EMB-1 (after zero-sum intro) →
+EMB-2 (at differentiator #1) → EMB-3 or real screenshot (at "what you get") →
+EMB-4 (at speed line) → CTA-Z (end). Social posts reuse HERO-A (link preview) and
+the `social-*` screenshots; EMB-1 works as a square feed image.
+
+---
+
 # Image prompts
 
 **Brand style (apply to all):** deep ink-navy (#1a1a2e)/near-black background, ONE accent — emerald #16a34a (positive/verified) or amber #f59e0b (energy/Day Pass); generous negative space; clean premium editorial-SaaS; soft depth. Keep on-image text ≤6 words; use Ideogram/DALL·E when text must render correctly. Avoid clip-art / neon-cyberpunk / clutter.
