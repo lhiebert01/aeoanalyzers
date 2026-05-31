@@ -14,6 +14,7 @@ const ROOT = path.resolve(__dirname, '..');
 const OUT = '/mnt/c/Users/Linds/Downloads/AEO-Analyzers-MASTER-Announcement.docx';
 
 const SOURCES = [
+  { file: 'docs/brand-messaging-guide.md', title: 'Part 0 — Brand & Messaging Guide (single source of truth)' },
   { file: 'docs/master-announcement.md', title: 'Part 1 — Posts: ready to cut & paste (with image references)' },
   { file: 'docs/blog-relaunch-2026.md', title: 'Part 2 — The Long-Form Article' },
   { file: 'docs/image-prompt-playbook.md', title: 'Part 3 — Image Prompt Playbook (regenerate / enhance)' },

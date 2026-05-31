@@ -171,6 +171,8 @@ The app is deployed on **Vercel** with automatic builds on push:
 
 ## Documentation
 
+- [Brand & Messaging Guide](./docs/brand-messaging-guide.md) -- single source of truth: positioning, USPs, benefits, CTA system, canonical assets
+- [Master Announcement](./docs/master-announcement.md) -- every post ready to paste, with image references
 - [STATUS.md](./STATUS.md) -- **Production source-of-truth**: version, live env vars, features, integrations, pending items
 - [Release Notes](./RELEASE-NOTES.md) -- Full changelog for all versions
 - [Re-Launch Announcement (2026)](./docs/blog-relaunch-2026.md) -- Flagship re-intro: differentiation, outcomes, strong CTA
