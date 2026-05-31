@@ -11,16 +11,35 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
-const OUT = '/mnt/c/Users/Linds/Downloads/AEO-Analyzers-Launch-Announcement.docx';
+const OUT = '/mnt/c/Users/Linds/Downloads/AEO-Analyzers-MASTER-Announcement.docx';
 
 const SOURCES = [
-  { file: 'docs/blog-relaunch-2026.md', title: 'Part 1 — The Launch Announcement (long-form article)' },
-  { file: 'docs/launch-announcement-kit.md', title: 'Part 2 — Channel Posts, Schedule & Image Prompts' },
-  { file: 'docs/visual-canon.md', title: 'Part 3 — Visual Canon (image ↔ story mapping)' },
+  { file: 'docs/master-announcement.md', title: 'Part 1 — Posts: ready to cut & paste (with image references)' },
+  { file: 'docs/blog-relaunch-2026.md', title: 'Part 2 — The Long-Form Article' },
+  { file: 'docs/image-prompt-playbook.md', title: 'Part 3 — Image Prompt Playbook (regenerate / enhance)' },
+  { file: 'docs/visual-canon.md', title: 'Part 4 — Visual Canon (existing-image ↔ story mapping)' },
 ];
 
 const d = await import('docx');
-const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } = d;
+const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle, Table, TableRow, TableCell, WidthType, ShadingType } = d;
+
+function tableFrom(rows) {
+  // rows: array of arrays of cell strings (first row = header)
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows: rows.map((cells, ri) =>
+      new TableRow({
+        children: cells.map((c) =>
+          new TableCell({
+            width: { size: Math.floor(100 / cells.length), type: WidthType.PERCENTAGE },
+            shading: ri === 0 ? { type: ShadingType.SOLID, color: '1a1a2e' } : undefined,
+            children: [new Paragraph({ children: inlineRuns(c, ri === 0 ? { bold: true, size: 18, color: 'ffffff' } : { size: 18, color: '333333' }) })],
+          })
+        ),
+      })
+    ),
+  });
+}
 
 const NAVY = '1a1a2e';
 const GREY = '555555';
@@ -45,8 +64,22 @@ function inlineRuns(text, baseOpts = {}) {
 
 function mdToParagraphs(md) {
   const out = [];
-  for (let raw of md.split('\n')) {
+  const lines = md.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    let raw = lines[i];
     const line = raw.replace(/\s+$/, '');
+    // Markdown table: collect consecutive | rows
+    if (/^\s*\|.*\|\s*$/.test(line)) {
+      const block = [];
+      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) { block.push(lines[i]); i++; }
+      i--; // step back; outer loop will i++
+      const rows = block
+        .map((r) => r.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim()))
+        .filter((cells) => !cells.every((c) => /^:?-+:?$/.test(c) || c === '')); // drop separator row
+      if (rows.length) out.push(tableFrom(rows));
+      out.push(new Paragraph({ spacing: { after: 80 } }));
+      continue;
+    }
     if (!line.trim()) { out.push(new Paragraph({ spacing: { after: 80 } })); continue; }
     if (/^#\s/.test(line))    { out.push(new Paragraph({ heading: HeadingLevel.HEADING_1, spacing: { before: 240, after: 120 }, children: inlineRuns(line.replace(/^#\s/, ''), { bold: true, size: 32, color: NAVY }) })); continue; }
     if (/^##\s/.test(line))   { out.push(new Paragraph({ heading: HeadingLevel.HEADING_2, spacing: { before: 220, after: 100 }, children: inlineRuns(line.replace(/^##\s/, ''), { bold: true, size: 26, color: NAVY }) })); continue; }
@@ -64,7 +97,7 @@ function mdToParagraphs(md) {
 const children = [
   new Paragraph({ spacing: { before: 1200 } }),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 }, children: [new TextRun({ text: 'AEO Analyzers', bold: true, size: 56, color: NAVY })] }),
-  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 }, children: [new TextRun({ text: 'Launch Announcement Kit', size: 32, color: GREY })] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 }, children: [new TextRun({ text: 'Master Announcement — posts, article, image playbook', size: 30, color: GREY })] }),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 }, children: [new TextRun({ text: 'Be the answer AI gives.', italics: true, size: 24, color: GREY })] }),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 600 }, children: [new TextRun({ text: 'PI GenAI LLC · Lindsay Hiebert · https://www.aeoanalyzers.com', size: 20, color: '999999' })] }),
 ];
