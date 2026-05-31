@@ -123,7 +123,7 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
           subscribe. Only shown once the one-time price is configured in env. */}
       {import.meta.env.VITE_STRIPE_PRICE_ID_REPORT && (
         <div className="max-w-4xl mx-auto mb-8">
-          <div className="relative bg-zinc-900 text-white rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden">
+          <div className="relative bg-zinc-900 text-white rounded-3xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 overflow-hidden">
             <div className="flex items-start gap-5">
               <div className="bg-white/10 p-4 rounded-2xl shrink-0">
                 <Zap className="w-8 h-8 text-amber-300" />
@@ -133,10 +133,24 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
                   <h3 className="text-xl font-bold">Day Pass</h3>
                   <span className="text-[10px] font-bold bg-amber-300 text-zinc-900 px-2 py-0.5 rounded-full uppercase tracking-widest">One-time</span>
                 </div>
-                <p className="text-zinc-300 text-sm max-w-md leading-relaxed">
-                  Just need to fix one site? Unlock <strong className="text-white">every fix and download for 24 hours</strong> — the
-                  full implementation roadmap, paste-ready JSON-LD, content rewrites, and the Word report. No subscription.
+                <p className="text-zinc-300 text-sm max-w-md leading-relaxed mb-4">
+                  Just need to fix one site? Unlock <strong className="text-white">everything for 24 hours</strong> — no subscription.
                 </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+                  {[
+                    'Full implementation roadmap',
+                    'Paste-ready JSON-LD (verified)',
+                    'Before/after content rewrites',
+                    'Word (.docx) report + handoff',
+                    'Unlimited analyses for 24 hours',
+                    'Expires automatically — no renewal',
+                  ].map((f, i) => (
+                    <div key={i} className="flex items-start gap-2 text-sm text-zinc-200">
+                      <Check className="w-4 h-4 text-amber-300 mt-0.5 shrink-0" />
+                      <span>{f}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="flex flex-col items-center gap-2 shrink-0">
