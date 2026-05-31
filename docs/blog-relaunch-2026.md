@@ -44,7 +44,7 @@ A score is interesting; a fix is valuable. You get **paste-ready JSON-LD, before
 **Outcome:** you don't just learn you have a problem — you get the exact, deploy-ready solution.
 
 **5. It shows you the invisible competition.**
-Multi-engine simulation (how Gemini, ChatGPT, and Perplexity each perceive you), a **Citation Probability** score, and a head-to-head **Competitive Duel** against a named rival.
+Gemini 3.5–powered AEO analysis (how Gemini, ChatGPT, and Perplexity each perceive you), a **Citation Probability** score, and a head-to-head **Competitive Duel** against a named rival.
 **Outcome:** you finally see where a competitor is winning the citation you should own.
 
 **6. It practices what it sells.**

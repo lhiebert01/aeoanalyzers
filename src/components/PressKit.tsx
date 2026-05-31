@@ -30,7 +30,7 @@ Most "AEO Analyzers" on the market today are glorified keyword counters. They lo
 AI doesn't care about your readability score. It cares about **Authority, Verifiability, and Citation Probability.**
 
 ### Why AEO Analyzers is Superior
-We didn't build a tool; we built a **Simulation Engine**. When you run an analysis on our platform, you aren't just checking boxes. You are running a live simulation through the world's most advanced LLMs to see exactly how they perceive your brand.
+We didn't build just another checklist. When you run an analysis, your site is evaluated by a frontier AI model to assess how answer engines would read and cite your brand — and exactly what to fix.
 
 **1. The Competitive Duel: Stop Guessing, Start Winning**
 Our "Competitive Duel" feature is a market first. It allows you to put your URL head-to-head against your biggest rival. We don't just give you two scores; we give you a **Verdict**. We tell you exactly why the AI chose them over you—and how to steal that citation back.
@@ -54,16 +54,16 @@ Stop optimizing for 2015. Start winning in 2026.
   const pressReleaseContent = `
 FOR IMMEDIATE RELEASE
 
-# AEO Analyzers Launches Revolutionary AI-Simulation Platform to Solve Digital Marketing’s Most Urgent Crisis: The AI Search Gap
+# AEO Analyzers Launches AI-Powered AEO Platform to Solve Digital Marketing’s Most Urgent Crisis: The AI Search Gap
 
-**SILICON VALLEY, CA — March 22, 2026** — AEO Analyzers, the next-generation digital marketing platform, today announced the official launch of its AI-powered simulation engine. Designed to address the rapid decline of traditional organic search traffic, AEO Analyzers provides businesses with the first-ever "Citation Probability" metric—a breakthrough in how brands secure visibility in AI-generated search results.
+**SILICON VALLEY, CA — March 22, 2026** — AEO Analyzers, the next-generation digital marketing platform, today announced the launch of its AI-powered Answer Engine Optimization platform. Designed to address the rapid decline of traditional organic search traffic, AEO Analyzers provides businesses with the first-ever "Citation Probability" metric—a breakthrough in how brands secure visibility in AI-generated search results.
 
 As AI agents like Google Gemini and OpenAI’s SearchGPT become the primary gatekeepers of information, traditional SEO strategies are failing. AEO Analyzers solves this "AI Search Gap" by simulating how Large Language Models (LLMs) perceive, categorize, and cite web content.
 
-"The most urgent problem in marketing today isn't ranking on page one; it's being the cited source of truth for an AI agent," said Lindsay Hiebert, Founder of AEO Analyzers. "Most tools are still looking at keywords. We are looking at semantic authority. Our platform doesn't just analyze; it simulates the future of search."
+"The most urgent problem in marketing today isn't ranking on page one; it's being the cited source of truth for an AI agent," said Lindsay Hiebert, Founder of AEO Analyzers. "Most tools are still looking at keywords. We are looking at semantic authority. Our platform doesn't just analyze; it shows you how to win the future of search."
 
 ### Key Innovations Include:
-*   **Competitive Duel Engine:** A head-to-head simulation that provides a definitive "Verdict" on which brand an AI will cite and why.
+*   **Competitive Duel Engine:** A head-to-head AEO comparison that provides a definitive "Verdict" on which brand an AI will cite and why.
 *   **Citation Probability Score:** A proprietary metric that predicts the likelihood of AI attribution with 94% accuracy.
 *   **AEO Implementation Roadmap:** A step-by-step technical guide to closing the semantic gap between a brand and an AI’s knowledge base.
 *   **Persona-Based Optimization:** Tailoring content to specific AI "personas" to ensure maximum reach across different LLM architectures.
@@ -73,7 +73,7 @@ Early adopters of the platform have reported a 40% increase in AI-driven referra
 "AEO Analyzers is far superior to any other platform on the market because it’s built on real-time AI reasoning, not static rules," Hiebert added. "It’s smarter, more effective, and built specifically to grow businesses in the post-search era."
 
 ### About AEO Analyzers
-AEO Analyzers is the leading platform for Answer Engine Optimization. Founded in 2026, the company provides advanced simulation tools for brands, agencies, and developers looking to secure their future in the AI-driven digital landscape.
+AEO Analyzers is the leading platform for Answer Engine Optimization. Founded in 2026, the company provides advanced AEO tools for brands, agencies, and developers looking to secure their future in the AI-driven digital landscape.
 
 **Media Contact:**
 Lindsay Hiebert
@@ -87,7 +87,7 @@ https://aeoanalyzers.com
 
 When AI agents like ChatGPT, Gemini, or Perplexity answer a user's question using your content but **fail to cite you**, you lose the customer. You’ve provided the expertise, but the AI takes the credit.
 
-Today, we are officially launching **AEO Analyzers** — the world's first AI Simulation Engine for Answer Engine Optimization.
+Today, we are launching **AEO Analyzers** — an AI-powered platform for Answer Engine Optimization.
 
 Stop guessing if your site is "AI-Ready." Start measuring it.
 
@@ -235,7 +235,7 @@ Check it out here: https://aeoanalyzers.com
                 <p>Most "AEO Analyzers" on the market today are glorified keyword counters. They look at your text and tell you if it's "readable." That's not optimization; that's a spell-check.</p>
                 
                 <h3 className="text-2xl font-black text-zinc-900 mt-12">Why AEO Analyzers is Superior</h3>
-                <p>We didn't build a tool; we built a <strong>Simulation Engine</strong>. When you run an analysis on our platform, you aren't just checking boxes. You are running a live simulation through the world's most advanced LLMs to see exactly how they perceive your brand.</p>
+                <p>We didn't build just another checklist. When you run an analysis, your site is evaluated by a frontier AI model to assess how answer engines would read and cite your brand — and exactly what to fix.</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-12">
                   <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-100">
@@ -276,17 +276,17 @@ Check it out here: https://aeoanalyzers.com
               </div>
 
               <h2 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight leading-tight uppercase">
-                AEO Analyzers Launches Revolutionary AI-Simulation Platform to Solve Digital Marketing’s Most Urgent Crisis: The AI Search Gap
+                AEO Analyzers Launches AI-Powered AEO Platform to Solve Digital Marketing’s Most Urgent Crisis: The AI Search Gap
               </h2>
 
-              <p><strong>SILICON VALLEY, CA — March 22, 2026</strong> — AEO Analyzers, the next-generation digital marketing platform, today announced the official launch of its AI-powered simulation engine. Designed to address the rapid decline of traditional organic search traffic, AEO Analyzers provides businesses with the first-ever "Citation Probability" metric—a breakthrough in how brands secure visibility in AI-generated search results.</p>
+              <p><strong>SILICON VALLEY, CA — March 22, 2026</strong> — AEO Analyzers, the next-generation digital marketing platform, today announced the launch of its AI-powered Answer Engine Optimization platform. Designed to address the rapid decline of traditional organic search traffic, AEO Analyzers provides businesses with the first-ever "Citation Probability" metric—a breakthrough in how brands secure visibility in AI-generated search results.</p>
 
-              <p>"The most urgent problem in marketing today isn't ranking on page one; it's being the cited source of truth for an AI agent," said Lindsay Hiebert, Founder of AEO Analyzers. "Most tools are still looking at keywords. We are looking at semantic authority. Our platform doesn't just analyze; it simulates the future of search."</p>
+              <p>"The most urgent problem in marketing today isn't ranking on page one; it's being the cited source of truth for an AI agent," said Lindsay Hiebert, Founder of AEO Analyzers. "Most tools are still looking at keywords. We are looking at semantic authority. Our platform doesn't just analyze; it shows you how to win the future of search."</p>
 
               <div className="space-y-4">
                 <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">Key Innovations Include:</p>
                 <ul className="list-disc pl-5 space-y-2">
-                  <li><strong>Competitive Duel Engine:</strong> A head-to-head simulation that provides a definitive "Verdict" on which brand an AI will cite and why.</li>
+                  <li><strong>Competitive Duel Engine:</strong> A head-to-head AEO comparison that provides a definitive "Verdict" on which brand an AI will cite and why.</li>
                   <li><strong>Citation Probability Score:</strong> A proprietary metric that predicts the likelihood of AI attribution with 94% accuracy.</li>
                   <li><strong>AEO Implementation Roadmap:</strong> A step-by-step technical guide to closing the semantic gap.</li>
                 </ul>
@@ -294,7 +294,7 @@ Check it out here: https://aeoanalyzers.com
 
               <div className="pt-12 border-t border-zinc-200 space-y-4">
                 <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">About AEO Analyzers</p>
-                <p>AEO Analyzers is the leading platform for Answer Engine Optimization. Founded in 2026, the company provides advanced simulation tools for brands, agencies, and developers looking to secure their future in the AI-driven digital landscape.</p>
+                <p>AEO Analyzers is the leading platform for Answer Engine Optimization. Founded in 2026, the company provides advanced AEO tools for brands, agencies, and developers looking to secure their future in the AI-driven digital landscape.</p>
               </div>
 
               <div className="pt-8 space-y-1">

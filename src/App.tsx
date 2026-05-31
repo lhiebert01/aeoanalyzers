@@ -729,9 +729,9 @@ export default function App() {
                 
                 <section className="space-y-8">
                   <div>
-                    <h2 className="text-2xl font-bold mb-4 text-zinc-900">1. Data Collection & Simulation</h2>
+                    <h2 className="text-2xl font-bold mb-4 text-zinc-900">1. Data Collection & Analysis</h2>
                     <p className="text-zinc-600 leading-relaxed">
-                      AEO Analyzers collects minimal personal data required to provide our simulation services. This includes your email address for account management and the URLs you submit for analysis. We do not store the full HTML content of analyzed sites beyond the duration of the simulation.
+                      AEO Analyzers collects minimal personal data required to provide our analysis services. This includes your email address for account management and the URLs you submit for analysis. We do not store the full HTML content of analyzed sites beyond the duration of the analysis.
                     </p>
                   </div>
 
@@ -963,7 +963,7 @@ export default function App() {
                     transition={{ delay: 0.1 }}
                     className="text-zinc-500 text-lg max-w-2xl mx-auto mb-10"
                   >
-                    We simulate how Gemini, ChatGPT, and Perplexity perceive your site — delivering insights that would take a web team hundreds of hours, in 90 seconds.
+                    We score how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — and give you the exact fixes that would take a web team hundreds of hours, in 90 seconds.
                   </motion.p>
 
                   <motion.form 
@@ -1031,7 +1031,7 @@ export default function App() {
                         {loading ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            Running AI Simulation...
+                            Running AI Analysis...
                           </>
                         ) : (
                           <>

@@ -47,7 +47,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     },
     {
       q: "What does AEO Analyzers actually do?",
-      a: "It simulates how AI models perceive your website. It audits your semantic structure, JSON-LD schema, and content density to provide an AEO Score and a likelihood of being cited in AI search results."
+      a: "It analyzes how AI answer engines would read and cite your website — auditing your semantic structure, JSON-LD schema, and content density — to give you an AEO Score, a Citation Probability, and the fixes to improve them."
     },
     {
       q: "How do I set up AEO for my website?",
@@ -72,7 +72,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     <div className="space-y-24 pb-24">
       <SEO
         title="Be the Answer AI Gives"
-        description="AEO Analyzers simulates multiple AI engines to show how Gemini, ChatGPT, and Perplexity perceive your brand. What takes web teams hundreds of hours, we deliver in 90 seconds."
+        description="AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — powered by Google Gemini 3.5 frontier model — and gives you the exact fixes, in 90 seconds."
         ogType="website"
         author="Lindsay Hiebert"
         publishedDate="2026-03-22T00:00:00Z"
@@ -89,7 +89,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
       <div className="bg-emerald-50 border-y border-emerald-100 py-3 px-6 text-center sticky top-0 z-50 backdrop-blur-md bg-emerald-50/80">
         <p className="text-[10px] font-black text-emerald-800 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
           <ShieldCheck className="w-3 h-3" />
-          Multi-Engine AI Simulation — Not a single algorithm. Multiple AI models. Real-world results.
+          AI-powered Answer Engine Optimization — frontier-model analysis, real-world results.
         </p>
       </div>
 
@@ -165,7 +165,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
                   </div>
                   <div>
                     <h4 className="font-bold text-lg mb-1">The Problem</h4>
-                    <p className="text-zinc-500">AI uses your expertise but gives you zero traffic or brand recognition. Single-algorithm tools can't replicate how multiple AI engines actually work.</p>
+                    <p className="text-zinc-500">AI uses your expertise but gives you zero traffic or brand recognition. Keyword-era tools can't see how AI answer engines decide what to cite.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -174,7 +174,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
                   </div>
                   <div>
                     <h4 className="font-bold text-lg mb-1">The Solution</h4>
-                    <p className="text-zinc-500">AEO Analyzers simulates multiple AI engines simultaneously and delivers an actionable roadmap in 90 seconds — work that would cost a web team hundreds of hours.</p>
+                    <p className="text-zinc-500">AEO Analyzers scores your AI-citation readiness and delivers an actionable roadmap in 90 seconds — work that would cost a web team hundreds of hours.</p>
                   </div>
                 </div>
               </div>
@@ -184,7 +184,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
                 <div className="w-3 h-3 rounded-full bg-red-500" />
                 <div className="w-3 h-3 rounded-full bg-amber-500" />
                 <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                <span className="text-xs font-mono text-zinc-500 ml-2 uppercase tracking-widest">AI Simulation</span>
+                <span className="text-xs font-mono text-zinc-500 ml-2 uppercase tracking-widest">AEO Analysis</span>
               </div>
               <div className="space-y-6">
                 <div className="h-4 w-3/4 bg-white/10 rounded-full animate-pulse" />
@@ -207,7 +207,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         <div className="text-center mb-16">
           <h2 id="trust-title" className="text-4xl md:text-6xl font-black tracking-tight mb-6">Why <span className="text-zinc-400">Analyzers</span>, Plural?</h2>
           <p className="text-zinc-500 text-xl max-w-3xl mx-auto leading-relaxed">
-            Legacy AEO tools run a single algorithm and call it a day. We simulate multiple AI engines — Gemini, ChatGPT, Perplexity — to produce real-world results. That's why it's Analyzer<strong>s</strong>.
+            Legacy tools check keywords. We analyze the universal signals every major answer engine — Gemini, ChatGPT, Perplexity — uses to decide what to cite. That's why it's Analyzer<strong>s</strong>.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
@@ -215,15 +215,15 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-black mb-4">Multi-Engine Simulation</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">We don't rely on a single algorithm. We simulate how multiple AI engines perceive your content — producing real-world results, not theoretical scores.</p>
+            <h3 className="text-xl font-black mb-4">Built for Every Answer Engine</h3>
+            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini 3.5 frontier model, we analyze the universal signals every major answer engine relies on to decide what to cite — real-world results, not theoretical scores.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">
               <Target className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-black mb-4">90-Second Results</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">What would take even the best web teams hundreds of hours of manual auditing, we deliver in 90 seconds with live AI simulation.</p>
+            <p className="text-zinc-500 text-sm leading-relaxed">What would take even the best web teams hundreds of hours of manual auditing, we deliver in 90 seconds with live AI analysis.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">

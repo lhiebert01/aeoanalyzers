@@ -91,7 +91,7 @@ That's the demand engine: **a recurring, low-cost subscription that protects a b
 ## The full feature set (the buyer's checklist)
 
 **Core analysis**
-- Multi-engine AI simulation (Gemini, ChatGPT, Perplexity perspectives)
+- Gemini 3.5–powered AEO analysis (Gemini, ChatGPT, Perplexity perspectives)
 - 0–100 AEO Score with a fully transparent formula (Entity × 0.3 + Density × 0.3 + Clarity × 0.2 + Structure × 0.2)
 - Citation Probability — your likelihood of being cited
 - Competitive Duel — head-to-head against any competitor

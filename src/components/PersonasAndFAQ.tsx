@@ -78,7 +78,7 @@ const userFaqs: FAQItem[] = [
   },
   {
     question: "How does the 'Citation Probability' score work?",
-    answer: "Our proprietary algorithm simulates how an LLM 'reasons' through your website's semantic structure. We analyze your JSON-LD Schema, content density, and technical meta-tags to determine the mathematical likelihood of an AI agent choosing your site as its primary reference."
+    answer: "Our analysis uses a frontier LLM to reason through your website's semantic structure. We analyze your JSON-LD Schema, content density, and technical meta-tags to determine the mathematical likelihood of an AI agent choosing your site as its primary reference."
   },
   {
     question: "I'm a developer. What are the technical requirements for AEO?",

@@ -13,7 +13,7 @@ scroll-by. Updated 2026-05-31. Pair with: `master-announcement.md` (posts),
 
 ## 2. Primary tagline + supporting lines
 - **Tagline:** *Be the answer AI gives.*
-- **Descriptor:** *Multiple AI engines. One score. 90 seconds.*
+- **Descriptor:** *Answer Engine Optimization, powered by Gemini 3.5. One score. 90 seconds.*
 - **Must-have line:** *If you want your business found in the era of AI agents and answer engines, Answer Engine Optimization is the new must-have.*
 - **The shift (use to reframe SEO):** *SEO got you onto the page. AEO decides whether you ARE the answer. Ranked is not the same as cited.*
 
@@ -38,7 +38,7 @@ scroll-by. Updated 2026-05-31. Pair with: `master-announcement.md` (posts),
 2. **Brand-aware advice.** Editorial/SaaS/ecommerce each get the right playbook; editorial voice is protected. → *Recommendations that fit your business and don't erase your voice.*
 3. **Truthful gaps.** Distinguishes "absent" from "present-but-unschematized"; no advice for features you don't have. → *Wrap content, don't rewrite it; no busywork.*
 4. **The cure, not just a score.** Paste-ready JSON-LD, rewrites, checklist, Word report, web-team handoff. → *You leave with the fix, deployable today.*
-5. **See the invisible competition.** Multi-engine simulation + Citation Probability + head-to-head Competitive Duel. → *You see exactly where a rival wins the citation.*
+5. **See the invisible competition.** Gemini 3.5–powered AEO analysis + Citation Probability + head-to-head Competitive Duel. → *You see exactly where a rival wins the citation.*
 6. **We dogfood it.** We made our own site AI-visible. → *Built by people who live the problem.*
 7. **90 seconds vs hundreds of hours.** → *Specialist-grade audit at SaaS speed and price.*
 
@@ -71,4 +71,4 @@ Confident, plain-English, credible, calm-urgent (urgency from the real shift, no
 - **Plan & cadence:** `docs/go-to-market-plan.md`.
 
 ## 12. Boilerplate (paste at the end of articles / about blurbs)
-> AEO Analyzers helps brands become the cited source of truth in AI answers. In about 90 seconds it shows how Gemini, ChatGPT, and Perplexity perceive your site, scores your Citation Probability, and gives you the exact, deploy-ready fixes. Free to try. Be the answer AI gives — https://www.aeoanalyzers.com · PI GenAI LLC.
+> AEO Analyzers helps brands become the cited source of truth in AI answers. In about 90 seconds it shows how citable you are to answer engines like Gemini, ChatGPT, and Perplexityr site, scores your Citation Probability, and gives you the exact, deploy-ready fixes. Free to try. Be the answer AI gives — https://www.aeoanalyzers.com · PI GenAI LLC.
