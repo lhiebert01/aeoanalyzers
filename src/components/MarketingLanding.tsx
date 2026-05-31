@@ -70,8 +70,8 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
 
   return (
     <div className="space-y-24 pb-24">
-      <SEO 
-        title="AEO Analyzers - The Official AI Simulation Engine"
+      <SEO
+        title="Be the Answer AI Gives"
         description="AEO Analyzers simulates multiple AI engines to show how Gemini, ChatGPT, and Perplexity perceive your brand. What takes web teams hundreds of hours, we deliver in 90 seconds."
         ogType="website"
         author="Lindsay Hiebert"

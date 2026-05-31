@@ -11,7 +11,7 @@ PNGs (named below). Long-form articles to link to: `docs/blog-relaunch-2026.md`
 
 | File (`images/launch-canon/…`) | Use |
 |---|---|
-| `aeo-hero-be-the-answer-ai-gives.png` | **Primary OG/cover** (links, article covers) — 1.91:1 |
+| `aeo-og-be-the-answer.png` | **Primary OG/cover** (links, article covers) — 1.91:1 |
 | `aeo-hero-be-the-answer.png` | Hero alt (logo lockup) |
 | `aeo-hero-source-of-truth.png` | Campaign/home hero · multi-engine |
 | `aeo-attribution-gap.png` | Problem: "Unseen. Uncited." (article inline) |
@@ -39,9 +39,9 @@ PNGs (named below). Long-form articles to link to: `docs/blog-relaunch-2026.md`
 # PIECE 1 — App Re-Launch (flagship)
 
 **Long article (Substack/Medium/LinkedIn):** publish `blog-relaunch-2026.md`.
-**Cover image:** `aeo-hero-be-the-answer-ai-gives.png` · **Inline:** `aeo-attribution-gap.png` → `aeo-verified-vs-guessed.png` → `aeo-score-dashboard.png` → `aeo-90s-vs-100hrs.png` · **End:** `aeo-closing-cta-free-audit.png`
+**Cover image:** `aeo-og-be-the-answer.png` · **Inline:** `aeo-attribution-gap.png` → `aeo-verified-vs-guessed.png` → `aeo-score-dashboard.png` → `aeo-90s-vs-100hrs.png` · **End:** `aeo-closing-cta-free-audit.png`
 
-### LinkedIn (post) · 🖼 `aeo-hero-be-the-answer-ai-gives.png`
+### LinkedIn (post) · 🖼 `aeo-og-be-the-answer.png`
 > Your customers stopped scrolling. They ask AI — and read one answer.
 >
 > That answer is built from the few sources the AI trusts. If a competitor is cited and you're not, you lose the sale and never see it in your analytics.
@@ -55,7 +55,7 @@ PNGs (named below). Long-form articles to link to: `docs/blog-relaunch-2026.md`
 > Run a free audit on your site — then your top competitor. The gap between the two scores is the gap AI is using to choose between you. 👉 aeoanalyzers.com
 > #AEO #GEO #AISearch #SEO #DigitalMarketing
 
-### Facebook (post) · 🖼 `aeo-hero-be-the-answer-ai-gives.png`
+### Facebook (post) · 🖼 `aeo-og-be-the-answer.png`
 > Search changed owners. Your customers now ask AI — Gemini, ChatGPT, Perplexity — and get one answer, from the sites the AI trusts. If that's not you, your competitor wins the customer invisibly.
 > AEO Analyzers (just re-launched) shows in ~90 seconds whether AI cites you, how you compare to a competitor, and exactly what to fix — with paste-ready code and a report for your web team. Free audit 👉 aeoanalyzers.com
 
@@ -67,11 +67,11 @@ PNGs (named below). Long-form articles to link to: `docs/blog-relaunch-2026.md`
 5. We ran it on ourselves, found we were invisible to AI, fixed it. Dogfooded.
 6. Free audit on your site + your competitor 👉 aeoanalyzers.com
 
-### Substack · subject + intro · 🖼 header `aeo-hero-be-the-answer-ai-gives.png`
+### Substack · subject + intro · 🖼 header `aeo-og-be-the-answer.png`
 > **Subject:** Be the answer AI gives (we just re-launched)
 > AI assistants are replacing search results with single answers — and brands have no idea whether they're the one being cited. We rebuilt AEO Analyzers to fix that, and to be the rare AI-audit tool you can actually trust (and hand straight to a developer). Full story below — run a free audit on your own site in ~90 seconds. — Lindsay
 
-### Medium · title + cover `aeo-hero-be-the-answer-ai-gives.png`
+### Medium · title + cover `aeo-og-be-the-answer.png`
 > Title: "Be the Answer AI Gives: Reintroducing AEO Analyzers" (set canonical to your site/Substack).
 
 ---
