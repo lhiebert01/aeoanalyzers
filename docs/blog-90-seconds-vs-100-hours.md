@@ -35,7 +35,7 @@ Conservatively? That's 200-400 hours of specialized work. At agency rates, you'r
 
 ## What We Do in 90 Seconds
 
-AEO Analyzers runs a live simulation through multiple AI engines simultaneously. In 90 seconds, you get:
+AEO Analyzers analyzes your AI-citation readiness with Google Gemini 3.5. In 90 seconds, you get:
 
 **1. Your AEO Score (0-100)**
 A composite metric across five dimensions: Structured Data, Semantic HTML, Metadata, Factual Density, and Entity Authority. Not a theoretical score — a real measurement of how AI engines actually perceive your site right now.
@@ -102,7 +102,7 @@ The future of search is answers. Make sure yours is the one AI cites.
 
 ---
 
-*Lindsay Hiebert is the founder of AEO Analyzers, the multi-engine AI simulation platform for Answer Engine Optimization. Learn more at [aeoanalyzers.com](https://www.aeoanalyzers.com).*
+*Lindsay Hiebert is the founder of AEO Analyzers, the AI-powered Answer Engine Optimization platform (powered by Google Gemini 3.5). Learn more at [aeoanalyzers.com](https://www.aeoanalyzers.com).*
 
 ---
 
@@ -116,7 +116,7 @@ The future of search is answers. Make sure yours is the one AI cites.
 
 Traditional SEO tools can't fix this. They analyze keywords and backlinks — problems from 2015. The real problem is AEO: Answer Engine Optimization.
 
-AEO Analyzers simulates multiple AI engines simultaneously to show you:
+AEO Analyzers analyzes AI-citation readiness (powered by Google Gemini 3.5) simultaneously to show you:
 - Your AEO Score (0-100)
 - Your Citation Probability
 - Exactly what to fix, with copy-paste code
@@ -141,7 +141,7 @@ This is the "Attribution Gap," and it's the most urgent crisis in digital market
 
 Your web team could spend 200+ hours auditing your site for AI readability. Or you could use AEO Analyzers and get the same insights in 90 seconds.
 
-We simulate how multiple AI engines perceive your site. Not one algorithm — multiple models, just like the real world. You get an AEO Score, a Citation Probability metric, and a complete roadmap with copy-paste code snippets.
+We analyze how answer engines read and cite your site, using Google Gemini 3.5 — and the signals we check are the universal standards every major engine (Gemini, ChatGPT, Perplexity) relies on. You get an AEO Score, a Citation Probability metric, and a complete roadmap with copy-paste code snippets.
 
 We even generate the exact JSON-LD structured data your site needs and tell your developer exactly where to paste it — whether you're on WordPress, Shopify, HubSpot, Wix, or custom code.
 
@@ -165,7 +165,7 @@ If AI doesn't cite you, you're invisible.
 
 Different rules. Different technology.
 
-4/ AEO Analyzers simulates MULTIPLE AI engines simultaneously. Not one algorithm — multiple models.
+4/ AEO Analyzers scores your AI-citation readiness with Google Gemini 3.5, then hands you the exact fixes.
 
 Because Gemini doesn't read your site the same way ChatGPT does.
 

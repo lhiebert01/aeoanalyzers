@@ -94,4 +94,4 @@ Run a new analysis at **[aeoanalyzers.com](https://www.aeoanalyzers.com)** and d
 
 ---
 
-*Lindsay Hiebert is the founder of AEO Analyzers, the multi-engine AI simulation platform for Answer Engine Optimization. Learn more at [aeoanalyzers.com](https://www.aeoanalyzers.com).*
+*Lindsay Hiebert is the founder of AEO Analyzers, the AI-powered Answer Engine Optimization platform (powered by Google Gemini 3.5). Learn more at [aeoanalyzers.com](https://www.aeoanalyzers.com).*

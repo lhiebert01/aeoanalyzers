@@ -180,7 +180,7 @@ The future of search is answers. Make sure yours is the one AI cites.
 
 ---
 
-*Lindsay Hiebert is the founder of AEO Analyzers, the multi-engine AI simulation platform for Answer Engine Optimization. Learn more at [aeoanalyzers.com](https://www.aeoanalyzers.com).*
+*Lindsay Hiebert is the founder of AEO Analyzers, the AI-powered Answer Engine Optimization platform (powered by Google Gemini 3.5). Learn more at [aeoanalyzers.com](https://www.aeoanalyzers.com).*
 
 ---
 

@@ -129,7 +129,7 @@ export default function UserGuideDashboard() {
           <Step 
             number="02" 
             title="Analyze Verdict" 
-            description="Our AI simulates a 'choice' between the two sources based on semantic clarity."
+            description="Our AI evaluates a 'choice' between the two sources based on semantic clarity."
             icon={<Swords className="w-5 h-5" />}
           />
           <Step 

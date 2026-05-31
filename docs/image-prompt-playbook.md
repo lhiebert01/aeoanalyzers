@@ -24,7 +24,7 @@ Each prompt notes the canonical file it produced in `images/launch-canon/`.*
 | IMG-3 | Verified vs Guessed Schema | `aeo-verified-vs-guessed.png` (+ `-alt`) | 1600×900 |
 | IMG-4 | Safe to Paste Handoff | `aeo-safe-to-paste-handoff.png` | 1600×900 |
 | IMG-5 | Product Score Dashboard | `aeo-score-dashboard.png` | 1600×900 |
-| IMG-6 | Multi-Engine Simulation | `aeo-multi-engine-3-1.png` | 1600×900 |
+| IMG-6 | Built for Every Answer Engine | `aeo-multi-engine-3-1.png` | 1600×900 |
 | IMG-7 | 90s vs Hours | `aeo-90s-vs-100hrs.png` | 1600×900 |
 | IMG-8 | Fixes, Not Scores | `aeo-fixes-not-scores.png` | 1600×900 |
 | IMG-9 | Brand-Aware Advice | `aeo-brand-aware-advice.png` | 1600×900 |
@@ -52,7 +52,7 @@ Each prompt notes the canonical file it produced in `images/launch-canon/`.*
 
 **HERO-2 — Source of Truth** → `aeo-hero-source-of-truth.png`
 > Refined editorial-SaaS hero on deep ink-navy. A single trusted source card center, glowing emerald, with faint AI answer streams converging toward it from several abstract AI engine nodes. Implies multiple AI systems recognize one brand as the source of truth. Soft emerald light, elegant spacing, space left for a headline.
-> Text: "Source of Truth" · chip: "Multi-engine simulation"
+> Text: "Source of Truth" · chip: "Gemini 3.5–powered AEO analysis"
 
 **IMG-1 — Attribution Gap** → `aeo-attribution-gap.png`
 > Dramatic but minimal on ink-navy. One AI answer card in the light; several faint brand cards in darkness behind it, uncited. One emerald spotlight on the cited card; other cards in muted blue-gray. Communicates: if AI uses your expertise but doesn't cite you, the lost customer never appears in analytics.
@@ -74,7 +74,7 @@ Each prompt notes the canonical file it produced in `images/launch-canon/`.*
 > Abstract premium dashboard on ink-navy, light floating SaaS panel. Large AEO gauge 91/100, four sub-bars (Entity, Density, Clarity, Structure), a Citation Probability chip, small "editorial site" tag. Emerald accent only. Soft shadow, high-end SaaS mockup (not a real browser shot). Large readable text.
 > Text: "91/100 | Citation Probability"
 
-**IMG-6 — Multi-Engine Simulation** → `aeo-multi-engine-3-1.png`
+**IMG-6 — Built for Every Answer Engine** → `aeo-multi-engine-3-1.png`
 > Premium abstract on ink-navy. Three subtle AI engine nodes (left) feeding one unified emerald score card (right). Nodes abstract/unlabeled (ChatGPT/Gemini/Perplexity without logos). Unified card shows a gauge + one trusted recommendation path.
 > Text: "3 engines. 1 score."
 

@@ -28,7 +28,7 @@ export default function UserGuide({ isAdmin, initialGuide = 'user' }: UserGuideP
     },
     {
       name: "Run the Analysis",
-      text: "Click the 'Analyze' button. Our AI will crawl your site and simulate how search engines and AI models perceive your content.",
+      text: "Click the 'Analyze' button. Our AI will crawl your site and analyze how search and AI answer engines would read and cite your content.",
       image: "https://picsum.photos/seed/aeo2/800/600"
     },
     {

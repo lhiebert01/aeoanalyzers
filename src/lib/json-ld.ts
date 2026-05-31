@@ -8,7 +8,7 @@ export function getOrganizationJsonLd() {
     name: 'AEO Analyzers',
     url: SITE_URL,
     logo: `${SITE_URL}/aeo-og-bta-2026.png`,
-    description: 'AEO Analyzers simulates multiple AI engines to show how Gemini, ChatGPT, and Perplexity perceive your brand. What takes web teams hundreds of hours, we deliver in 90 seconds.',
+    description: 'AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — powered by Google Gemini 3.5 frontier model — and gives you the exact fixes, in 90 seconds.',
     sameAs: [
       'https://www.linkedin.com/company/aeo-analyzers',
       'https://twitter.com/aeoanalyzers',
@@ -29,7 +29,7 @@ export function getWebSiteJsonLd() {
     '@type': 'WebSite',
     name: 'AEO Analyzers',
     url: SITE_URL,
-    description: 'Multi-engine AI simulation for Answer Engine Optimization. Multiple AI models. Real-world results. 90 seconds.',
+    description: 'AI-powered Answer Engine Optimization, powered by Google Gemini 3.5. Real frontier-model analysis. Real-world results. 90 seconds.',
   };
 }
 
@@ -42,7 +42,7 @@ export function getSoftwareApplicationJsonLd() {
     url: SITE_URL,
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
-    description: 'AEO Analyzers simulates multiple AI engines to show how Gemini, ChatGPT, and Perplexity perceive your brand. What takes web teams hundreds of hours, we deliver in 90 seconds.',
+    description: 'AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — powered by Google Gemini 3.5 frontier model — and gives you the exact fixes, in 90 seconds.',
     offers: {
       '@type': 'AggregateOffer',
       priceCurrency: 'USD',
@@ -51,7 +51,7 @@ export function getSoftwareApplicationJsonLd() {
       offerCount: '3',
     },
     featureList: [
-      'AI Simulation Engine',
+      'AI-Powered AEO Analysis',
       'Competitive Duel Engine',
       'Citation Probability Scoring',
       'AEO Implementation Roadmaps',
