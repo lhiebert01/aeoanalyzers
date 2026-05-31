@@ -24,7 +24,7 @@ const SEO: React.FC<SEOProps> = ({
   keywords = ['AEO', 'Answer Engine Optimization', 'AI Search', 'Brand Citations', 'SEO for AI', 'LLM Optimization', 'Gemini SEO', 'ChatGPT SEO', 'Perplexity SEO', 'AI Search Optimization', 'Generative Engine Optimization', 'GEO', 'AI Citation', 'AI Attribution', 'Semantic SEO', 'Knowledge Graph Optimization'],
   canonical,
   ogType = 'website',
-  ogImage = '/aeo-og.png',
+  ogImage = '/aeo-og-bta-2026.png',
   author = DEFAULT_AUTHOR,
   publishedDate = '2026-03-22T00:00:00Z',
   jsonLd,
