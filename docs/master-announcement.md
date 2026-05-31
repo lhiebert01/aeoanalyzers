@@ -7,6 +7,17 @@ to attach. CTA everywhere → **https://www.aeoanalyzers.com***
 PNGs (named below). Long-form articles to link to: `docs/blog-relaunch-2026.md`
 (publish on Substack/Medium/LinkedIn). Brand line: *Be the answer AI gives.*
 
+## Posting mechanics — link in the FIRST COMMENT (LinkedIn & Facebook)
+
+For LI/FB launch posts, use **link-in-first-comment** to maximize reach:
+1. **Post body:** hook + story, ending with **"🔗 Free audit + competitor check — link in the first comment 👇"**. Do NOT put the URL in the body.
+2. **Image:** upload the listed image **natively** (link-in-comment posts don't render the OG preview card, so the uploaded image is your visual). Bonus: this sidesteps LinkedIn's OG-image cache entirely.
+3. **First comment:** paste the exact text from the **First-Comment Library** (bottom of this doc), then **pin** it.
+4. **A/B (optional):** keep ONE variant with the link in the body (which shows the OG card) to compare clicks vs. reach.
+
+- **X/Twitter:** put the link in the **final tweet of the thread** (as written) — X handles in-thread links fine. (Or use the same text as a first reply.)
+- **Substack/Medium:** the article *is* the destination — no link-in-comment needed; optionally pin the "run your own free audit" first comment.
+
 ## Image quick-reference (canonical name → use)
 
 | File (`images/launch-canon/…`) | Use |
@@ -150,4 +161,57 @@ PNGs (named below). Long-form articles to link to: `docs/blog-relaunch-2026.md`
 # PIECE 8 — LinkedIn carousel (7 slides, 1080×1350)
 
 Upload in order: `aeo-carousel-0-cover.png` → `1-zero-sum` → `2-attribution-gap` → `3-verified-schema` → `4-multi-engine` → `5-roadmap` → `6-cta`.
-Caption: "AI search is zero-sum — one answer, one cited source. Here's how to be the one it cites (swipe). Free audit → aeoanalyzers.com"
+Body caption: "AI search is zero-sum — one answer, one cited source. Here's how to be the one it cites (swipe). 🔗 Free audit — link in the first comment 👇"
+First comment: use **Carousel** below.
+
+---
+
+# FIRST-COMMENT LIBRARY (exact, paste-ready)
+
+Paste these as the **first comment** on LinkedIn/Facebook posts (link kept out of the body), then **pin** the comment. For **X**, use the same text as the **final tweet** of the thread. For **Substack/Medium**, optionally pin the "Default" as a comment. Each post's body should end with: **"🔗 Free audit + competitor check — link in the first comment 👇"**
+
+**Default (App Re-Launch — PIECE 1, LI/FB/X):**
+> 👉 See how AI engines describe and cite your brand — free, ~90 seconds, no signup to get your score: https://aeoanalyzers.com
+>
+> Then run your #1 competitor. The gap between the two scores is the gap AI is using to choose between you right now.
+>
+> Only have one site? Grab a $24 Day Pass — full access for 24 hours, no subscription.
+
+**Problem (PIECE 2):**
+> 👉 Find your own "attribution gap" in ~90 seconds — free: https://aeoanalyzers.com
+>
+> You'll see your Citation Probability and exactly where AI uses your content without citing you — plus the fixes to close it.
+
+**Solution (PIECE 3):**
+> 👉 Get your AEO score + the exact fixes — free, ~90 seconds: https://aeoanalyzers.com
+>
+> Schema, content, authority — laid out so your developer can ship it. Powered by Google Gemini 3.5.
+
+**Benefits / Source of Truth (PIECE 4):**
+> 👉 See your Citation Probability and your path to becoming the source AI cites — free: https://aeoanalyzers.com
+>
+> Then benchmark a competitor head-to-head and see who AI would name.
+
+**Dogfood case study (PIECE 5):**
+> 👉 Run the same audit on your own site — free, ~90 seconds: https://aeoanalyzers.com
+>
+> We ran it on ours and fixed what we found. You'll likely see the same gaps — and the exact fixes.
+
+**Day Pass (PIECE 6):**
+> 👉 $24 Day Pass — 24 hours of full access: every fix, the paste-ready JSON-LD, and the Word report. No subscription: https://aeoanalyzers.com
+>
+> Want to look first? Your AEO score is free.
+
+**Persona posts (PIECE 7):**
+- Agencies: > 👉 Run it on a client — free: https://aeoanalyzers.com — turn "why aren't we in ChatGPT?" into a billable, concrete roadmap.
+- Local business: > 👉 Check your local AI visibility — free, ~90 seconds: https://aeoanalyzers.com — see if AI can identify you over the directories.
+- Ecommerce/Shopify: > 👉 Audit your product & review schema — free: https://aeoanalyzers.com — compete with the big retailers for the citation.
+- Developers: > 👉 Run it as a pre-handoff QA step — free: https://aeoanalyzers.com — ship apps that are actually visible to AI.
+- Public sector/authority: > 👉 Audit your official pages — free: https://aeoanalyzers.com — make your guidance the source AI cites, not outdated third-party pages.
+
+**Carousel (PIECE 8):**
+> 👉 Run your free audit (90 seconds, no signup to see your score): https://aeoanalyzers.com
+>
+> Then run your top competitor — the gap between the two scores is the gap AI is using to choose between you.
+
+**Note:** Because link-in-comment posts use your uploaded image (not the OG card), you don't need the `?v=` cache-bust for these. Keep the URL clean (`https://aeoanalyzers.com`).
