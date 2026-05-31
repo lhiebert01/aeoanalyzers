@@ -57,28 +57,29 @@ async function main() {
     return;
   }
 
-  let puppeteer;
+  let puppeteer, chromium;
   try {
-    puppeteer = (await import('puppeteer')).default;
+    puppeteer = (await import('puppeteer-core')).default;
+    chromium = (await import('@sparticuz/chromium')).default;
   } catch {
-    console.warn('[prerender] puppeteer not installed — skipping (shipping SPA shell).');
+    console.warn('[prerender] puppeteer-core/@sparticuz/chromium not installed — skipping (shipping SPA shell).');
     return;
   }
 
   const server = await startServer();
   let browser;
   try {
-    // executablePath lets us point at a system/serverless Chromium when the
-    // bundled download is unavailable (e.g. PUPPETEER_EXECUTABLE_PATH on Vercel,
-    // or a local Chrome for testing). Falls back to puppeteer's bundled browser.
-    const launchOpts = {
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-    };
-    if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-      launchOpts.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
-    }
-    browser = await puppeteer.launch(launchOpts);
+    // @sparticuz/chromium ships a Chromium that runs in lib-bare environments
+    // like Vercel's build container (full puppeteer Chromium fails there with
+    // "libnspr4.so: cannot open shared object file"). PUPPETEER_EXECUTABLE_PATH
+    // overrides it (e.g. a local system Chrome for testing).
+    chromium.setGraphicsMode = false;
+    const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || (await chromium.executablePath());
+    browser = await puppeteer.launch({
+      args: [...chromium.args, '--disable-dev-shm-usage'],
+      executablePath,
+      headless: chromium.headless,
+    });
     const page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (compatible; AEOAnalyzersPrerender/1.0)');
     await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle0', timeout: 30000 });
