@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.mjs",
+    "build:nopre": "vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
     "test": "vitest run"
@@ -35,6 +36,7 @@
     "@types/node": "^22.14.0",
     "@vercel/node": "^5.6.20",
     "autoprefixer": "^10.4.21",
+    "puppeteer": "^25.1.0",
     "tailwindcss": "^4.1.14",
     "typescript": "~5.8.2",
     "vitest": "^2.1.9"

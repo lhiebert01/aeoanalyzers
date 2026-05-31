@@ -1,0 +1,28 @@
+# AEO Analyzers
+
+AEO Analyzers shows a brand exactly how today's AI assistants (Gemini, ChatGPT, Perplexity) describe, rank, and cite it — and what to change to get cited — in about 90 seconds, instead of the hundreds of hours a web team would spend checking by hand. It is an Answer Engine Optimization (AEO) tool: it simulates multiple AI engines, returns a 0–100 AEO score and a Citation Probability, runs head-to-head "Competitive Duel" comparisons against named rivals, and produces a prioritized, deploy-ready fix list (schema, content, structure).
+
+## What it does
+- AEO score (0–100) with a transparent formula: Entity×0.3 + Density×0.3 + Clarity×0.2 + Structure×0.2.
+- Citation Probability: how likely AI assistants are to cite the site for its core topic.
+- Competitive Duel: side-by-side AEO comparison against a competitor URL.
+- Brand-aware analysis: editorial/news/SaaS/ecommerce/service sites each get the correct recommendations (editorial voice is preserved, never corporatized).
+- Provenance-safe JSON-LD: a "verified, safe to paste" schema block (detected values only) separate from a "candidate, verify first" block (inferred values).
+- Advanced diagnostics: Citation Hook Density, E-E-A-T Author Audit, LLM Summarization Test, Zero-Click/Snippet Predictor, Query-to-Content Gap, Semantic Chunking.
+- Deploy-ready output: paste-ready JSON-LD, content rewrites, meta-description rewrite, a prioritized implementation checklist, a Word (.docx) report, and a web-team handoff template.
+
+## Who it's for
+Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and ecommerce brands who need to know — and improve — how AI assistants represent them.
+
+## Pricing
+- Free: one full diagnostic analysis (scores, gaps, brand type) — the specific fixes are unlocked on a paid plan.
+- Pro: $49/month.
+- Business: $199/month.
+
+## Key pages
+- Home / Why AEO: https://www.aeoanalyzers.com/
+- Pricing: https://www.aeoanalyzers.com/ (Pricing view)
+- FAQ: https://www.aeoanalyzers.com/ (FAQ view)
+
+## Publisher
+AEO Analyzers is operated by PI GenAI LLC. Founder: Lindsay Hiebert. Contact: Lindsay.Hiebert@gmail.com
