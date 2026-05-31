@@ -118,7 +118,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           transition={{ delay: 0.1 }}
           className="text-zinc-500 text-xl md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          What takes the best web teams hundreds of hours, we deliver in 90 seconds. AEO Analyzers simulates multiple AI engines to show exactly how your brand is perceived — and how to fix it.
+          Search is becoming answers. AI agents and answer engines give one cited source — and if it isn't you, your customers never see you. Answer Engine Optimization is the new must-have: AEO Analyzers shows you in 90 seconds whether AI cites your business — and exactly how to fix it.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
