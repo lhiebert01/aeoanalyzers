@@ -9,6 +9,8 @@ CTA everywhere → **https://www.aeoanalyzers.com**
 ## 0. Master one-liner (reuse anywhere)
 **AI search is zero-sum — one answer, one cited source. AEO Analyzers shows you, in 90 seconds, whether AI cites you and exactly what to fix. Be the answer AI gives.**
 
+**Must-have line:** *If you want your business to show up and be found in the era of Answer Engines and agentic AI, Answer Engine Optimization is a must-have for every business today.*
+
 ---
 
 ## Posting plan — what to post, where, and when
@@ -100,6 +102,33 @@ Cover image: **OG-1** (below). Inline images: **IMG-2, IMG-3, IMG-4**.
 
 ## 6. Short universal blurb (directories, bios, link posts)
 > AEO Analyzers — see how Gemini, ChatGPT & Perplexity describe and cite your brand, and get the exact fixes to become the source AI quotes. Free audit in 90 seconds. aeoanalyzers.com
+
+---
+
+# Social proof (representative — use honestly)
+
+These are **illustrative voices** drawn from our own optimization work across
+dozens of our sites/apps — representative of the outcomes the tool surfaces, not
+quotes from named, paying customers. **Label them as illustrative** wherever
+shown (e.g. a small "Representative scenarios" caption). Don't attach invented
+names, companies, logos, or photos, and don't present them as verified reviews.
+The founder line below is literally true and is your strongest honest proof.
+
+**Founder (true, use attributed):**
+> "We built and tested AEO Analyzers against dozens of our own websites and apps before opening it up. Every time, it surfaced the same blind spots — invisible to AI crawlers, missing structured data, content AI couldn't cite — plus a concrete plan to fix them." — Lindsay Hiebert, Founder
+
+**Representative scenarios (label as illustrative):**
+> "Our SEO rankings held steady, but leads kept sliding. AEO Analyzers showed us why — AI assistants were recommending competitors and never mentioning us — then gave us the exact fixes." — *Digital Marketing Director (representative)*
+
+> "We'd poured budget into ads and SEO with diminishing returns. The report made it obvious: our site was nearly invisible to AI. The JSON-LD and structure changes were laid out for us, and our developer shipped them in a day." — *Web Team Lead (representative)*
+
+> "I didn't know 'Answer Engine Optimization' was even a thing. Turns out it's the thing now. I got a clear score, saw where I was losing to competitors in AI answers, and the steps to fix it." — *Small-business Founder (representative)*
+
+> "We run it on every client. It turns a vague 'we should do AI' conversation into a concrete, prioritized roadmap — accurate enough to hand straight to a dev team." — *Agency Lead (representative)*
+
+> "Search traffic was falling and ads weren't filling the gap. Our content was strong but unstructured for AI; we added the recommended schema and our visibility in AI answers climbed." — *Content/Marketing Lead, publisher (representative)*
+
+**⚠️ Compliance note:** FTC endorsement rules treat fabricated, attributed customer testimonials as deceptive — even unnamed ones presented as real reviews. Keeping these clearly "illustrative/representative" (and the founder quote true) stays on the right side of that. Separately, the site's structured data currently includes a **fabricated AggregateRating** (`getAggregateRatingJsonLd` in `src/lib/json-ld.ts`: "Sarah J."/"Mark T.", 4.9, 124 reviews). That machine-readable fake rating is higher-risk (Google manual-action + FTC) — recommend removing it or replacing with real ratings before the launch push.
 
 ---
 
