@@ -7,7 +7,7 @@ export function getOrganizationJsonLd() {
     '@type': 'Organization',
     name: 'AEO Analyzers',
     url: SITE_URL,
-    logo: `${SITE_URL}/aeo-og.png`,
+    logo: `${SITE_URL}/aeo-og-bta-2026.png`,
     description: 'AEO Analyzers simulates multiple AI engines to show how Gemini, ChatGPT, and Perplexity perceive your brand. What takes web teams hundreds of hours, we deliver in 90 seconds.',
     sameAs: [
       'https://www.linkedin.com/company/aeo-analyzers',
