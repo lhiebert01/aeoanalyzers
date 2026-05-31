@@ -1,5 +1,28 @@
 # Release Notes
 
+## v1.5.0 — May 31, 2026
+
+### AI-Crawler Visibility, Live Payments & the $24 Day Pass
+
+The release that makes AEO Analyzers practice what it sells and take money for the first time.
+
+#### Crawlable by AI engines (prerender)
+- The Vite SPA shipped an empty `<div id="root">` shell — invisible to AI crawlers, fatal for an AEO product. `scripts/prerender.mjs` now renders `/` (the anonymous landing) at build time via headless Chromium and writes full HTML — body + react-helmet meta + JSON-LD — into `dist/index.html`. Verified live: crawler view returns a ~47 KB body + JSON-LD (was 47 bytes).
+- Uses **puppeteer-core + @sparticuz/chromium** (full puppeteer's Chromium can't launch on Vercel's build — `libnspr4.so` missing). Fail-open + 120s watchdog so it can never break/hang a build.
+- Added `public/llms.txt`.
+
+#### Payments live (Stripe) — first-time configuration
+- Production was never actually wired to Stripe (no keys in Vercel; webhook pointed at a dead Cloud Run URL, 100% failing). Now configured: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and Pro/Business/Day-Pass price IDs in Vercel; webhook repointed to `https://www.aeoanalyzers.com/api/webhook` with `checkout.session.completed` + subscription events.
+- Pro ($49/mo) and Business ($199/mo) checkout now function.
+
+#### $24 Day Pass (one-time, 24h full access)
+- One-time purchase grants 24h of full access (`users.report_pass_until`), then auto-expires to free — built for the single-site user who won't subscribe. Reuses checkout/webhook; `mode: 'payment'`; surfaced as a bulleted card on the Pricing page. New Supabase column `report_pass_until timestamptz`.
+
+#### Docs
+- Added `STATUS.md` (production source-of-truth), `docs/go-to-market-plan.md`, `docs/blog-relaunch-2026.md`, `docs/prerender-plan.md`.
+
+---
+
 ## v1.4.0 — May 29, 2026
 
 ### Trustworthy AEO: Brand-Aware Analysis, Provenance-Safe Schema & Accurate Scoring

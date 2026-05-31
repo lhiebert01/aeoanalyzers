@@ -171,7 +171,11 @@ The app is deployed on **Vercel** with automatic builds on push:
 
 ## Documentation
 
+- [STATUS.md](./STATUS.md) -- **Production source-of-truth**: version, live env vars, features, integrations, pending items
 - [Release Notes](./RELEASE-NOTES.md) -- Full changelog for all versions
+- [Re-Launch Announcement (2026)](./docs/blog-relaunch-2026.md) -- Flagship re-intro: differentiation, outcomes, strong CTA
+- [Go-To-Market Plan](./docs/go-to-market-plan.md) -- Announce / market / sell roadmap + blog cadence
+- [Prerender Plan](./docs/prerender-plan.md) -- How the SPA is made crawlable to AI engines
 - [v1.4 Launch: Trustworthy AEO](./docs/blog-v1.4-trustworthy-aeo-launch.md) -- Brand-aware analysis, provenance-safe schema, accurate scoring (launch announcement)
 - [v1.4 Launch Plan & Messaging](./docs/launch-plan-v1.4.md) -- Positioning, audience hooks, ready-to-use copy, channel sequence
 - [v1.4 Image Prompts](./docs/image-prompts-v1.4.md) -- Hero & in-article image generation prompts + asset-folder guide

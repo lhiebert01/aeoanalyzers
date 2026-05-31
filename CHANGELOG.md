@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.5.0 — AI-crawler visibility, live payments, $24 Day Pass (2026-05-31)
+
+- **Prerender:** `/` is rendered at build time (puppeteer-core + @sparticuz/chromium) so AI crawlers get body + JSON-LD, not an empty SPA shell. Fail-open + watchdog. Added `public/llms.txt`. See `docs/prerender-plan.md`.
+- **Stripe live:** configured production keys (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`) + Pro/Business/Day-Pass price IDs in Vercel; repointed the webhook to the Vercel `/api/webhook` (was a dead Cloud Run URL). Pro/Business checkout now works.
+- **$24 Day Pass:** one-time purchase → 24h full access (`users.report_pass_until`), auto-expires; bulleted card on Pricing; new Supabase column.
+- **Docs:** `STATUS.md` (source-of-truth), `docs/go-to-market-plan.md`, `docs/blog-relaunch-2026.md`.
+
 ## Hotfixes — DOCX download + resilient AI parsing (2026-05-29)
 
 Two production issues surfaced after the accuracy release.
