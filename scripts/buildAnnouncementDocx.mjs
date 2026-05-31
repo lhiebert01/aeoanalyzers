@@ -15,7 +15,8 @@ const OUT = '/mnt/c/Users/Linds/Downloads/AEO-Analyzers-Launch-Announcement.docx
 
 const SOURCES = [
   { file: 'docs/blog-relaunch-2026.md', title: 'Part 1 — The Launch Announcement (long-form article)' },
-  { file: 'docs/launch-announcement-kit.md', title: 'Part 2 — Channel Posts & Image Prompts' },
+  { file: 'docs/launch-announcement-kit.md', title: 'Part 2 — Channel Posts, Schedule & Image Prompts' },
+  { file: 'docs/visual-canon.md', title: 'Part 3 — Visual Canon (image ↔ story mapping)' },
 ];
 
 const d = await import('docx');
