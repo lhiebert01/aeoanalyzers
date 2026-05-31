@@ -116,5 +116,16 @@ const doc = new Document({
 });
 
 const buf = await Packer.toBuffer(doc);
-writeFileSync(OUT, buf);
-console.log(`Wrote ${OUT} (${buf.length} bytes)`);
+// Always keep a source copy in the repo's docs/ folder.
+const repoCopy = path.join(ROOT, 'docs', 'AEO-Analyzers-MASTER-Announcement.docx');
+writeFileSync(repoCopy, buf);
+console.log(`Wrote ${repoCopy} (${buf.length} bytes)`);
+// Also write to Downloads for convenience; if it's open in Word (locked), fall back to a -v2 name.
+try {
+  writeFileSync(OUT, buf);
+  console.log(`Wrote ${OUT}`);
+} catch (e) {
+  const alt = OUT.replace(/\.docx$/, '-v2.docx');
+  writeFileSync(alt, buf);
+  console.log(`Primary locked (${e.code}); wrote ${alt} instead — close Word and re-run for the canonical name.`);
+}
