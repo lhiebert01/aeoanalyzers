@@ -86,11 +86,16 @@ async function main() {
     await page.waitForSelector(WAIT_SELECTOR, { timeout: 15000 });
 
     // Sanity: confirm real value-prop content rendered before we overwrite.
-    const html = await page.content();
+    let html = await page.content();
     if (!/Secure your|Citation|Simulation/i.test(html)) {
       console.warn('[prerender] rendered HTML lacks expected content — skipping overwrite.');
       return;
     }
+    // The app derives some URLs from window.location.origin, which during
+    // prerender is the local server. Rewrite those back to the production origin
+    // so og:image/og:url/canonical/JSON-LD don't leak localhost into the snapshot.
+    const localOrigin = `http://localhost:${PORT}`;
+    html = html.split(localOrigin).join('https://aeoanalyzers.com');
     writeFileSync(INDEX, '<!doctype html>\n' + html.replace(/^<!doctype html>/i, ''), 'utf8');
     console.log(`[prerender] wrote prerendered landing to dist/index.html (${html.length} bytes).`);
   } catch (err) {
