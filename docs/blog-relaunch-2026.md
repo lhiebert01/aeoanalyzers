@@ -17,6 +17,18 @@ That's the new game. It's called **Answer Engine Optimization (AEO)**, and it is
 
 ---
 
+## The shift, by the numbers
+
+This isn't a hunch — the data is stark:
+
+- **Gartner projects traditional search engine volume will fall 25% by 2026** as people turn to AI chatbots and answer engines instead. ([Gartner](https://www.gartner.com/en/newsroom/press-releases/2024-02-19-gartner-predicts-search-engine-volume-will-drop-25-percent-by-2026-due-to-ai-chatbots-and-other-virtual-agents))
+- **Roughly 60% of Google searches now end without a click** — the answer is read right on the results page — and that climbs to **~83% when an AI Overview appears** (and ~93% in Google's AI Mode). ([zero-click research, 2026](https://www.digitalapplied.com/blog/zero-click-search-statistics-2026-complete-data))
+- **AI Overviews now appear in about half of all searches** and reach ~2 billion users a month; **ChatGPT alone has ~800–900 million weekly users.** ([market data, 2026](https://firstpagesage.com/seo-blog/google-vs-chatgpt-market-share-report/))
+
+The takeaway isn't "SEO is dead." SEO still earns the crawl and the ranking. But ranking on a page fewer people click is no longer the same as being **the answer AI gives** — and that answer is increasingly where the customer decides. AEO is the layer that makes you citable in that moment.
+
+---
+
 ## Why we're reintroducing it
 
 We've rebuilt AEO Analyzers around one standard: **a report a sophisticated brand owner can't catch making a mistake — and can hand straight to their web team.** Along the way we even fixed our *own* site (more on that below). This is the version worth your attention.

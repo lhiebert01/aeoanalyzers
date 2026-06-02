@@ -26,6 +26,19 @@
 
 ---
 
+## 0c. The proof — stats to cite (for the blog & longer posts)
+
+Use these to back the urgency. Keep the honest nuance: **SEO still matters; AEO is the new layer that makes you *citable*, not just ranked.**
+
+- **Gartner: traditional search engine volume will drop 25% by 2026** as users shift to AI chatbots/answer engines. ([gartner.com](https://www.gartner.com/en/newsroom/press-releases/2024-02-19-gartner-predicts-search-engine-volume-will-drop-25-percent-by-2026-due-to-ai-chatbots-and-other-virtual-agents))
+- **~60% of Google searches end with no click** — and **~83% when an AI Overview answers** (≈93% in Google's AI Mode). ([zero-click research, 2026](https://www.digitalapplied.com/blog/zero-click-search-statistics-2026-complete-data))
+- **AI Overviews appear in ~50% of searches (~2B users/mo); ChatGPT ~800–900M weekly users.** ([market data, 2026](https://firstpagesage.com/seo-blog/google-vs-chatgpt-market-share-report/))
+
+**Stat-backed closer (paste-ready):**
+> Gartner says traditional search drops 25% by 2026, and ~60% of searches already end without a click. If AI can't cite you, you're invisible to where buyers now decide. See your AEO score free 👉 https://www.aeoanalyzers.com
+
+---
+
 ## 1. What this app does — features & benefits (say this about AEO Analyzers)
 
 **The diagnosis (free):**
