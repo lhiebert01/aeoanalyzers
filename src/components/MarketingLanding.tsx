@@ -100,7 +100,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           animate={{ opacity: 1, scale: 1 }}
           className="inline-block px-4 py-1.5 bg-zinc-900 text-white rounded-full text-[10px] font-black mb-10 uppercase tracking-[0.3em]"
         >
-          Multiple AI Engines. One Score. 90 Seconds.
+          Built for AI Answer Engines. One Score. 90 Seconds.
         </motion.div>
         <motion.h1 
           id="hero-title"

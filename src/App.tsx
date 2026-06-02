@@ -948,7 +948,7 @@ export default function App() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="inline-block px-4 py-1.5 bg-zinc-100 text-zinc-600 rounded-full text-xs font-bold mb-6 uppercase tracking-wider"
                   >
-                    Multiple AI Engines. One Score. 90 Seconds.
+                    Built for AI Answer Engines. One Score. 90 Seconds.
                   </motion.div>
                   <motion.h1 
                     initial={{ opacity: 0, y: 20 }}
