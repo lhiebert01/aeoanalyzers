@@ -15,10 +15,11 @@ const OUT = '/mnt/c/Users/Linds/Downloads/AEO-Analyzers-MASTER-Announcement.docx
 
 const SOURCES = [
   { file: 'docs/brand-messaging-guide.md', title: 'Part 0 — Brand & Messaging Guide (single source of truth)' },
-  { file: 'docs/master-announcement.md', title: 'Part 1 — Posts: ready to cut & paste (with image references)' },
-  { file: 'docs/blog-relaunch-2026.md', title: 'Part 2 — The Long-Form Article' },
-  { file: 'docs/image-prompt-playbook.md', title: 'Part 3 — Image Prompt Playbook (regenerate / enhance)' },
-  { file: 'docs/visual-canon.md', title: 'Part 4 — Visual Canon (existing-image ↔ story mapping)' },
+  { file: 'docs/launch-announcement-kit.md', title: 'Part 1 — Posting Calendar & Plan (when / where to post)' },
+  { file: 'docs/master-announcement.md', title: 'Part 2 — Posts: ready to cut & paste (with image references)' },
+  { file: 'docs/blog-relaunch-2026.md', title: 'Part 3 — The Long-Form Article' },
+  { file: 'docs/image-prompt-playbook.md', title: 'Part 4 — Image Prompt Playbook (regenerate / enhance)' },
+  { file: 'docs/visual-canon.md', title: 'Part 5 — Visual Canon (existing-image ↔ story mapping)' },
 ];
 
 const d = await import('docx');
