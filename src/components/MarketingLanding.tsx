@@ -86,19 +86,19 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
       />
 
       {/* Official Platform Banner */}
-      <div className="bg-emerald-50 border-y border-emerald-100 py-3 px-6 text-center sticky top-0 z-50 backdrop-blur-md bg-emerald-50/80">
-        <p className="text-[10px] font-black text-emerald-800 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-          <ShieldCheck className="w-3 h-3" />
+      <div className="bg-emerald-100 border-y border-emerald-200 py-3.5 px-6 text-center sticky top-0 z-50 backdrop-blur-md bg-emerald-100/90">
+        <p className="text-xs sm:text-sm font-black text-emerald-900 uppercase tracking-[0.15em] flex items-center justify-center gap-2">
+          <ShieldCheck className="w-4 h-4" />
           AI-powered Answer Engine Optimization — frontier-model analysis, real-world results.
         </p>
       </div>
 
       {/* Hero Section */}
-      <section className="text-center max-w-5xl mx-auto px-6 pt-20 pb-32" aria-labelledby="hero-title">
+      <section className="text-center max-w-5xl mx-auto px-6 pt-10 pb-24" aria-labelledby="hero-title">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="inline-block px-4 py-1.5 bg-zinc-900 text-white rounded-full text-[10px] font-black mb-10 uppercase tracking-[0.3em]"
+          className="inline-block px-5 py-2 bg-zinc-900 text-white rounded-full text-xs sm:text-sm font-black mb-8 uppercase tracking-[0.2em]"
         >
           The Fixes — Not Just a Score. In 90 Seconds.
         </motion.div>
