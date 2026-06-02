@@ -100,7 +100,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           animate={{ opacity: 1, scale: 1 }}
           className="inline-block px-4 py-1.5 bg-zinc-900 text-white rounded-full text-[10px] font-black mb-10 uppercase tracking-[0.3em]"
         >
-          Built for AI Answer Engines. One Score. 90 Seconds.
+          The Fixes — Not Just a Score. In 90 Seconds.
         </motion.div>
         <motion.h1 
           id="hero-title"
@@ -118,7 +118,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           transition={{ delay: 0.1 }}
           className="text-zinc-500 text-xl md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          Search is becoming answers. AI agents and answer engines give one cited source — and if it isn't you, your customers never see you. Answer Engine Optimization is the new must-have: AEO Analyzers shows you in 90 seconds whether AI cites your business — and exactly how to fix it.
+          Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. Most AEO tools hand you a score and walk away. AEO Analyzers shows you exactly <em>why</em> AI overlooks you — and gives you the fixes to change it: paste-ready schema, content rewrites, and a developer-ready report. In ~90 seconds, powered by Google Gemini 3.5.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -131,7 +131,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
             aria-label="Get your AEO score now"
             className="w-full sm:w-auto bg-zinc-900 text-white px-12 py-6 rounded-2xl font-black hover:bg-zinc-800 transition-all shadow-2xl shadow-zinc-900/20 flex items-center justify-center gap-3 text-xl uppercase tracking-tight"
           >
-            Get Your AEO Score
+            Get My Free AEO Score
             <ArrowRight className="w-6 h-6" />
           </button>
           <a 
@@ -142,6 +142,14 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
             Learn Why It Matters
           </a>
         </motion.div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-zinc-400 text-sm mt-6 max-w-2xl mx-auto"
+        >
+          Your AEO score and gaps are <strong>free</strong>. Unlock every fix — paste-ready schema, content rewrites, and the full Word report — with a <strong>$24 Day Pass</strong> (24 hours, no subscription) or a plan.
+        </motion.p>
       </section>
 
       {/* The Attribution Gap Section */}
@@ -165,7 +173,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
                   </div>
                   <div>
                     <h4 className="font-bold text-lg mb-1">The Problem</h4>
-                    <p className="text-zinc-500">AI uses your expertise but gives you zero traffic or brand recognition. Keyword-era tools can't see how AI answer engines decide what to cite.</p>
+                    <p className="text-zinc-500">AI uses your expertise but sends you zero traffic. Keyword-era tools can't see how answer engines choose what to cite — and score-only AEO tools just tell you you're losing, without telling you how to win.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -174,7 +182,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
                   </div>
                   <div>
                     <h4 className="font-bold text-lg mb-1">The Solution</h4>
-                    <p className="text-zinc-500">AEO Analyzers scores your AI-citation readiness and delivers an actionable roadmap in 90 seconds — work that would cost a web team hundreds of hours.</p>
+                    <p className="text-zinc-500">AEO Analyzers doesn't stop at a number. Your free audit pinpoints <em>why</em> AI overlooks you; a $24 Day Pass (or a plan) unlocks the cure — paste-ready JSON-LD (verified vs. guessed), content rewrites, a prioritized checklist, and a Word report your developer can ship today.</p>
                   </div>
                 </div>
               </div>
@@ -215,22 +223,22 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-black mb-4">Built for Every Answer Engine</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini 3.5 frontier model, we analyze the universal signals every major answer engine relies on to decide what to cite — real-world results, not theoretical scores.</p>
+            <h3 className="text-xl font-black mb-4">The Cure, Not Just a Score</h3>
+            <p className="text-zinc-500 text-sm leading-relaxed">Other tools hand you a number and stop. We hand you the fixes — verified JSON-LD, content rewrites, and a deploy-ready Word report — so you actually <em>move</em> your AI visibility, not just measure it.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">
               <Target className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-black mb-4">90-Second Results</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">What would take even the best web teams hundreds of hours of manual auditing, we deliver in 90 seconds with live AI analysis.</p>
+            <h3 className="text-xl font-black mb-4">Built for Every Answer Engine</h3>
+            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini 3.5, we analyze the universal signals every major answer engine — Gemini, ChatGPT, Perplexity — uses to decide what to cite. ~90 seconds, not hundreds of manual hours.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">
               <Zap className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-black mb-4">Real-Time Growth</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">Close the AI Search Gap in minutes. Our roadmaps are designed for immediate implementation and measurable results.</p>
+            <h3 className="text-xl font-black mb-4">Visibility That Pays</h3>
+            <p className="text-zinc-500 text-sm leading-relaxed">More AI citations means more qualified traffic and easier discovery of your pages, products, and storefronts — growth you can trace to revenue, not vanity metrics.</p>
           </div>
         </div>
       </section>
