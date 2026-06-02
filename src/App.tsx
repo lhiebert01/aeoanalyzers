@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ImplementationRoadmap from './components/ImplementationRoadmap';
 import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRight, Loader2, Globe, Cpu, Swords, Copy, Check, User as UserIcon, LogOut, History, CreditCard, LayoutDashboard, Settings, BookOpen, ShieldAlert, BarChart, Lock, Mail, FileText, Layout, ShoppingBag, Code, Info, ExternalLink, ChevronRight, ChevronDown, Share2, Linkedin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -116,23 +116,51 @@ export default function App() {
                      userProfile?.subscription_status?.toLowerCase() === 'business' ||
                      isAdmin || hasActivePass;
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const sessionId = params.get('session_id');
-    if (sessionId) {
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 5000);
-      
-      // Remove session_id from URL
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
+  // Header tier badge: reflect an active Day Pass (with hours remaining), not just
+  // subscription_status (a Day Pass leaves subscription_status as 'free').
+  const subStatus = userProfile?.subscription_status?.toLowerCase();
+  const passHoursLeft = hasActivePass
+    ? Math.max(1, Math.ceil((new Date(userProfile!.report_pass_until).getTime() - Date.now()) / 3_600_000))
+    : 0;
+  const tierLabel = isAdmin ? 'Admin'
+    : subStatus === 'pro' ? 'Pro'
+    : subStatus === 'business' ? 'Business'
+    : hasActivePass ? `Day Pass · ${passHoursLeft}h left`
+    : 'Free';
+  const tierDotClass = isAdmin ? 'bg-purple-500 animate-pulse'
+    : (subStatus === 'pro' || subStatus === 'business') ? 'bg-emerald-500 animate-pulse'
+    : hasActivePass ? 'bg-amber-500 animate-pulse'
+    : 'bg-zinc-300';
 
-      if (userProfile) {
-        setUserProfile({ ...userProfile, subscription_status: 'Pro' });
-      }
-      trackEvent('subscription_success', { plan: 'Pro', sessionId });
+  // Re-fetch the user profile from the DB (same path as auth init). Used after a
+  // Stripe return so the entitlement the webhook just wrote (Day Pass / subscription)
+  // shows up without a manual reload.
+  const refreshProfile = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const { data: profiles } = await supabaseQuery('users', `select=*&id=eq.${user.id}`, 8000);
+      if (profiles?.[0]) setUserProfile(profiles[0]);
+    } catch (e) {
+      console.error('[Profile] refresh failed:', e);
     }
-  }, [userProfile]);
+  }, [user?.id]);
+
+  useEffect(() => {
+    const sessionId = new URLSearchParams(window.location.search).get('session_id');
+    if (!sessionId || !user?.id) return;
+
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 6000);
+    window.history.replaceState({}, '', window.location.pathname);
+    trackEvent('purchase_success', { sessionId });
+
+    // The Stripe webhook writes the entitlement asynchronously — poll a few times
+    // so the UI reflects the real DB state (no fake "Pro", no manual reload).
+    refreshProfile();
+    const t1 = setTimeout(refreshProfile, 2500);
+    const t2 = setTimeout(refreshProfile, 6000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [user?.id, refreshProfile]);
 
   // Analyzer State
   const [url, setUrl] = useState('');
@@ -520,7 +548,9 @@ export default function App() {
             className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-500 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-bold"
           >
             <CheckCircle2 className="w-5 h-5" />
-            Subscription Successful! Welcome to Pro.
+            {hasActivePass && subStatus !== 'pro' && subStatus !== 'business'
+              ? 'Day Pass active — full access for 24 hours!'
+              : 'Payment successful — your full access is unlocked!'}
           </motion.div>
         )}
       </AnimatePresence>
@@ -566,8 +596,8 @@ export default function App() {
                 <div className="hidden sm:flex flex-col items-end">
                   <span className="text-xs font-black text-zinc-900 uppercase tracking-tight">{userProfile?.display_name || user.email?.split('@')[0]}</span>
                   <div className="flex items-center gap-1.5">
-                    <div className={`w-1.5 h-1.5 rounded-full ${isAdmin ? 'bg-purple-500 animate-pulse' : userProfile?.subscription_status?.toLowerCase() === 'pro' || userProfile?.subscription_status?.toLowerCase() === 'business' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-300'}`} />
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{isAdmin ? 'Admin' : userProfile?.subscription_status || 'Free'}</span>
+                    <div className={`w-1.5 h-1.5 rounded-full ${tierDotClass}`} />
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{tierLabel}</span>
                   </div>
                 </div>
                 <button 
@@ -1202,7 +1232,7 @@ export default function App() {
                       {/* Advanced Analysis Cards */}
                       <AdvancedAnalysisCards
                         result={result}
-                        isPaid={userProfile?.subscription_status?.toLowerCase() === 'pro' || userProfile?.subscription_status?.toLowerCase() === 'business' || isAdmin}
+                        isPaid={isPaidUser}
                         onUpgrade={() => setView('payments')}
                       />
 
