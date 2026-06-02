@@ -32,6 +32,9 @@ const SEO: React.FC<SEOProps> = ({
   const fullTitle = title ? `${title} | AEO Analyzers` : DEFAULT_TITLE;
   const currentUrl = canonical ? canonical : (typeof window !== 'undefined' ? window.location.href : SITE_URL);
   const imageUrl = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`;
+  const imageType = /\.png(\?|$)/i.test(imageUrl) ? 'image/png'
+    : /\.webp(\?|$)/i.test(imageUrl) ? 'image/webp'
+    : 'image/jpeg';
 
   return (
     <Helmet>
@@ -52,9 +55,9 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={currentUrl} />
       <meta property="og:image" content={imageUrl} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta property="og:image:type" content="image/jpeg" />
+      <meta property="og:image:width" content="1735" />
+      <meta property="og:image:height" content="906" />
+      <meta property="og:image:type" content={imageType} />
       <meta property="og:locale" content="en_US" />
       
       {/* Article Metadata (if applicable) */}

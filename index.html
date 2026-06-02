@@ -5,7 +5,11 @@
     <meta name="google-site-verification" content="DlwSt_OuvQ-dstXq7wOK02NovwvI4inn1qqUN2wNpws" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- AEO / SEO Meta Tags -->
+    <!-- AEO / SEO Meta Tags. FALLBACK set, used as-is only when prerender is skipped
+         (fail-open). When prerender runs, react-helmet (src/components/SEO.tsx) injects
+         its own canonical set and scripts/prerender.mjs dedupes (keep-first), so the
+         live HTML carries exactly one title, description and OG block. Do not put
+         literal angle-bracket tag names in this comment — the dedupe matches them. -->
     <title>AEO Analyzers | Multiple AI Engines. One Score. 90 Seconds.</title>
     <meta name="description" content="AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — powered by Google Gemini 3.5 frontier model — and gives you the exact fixes, in 90 seconds." />
     <link rel="canonical" href="https://aeoanalyzers.com" />
@@ -26,7 +30,7 @@
     <meta name="twitter:title" content="AEO Analyzers | Be the Answer AI Gives" />
     <meta name="twitter:description" content="See how Gemini, ChatGPT, and Perplexity perceive your brand — in 90 seconds. Get your AEO score, Citation Probability, a head-to-head Competitive Duel, and the exact fixes to become the source AI cites." />
     <meta name="twitter:image" content="https://aeoanalyzers.com/aeo-og-bta-2026.png" />
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="https://api.dicebear.com/7.x/shapes/svg?seed=Analyzers&backgroundColor=000000" />
     <link rel="manifest" href="/manifest.json" />
