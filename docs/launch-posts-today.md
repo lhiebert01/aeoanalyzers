@@ -12,6 +12,20 @@
 
 ---
 
+## 0b. The hard CTA — the stakes (use as the closer on every post)
+
+**Say this plainly:** Your customers now ask AI first. If your site isn't built for answer engines, AI can't cite you — so you lose the traffic, the customer, and the sale to a competitor, and it never even shows in your analytics. **A website AI can't read is money spent on a storefront no one is ever shown.** AEO isn't optional anymore — it's how you stay visible in the age of answer engines and agentic AI search.
+
+**Closer line (paste at the end of any post):**
+> Don't pay for a website AI can't see. Find out in ~90 seconds whether AI cites you — **free.** Then unlock the exact fixes with a **$24 Day Pass.** 👉 https://www.aeoanalyzers.com
+
+**Short variants:**
+- "If AI can't cite your site, your competitor gets the customer. Check your AEO score free 👉 aeoanalyzers.com"
+- "A website that's invisible to AI is wasted spend. See your Citation Probability in ~90 seconds 👉 aeoanalyzers.com"
+- "AEO is the new must-have. Be visible to answer engines today — or be invisible to your market 👉 aeoanalyzers.com"
+
+---
+
 ## 1. What this app does — features & benefits (say this about AEO Analyzers)
 
 **The diagnosis (free):**
