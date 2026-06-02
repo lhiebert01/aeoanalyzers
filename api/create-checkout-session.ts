@@ -34,7 +34,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       throw new Error(`Price ID for plan '${planId}' is not configured.`);
     }
 
-    const appUrl = process.env.VITE_APP_URL || 'https://aeoanalyzers.com';
+    // Normalize the base URL so a misconfigured VITE_APP_URL (bare domain, trailing
+    // slash, stray whitespace) can't make Stripe reject success_url/cancel_url with
+    // "Not a valid URL" — which silently breaks ALL checkout (Day Pass + subs).
+    let appUrl = (process.env.VITE_APP_URL || 'https://www.aeoanalyzers.com').trim().replace(/\/+$/, '');
+    if (!/^https?:\/\//i.test(appUrl)) appUrl = `https://${appUrl}`;
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
