@@ -118,16 +118,24 @@ const doc = new Document({
 });
 
 const buf = await Packer.toBuffer(doc);
-// Always keep a source copy in the repo's docs/ folder.
-const repoCopy = path.join(ROOT, 'docs', 'AEO-Analyzers-MASTER-Announcement.docx');
-writeFileSync(repoCopy, buf);
-console.log(`Wrote ${repoCopy} (${buf.length} bytes)`);
-// Also write to Downloads for convenience; if it's open in Word (locked), fall back to a -v2 name.
-try {
-  writeFileSync(OUT, buf);
-  console.log(`Wrote ${OUT}`);
-} catch (e) {
-  const alt = OUT.replace(/\.docx$/, '-v2.docx');
-  writeFileSync(alt, buf);
-  console.log(`Primary locked (${e.code}); wrote ${alt} instead — close Word and re-run for the canonical name.`);
+
+// Write a target; if it's locked (open in Word → EACCES/EBUSY), fall back to a
+// -v2 name instead of crashing, so a lock on one copy never blocks the other.
+function writeResilient(target, label) {
+  try {
+    writeFileSync(target, buf);
+    console.log(`Wrote ${label}: ${target} (${buf.length} bytes)`);
+  } catch (e) {
+    const alt = target.replace(/\.docx$/, '-v2.docx');
+    try {
+      writeFileSync(alt, buf);
+      console.log(`⚠️  ${label} locked (${e.code}) — wrote ${alt} instead. Close Word and re-run for the canonical name.`);
+    } catch (e2) {
+      console.log(`⚠️  ${label} could not be written (${e.code}/${e2.code}) — close Word and re-run.`);
+    }
+  }
 }
+
+// Repo source copy + the Downloads convenience copy.
+writeResilient(path.join(ROOT, 'docs', 'AEO-Analyzers-MASTER-Announcement.docx'), 'repo copy');
+writeResilient(OUT, 'Downloads copy');
