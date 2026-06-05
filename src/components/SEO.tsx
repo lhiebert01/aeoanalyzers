@@ -15,7 +15,7 @@ interface SEOProps {
 
 const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://aeoanalyzers.com';
 const DEFAULT_TITLE = 'AEO Analyzers | Be the Answer AI Gives';
-const DEFAULT_DESCRIPTION = 'AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — powered by Google Gemini 3.5 frontier model — and gives you the exact fixes, in 90 seconds. Get your Citation Probability, competitive benchmarks, and an actionable roadmap for AI search.';
+const DEFAULT_DESCRIPTION = 'AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — and gives you the exact fixes, in 90 seconds.';
 const DEFAULT_AUTHOR = 'Lindsay Hiebert';
 
 const SEO: React.FC<SEOProps> = ({
