@@ -78,9 +78,9 @@ And it does all of this in **90 seconds** — work that would take a web team **
 ## Pricing — including a way for everyone to say yes
 
 - **Free:** one full diagnostic audit — your score, your gaps, your brand type. See exactly where you stand.
-- **Day Pass — $24, one-time:** only have a site or two? Unlock **every fix and download for 24 hours**, no subscription. Fix it today, done.
-- **Pro — $49/mo:** for freelancers and small teams.
-- **Business — $199/mo:** for agencies and growing SaaS — competitor benchmarking and higher volume.
+- **Day Pass — one-time:** only have a site or two? Unlock **every fix and download for 24 hours**, no subscription. Fix it today, done.
+- **Pro:** for freelancers and small teams.
+- **Business:** for agencies and growing SaaS — competitor benchmarking and higher volume.
 
 ---
 

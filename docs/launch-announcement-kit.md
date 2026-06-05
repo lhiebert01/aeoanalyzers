@@ -24,7 +24,7 @@ Times are suggestions in ET; adjust to your audience. The **article** = `blog-re
 | **Day 2, 8:00am** | Substack | Publish the **article** + the **email intro** (§5) so it emails subscribers | Header **OG-1**; inline IMG-2, IMG-5 |
 | **Day 2, 11:30am** | Facebook | The **Facebook post** (§4) linking to the article | Link preview pulls **OG-1**; or attach **IMG-3** |
 | **Day 3, 9:00am** | Medium | Republish the **article** (set canonical to your site/Substack) | Cover **OG-1**; inline IMG-2, IMG-3, IMG-5 |
-| **Day 4–5** | LinkedIn + X | **Day Pass angle** — "only have one site? $24, fix it today" (adapt §1/§3) | **IMG-4** (90s vs 100hrs) or amber Day-Pass variant |
+| **Day 4–5** | LinkedIn + X | **Day Pass angle** — "only have one site? fix it today" (adapt §1/§3) | **IMG-4** (90s vs 100hrs) or amber Day-Pass variant |
 | **Day 7** | LinkedIn | **Dogfood story** — "we were invisible to AI; here's the fix" (use the case-study angle) | IMG-2 (verified/candidate) |
 | **Day 10+** | Directories / outreach | Submit to AEO/GEO directories; pitch "best AEO tools 2026" listicles; agency DMs with article link | — |
 | **Ongoing** | All | 2–4 posts/month (see `go-to-market-plan.md` cadence) | per post |
@@ -142,7 +142,7 @@ stat chip and (on hero/CTA) an action line.
 **⚠️ Honesty guardrail (read first):** we have **no customer-outcome stats yet** —
 do NOT put invented numbers like "+47% traffic" on any image. Use only:
 (a) **true product facts** — "90 seconds", "0–100 AEO score", "3 AI engines:
-Gemini · ChatGPT · Perplexity", "Citation Probability", "Free audit", "$24 Day
+Gemini · ChatGPT · Perplexity", "Citation Probability", "Free audit", "Day
 Pass · no subscription", "hundreds of hours → 90 seconds"; or
 (b) **cited market facts** (only if you have a real source to footnote, e.g. the
 rise of AI search/AI Overviews). When in doubt, frame as the shift ("1 AI answer
@@ -173,7 +173,7 @@ replaces 10 blue links"), not a performance claim.
 > Split: faded stack of "100s of hours" timesheets on one side; a nearly-complete emerald progress ring with "90s" on the other. Stat chip: "hundreds of hours → 90 seconds". 16:9.
 
 ### CTA-Z — closing call to action (1200×630) · maps to: end of article
-> Ink-navy, the glowing answer card centered, confident. Big line: "Be the answer AI gives." Amber CTA pill: "Free audit → aeoanalyzers.com". Small emerald row of chips: "Free · $24 Day Pass · no subscription". 1.91:1.
+> Ink-navy, the glowing answer card centered, confident. Big line: "Be the answer AI gives." Amber CTA pill: "Free audit → aeoanalyzers.com". Small emerald row of chips: "Free · Day Pass · no subscription". 1.91:1.
 
 **Placement recap in the article:** HERO-A (top) → EMB-1 (after zero-sum intro) →
 EMB-2 (at differentiator #1) → EMB-3 or real screenshot (at "what you get") →

@@ -103,8 +103,8 @@ Each prompt notes the canonical file it produced in `images/launch-canon/`.*
 > Text: "Be the answer. | Free audit" · chip: "90 seconds | No subscription"
 
 **IMG-13 — Day Pass Tile** → `aeo-day-pass-24.png`
-> Premium pricing tile on ink-navy, amber accent + soft warm glow, clean SaaS card. Large "$24", a "24 hours" chip, a few abstract checkmark rows. Simple, trustworthy, no-subscription.
-> Text: "Day Pass | $24 | 24 hours" · chip: "Start now"
+> Premium pricing tile on ink-navy, amber accent + soft warm glow, clean SaaS card. A bold "Day Pass" title, a "24 hours" chip, a few abstract checkmark rows. Simple, trustworthy, no-subscription.
+> Text: "Day Pass | 24 hours | no subscription" · chip: "Start now"
 
 **IMG-14 — Analysis History** → `aeo-analysis-history.png`
 > Clean analysis-history dashboard on ink-navy: premium SaaS table (recent analyses, score, citation probability, date, type), one high-performing row emerald, others muted; a small trend card showing improvement over time.
@@ -146,4 +146,4 @@ Each prompt notes the canonical file it produced in `images/launch-canon/`.*
 - Prefer **real screenshots** for product-proof sections (more credible than renders) — see `images/marketing/launch-<date>/`.
 - Export web images 1200–1600px wide, ≤~300 KB. Web path: `public/images/blog/`; set per-post OG via the SEO component.
 - Sizes: 1200×630 link previews · 1600×900 inline · 1080×1080 feed squares · 1080×1350 carousel.
-- **Accuracy:** no invented outcome stats (no "10x traffic / +X% leads") and no internal economics in customer-facing images until we have real, citable data. True product facts (90s, 0–100, 3 engines, $24/free) and the market shift are fine.
+- **Accuracy:** no invented outcome stats (no "10x traffic / +X% leads") and no internal economics in customer-facing images until we have real, citable data. True product facts (90s, 0–100, 3 engines, free) and the market shift are fine.

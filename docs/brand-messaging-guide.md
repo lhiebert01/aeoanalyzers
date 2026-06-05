@@ -43,7 +43,7 @@ scroll-by. Updated 2026-05-31. Pair with: `master-announcement.md` (posts),
 7. **90 seconds vs hundreds of hours.** → *Specialist-grade audit at SaaS speed and price.*
 
 ## 6. Benefits (what's in it for them — outcome words)
-Get cited by AI · stop losing customers you can't see · prove marketing impact with a repeatable score · hand your developer a deploy-ready fix · protect your brand voice · beat a named competitor to the citation · fix one site today for $24, no subscription.
+Get cited by AI · stop losing customers you can't see · prove marketing impact with a repeatable score · hand your developer a deploy-ready fix · protect your brand voice · beat a named competitor to the citation · fix one site today with a Day Pass, no subscription.
 
 ## 7. Features (capabilities)
 0–100 AEO score (Entity/Density/Clarity/Structure) · Citation Probability · Competitive Duel · brand-type detection · provenance-split JSON-LD · honest OfferCatalog · Citation Hook Density · E‑E‑A‑T audit · LLM Summarization Test · Zero-Click/Snippet Predictor · Query-to-Content Gap (incl. "schema-only") · Semantic Chunking · content rewrites · meta rewrite · implementation checklist · Word (.docx) report · web-team handoff · analysis history.
@@ -51,7 +51,7 @@ Get cited by AI · stop losing customers you can't see · prove marketing impact
 ## 8. CTA system — make people act, not scroll
 - **Primary CTA (always):** **"Run your free audit → aeoanalyzers.com"** (or "Get your free AEO score").
 - **Comparison CTA (high-converting):** **"Now run it on your top competitor. The gap between the two scores is the gap AI is using to choose between you."**
-- **Low-commitment CTA:** **"Only have one site? $24 Day Pass — fix it today, no subscription."**
+- **Low-commitment CTA:** **"Only have one site? Day Pass — fix it today, no subscription."**
 - **Action psychology (use honestly):** name the *invisible* loss ("you're losing deals you'll never see"), make it *zero-risk* ("free, 90 seconds, no signup to see your score"), make it *specific* ("see your number, then your competitor's"), and give a *next step* ("here's the exact fix"). End every asset with ONE clear action.
 
 ## 9. Voice & tone
@@ -59,7 +59,7 @@ Confident, plain-English, credible, calm-urgent (urgency from the real shift, no
 
 ## 10. Accuracy guardrails (non-negotiable)
 - **No invented outcome stats** ("+X% traffic", "10x leads") and **no internal economics** (margins, per-user cost) in public copy/visuals until we have real, citable data.
-- Use only **true product facts** (90 seconds, 0–100, 3 engines, free/$24) and the **market shift**.
+- Use only **true product facts** (90 seconds, 0–100, 3 engines, free) and the **market shift**.
 - **Testimonials** must be founder-true or clearly labeled "illustrative/representative" — never fabricated named-customer endorsements (FTC). Remove the fabricated AggregateRating in `json-ld.ts` before scaling.
 - Avoid unsubstantiated superlatives ("Official", "world's first").
 

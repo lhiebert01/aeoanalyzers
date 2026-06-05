@@ -17,7 +17,7 @@
 **Say this plainly:** Your customers now ask AI first. If your site isn't built for answer engines, AI can't cite you — so you lose the traffic, the customer, and the sale to a competitor, and it never even shows in your analytics. **A website AI can't read is money spent on a storefront no one is ever shown.** AEO isn't optional anymore — it's how you stay visible in the age of answer engines and agentic AI search.
 
 **Closer line (paste at the end of any post):**
-> Don't pay for a website AI can't see. Find out in ~90 seconds whether AI cites you — **free.** Then unlock the exact fixes with a **$24 Day Pass.** 👉 https://www.aeoanalyzers.com
+> Don't pay for a website AI can't see. Find out in ~90 seconds whether AI cites you — **free.** Then unlock the exact fixes with a **Day Pass.** 👉 https://www.aeoanalyzers.com
 
 **Short variants:**
 - "If AI can't cite your site, your competitor gets the customer. Check your AEO score free 👉 aeoanalyzers.com"
@@ -57,8 +57,8 @@ Use these to back the urgency. Keep the honest nuance: **SEO still matters; AEO 
 
 **Pricing:**
 - **Free** — one full diagnosis (scores + gaps).
-- **Day Pass — $24, one-time:** unlock every fix, the paste-ready JSON-LD, and the Word report for **24 hours. No subscription. Expires automatically.** Perfect if you just need to fix one site.
-- **Pro — $49/mo** (freelancers / small teams) · **Business — $199/mo** (agencies / multi-site / SaaS).
+- **Day Pass — one-time:** unlock every fix, the paste-ready JSON-LD, and the Word report for **24 hours. No subscription. Expires automatically.** Perfect if you just need to fix one site.
+- **Pro** (freelancers / small teams) · **Business** (agencies / multi-site / SaaS).
 
 **Powered by Google Gemini 3.5. ~90 seconds. The fixes are universal standards every answer engine uses.**
 
@@ -77,7 +77,7 @@ Use these to back the urgency. Keep the honest nuance: **SEO still matters; AEO 
 > • a **head-to-head Competitive Duel** vs a rival
 > • the **exact fixes** — paste-ready JSON-LD (verified vs candidate, so you never paste a guessed fact), content rewrites, and a Word report your dev can ship.
 >
-> Only need to fix one site? There's a **$24 Day Pass** — full access for 24 hours, no subscription.
+> Only need to fix one site? There's a **Day Pass** — full access for 24 hours, no subscription.
 >
 > We even ran it on ourselves, found we were invisible to AI, and fixed it.
 >
@@ -87,7 +87,7 @@ Use these to back the urgency. Keep the honest nuance: **SEO still matters; AEO 
 **First comment (paste, then pin):**
 > 👉 See how AI describes and cites your brand — free, ~90 seconds, no signup for your score: https://aeoanalyzers.com
 > Then run your #1 competitor. The gap between the two scores is the gap AI is using to choose between you right now.
-> Only have one site? Grab a **$24 Day Pass** — full access for 24 hours, no subscription.
+> Only have one site? Grab a **Day Pass** — full access for 24 hours, no subscription.
 
 ---
 
@@ -97,7 +97,7 @@ Use these to back the urgency. Keep the honest nuance: **SEO still matters; AEO 
 2. That's AEO. SEO got you onto the results page. AEO decides whether you ARE the result.
 3. We re-launched AEO Analyzers (powered by Gemini 3.5): ~90 sec → your AEO score + Citation Probability + a head-to-head Competitive Duel.
 4. The part other tools skip: the **cure**. Paste-ready JSON-LD (verified vs candidate — never paste a guessed fact), content rewrites, and a Word report your dev can ship.
-5. Just need to fix one site? **$24 Day Pass** — 24 hours of full access, no subscription.
+5. Just need to fix one site? **Day Pass** — 24 hours of full access, no subscription.
 6. We ran it on ourselves, found we were invisible to AI, fixed it. Dogfooded.
 7. Free audit on your site + your competitor 👉 https://aeoanalyzers.com
 
@@ -109,7 +109,7 @@ Use these to back the urgency. Keep the honest nuance: **SEO still matters; AEO 
 >
 > AEO Analyzers (just re-launched, powered by Google Gemini 3.5) shows in ~90 seconds whether AI cites you, how you stack up against a competitor, and **exactly** what to fix — with paste-ready code and a report for your web team.
 >
-> Just need to fix one site? A **$24 Day Pass** unlocks everything for 24 hours — no subscription.
+> Just need to fix one site? A **Day Pass** unlocks everything for 24 hours — no subscription.
 >
 > 🔗 Free audit — link in the first comment 👇
 
@@ -123,7 +123,7 @@ Use these to back the urgency. Keep the honest nuance: **SEO still matters; AEO 
 >
 > AI assistants are replacing search results with single answers — and most brands have no idea whether they're the one being cited. We rebuilt **AEO Analyzers** to fix that: powered by Google Gemini 3.5, it scores your Citation Probability in ~90 seconds, benchmarks you head-to-head against a competitor, and hands you the exact fixes — paste-ready JSON-LD, content rewrites, and a Word report your developer can ship. It's the rare AI-audit tool that won't make you paste a guessed "fact."
 >
-> New: a **$24 Day Pass** unlocks everything for 24 hours — no subscription. Run a free audit on your own site below. — Lindsay
+> New: a **Day Pass** unlocks everything for 24 hours — no subscription. Run a free audit on your own site below. — Lindsay
 
 ---
 
@@ -144,7 +144,7 @@ Use these to back the urgency. Keep the honest nuance: **SEO still matters; AEO 
 >
 > The practical checklist that moves the needle: valid, accurate JSON-LD (don't publish schema with guessed values — it teaches the AI wrong facts), clear Q&A-structured content, real E-E-A-T signals, and specific/measurable claims over adjectives.
 >
-> I built a tool that scores this and generates the fixes (AEO Analyzers — there's a free audit and a $24 one-time day pass if you just need to fix one site), but the checklist above is the core of it regardless of what you use. Happy to answer AEO questions in the comments.
+> I built a tool that scores this and generates the fixes (AEO Analyzers — there's a free audit and a one-time Day Pass if you just need to fix one site), but the checklist above is the core of it regardless of what you use. Happy to answer AEO questions in the comments.
 
 ---
 

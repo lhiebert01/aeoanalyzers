@@ -37,7 +37,7 @@ For LI/FB launch posts, use **link-in-first-comment** to maximize reach:
 | `aeo-ecommerce-get-cited.png` | Ecommerce / product schema |
 | `aeo-agency-client-ready.png` | Agency / client-ready report |
 | `aeo-closing-cta-free-audit.png` | **Closing CTA** (article end) — 1.91:1 |
-| `aeo-day-pass-24.png` | Day Pass $24 tile (square) |
+| `aeo-day-pass-24.png` | Day Pass tile (square) |
 | `aeo-analysis-history.png` | Analysis history / ongoing value |
 | `aeo-official-source-wins.png` | Public sector / authority |
 | `aeo-local-expert-found.png` | Local expert use case |
@@ -138,13 +138,13 @@ For LI/FB launch posts, use **link-in-first-comment** to maximize reach:
 
 ---
 
-# PIECE 6 — Day Pass offer ($24, one-time)
+# PIECE 6 — Day Pass offer (one-time)
 
 ### LinkedIn / Facebook · 🖼 `aeo-day-pass-24.png`
-> Only have one or two sites? You don't need a subscription. The AEO Analyzers **Day Pass — $24, 24 hours** unlocks every fix and download: the full roadmap, paste-ready JSON-LD, content rewrites, and the Word report. Fix your site today. 👉 aeoanalyzers.com
+> Only have one or two sites? You don't need a subscription. The AEO Analyzers **Day Pass — 24 hours** unlocks every fix and download: the full roadmap, paste-ready JSON-LD, content rewrites, and the Word report. Fix your site today. 👉 aeoanalyzers.com
 
 ### X · 🖼 `aeo-day-pass-24.png`
-> New: $24 Day Pass. 24 hours of full AEO access — every fix + the Word report. No subscription. Fix your site today 👉 aeoanalyzers.com
+> New: Day Pass. 24 hours of full AEO access — every fix + the Word report. No subscription. Fix your site today 👉 aeoanalyzers.com
 
 ---
 
@@ -175,7 +175,7 @@ Paste these as the **first comment** on LinkedIn/Facebook posts (link kept out o
 >
 > Then run your #1 competitor. The gap between the two scores is the gap AI is using to choose between you right now.
 >
-> Only have one site? Grab a $24 Day Pass — full access for 24 hours, no subscription.
+> Only have one site? Grab a Day Pass — full access for 24 hours, no subscription.
 
 **Problem (PIECE 2):**
 > 👉 Find your own "attribution gap" in ~90 seconds — free: https://aeoanalyzers.com
@@ -198,7 +198,7 @@ Paste these as the **first comment** on LinkedIn/Facebook posts (link kept out o
 > We ran it on ours and fixed what we found. You'll likely see the same gaps — and the exact fixes.
 
 **Day Pass (PIECE 6):**
-> 👉 $24 Day Pass — 24 hours of full access: every fix, the paste-ready JSON-LD, and the Word report. No subscription: https://aeoanalyzers.com
+> 👉 Day Pass — 24 hours of full access: every fix, the paste-ready JSON-LD, and the Word report. No subscription: https://aeoanalyzers.com
 >
 > Want to look first? Your AEO score is free.
 
