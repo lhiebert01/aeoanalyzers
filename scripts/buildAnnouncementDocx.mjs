@@ -18,9 +18,10 @@ const SOURCES = [
   { file: 'docs/launch-posts-today.md', title: 'Part 1 — POST TODAY (final, accurate, paste-ready: all channels + features/benefits + Day Pass)' },
   { file: 'docs/launch-announcement-kit.md', title: 'Part 2 — Posting Calendar & Plan (when / where to post)' },
   { file: 'docs/master-announcement.md', title: 'Part 3 — Full Post Library (all pieces, with image references)' },
-  { file: 'docs/blog-relaunch-2026.md', title: 'Part 4 — The Long-Form Article' },
-  { file: 'docs/image-prompt-playbook.md', title: 'Part 5 — Image Prompt Playbook (regenerate / enhance)' },
-  { file: 'docs/visual-canon.md', title: 'Part 6 — Visual Canon (existing-image ↔ story mapping)' },
+  { file: 'docs/article-be-the-answer.md', title: 'Part 4 — Substack / Medium Article (ready to publish: title + intro + full body)' },
+  { file: 'docs/blog-relaunch-2026.md', title: 'Part 5 — The Long-Form Relaunch Article (alternate)' },
+  { file: 'docs/image-prompt-playbook.md', title: 'Part 6 — Image Prompt Playbook (regenerate / enhance)' },
+  { file: 'docs/visual-canon.md', title: 'Part 7 — Visual Canon (existing-image ↔ story mapping)' },
 ];
 
 const d = await import('docx');
