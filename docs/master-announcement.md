@@ -110,7 +110,7 @@ For LI/FB launch posts, use **link-in-first-comment** to maximize reach:
 > SEO ranks. Ads interrupt. **AEO gets you cited.** Answer Engine Optimization is how you become the source AI names — and it's measurable: a score, a citation probability, and a concrete roadmap. Here's how it works 👇 [link]
 
 ### X · 🖼 `aeo-multi-engine-3-1.png`
-> AEO Analyzers simulates 3 engines (Gemini/ChatGPT/Perplexity) → one score → the exact fixes. Not a single-algorithm guess. Real-world results in ~90s. [link]
+> AEO Analyzers scores how citable you are by the 3 big answer engines (Gemini/ChatGPT/Perplexity) → one score → the exact fixes. Powered by Gemini 3.5. Real-world results in ~90s. [link]
 
 ### Facebook · 🖼 `aeo-fixes-not-scores.png`
 > The best part of an AEO audit isn't the score — it's the fix list. Schema, content, authority, laid out so your developer can ship it. [link]

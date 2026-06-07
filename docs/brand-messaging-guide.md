@@ -21,7 +21,7 @@ scroll-by. Updated 2026-05-31. Pair with: `master-announcement.md` (posts),
 **Problem → Stakes → Solution → Proof → Action.**
 1. **Problem:** Customers now ask AI and read one answer, assembled from the few sources AI trusts.
 2. **Stakes (the hook):** If a competitor is cited and you're not, you lose the customer **invisibly** — it never shows in your analytics. AI search is zero-sum: one answer, one cited source.
-3. **Solution:** AEO Analyzers simulates how Gemini, ChatGPT, and Perplexity see you, scores it, and hands you the exact fixes.
+3. **Solution:** AEO Analyzers scores how citable you are by Gemini, ChatGPT, and Perplexity, and hands you the exact fixes.
 4. **Proof:** Measurable (AEO score + Citation Probability), brand-aware, provenance-safe, deploy-ready — and we dogfood it on our own site.
 5. **Action:** Run a free audit on your site, then your competitor. The gap is what AI is using to choose between you — today.
 

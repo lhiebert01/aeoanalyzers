@@ -166,7 +166,7 @@ replaces 10 blue links"), not a performance claim.
 > Two code cards side by side: left green "Verified — safe to paste" with a source-quote callout; right amber "Verify first" with a warning icon. Emerald stat chip: "0 invented facts". 16:9.
 
 ### EMB-3 — what you get / the score (1600×900) · maps to: "what you get" + 90-seconds claim
-> Abstracted product dashboard: big "91 / 100" gauge, four sub-bars (Entity, Density, Clarity, Structure), a "Citation Probability" chip, a small "editorial site" tag. Stat chip: "3 AI engines simulated". Soft shadow, SaaS screenshot style. 16:9. (Or use the real screenshot `section-hero.png`.)
+> Abstracted product dashboard: big "91 / 100" gauge, four sub-bars (Entity, Density, Clarity, Structure), a "Citation Probability" chip, a small "editorial site" tag. Stat chip: "Built for 3 answer engines". Soft shadow, SaaS screenshot style. 16:9. (Or use the real screenshot `section-hero.png`.)
 > NOTE: prefer the REAL screenshots in `images/marketing/` for product shots — more credible than a render.
 
 ### EMB-4 — hours → seconds (1600×900) · maps to: the speed/value line

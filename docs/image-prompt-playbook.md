@@ -111,7 +111,7 @@ Each prompt notes the canonical file it produced in `images/launch-canon/`.*
 > Text: "Analysis History" · chip: "Score | Citation Probability"
 
 **IMG-15 — Public Sector Source of Truth** → `aeo-official-source-wins.png`
-> Serious premium editorial-SaaS on ink-navy. An official source card glowing emerald center; outdated blog/article cards fade behind. A subtle AI answer stream points to the official card. Calm, civic, trustworthy. No flags/seals/logos.
+> Serious premium editorial-SaaS on ink-navy. An authoritative source card glowing emerald center; outdated blog/article cards fade behind. A subtle AI answer stream points to the authoritative card. Calm, civic, trustworthy. No flags/seals/logos.
 > Text: "Official source wins."
 
 **IMG-16 — Local Expert** → `aeo-local-expert-found.png`
@@ -130,7 +130,7 @@ Each prompt notes the canonical file it produced in `images/launch-canon/`.*
 - 1 Zero-Sum: one glowing answer card from a stack of faded results. "AI search is zero-sum | Winner gets cited."
 - 2 Attribution Gap: AI answer uses knowledge while source brand sits in shadow. "Traffic disappears | Analytics miss it." (amber)
 - 3 Verified Schema: emerald verified vs amber warning code cards. "Never paste guesses | Verify first."
-- 4 Multi-Engine: three nodes → one score card. "Multiple engines | One score."
+- 4 Multi-Engine: three nodes → one score card. "Built for every answer engine | One score."
 - 5 Roadmap: score card → Schema/Content/Authority. "Fixes, not scores | Act immediately."
 - 6 CTA: glowing answer card + emerald check + amber CTA pill. "Run your audit | 90 seconds."
 
