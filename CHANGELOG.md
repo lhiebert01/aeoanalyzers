@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.5.1 — Grounded-only output: no fabricated claims (2026-06-21)
+
+- **Claims-safety backstop** (`src/lib/claimsSafety.ts`): new deterministic pass inside `applyAccuracyGuards` that uses the analyzed page's text as ground truth. Strips fabricated `aggregateRating`/`review` nodes and any ungrounded number from every generated JSON-LD block (including the "candidate" block); drops content rewrites that invent a number/guarantee/pass-rate not on the page; strips ungrounded numbers from the meta-description rewrite; reframes "add statistics/ratings" checklist advice as conditional. Stripped values disclosed via new `claimsSafetyRemoved` field.
+- **Prompts tightened** (`geminiService.ts`): candidate schema must use empty template slots, never plausible numbers; rewriter forbidden from introducing new numbers/claims; checklist must not advise publishing unprovable metrics.
+- **Our own site de-fabricated:** removed the fake `aggregateRating` (4.9 / 124) + invented "Sarah J."/"Mark T." testimonials from `json-ld.ts` and `MarketingLanding.tsx`; corrected `SoftwareApplication` price range (highPrice 99→199, offerCount 3→4); reworded a stale `twitter:description` that implied multi-engine querying.
+- **Tests:** +9 regression tests in `accuracy.test.ts` (no-reviews page → nothing fabricated; real-reviews page → passes through). 29 tests green; `tsc` + build clean.
+
 ## v1.5.0 — AI-crawler visibility, live payments, $24 Day Pass (2026-05-31)
 
 - **Prerender:** `/` is rendered at build time (puppeteer-core + @sparticuz/chromium) so AI crawlers get body + JSON-LD, not an empty SPA shell. Fail-open + watchdog. Added `public/llms.txt`. See `docs/prerender-plan.md`.

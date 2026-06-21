@@ -3,6 +3,13 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { classifySiteType, type SiteType } from "../lib/brandType";
 import { filterOfferCatalogString, type OfferFilterResult } from "../lib/offerCatalog";
 import {
+  extractPageText,
+  sanitizeSchemaBlock,
+  sanitizeRewrites,
+  stripUngroundedNumbers,
+  conditionalizeMetricInstruction,
+} from "../lib/claimsSafety";
+import {
   categoryFromAnswerQuality,
   filterCandidateQueries,
   recommendationFor,
@@ -102,6 +109,11 @@ export interface AnalysisResult {
 
   // Change 3: offers stripped from the catalog (architecture terms / over cap).
   offerCatalogRemoved?: { name: string; reason: string }[];
+
+  // Claims-safety: values the grounded-only backstop stripped because they were
+  // not detected on the analyzed page (fabricated ratings/counts/claims). Shown
+  // for transparency; the report never ships an ungrounded value.
+  claimsSafetyRemoved?: { field: string; reason: string }[];
 
   // Change 6: for editorial/news sites, replaces voice rewrites with structured
   // data suggestions (the path to higher AEO for editorial brands).
@@ -465,9 +477,9 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     PROVENANCE-TAGGED SCHEMA (Change 2 — the most important discipline here):
     You will produce TWO separate JSON-LD blocks. NEVER mix detected and inferred values in the same block.
 
-    - verifiedSchema (string): A COMPLETE, paste-ready JSON-LD block containing ONLY values that literally appear in the page content. Use @type Organization with the actual business name, url, and logo (actual logo URL if present, else a placeholder path). Include hasOfferCatalog listing ONLY user-facing services a customer can actually sign up for / buy / use. EXCLUDE internal architecture (names containing Layer/Engine/Framework/Model/Pipeline/System/Architecture/Algorithm/Module are internal modules, NOT buyable services). List AT MOST 4 offers (keep the strongest if more). Every "name" and "description" must use terminology and specifics drawn from the page — NO invented status names, enums, tiers, prices, or specs. If you cannot verify a value on the page, it does NOT belong in this block. Valid JSON only, no script tags, no markdown.
+    - verifiedSchema (string): A COMPLETE, paste-ready JSON-LD block containing ONLY values that literally appear in the page content. Use @type Organization with the actual business name, url, and logo (actual logo URL if present, else a placeholder path). Include hasOfferCatalog listing ONLY user-facing services a customer can actually sign up for / buy / use. EXCLUDE internal architecture (names containing Layer/Engine/Framework/Model/Pipeline/System/Architecture/Algorithm/Module are internal modules, NOT buyable services). List AT MOST 4 offers (keep the strongest if more). Every "name" and "description" must use terminology and specifics drawn from the page — NO invented status names, enums, tiers, prices, or specs. NEVER include aggregateRating, ratingValue, reviewCount, or review objects unless those exact rating numbers literally appear on the page. If you cannot verify a value on the page, it does NOT belong in this block. Valid JSON only, no script tags, no markdown.
 
-    - candidateSchema (string): A SEPARATE JSON-LD block (or "" if none) containing fields you believe are plausible but could NOT verify on the page — inferred service names, inferred descriptions, inferred enums. Each inferred itemOffered should carry a "_meta": {"provenance":"inferred","warning":"Inferred, not detected on the page. Verify before publishing."}. This block is explicitly labeled "verify before pasting" in the report. If everything was detected, return "".
+    - candidateSchema (string): A SEPARATE JSON-LD block (or "" if none) containing inferred STRUCTURE only — plausible service names, descriptions, or schema types you could not verify on the page. Each inferred itemOffered should carry a "_meta": {"provenance":"inferred","warning":"Inferred, not detected on the page. Verify before publishing."}. ABSOLUTE RULE: NEVER put a concrete fabricated NUMBER in this block — no ratingValue, reviewCount, ratingCount, aggregateRating, price, user/student/customer count, founding year, or any statistic that is not literally on the page. Do NOT emit "plausible" or "example" numbers (e.g. ratingValue "4.9", reviewCount "120") even though this block is labeled "verify before pasting" — a labeled fake is still pasted. If a field needs a value you cannot verify, use an explicit empty placeholder string like "<only if you have real, verifiable reviews>", never a number. If everything was detected, return "".
 
     - schemaProvenance (array): For each significant field you put in EITHER block, an object {field, value, provenance ("detected"|"inferred"|"user_required"), sourceQuote (exact page text supporting a detected value, else ""), confidence (0.0-1.0)}. This lets the user audit the schema.
 
@@ -480,8 +492,9 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
       : `CONTENT REWRITES (contentRewrites array):
     Identify 3-5 sentences or phrases from the ACTUAL analyzed content that use vague marketing language ("cutting-edge", "industry-leading", "best-in-class", "dynamic", "fast-growing", etc.). For each, provide:
     - current: The exact text from the page (Low Citation version)
-    - proposed: A rewritten version replacing adjectives with specific metrics, protocols, specs, or measurable claims (High Citation version)
+    - proposed: A rewritten version that surfaces specifics ALREADY PRESENT on the page (real metrics, protocols, specs, named technologies) more citably (High Citation version)
     - page: The page section or context where this text appears
+    GROUNDING RULE (critical): A rewrite may ONLY re-express facts, numbers, sources, or specifications that appear verbatim or near-verbatim in the source page. Do NOT introduce ANY new quantitative claim, statistic, percentage, pass rate, success rate, outcome, guarantee, rating, certification, or capability that is not already in the source content. Inventing "a pass rate matching the 70% industry average" or "average exam score indicators" when the page does not state them is FALSE ADVERTISING — never do it. If a vague phrase has no underlying detected fact to substitute, either leave it unchanged or recommend a STRUCTURAL change (heading, list, schema) instead — never fabricate a number. If you cannot find 3 phrases with a real underlying fact to surface, return fewer (or an empty array). Quality over quantity.
     Return schemaDensityRecommendations as an empty array.`}
 
     IMPLEMENTATION CHECKLIST (implementationChecklist array):
@@ -489,6 +502,7 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     - category: One of "Technical", "Authority", "Structural", "Editorial", "Coverage"
     - action: The specific action to take (e.g., "Paste the VERIFIED JSON-LD into the site header")
     - priority: "High", "Medium", or "Low"
+    NEVER instruct the site to ADD statistics, ratings, reviews, star counts, pass rates, or performance metrics it may not actually have. If surfacing metrics is relevant, phrase it conditionally — e.g. "If you have verifiable, substantiated metrics (real pass rates, real review counts), surface them in schema; otherwise do not add them." Do not advise publishing any number a site cannot prove.
   `;
 
   const enhancedSchema = {
@@ -577,7 +591,7 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     }
   }
 
-  return applyAccuracyGuards(coreResult, brand);
+  return applyAccuracyGuards(coreResult, brand, html);
 }
 
 /**
@@ -587,7 +601,11 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
  */
 export function applyAccuracyGuards(
   result: AnalysisResult,
-  brand: ReturnType<typeof classifySiteType>
+  brand: ReturnType<typeof classifySiteType>,
+  // The analyzed page's raw HTML. When provided, the grounded-only claims-safety
+  // backstop runs: no number/rating/claim survives unless it is on the page.
+  // Optional so unit tests of the other guards can omit it.
+  pageHtml?: string
 ): AnalysisResult {
   const isEditorial = brand.type === 'editorial' || brand.type === 'news';
 
@@ -668,6 +686,73 @@ export function applyAccuracyGuards(
         q.gapCategory = 'schema_only';
       }
     }
+  }
+
+  // --- Grounded-only claims-safety backstop (runbook FIX 3) -----------------
+  // Runs over the FULL assembled report. Nothing that the report emits as data
+  // may contain a number, rating, or claim that is not on the analyzed page.
+  // Gated on pageHtml so the other guards stay unit-testable in isolation.
+  if (pageHtml) {
+    const pageText = extractPageText(pageHtml);
+    const removed: { field: string; reason: string }[] = [];
+
+    // 1. Strip fabricated ratings/reviews and ungrounded numeric values from
+    //    every generated JSON-LD block (including the "candidate" block — a
+    //    labeled fake is still a fake people paste).
+    for (const key of ['schemaSnippet', 'verifiedSchema', 'candidateSchema', 'comprehensiveSchema'] as const) {
+      const block = result[key];
+      if (typeof block === 'string' && block.trim()) {
+        const { schema, stripped } = sanitizeSchemaBlock(block, pageText);
+        result[key] = schema;
+        stripped.forEach((s) => removed.push({ field: `${key}.${s.field}`, reason: s.reason }));
+      }
+    }
+    // Keep the back-compat paste target pointed at the sanitized verified block.
+    if (result.verifiedSchema && result.verifiedSchema.trim()) {
+      result.comprehensiveSchema = result.verifiedSchema;
+    }
+
+    // 2. Drop rewrites that invent numbers / unverifiable claims not on the page.
+    if (result.contentRewrites && result.contentRewrites.length > 0) {
+      const { kept, dropped } = sanitizeRewrites(result.contentRewrites, pageText);
+      result.contentRewrites = kept;
+      dropped.forEach((d) =>
+        removed.push({ field: `contentRewrite (${d.rewrite.page})`, reason: d.reason })
+      );
+    }
+
+    // 3. Strip ungrounded numbers from the meta-description rewrite.
+    if (result.metaDescriptionRewrite?.suggested) {
+      const { text, removed: nums } = stripUngroundedNumbers(
+        result.metaDescriptionRewrite.suggested,
+        pageText,
+        result.metaDescriptionRewrite.current
+      );
+      if (nums.length > 0) {
+        result.metaDescriptionRewrite.suggested = text;
+        removed.push({ field: 'metaDescriptionRewrite', reason: `ungrounded number(s) removed: ${nums.join(', ')}` });
+      }
+    }
+
+    // 4. Reframe checklist + recommendation items that tell the site to ADD
+    //    stats/ratings/reviews unconditionally (which invites fabrication).
+    if (result.implementationChecklist) {
+      for (const item of result.implementationChecklist) {
+        const { text, changed } = conditionalizeMetricInstruction(item.action);
+        if (changed) {
+          item.action = text;
+          removed.push({ field: 'implementationChecklist', reason: 'reframed "add metrics" advice as conditional on verifiable data' });
+        }
+      }
+    }
+    if (Array.isArray(result.recommendations)) {
+      result.recommendations = result.recommendations.map((rec) => {
+        const { text } = conditionalizeMetricInstruction(rec);
+        return text;
+      });
+    }
+
+    if (removed.length > 0) result.claimsSafetyRemoved = removed;
   }
 
   return result;

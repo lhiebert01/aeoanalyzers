@@ -17,6 +17,14 @@ import {
 } from '../lib/queryGap';
 import { applyAccuracyGuards, safeJsonParse, type AnalysisResult } from '../services/geminiService';
 import {
+  extractPageText,
+  isGrounded,
+  sanitizeSchemaBlock,
+  sanitizeRewrites,
+  stripUngroundedNumbers,
+  conditionalizeMetricInstruction,
+} from '../lib/claimsSafety';
+import {
   MACROLENS_EDITORIAL_HTML,
   SAAS_HTML,
   ECOMMERCE_HTML,
@@ -230,5 +238,116 @@ describe('Test 5: capability-scoped query generation', () => {
     const questions = guarded.queryContentGap!.generatedQuestions.map((q) => q.question);
     expect(questions).not.toContain('Do you have a mobile app for alerts?');
     expect(questions).toContain('Is it free?');
+  });
+});
+
+// --- Test 6: grounded-only claims safety (the no-fabrication backstop) ------
+//
+// The analyzer must never EMIT a number, rating, or claim that is not on the
+// analyzed page — in any section, including the "candidate" block. These pin
+// the durable backstop down. A SaaS page (non-editorial, so rewrites are not
+// pre-stripped) is used, with extra grounded numbers appended; numbers are
+// chosen so none is a digit-substring of another (e.g. no "120" inside "12000").
+const PAGE_WITH_REAL_REVIEWS =
+  SAAS_HTML + '<p>Rated 4.6 from 257 verified reviews. Processes 33000 events per second.</p>';
+
+describe('Test 6: grounded-only claims safety', () => {
+  it('extractPageText strips tags but keeps the numbers', () => {
+    const text = extractPageText('<div>Rated <b>4.6</b> from 257 reviews</div>');
+    expect(text).toContain('4.6');
+    expect(text).toContain('257');
+    expect(text).not.toContain('<b>');
+  });
+
+  it('isGrounded matches digit sequences regardless of commas', () => {
+    expect(isGrounded('1,200', 'we served 1200 customers')).toBe(true);
+    expect(isGrounded('4.9', 'rated 4.6 here')).toBe(false);
+  });
+
+  it('strips a fabricated aggregateRating from a generated schema block', () => {
+    const fabricated = JSON.stringify({
+      '@context': 'https://schema.org', '@type': 'Organization', name: 'Acme',
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.9', reviewCount: '120' },
+    });
+    const { schema, stripped } = sanitizeSchemaBlock(fabricated, 'Acme builds widgets. No reviews here.');
+    expect(schema).not.toContain('aggregateRating');
+    expect(schema).not.toContain('4.9');
+    expect(schema).not.toContain('120');
+    expect(stripped.length).toBeGreaterThan(0);
+  });
+
+  it('KEEPS an aggregateRating whose numbers ARE on the page (detected → allowed)', () => {
+    const real = JSON.stringify({
+      '@context': 'https://schema.org', '@type': 'Organization', name: 'Acme',
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.6', reviewCount: '257' },
+    });
+    const { schema, stripped } = sanitizeSchemaBlock(real, extractPageText(PAGE_WITH_REAL_REVIEWS));
+    expect(schema).toContain('aggregateRating');
+    expect(schema).toContain('4.6');
+    expect(stripped.length).toBe(0);
+  });
+
+  it('drops a rewrite that invents an ungrounded number / pass rate', () => {
+    const { kept, dropped } = sanitizeRewrites(
+      [{ current: 'industry-leading platform', proposed: 'guarantees a 70% pass rate for every user', page: 'hero' }],
+      extractPageText(PAGE_WITH_REAL_REVIEWS)
+    );
+    expect(kept.length).toBe(0);
+    expect(dropped.length).toBe(1);
+  });
+
+  it('keeps a rewrite that only re-expresses a number already on the page', () => {
+    const { kept } = sanitizeRewrites(
+      [{ current: 'blazing fast', proposed: 'processes 33000 events per second', page: 'hero' }],
+      extractPageText(PAGE_WITH_REAL_REVIEWS)
+    );
+    expect(kept.length).toBe(1);
+  });
+
+  it('strips an ungrounded number from a meta-description rewrite', () => {
+    const { text, removed } = stripUngroundedNumbers('Trusted by 5000 teams worldwide', 'a small startup page');
+    expect(text).not.toContain('5000');
+    expect(removed).toContain('5000');
+  });
+
+  it('reframes "add statistics/ratings" advice as conditional', () => {
+    const { text, changed } = conditionalizeMetricInstruction('Add customer star ratings and review counts to your pages');
+    expect(changed).toBe(true);
+    expect(text.toLowerCase()).toContain('substantiate');
+  });
+
+  it('end-to-end: applyAccuracyGuards strips a fabricated candidate-schema rating but keeps a grounded one', () => {
+    const brand = classifySiteType(PAGE_WITH_REAL_REVIEWS);
+    expect(brand.type).not.toBe('editorial'); // so rewrites are not pre-stripped
+    const result: AnalysisResult = {
+      score: 90, summary: '', criteria: [], recommendations: ['Add performance statistics to your homepage'],
+      citationProbability: 80,
+      verifiedSchema: JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'Organization', name: 'Linearish',
+        aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.6', reviewCount: '257' },
+      }),
+      // The "verify before pasting" block tries to ship an invented rating.
+      candidateSchema: JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'Organization', name: 'Linearish',
+        aggregateRating: { '@type': 'AggregateRating', ratingValue: '4.9', reviewCount: '120' },
+      }),
+      contentRewrites: [
+        { current: 'best-in-class', proposed: 'ensures a 98% customer pass rate', page: 'hero' },
+        { current: 'blazing fast', proposed: 'processes 33000 events per second', page: 'hero' },
+      ],
+    };
+    const guarded = applyAccuracyGuards(result, brand, PAGE_WITH_REAL_REVIEWS);
+
+    // Fabricated candidate rating gone; grounded verified rating kept.
+    expect(guarded.candidateSchema).not.toContain('4.9');
+    expect(guarded.candidateSchema).not.toContain('aggregateRating');
+    expect(guarded.verifiedSchema).toContain('4.6');
+    // Invented pass-rate rewrite dropped; grounded rewrite kept.
+    expect(guarded.contentRewrites!.length).toBe(1);
+    expect(guarded.contentRewrites![0].proposed).toContain('33000');
+    // Fabrication-inviting recommendation reframed.
+    expect(guarded.recommendations[0].toLowerCase()).toContain('substantiate');
+    // Disclosure list populated.
+    expect(guarded.claimsSafetyRemoved!.length).toBeGreaterThan(0);
   });
 });

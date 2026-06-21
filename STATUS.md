@@ -2,7 +2,12 @@
 
 **App:** AEO Analyzers · **Live:** https://www.aeoanalyzers.com · **Repo:** lhiebert01/aeoanalyzers
 **Publisher:** PI GenAI LLC · **Founder:** Lindsay Hiebert
-**Version:** v1.5.0 · **Last updated:** 2026-05-31 · **Hosting:** Vercel (project `aeo-app1`)
+**Version:** v1.5.1 · **Last updated:** 2026-06-21 · **Hosting:** Vercel (project `aeo-app1`)
+
+> **v1.5.1 (2026-06-21):** Grounded-only output — the analyzer never emits a number/rating/claim
+> not on the analyzed page (new `src/lib/claimsSafety.ts` backstop in `applyAccuracyGuards`), and
+> our own marketing site's fabricated `aggregateRating` + invented testimonials were removed. See
+> RELEASE-NOTES.md.
 
 > One-page "where is this app" reference. Update the version line + the relevant
 > section whenever something material ships. Detailed history lives in

@@ -47,8 +47,8 @@ export function getSoftwareApplicationJsonLd() {
       '@type': 'AggregateOffer',
       priceCurrency: 'USD',
       lowPrice: '0',
-      highPrice: '99',
-      offerCount: '3',
+      highPrice: '199',
+      offerCount: '4',
     },
     featureList: [
       'AI-Powered AEO Analysis',
@@ -74,36 +74,13 @@ export function getFAQJsonLd(faqs: Array<{ question: string; answer: string }>) 
   };
 }
 
-// 5. AggregateRating + Reviews — E-E-A-T trust signals
-export function getAggregateRatingJsonLd(appName: string, siteUrl: string) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: appName,
-    url: siteUrl,
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      bestRating: '5',
-      ratingCount: '124',
-      reviewCount: '124',
-    },
-    review: [
-      {
-        '@type': 'Review',
-        author: { '@type': 'Person', name: 'Sarah J.' },
-        reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
-        reviewBody: 'AEO Analyzers transformed how we think about search. Our brand citations are now consistently accurate across all AI engines.',
-      },
-      {
-        '@type': 'Review',
-        author: { '@type': 'Person', name: 'Mark T.' },
-        reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
-        reviewBody: 'The competitive benchmarking tool is a game-changer. We can finally see how we stack up in the age of AI search.',
-      },
-    ],
-  };
-}
+// 5. AggregateRating + Reviews — INTENTIONALLY REMOVED.
+// We do not yet have a verifiable, substantiated body of public reviews, so we
+// must NOT emit aggregateRating / Review JSON-LD. Publishing invented review
+// counts or star ratings is a deceptive-practice (FTC) and Google
+// structured-data-spam risk — the same fabrication the analyzer now refuses to
+// generate for our users. When real, verifiable reviews exist (e.g. from a
+// third-party platform), add a grounded AggregateRating here sourced from them.
 
 // 6. HowTo — for tutorial/setup pages
 export function getHowToJsonLd(steps: Array<{ name: string; text: string; image?: string }>) {
