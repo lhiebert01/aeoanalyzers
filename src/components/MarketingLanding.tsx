@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRight, Globe, Cpu, Swords, User as UserIcon, BookOpen, Code, ShoppingBag, Building2, HelpCircle, ShieldAlert, Target, ChevronDown, Star, Share2, Linkedin, Copy, ExternalLink } from 'lucide-react';
+import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRight, Globe, Cpu, Swords, User as UserIcon, BookOpen, Code, ShoppingBag, Building2, HelpCircle, ShieldAlert, Target, ChevronDown, Share2, Linkedin, Copy, ExternalLink } from 'lucide-react';
 import SEO from './SEO';
-import { getFAQJsonLd, getSoftwareApplicationJsonLd, getAggregateRatingJsonLd, getOrganizationJsonLd, getWebSiteJsonLd } from '../lib/json-ld';
+import { getFAQJsonLd, getSoftwareApplicationJsonLd, getOrganizationJsonLd, getWebSiteJsonLd } from '../lib/json-ld';
 
 interface MarketingLandingProps {
   onGetStarted: () => void;
@@ -63,11 +63,6 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     }
   ];
 
-  const reviews = [
-    { name: "Sarah J.", role: "Agency SEO Lead", body: "AEO Analyzers transformed how we think about search. Our brand citations are now consistently accurate across all AI engines.", rating: 5 },
-    { name: "Mark T.", role: "E-commerce Business", body: "The competitive benchmarking tool is a game-changer. We can finally see how we stack up in the age of AI search.", rating: 5 }
-  ];
-
   return (
     <div className="space-y-24 pb-24">
       <SEO
@@ -80,8 +75,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           getOrganizationJsonLd(),
           getWebSiteJsonLd(),
           getSoftwareApplicationJsonLd(),
-          getFAQJsonLd(faqs.map(f => ({ question: f.q, answer: f.a }))),
-          getAggregateRatingJsonLd('AEO Analyzers', 'https://aeoanalyzers.com')
+          getFAQJsonLd(faqs.map(f => ({ question: f.q, answer: f.a })))
         ]}
       />
 
@@ -337,32 +331,6 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
               <ShieldCheck className="w-5 h-5 text-emerald-500" />
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Reviews Section */}
-      <section className="max-w-6xl mx-auto px-6" aria-labelledby="reviews-title">
-        <h2 id="reviews-title" className="sr-only">Customer Reviews</h2>
-        <div className="grid md:grid-cols-2 gap-8">
-          {reviews.map((r, i) => (
-            <article key={i} className="bg-white border border-zinc-100 rounded-3xl p-8 shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(r.rating)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <p className="text-zinc-600 italic mb-6 leading-relaxed">"{r.body}"</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center font-bold text-zinc-400">
-                  {r.name[0]}
-                </div>
-                <div>
-                  <div className="font-bold text-sm">{r.name}</div>
-                  <div className="text-xs text-zinc-400">{r.role}</div>
-                </div>
-              </div>
-            </article>
-          ))}
         </div>
       </section>
 

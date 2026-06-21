@@ -1,5 +1,32 @@
 # Release Notes
 
+## v1.5.1 — June 21, 2026
+
+### Grounded-Only Output: the analyzer (and our own site) never fabricate a fact
+
+A real audit caught the analyzer doing the one thing an AEO tool must never do: **emitting invented values that users paste onto real sites.** The page *detection* was solid; two *generators* fabricated data:
+
+- The "Candidate Schema (Verify Before Pasting)" appendix emitted an invented `aggregateRating` (e.g. `ratingValue: "4.9"`, `reviewCount: "120"`). Publishing fake review stars is an FTC deceptive-practice + Google structured-data-spam risk. A "verify before pasting" label is not enough — people paste anyway.
+- The "Adjective-to-Metric" rewriter and checklist invented unverifiable claims (e.g. "a 70% pass rate", "average exam score indicators") that were nowhere on the source page — i.e. advising customers to publish false advertising.
+
+**Core principle now enforced in code:** the tool may re-express what is actually on the analyzed page more citably; it may **never** manufacture a fact, rating, statistic, percentage, pass rate, guarantee, or outcome that the page does not contain — in any section, including "candidate" blocks.
+
+#### What changed
+- **New claims-safety backstop** (`src/lib/claimsSafety.ts`) runs over the full assembled report inside `applyAccuracyGuards`, with the analyzed page's text as ground truth:
+  - Strips fabricated `aggregateRating` / `review` nodes and any ungrounded numeric value (price, counts, founding year, …) from **every** generated JSON-LD block, including the candidate block.
+  - Drops any content rewrite whose "proposed" text introduces a number or unverifiable claim (guarantee, pass rate, credential) not present on the page or in the original phrase.
+  - Strips ungrounded numbers from the meta-description rewrite.
+  - Reframes checklist/recommendation items that say "add statistics/ratings/reviews" into conditional advice ("only if you can substantiate it with real, verifiable data").
+  - Anything stripped is disclosed via a new `claimsSafetyRemoved` field.
+- **Generator prompts tightened**: candidate schema must use empty template slots (`"<only if you have real, verifiable reviews>"`) never plausible numbers; the rewriter is explicitly forbidden from introducing new numbers/claims; the checklist is told never to advise publishing unprovable metrics.
+- **Our own marketing site cleaned up** (same discipline, applied to ourselves):
+  - Removed the fabricated `aggregateRating` (4.9 / 124 reviews) and the two invented testimonials ("Sarah J.", "Mark T.") from both the JSON-LD and the visible landing page.
+  - Corrected the `SoftwareApplication` price range (`highPrice` 99 → 199, `offerCount` 3 → 4) to match real plans.
+  - Reworded a stale `twitter:description` that implied we query ChatGPT/Perplexity directly — we analyze the universal citation signals those engines use, powered by Google Gemini 3.5.
+- **Tests:** 9 new regression tests (feed a page with no reviews/stats → assert nothing fabricated ships; a page that *does* contain real reviews → assert they pass through).
+
+---
+
 ## v1.5.0 — May 31, 2026
 
 ### AI-Crawler Visibility, Live Payments & the $24 Day Pass
