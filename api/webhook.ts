@@ -51,6 +51,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     if (event.type === 'checkout.session.completed' || event.type === 'customer.subscription.updated') {
       const session = event.data.object as any;
+
+      // App gate: the shared PIGENAI Stripe account sends EVERY app's events
+      // here, and other apps (AI Stock Assist) use the same metadata keys
+      // (userId/planId) — a foreign "planId: pro" purchase must never set
+      // subscription status in AEO's database. Only sessions created by this
+      // app carry our domain in their URLs.
+      const urls = `${session.success_url || ''} ${session.cancel_url || ''}`;
+      if (session.object === 'checkout.session' && !urls.includes('aeoanalyzers.com')) {
+        console.log(`Ignoring foreign-app event ${event.id} (${urls.trim().slice(0, 80)})`);
+        return res.json({ received: true });
+      }
+
       const userId = session.metadata?.userId;
       const planId = session.metadata?.planId;
 
