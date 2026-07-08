@@ -4,7 +4,7 @@
   "framework": "vite",
   "redirects": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "has": [{ "type": "host", "value": "www.aeoanalyzers.com" }],
       "destination": "https://aeoanalyzers.com/$1",
       "permanent": true
