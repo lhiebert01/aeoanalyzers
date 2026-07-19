@@ -190,7 +190,7 @@ export async function generateDocxReport(
     ),
     boldBodyText('How AI Answer Engines use JSON-LD: ', 'When an AI engine like Google Gemini, ChatGPT, or Perplexity answers a user\'s question, it scans websites for structured, trustworthy data it can quote. JSON-LD gives the AI a pre-organized summary of your business — no guessing required. Without it, AI has to infer your offerings from unstructured page content, which leads to incomplete or inaccurate citations.'),
     bodyText(
-      'Sites with comprehensive JSON-LD are significantly more likely to be cited as the authoritative source because the AI can extract exact service names, descriptions, and capabilities with high confidence.'
+      'Sites with comprehensive JSON-LD improve their chances of being cited as an authoritative source, because the AI can extract exact service names, descriptions, and capabilities with high confidence.'
     ),
     spacer()
   );
