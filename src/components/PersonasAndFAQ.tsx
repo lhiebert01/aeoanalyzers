@@ -121,7 +121,7 @@ const measurementFaqs: FAQItem[] = [
   },
   {
     question: "How many Citation Sweeps do I get, and what do they cost me?",
-    answer: "Sweeps are included with paid plans: Day Pass includes 1, Pro includes 3 per month, and Business includes 12 per month. Anyone — even signed-out visitors — can run a free single-engine Quick Check on Google/Gemini to preview their citability before upgrading."
+    answer: "Sweeps are included with paid plans: Day Pass includes 3, Pro includes 8 per month, and Business includes 20 per month. Anyone — even signed-out visitors — can run a free single-engine Quick Check on Google/Gemini to preview their citability before upgrading."
   },
   {
     question: "How is this different from other AEO tools?",

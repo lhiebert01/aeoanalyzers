@@ -27,10 +27,10 @@ export const config = { maxDuration: 300 };
 const ALL_ENGINES: Engine[] = ['claude', 'openai', 'perplexity', 'gemini'];
 
 const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com'];
-// Monthly sweep quota per tier — the real-money spend guardrail. Set so that,
-// with a size-capped sweep (~$4 COGS on economical models), gross margin stays
-// ≥70% even at max usage: Day Pass ~79%, Pro ~72%, Business ~73%.
-const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, Business: 12, Pro: 3, daypass: 1 };
+// Monthly sweep quota per tier — the real-money spend guardrail. A size-capped
+// sweep MEASURED at ~$1.34 COGS (Haiku + economical engines, max_searches 3), so
+// gross margin stays ≥75% even at max usage: Day Pass ~79%, Pro ~75%, Business ~84%.
+const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, Business: 20, Pro: 8, daypass: 3 };
 // One paid sweep is bounded by total query-runs (queries × runs) so it both fits
 // the serverless timeout (at concurrency 8) AND has predictable cost/margin.
 const MAX_QUERY_RUNS_PER_SWEEP = 15;

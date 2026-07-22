@@ -55,7 +55,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     },
     {
       q: "How much does AEO Analyzers cost, and what are Citation Sweeps limited to?",
-      a: "Start free — a full AEO analysis plus a single-engine Quick Check on Google/Gemini. Day Pass is $24 for 24 hours (includes 1 sweep), Pro is $49/month (unlimited analysis + 3 sweeps/month), and Business is $199/month (12 sweeps/month). A full sweep runs across all four engines with stored transcripts."
+      a: "Start free — a full AEO analysis plus a single-engine Quick Check on Google/Gemini. Day Pass is $24 for 24 hours (includes 3 sweeps), Pro is $49/month (unlimited analysis + 8 sweeps/month), and Business is $199/month (20 sweeps/month). A full sweep runs across all four engines with stored transcripts."
     },
     {
       q: "How is this different from other AEO tools?",

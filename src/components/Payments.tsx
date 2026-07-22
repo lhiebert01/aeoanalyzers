@@ -10,7 +10,7 @@ const PLANS = [
     period: '/mo',
     description: 'Perfect for freelance developers and small marketing teams.',
     features: [
-      '3 Citation Sweeps / mo — all 4 AI engines, with transcripts',
+      '8 Citation Sweeps / mo — all 4 AI engines, with transcripts',
       'Unlimited AEO analyses & fixes',
       'Answer-fidelity + competitor “cited instead” list',
       'Historical score & citation tracking',
@@ -26,7 +26,7 @@ const PLANS = [
     period: '/mo',
     description: 'For mid-sized agencies and growing SaaS companies.',
     features: [
-      '12 Citation Sweeps / mo — all 4 AI engines, with transcripts',
+      '20 Citation Sweeps / mo — all 4 AI engines, with transcripts',
       'Unlimited AEO analyses & fixes',
       'AI-crawler telemetry & drift monitoring',
       'Competitor benchmarking & authority-gap report',
@@ -138,7 +138,7 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                   {[
-                    '1 Citation Sweep (all 4 AI engines)',
+                    '3 Citation Sweeps (all 4 AI engines)',
                     'Full implementation roadmap',
                     'Paste-ready JSON-LD (verified)',
                     'Before/after content rewrites',
@@ -232,9 +232,9 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
             <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Included Citation Sweeps</div>
             <ul className="space-y-2 text-sm text-zinc-700">
               <li className="flex justify-between"><span>Free</span><span className="font-bold text-zinc-500">1 Quick Check (Google/Gemini)</span></li>
-              <li className="flex justify-between"><span>Day Pass ($24)</span><span className="font-bold">1 full sweep</span></li>
-              <li className="flex justify-between"><span>Pro ($49/mo)</span><span className="font-bold">3 full sweeps / month</span></li>
-              <li className="flex justify-between"><span>Business ($199/mo)</span><span className="font-bold">12 full sweeps / month</span></li>
+              <li className="flex justify-between"><span>Day Pass ($24)</span><span className="font-bold">3 full sweeps</span></li>
+              <li className="flex justify-between"><span>Pro ($49/mo)</span><span className="font-bold">8 full sweeps / month</span></li>
+              <li className="flex justify-between"><span>Business ($199/mo)</span><span className="font-bold">20 full sweeps / month</span></li>
             </ul>
           </div>
           <div className="bg-white border border-zinc-200 rounded-2xl p-6">
