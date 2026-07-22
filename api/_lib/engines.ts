@@ -39,7 +39,10 @@ async function askClaude(query: string): Promise<EngineAnswer> {
   if (!key) throw new MissingKeyError('ANTHROPIC_API_KEY');
   const client = new Anthropic({ apiKey: key });
   const model = process.env.SWEEP_CLAUDE_MODEL || 'claude-opus-4-8';
-  const tools = [{ type: 'web_search_20260209' as const, name: 'web_search' as const }];
+  // Basic web-search variant: works on ALL Claude models (Haiku→Opus). The
+  // _20260209 dynamic-filtering variant is Opus/Sonnet-tier ONLY and 400s on
+  // Haiku — so use basic here since SWEEP_CLAUDE_MODEL may be a cheap tier.
+  const tools = [{ type: 'web_search_20250305' as const, name: 'web_search' as const }];
 
   let messages: any[] = [{ role: 'user', content: query }];
   let resp: any = await client.messages.create({ model, max_tokens: 2048, tools: tools as any, messages });
