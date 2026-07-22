@@ -2,7 +2,17 @@
 
 **App:** AEO Analyzers · **Live:** https://www.aeoanalyzers.com · **Repo:** lhiebert01/aeoanalyzers
 **Publisher:** PI GenAI LLC · **Founder:** Lindsay Hiebert
-**Version:** v1.6.0 · **Last updated:** 2026-07-01 · **Hosting:** Vercel (project `aeo-app1`)
+**Version:** v1.7.0 · **Last updated:** 2026-07-22 · **Hosting:** Vercel (project `aeo-app1`)
+
+> **v1.7.0 (2026-07-22) — Measurement-loop platform (WO-AEO-PLATFORM-001 + DOGFOOD-001 + ADDENDUM-002):**
+> Adds the post-fix measurement loop on top of the diagnostic. All deterministic cores tested (96 tests).
+> - **WO-1 Tested Citation Sweeps** — `api/run-sweep` asks Claude/OpenAI/Perplexity/Gemini (web search on) N× per query; grounded (LLM-free) citation detection → three-layer model (retrievability / citation win) + "cited instead" competitor list + per-sweep cost + stored transcripts. New **Sweeps** dashboard tab (`src/components/SweepDashboard.tsx`). Libs: `citationSweep`.
+> - **WO-2 Answer Fidelity** — `api/score-fidelity`, `truthRecord` + `fidelity` + `factClassification`: diffs engine answers vs the client's canonical truth record; deterministic founder-misattribution detector (the Jesper-Nissen case) + conflation/reranker/fabrication/staleness classification.
+> - **WO-3 AI Crawler Telemetry** — `botClassify` (versioned UA registry → Live/Search/Training tiers + vendor/status/consequence), `middleware.ts` (pass-through beacon), `api/bot-hit` + `api/bot-stats`, `bot_hits` table.
+> - **WO-4/5/6/7** — `pickRate` (crawl-vs-cite), `driftDiff` (`api/drift-check`, truth-record baseline), `api/action-plan` (stateful plans), `authorityGap` (POSSE, no parasite; pollution signal).
+> - **WO-8 + dogfood** — `indexCoverage` (Bing signal, non-JS render test, `namespaceCollision` risk); our own entity-conflation fix live (schema @graph, "AEO Analyzers by PI GenAI LLC", sole-creator title, llms.txt + footer disambiguation).
+>
+> **Activation:** provider API keys in Vercel + local `.env` (ANTHROPIC/OPENAI/PERPLEXITY/GEMINI). Supabase migrations run (query_panels, citation_sweeps, sweep_results, bot_hits, truth_records, action_plans). **Pending user action:** Bing Webmaster verification + recrawl (gates DOGFOOD-001 Part B N=5 re-measure). See RELEASE-NOTES.md.
 
 > **v1.6.0 (2026-07-01):** Closed five AEO blind spots from an independent audit:
 > (1) **AI crawler-access gate** — `api/fetch-site` now returns robots.txt + llms.txt;

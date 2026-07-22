@@ -1,5 +1,20 @@
 # Release Notes
 
+## v1.7.0 — July 22, 2026
+
+### Measurement-loop platform (WO-AEO-PLATFORM-001 + DOGFOOD-001 + ADDENDUM-002)
+
+Turns the point-in-time diagnostic into a continuous, honest measurement loop. Core principle: report three separable layers — **Retrievability** (branded), **Fidelity** (matches truth record), **Citation Win** (category) — each with its own fix path, every score backed by a stored transcript. Never present a category-citation zero as "AI can't find you."
+
+- **WO-1 Tested Citation Sweeps** — `api/run-sweep` asks Claude/OpenAI/Perplexity/Gemini with web search on, N× per query; grounded (LLM-free) citation + "cited instead" detection → three-layer roll-up + per-sweep cost + stored transcripts. New **Sweeps** dashboard tab. Live smoke test verified end-to-end (all 4 engines, persisted).
+- **WO-2 Answer Fidelity** — truth-record extraction + founder-misattribution detector (the Jesper-Nissen case) + conflation/reranker/fabrication/staleness classification (`api/score-fidelity`).
+- **WO-3 AI Crawler Telemetry** — versioned UA registry (Live/Search/Training + vendor/status/consequence), pass-through edge middleware, `api/bot-hit`/`api/bot-stats`.
+- **WO-4/5/6/7** — crawl-vs-cite pick rate, deployment-drift monitor, stateful action plans, POSSE-bounded authority-gap report (no parasite tactics) + pollution signal.
+- **WO-8 + DOGFOOD-001** — index-coverage scan (Bing signal, non-JS render test, namespace-collision risk); our own entity-conflation fix shipped live (connected @graph, "AEO Analyzers by PI GenAI LLC", "Founder & Sole Creator", llms.txt + footer disambiguation).
+- **ADDENDUM-002** — registry token lifecycle status; POSSE/parasite boundary; repo `CLAUDE.md` feature test ("accuracy vs exploiting blind spots"); audit-what-is-served rule.
+
+96 deterministic-core tests. Activation: provider keys in Vercel/`.env`; Supabase migrations run. Pending: Bing Webmaster verification + recrawl (gates DOGFOOD-001 Part B N=5 re-measure).
+
 ## v1.6.0 — July 1, 2026
 
 ### Closing the AEO blind spots an independent Claude.ai audit found
