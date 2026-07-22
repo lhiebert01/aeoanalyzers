@@ -42,24 +42,28 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
       a: "Answer Engine Optimization (AEO) is the process of making your site 'AI-Readable'. As users move from typing keywords into Google to asking questions to AI agents like ChatGPT, Gemini, and Perplexity, your site must be semantically structured to be cited as the primary source of truth."
     },
     {
-      q: "How much does AEO Analyzers cost?",
-      a: "AEO Analyzers starts with a free tier for your first analysis. Pro plans start at $49/month, providing unlimited analysis, competitive benchmarking, and full technical roadmaps."
-    },
-    {
       q: "What does AEO Analyzers actually do?",
-      a: "It analyzes how AI answer engines would read and cite your website — auditing your semantic structure, JSON-LD schema, and content density — to give you an AEO Score, a Citation Probability, and the fixes to improve them."
+      a: "Two things. First, it diagnoses your site — an AEO Score, a Citation Probability, and the exact fixes (paste-ready JSON-LD schema, content rewrites, a developer-ready report). Second, it proves the result with live Citation Sweeps: it asks the real AI engines — ChatGPT, Claude, Perplexity, and Gemini — your buyers' questions and shows whether they actually cite you, who they cite instead, and the exact answers they gave."
     },
     {
-      q: "How do I set up AEO for my website?",
-      a: "Start by running an analysis here. We'll provide you with the exact JSON-LD code snippets and technical fixes needed to improve your visibility. Most fixes can be implemented in under 30 minutes."
+      q: "What is a Citation Sweep and what does it measure?",
+      a: "A Citation Sweep runs your buyers' questions against the real answer engines, multiple times each, and measures three separate things — Retrievability (does AI find you when asked about your brand), Fidelity (does AI's answer about you match the facts), and Citation Win (does AI pick you for category questions like 'best [category] tools'). Every result is backed by a stored transcript you can read."
     },
     {
-      q: "Does AEO Analyzers support e-commerce?",
-      a: "Yes. AI shopping assistants rely on 'Product' and 'Review' Schema to recommend items. We audit your store to ensure you're not invisible to these new AI buyers."
+      q: "How do you catch facts AI gets wrong about my business?",
+      a: "We build a 'truth record' from your own structured data and site, then compare each AI engine's answer against it. If an engine invents a fact — a wrong founder, a stale price, a feature you don't have — we flag it with the correct value and the fix. No other AEO tool measures whether AI is telling the truth about you."
     },
     {
-      q: "Is AEO Analyzers free?",
-      a: "Yes, we offer a free tier that allows you to run your first full AEO audit or competitive duel to see where you stand."
+      q: "How much does AEO Analyzers cost, and what are Citation Sweeps limited to?",
+      a: "Start free — a full AEO analysis plus a single-engine Quick Check on Google/Gemini. Day Pass is $24 for 24 hours (includes 1 sweep), Pro is $49/month (unlimited analysis + 3 sweeps/month), and Business is $199/month (12 sweeps/month). A full sweep runs across all four engines with stored transcripts."
+    },
+    {
+      q: "How is this different from other AEO tools?",
+      a: "Most tools hand you a score and stop — and some report a scary 'you're invisible to AI' that falls apart the moment you test it live. We report three separable, honest layers, each backed by the actual engine transcript. Our promise: run the query yourself and you'll get what our report says."
+    },
+    {
+      q: "Does AEO Analyzers support e-commerce, Shopify, WordPress, or custom apps?",
+      a: "Yes. AI shopping assistants rely on 'Product' and 'Review' Schema, and machine-readability is the same whether you run a CMS or a custom React/Next.js app. We audit your public HTML and metadata regardless of your stack, and sweeps work for any domain."
     }
   ];
 
@@ -81,7 +85,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
       <div className="bg-emerald-100 border-y border-emerald-200 py-3.5 px-6 text-center sticky top-0 z-50 backdrop-blur-md bg-emerald-100/90">
         <p className="text-xs sm:text-sm font-black text-emerald-900 uppercase tracking-[0.15em] flex items-center justify-center gap-2">
           <ShieldCheck className="w-4 h-4" />
-          AI-powered Answer Engine Optimization — frontier-model analysis, real-world results.
+          Measurement honesty — every score backed by the real AI transcript. Run the query yourself.
         </p>
       </div>
 
@@ -110,7 +114,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           transition={{ delay: 0.1 }}
           className="text-zinc-500 text-xl md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. Most AEO tools hand you a score and walk away. AEO Analyzers shows you exactly <em>why</em> AI overlooks you — and gives you the fixes to change it: paste-ready schema, content rewrites, and a developer-ready report. In ~90 seconds, powered by Google Gemini.
+          Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. Most AEO tools hand you a score and walk away. AEO Analyzers shows you exactly <em>why</em> AI overlooks you and gives you the fixes — then <strong>proves it worked</strong> with live Citation Sweeps across ChatGPT, Claude, Perplexity, and Gemini, showing who they actually cite. Diagnose in ~90 seconds; measure the outcome for real.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -200,6 +204,37 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Measurement Loop Section — the new "prove it" layer */}
+      <section className="max-w-6xl mx-auto px-6 py-24" aria-labelledby="measure-title">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+            <BarChart3 className="w-3 h-3" /> New — Citation Sweeps
+          </div>
+          <h2 id="measure-title" className="text-4xl md:text-6xl font-black tracking-tight mb-6">Don't just optimize — <span className="text-zinc-400 italic font-serif">prove it.</span></h2>
+          <p className="text-zinc-500 text-xl max-w-3xl mx-auto leading-relaxed">
+            A score predicts. A <strong>Citation Sweep</strong> proves. We ask the real engines — ChatGPT, Claude, Perplexity, Gemini — your buyers' questions, multiple times each, and measure three separable layers. Every result is backed by the actual transcript.
+          </p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
+            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white mb-6"><Search className="w-6 h-6" /></div>
+            <h3 className="text-xl font-black mb-4">Retrievability</h3>
+            <p className="text-zinc-500 text-sm leading-relaxed">When someone asks AI about your brand by name, does it return a real answer? A health check that should be ~100%. A miss here is an indexing emergency.</p>
+          </div>
+          <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
+            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white mb-6"><ShieldCheck className="w-6 h-6" /></div>
+            <h3 className="text-xl font-black mb-4">Fidelity</h3>
+            <p className="text-zinc-500 text-sm leading-relaxed">Does AI's answer match the real facts about you? We catch fabricated founders, stale prices, and invented features — with the correct value and the fix. <em>No other tool measures this.</em></p>
+          </div>
+          <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
+            <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white mb-6"><Swords className="w-6 h-6" /></div>
+            <h3 className="text-xl font-black mb-4">Citation Win</h3>
+            <p className="text-zinc-500 text-sm leading-relaxed">For unbranded category questions ("best [category] tools"), does AI pick you — and if not, exactly who is <strong>cited instead</strong>? Your real competitive gap, in AI answers.</p>
+          </div>
+        </div>
+        <p className="text-center text-zinc-400 text-sm mt-8 max-w-2xl mx-auto">Plus AI-crawler telemetry (Live / Search / Training bot hits) and drift monitoring — so you know you're being read, and stay that way. <strong className="text-zinc-600">Free visitors</strong> get a single-engine Quick Check; <strong className="text-zinc-600">paid plans</strong> unlock the full multi-engine sweep with stored transcripts.</p>
       </section>
 
       {/* Trust & Authority Section */}

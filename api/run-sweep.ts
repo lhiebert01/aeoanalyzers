@@ -27,8 +27,13 @@ export const config = { maxDuration: 300 };
 const ALL_ENGINES: Engine[] = ['claude', 'openai', 'perplexity', 'gemini'];
 
 const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com'];
-// Monthly sweep quota per tier — the real-money spend guardrail.
-const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, Business: 20, Pro: 8, daypass: 3 };
+// Monthly sweep quota per tier — the real-money spend guardrail. Set so that,
+// with a size-capped sweep (~$4 COGS on economical models), gross margin stays
+// ≥70% even at max usage: Day Pass ~79%, Pro ~72%, Business ~73%.
+const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, Business: 12, Pro: 3, daypass: 1 };
+// One paid sweep is bounded so its cost (and margin) is predictable.
+const MAX_QUERIES_PER_SWEEP = 15;
+const MAX_RUNS_PER_SWEEP = 3;
 
 class HttpError extends Error {
   constructor(public status: number, message: string) { super(message); }
@@ -110,6 +115,19 @@ async function pool<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>
   return results;
 }
 
+/** Pre-flight: confirm the domain actually resolves before a paid sweep spends
+ *  money/quota on a typo. Any HTTP response (even 403) means the host exists;
+ *  only a DNS/connection failure (throw on both attempts) means "unreachable". */
+async function domainResolves(domain: string): Promise<boolean> {
+  const base = /^https?:\/\//.test(domain) ? domain : `https://${domain}`;
+  const try1 = async (u: string, ms: number) => {
+    await fetch(u, { method: 'GET', redirect: 'follow', signal: AbortSignal.timeout(ms), headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AEOAnalyzers/1.0)' } });
+    return true;
+  };
+  try { return await try1(base, 8000); }
+  catch { try { return await try1(base.replace(/^https:/, 'http:'), 6000); } catch { return false; } }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -146,6 +164,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       categoryQueries = categoryQueries.slice(0, 1);
       runsPerQuery = 1;
       persist = false;
+    } else if (access.tier !== 'admin') {
+      // Bound one paid sweep's size so its cost (and margin) is predictable:
+      // total queries ≤ MAX_QUERIES_PER_SWEEP, runs ≤ MAX_RUNS_PER_SWEEP.
+      brandedQueries = brandedQueries.slice(0, MAX_QUERIES_PER_SWEEP);
+      const remaining = Math.max(0, MAX_QUERIES_PER_SWEEP - brandedQueries.length);
+      categoryQueries = categoryQueries.slice(0, remaining);
+      runsPerQuery = Math.min(runsPerQuery, MAX_RUNS_PER_SWEEP);
     }
 
     const configured = configuredEngines();
@@ -161,6 +186,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         detail: 'Set ANTHROPIC_API_KEY / OPENAI_API_KEY / PERPLEXITY_API_KEY / GEMINI_API_KEY in the environment.',
         configured,
       });
+    }
+
+    // Pre-flight for PAID sweeps: a domain that doesn't resolve is almost always
+    // a typo — reject BEFORE spending a sweep or counting quota ("No sweep used").
+    if (!access.quickCheck) {
+      const ok = await domainResolves(domain);
+      if (!ok) return res.status(400).json({ error: `We couldn't reach "${domain}" — please check the spelling. No sweep was used.` });
     }
 
     // Build the full task matrix.

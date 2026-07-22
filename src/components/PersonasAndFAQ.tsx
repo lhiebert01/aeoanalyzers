@@ -98,6 +98,49 @@ const userFaqs: FAQItem[] = [
   }
 ];
 
+const measurementFaqs: FAQItem[] = [
+  {
+    question: "What's the difference between the AEO Score and a Citation Sweep?",
+    answer: "The AEO Score is a fast diagnostic — it analyzes your page and predicts how citable you are, then hands you the fixes. A Citation Sweep is live proof: it actually asks ChatGPT, Claude, Perplexity, and Gemini your buyers' questions and shows whether they cite you, who they cite instead, and the exact answers they gave — every result backed by a stored transcript you can read."
+  },
+  {
+    question: "What does a Citation Sweep actually measure?",
+    answer: "Three separate things — because collapsing them into one number hides the truth. (1) Retrievability: can AI find you when someone asks about your brand by name (should be ~100%). (2) Fidelity: does the AI's answer match the real facts about you. (3) Citation Win: when someone asks an unbranded category question like 'best [category] tools,' does the AI pick you. Each layer has its own fix path."
+  },
+  {
+    question: "What is Answer Fidelity — how do you catch facts AI gets wrong about me?",
+    answer: "We build a 'truth record' from your own structured data and site, then compare each engine's answer against it. If an engine invents a fact — a wrong founder, a stale price, a feature you don't have — we flag it with the correct value and the source to fix it. No other AEO tool measures whether AI is telling the truth about you."
+  },
+  {
+    question: "Who gets 'cited instead' of me?",
+    answer: "On category queries, a sweep records exactly which competitors the AI names in your place, and how often — so you see your real competitive gap in AI answers, not just a score in a vacuum."
+  },
+  {
+    question: "Can you show me when AI bots crawl my site?",
+    answer: "Yes. AI crawlers don't run JavaScript, so normal analytics never see them. Our telemetry captures them server-side and sorts them into three tiers: Live (a person just asked an AI and it fetched your page to answer them), Search (indexing for answer engines), and Training (knowledge ingestion) — so you know whether you're actually being read, and for what."
+  },
+  {
+    question: "How many Citation Sweeps do I get, and what do they cost me?",
+    answer: "Sweeps are included with paid plans: Day Pass includes 1, Pro includes 3 per month, and Business includes 12 per month. Anyone — even signed-out visitors — can run a free single-engine Quick Check on Google/Gemini to preview their citability before upgrading."
+  },
+  {
+    question: "How is this different from other AEO tools?",
+    answer: "Most tools hand you a score and stop — and some report a scary 'you're invisible to AI' that falls apart the moment you test it live. We report three separable layers, each backed by the actual engine transcript. Our promise: run the query yourself and you'll get what our report says."
+  }
+];
+
+const glossary: { term: string; def: string }[] = [
+  { term: "AEO (Answer Engine Optimization)", def: "Optimizing your site so AI answer engines — ChatGPT, Gemini, Perplexity, Claude — find, trust, and cite it as the source." },
+  { term: "Citation Sweep", def: "A live test that asks the real AI engines your buyers' questions, multiple times each, and measures whether they cite you." },
+  { term: "Retrievability", def: "Whether AI returns a real answer when someone asks about your brand by name. A health check — should be ~100%." },
+  { term: "Fidelity", def: "Whether the AI's answer about you is factually correct, checked against your canonical truth record." },
+  { term: "Citation Win", def: "Whether AI picks you for an unbranded category question ('best [category] tools'). The competitive metric." },
+  { term: "Cited Instead", def: "The competitors an AI names in your place on a category query." },
+  { term: "Truth Record", def: "The canonical facts about you (from your schema and llms.txt) that AI answers are checked against." },
+  { term: "Quick Check", def: "The free, single-engine (Google/Gemini) citability preview available to everyone." },
+  { term: "AI Crawler Tiers", def: "Live (a human just asked, the engine fetched your page now), Search (indexing), Training (knowledge ingestion) — each means something different for your visibility." },
+];
+
 const adminFaqs: FAQItem[] = [
   {
     question: "How do I manage users who have lost their passwords?",
@@ -206,6 +249,25 @@ export default function PersonasAndFAQ() {
             </div>
           </div>
 
+          {/* Measurement & Monitoring FAQ */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-black tracking-tight flex items-center gap-3 px-4">
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+              Measurement &amp; Monitoring (Citation Sweeps)
+            </h3>
+            <div className="space-y-3">
+              {measurementFaqs.map((faq, idx) => (
+                <AccordionItem
+                  key={idx + 200}
+                  idx={idx + 200}
+                  isOpen={openFaq === idx + 200}
+                  onToggle={() => setOpenFaq(openFaq === idx + 200 ? null : idx + 200)}
+                  {...faq}
+                />
+              ))}
+            </div>
+          </div>
+
           {/* Admin FAQ */}
           <div className="space-y-6">
             <h3 className="text-xl font-black tracking-tight flex items-center gap-3 px-4">
@@ -224,6 +286,23 @@ export default function PersonasAndFAQ() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Glossary Section */}
+      <section className="space-y-12">
+        <div className="flex items-center gap-4">
+          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">03</span>
+          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Glossary</h2>
+          <div className="h-px flex-1 bg-zinc-100" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          {glossary.map((g) => (
+            <div key={g.term} className="bg-zinc-50/50 border border-zinc-100 rounded-2xl p-5">
+              <div className="font-black text-sm text-zinc-900">{g.term}</div>
+              <p className="text-sm text-zinc-500 leading-relaxed mt-1.5">{g.def}</p>
+            </div>
+          ))}
         </div>
       </section>
 

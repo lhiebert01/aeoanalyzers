@@ -10,11 +10,11 @@ const PLANS = [
     period: '/mo',
     description: 'Perfect for freelance developers and small marketing teams.',
     features: [
-      '50 analyses per month',
-      'Full detailed breakdown',
-      'Optimization roadmap',
-      'Historical score tracking',
-      'PDF report exports'
+      '3 Citation Sweeps / mo — all 4 AI engines, with transcripts',
+      'Unlimited AEO analyses & fixes',
+      'Answer-fidelity + competitor “cited instead” list',
+      'Historical score & citation tracking',
+      'DOCX / PDF report exports'
     ],
     buttonText: 'Upgrade to Pro',
     popular: true
@@ -26,11 +26,11 @@ const PLANS = [
     period: '/mo',
     description: 'For mid-sized agencies and growing SaaS companies.',
     features: [
-      '500 analyses per month',
-      'Competitor benchmarking',
-      'API access for CI/CD',
-      'Priority AI processing',
-      'Team collaboration tools'
+      '12 Citation Sweeps / mo — all 4 AI engines, with transcripts',
+      'Unlimited AEO analyses & fixes',
+      'AI-crawler telemetry & drift monitoring',
+      'Competitor benchmarking & authority-gap report',
+      'Priority processing & team tools'
     ],
     buttonText: 'Upgrade to Business',
     popular: false
@@ -138,12 +138,12 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                   {[
+                    '1 Citation Sweep (all 4 AI engines)',
                     'Full implementation roadmap',
                     'Paste-ready JSON-LD (verified)',
                     'Before/after content rewrites',
                     'Word (.docx) report + handoff',
                     'Unlimited analyses for 24 hours',
-                    'Expires automatically — no renewal',
                   ].map((f, i) => (
                     <div key={i} className="flex items-start gap-2 text-sm text-zinc-200">
                       <Check className="w-4 h-4 text-amber-300 mt-0.5 shrink-0" />
@@ -223,14 +223,40 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
         ))}
       </div>
 
-      <div className="mt-16 p-8 bg-zinc-50 border border-zinc-200 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8">
+      {/* Entitlements & add-ons — make caps and extras explicit */}
+      <div className="mt-16 max-w-4xl mx-auto">
+        <h3 className="text-2xl font-bold tracking-tight text-center mb-2">What's included — and what counts as a Sweep</h3>
+        <p className="text-zinc-500 text-center mb-8 max-w-2xl mx-auto">The AEO diagnostic (score + fixes) is unlimited on every paid plan. <strong className="text-zinc-700">Citation Sweeps</strong> — the live multi-engine measurement — are the metered entitlement.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6">
+            <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Included Citation Sweeps</div>
+            <ul className="space-y-2 text-sm text-zinc-700">
+              <li className="flex justify-between"><span>Free</span><span className="font-bold text-zinc-500">1 Quick Check (Google/Gemini)</span></li>
+              <li className="flex justify-between"><span>Day Pass ($24)</span><span className="font-bold">1 full sweep</span></li>
+              <li className="flex justify-between"><span>Pro ($49/mo)</span><span className="font-bold">3 full sweeps / month</span></li>
+              <li className="flex justify-between"><span>Business ($199/mo)</span><span className="font-bold">12 full sweeps / month</span></li>
+            </ul>
+          </div>
+          <div className="bg-white border border-zinc-200 rounded-2xl p-6">
+            <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">What one Sweep covers</div>
+            <ul className="space-y-2 text-sm text-zinc-600">
+              <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>One domain, all 4 engines (ChatGPT, Claude, Perplexity, Gemini)</span></li>
+              <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>Up to 15 questions × 3 runs each, with stored transcripts</span></li>
+              <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>Same price for a 1-page site or a 100,000-page site — a sweep asks the engines, it doesn't crawl your pages</span></li>
+            </ul>
+          </div>
+        </div>
+        <p className="text-center text-zinc-400 text-sm mt-6">Need more sweeps than your plan includes? <strong className="text-zinc-600">Add-on sweep credits</strong> and higher-volume monitoring are available — <a href="#" onClick={(e) => e.preventDefault()} className="underline">contact us</a> or upgrade your plan.</p>
+      </div>
+
+      <div className="mt-12 p-8 bg-zinc-50 border border-zinc-200 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="flex items-center gap-6">
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-zinc-100">
             <ShieldCheck className="w-8 h-8 text-zinc-900" />
           </div>
           <div>
-            <h4 className="font-bold text-lg">Enterprise Custom</h4>
-            <p className="text-zinc-500 text-sm">Need unlimited analyses or custom AI fine-tuning?</p>
+            <h4 className="font-bold text-lg">Enterprise & Agencies</h4>
+            <p className="text-zinc-500 text-sm">Need high-volume sweeps, more monitored domains, or white-label reports?</p>
           </div>
         </div>
         <button className="px-8 py-3 bg-white border border-zinc-200 rounded-xl font-bold hover:bg-zinc-50 transition-all">
