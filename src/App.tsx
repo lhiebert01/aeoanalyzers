@@ -398,9 +398,36 @@ export default function App() {
     }
   };
 
+  // Graceful URL input: accept "example.com", "www.example.com", "http://…",
+  // "https://…/path" — normalize to a canonical https:// URL. Returns '' if the
+  // input can't be a real host.
+  const normalizeUrl = (raw: string): string => {
+    let s = (raw || '').trim().replace(/^@+/, '').replace(/\s+/g, '');
+    if (!s) return '';
+    if (!/^https?:\/\//i.test(s)) s = 'https://' + s.replace(/^\/+/, '');
+    try {
+      const u = new URL(s);
+      if (!u.hostname.includes('.') || /\s/.test(u.hostname)) return '';
+      return u.toString().replace(/\/$/, '');
+    } catch {
+      return '';
+    }
+  };
+
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url) return;
+    const aUrl = normalizeUrl(url);
+    if (!aUrl) {
+      setError('Please enter a valid website — e.g. example.com, www.example.com, or https://example.com');
+      return;
+    }
+    if (aUrl !== url) setUrl(aUrl); // reflect the cleaned URL back to the input
+    const aCompetitor = isDuel && competitorUrl ? normalizeUrl(competitorUrl) : '';
+    if (isDuel && competitorUrl && !aCompetitor) {
+      setError('Please enter a valid competitor website.');
+      return;
+    }
+    if (aCompetitor && aCompetitor !== competitorUrl) setCompetitorUrl(aCompetitor);
 
     // Check Free Tier Limit (Day Pass also grants full access during its 24h window)
     const isPro = isPaidUser;
@@ -421,13 +448,13 @@ export default function App() {
     setIsViewingHistory(false);
 
     try {
-      trackEvent('analysis_start', { isDuel, url });
-      if (isDuel && competitorUrl) {
+      trackEvent('analysis_start', { isDuel, url: aUrl });
+      if (isDuel && aCompetitor) {
         const [site1, site2] = await Promise.all([
-          fetchHtml(url),
-          fetchHtml(competitorUrl)
+          fetchHtml(aUrl),
+          fetchHtml(aCompetitor)
         ]);
-        const duel = await performCompetitiveDuel(url, site1.html, competitorUrl, site2.html, site1.crawler, site2.crawler);
+        const duel = await performCompetitiveDuel(aUrl, site1.html, aCompetitor, site2.html, site1.crawler, site2.crawler);
         setDuelResult(duel);
         setLoading(false);
 
@@ -445,15 +472,15 @@ export default function App() {
               ...duel.user,
               competitorScore: duel.competitor.score
             },
-            url,
-            competitorUrl
+            aUrl,
+            aCompetitor
           ).catch(console.error);
           updateUsageCount().catch(console.error);
         }
         trackEvent('analysis_complete', { type: 'duel', winner: duel.winner });
       } else {
-        const site = await fetchHtml(url);
-        const analysis = await analyzeWebsite(url, site.html, site.crawler);
+        const site = await fetchHtml(aUrl);
+        const analysis = await analyzeWebsite(aUrl, site.html, site.crawler);
         setResult(analysis);
         setLoading(false);
 
@@ -466,7 +493,7 @@ export default function App() {
 
         // Save to DB in background (don't block UI)
         if (user) {
-          saveToHistory(analysis, url).catch(console.error);
+          saveToHistory(analysis, aUrl).catch(console.error);
           updateUsageCount().catch(console.error);
         }
         trackEvent('analysis_complete', { type: 'single', score: analysis.score });
@@ -1034,7 +1061,7 @@ export default function App() {
                         <Globe className="w-6 h-6 text-zinc-400 mr-4" />
                         <input 
                           type="url" 
-                          placeholder="Your Website URL"
+                          placeholder="Your website — e.g. example.com"
                           aria-label="Your Website URL"
                           className="w-full bg-transparent border-none focus:ring-0 text-zinc-900 font-bold placeholder:text-zinc-300 py-4 text-lg"
                           value={url}
