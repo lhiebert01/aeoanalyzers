@@ -41,4 +41,15 @@ describe('botClassify (WO-3)', () => {
     expect(TIER_DEFINITIONS.search).toMatch(/Bing/);
     expect(TIER_DEFINITIONS.training).toMatch(/not an endorsement/i);
   });
+
+  it('carries token lifecycle status + consequence (ADDENDUM-002 #2)', () => {
+    expect(classifyUserAgent('GPTBot/1.1')?.status).toBe('active');
+    expect(classifyUserAgent('anthropic-ai/0.1')?.status).toBe('legacy');
+    expect(classifyUserAgent('Grok/1.0')?.status).toBe('unstable');
+    expect(classifyUserAgent('Grok/1.0')?.vendor).toBe('xAI');
+    // Applebot vs Applebot-Extended are distinct consequences, not conflated.
+    expect(classifyUserAgent('Applebot-Extended/1.0')?.consequence).toMatch(/training/i);
+    expect(classifyUserAgent('Applebot/0.1')?.consequence).toMatch(/Siri|Spotlight/i);
+    expect(classifyUserAgent('ChatGPT-User/1.0')?.consequence).toMatch(/live retrieval/i);
+  });
 });

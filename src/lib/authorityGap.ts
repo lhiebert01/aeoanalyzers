@@ -29,6 +29,10 @@ export interface AuthorityGapReport {
   authorityDomains: AuthoritySource[];
   /** Prioritized "get listed here" recommendations. */
   recommendations: string[];
+  /** ADDENDUM-002 #4: a single third-party operator saturating the category's
+   *  retrieval surfaces — the mechanism behind entity conflation (Nissen). Feeds
+   *  the WO-2 classifier as a conflation-risk driver. Null when no domination. */
+  pollutionSignal: { domain: string; citations: number; sharePct: number } | null;
 }
 
 // Domains answer engines disproportionately trust as category authorities.
@@ -94,5 +98,27 @@ export function aggregateAuthorityGap(runs: RunLike[], clientDomain: string): Au
     recommendations.push('No third-party sources were cited across these runs — either the queries were answered from training data (search-off) or coverage is thin. Run with search enabled and expand the category query panel.');
   }
 
-  return { authorityDomains, recommendations };
+  // ADDENDUM-002 #4: POSSE, not parasite. This boundary is non-negotiable.
+  if (authorityDomains.length) {
+    recommendations.push(
+      'Follow POSSE (Publish on your Own Site, Syndicate Elsewhere): keep the canonical version on your domain, and where you syndicate, attribute + link back and set canonical/og per placement. Do NOT host content on a high-authority platform purely to borrow its ranking (parasite SEO / Perplexity-Pages seeding) — Google’s site-reputation-abuse enforcement makes that a crash risk and the equity accrues to the host, not you.'
+    );
+  }
+
+  // ADDENDUM-002 #4: pollution signal — one non-client operator saturating the
+  // category retrieval space is the conflation mechanism (feeds the WO-2 classifier).
+  const totalCitations = authorityDomains.reduce((s, d) => s + d.citations, 0);
+  const top = authorityDomains[0];
+  let pollutionSignal: AuthorityGapReport['pollutionSignal'] = null;
+  if (top && totalCitations >= 4) {
+    const sharePct = Math.round((top.citations / totalCitations) * 100);
+    if (sharePct >= 45 && top.citations >= 3) {
+      pollutionSignal = { domain: top.domain, citations: top.citations, sharePct };
+      recommendations.push(
+        `Conflation-risk driver: ${top.domain} dominates your category’s cited sources (${sharePct}% of citations). When one third-party operator saturates the retrieval surface, engines can merge its entity with yours — pair the authority actions above with the disambiguation counter-signals (WO-8 / entity graph).`
+      );
+    }
+  }
+
+  return { authorityDomains, recommendations, pollutionSignal };
 }

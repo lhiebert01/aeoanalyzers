@@ -20,9 +20,10 @@ import SEO from './components/SEO';
 import AdvancedAnalysisCards from './components/AdvancedAnalysisCards';
 import CrawlerAccessCard from './components/CrawlerAccessCard';
 import IndexCoverageCard from './components/IndexCoverageCard';
+import SweepDashboard from './components/SweepDashboard';
 import { getOrganizationJsonLd, getWebSiteJsonLd, getBreadcrumbJsonLd } from './lib/json-ld';
 
-type View = 'analyzer' | 'history' | 'payments' | 'settings' | 'auth' | 'admin' | 'guide' | 'landing' | 'privacy' | 'terms' | 'press';
+type View = 'analyzer' | 'sweeps' | 'history' | 'payments' | 'settings' | 'auth' | 'admin' | 'guide' | 'landing' | 'privacy' | 'terms' | 'press';
 
 // Simple GA4 Tracking Hook
 const useGA4 = () => {
@@ -590,6 +591,7 @@ export default function App() {
                 <>
                   <div className="w-px h-6 bg-zinc-200 mx-2" />
                   <NavButton active={view === 'analyzer'} onClick={() => navigateTo('analyzer')} icon={<LayoutDashboard className="w-4 h-4" />} label="Analyzer" />
+                  <NavButton active={view === 'sweeps'} onClick={() => navigateTo('sweeps')} icon={<BarChart3 className="w-4 h-4" />} label="Sweeps" />
                   <NavButton active={view === 'history'} onClick={() => navigateTo('history')} icon={<History className="w-4 h-4" />} label="History" />
                   <NavButton active={view === 'payments'} onClick={() => navigateTo('payments')} icon={<CreditCard className="w-4 h-4" />} label="Pricing" />
                 </>
@@ -667,6 +669,7 @@ export default function App() {
                 {user && (
                   <>
                     <NavButton active={view === 'analyzer'} onClick={() => navigateTo('analyzer')} icon={<LayoutDashboard className="w-4 h-4" />} label="Analyzer" />
+                    <NavButton active={view === 'sweeps'} onClick={() => navigateTo('sweeps')} icon={<BarChart3 className="w-4 h-4" />} label="Sweeps" />
                     <NavButton active={view === 'history'} onClick={() => navigateTo('history')} icon={<History className="w-4 h-4" />} label="History" />
                     <NavButton active={view === 'payments'} onClick={() => navigateTo('payments')} icon={<CreditCard className="w-4 h-4" />} label="Pricing" />
                   </>
@@ -871,8 +874,20 @@ export default function App() {
             </motion.div>
           )}
 
+          {view === 'sweeps' && (
+            <motion.div
+              key="sweeps"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="px-6"
+            >
+              <SweepDashboard />
+            </motion.div>
+          )}
+
           {view === 'history' && user && (
-            <motion.div 
+            <motion.div
               key="history"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
