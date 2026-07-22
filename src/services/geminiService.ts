@@ -178,19 +178,17 @@ export interface CompetitiveResult {
 }
 
 // Flash models in priority order — best quality first, then stable fallbacks.
-// Verified against https://ai.google.dev/gemini-api/docs/models (2026-05-29).
-// The previous chain started with gemini-3-flash-preview (now DEPRECATED) and
-// gemini-3.1-flash-lite-preview (wrong ID — the stable one has no "-preview"),
-// which both 503'd and forced every run onto 2.5-flash.
-// 1. gemini-3.5-flash:       Latest stable, most intelligent (Stable)
-// 2. gemini-3.1-flash-lite:  Stable, fast/efficient workhorse (Stable)
-// 3. gemini-2.5-flash:       Stable production fallback (Stable)
-// 4. gemini-2.5-flash-lite:  Stable lightweight, always available (Stable)
+// Verified against https://ai.google.dev/gemini-api/docs/models (2026-07-22).
+// 1. gemini-3.6-flash:       Latest (Jul 21 2026) — better quality + fewer output
+//                            tokens than 3.5-flash, and cheaper ($1.50/$7.50 vs $1.50/$9.00).
+// 2. gemini-3.5-flash:       Stable, most intelligent prior gen (fallback).
+// 3. gemini-3.5-flash-lite:  Fastest/cheapest 3.5-class ($0.30/$2.50) (fallback).
+// 4. gemini-2.5-flash:       Stable production fallback, always available.
 const MODELS = [
+  "gemini-3.6-flash",
   "gemini-3.5-flash",
-  "gemini-3.1-flash-lite",
+  "gemini-3.5-flash-lite",
   "gemini-2.5-flash",
-  "gemini-2.5-flash-lite",
 ];
 
 // Tolerant JSON parse for model output. Even with responseMimeType:json +

@@ -135,7 +135,7 @@ async function askGemini(query: string): Promise<EngineAnswer> {
   const key = process.env.GEMINI_API_KEY || (process.env.VITE_DEV_GEMINI_KEY as string);
   if (!key) throw new MissingKeyError('GEMINI_API_KEY');
   const ai = new GoogleGenAI({ apiKey: key });
-  const model = process.env.SWEEP_GEMINI_MODEL || 'gemini-2.5-flash';
+  const model = process.env.SWEEP_GEMINI_MODEL || 'gemini-3.6-flash';
   const resp: any = await ai.models.generateContent({
     model,
     contents: query,
