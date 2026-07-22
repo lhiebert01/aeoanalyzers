@@ -31,8 +31,9 @@ const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com']
 // with a size-capped sweep (~$4 COGS on economical models), gross margin stays
 // ≥70% even at max usage: Day Pass ~79%, Pro ~72%, Business ~73%.
 const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, Business: 12, Pro: 3, daypass: 1 };
-// One paid sweep is bounded so its cost (and margin) is predictable.
-const MAX_QUERIES_PER_SWEEP = 15;
+// One paid sweep is bounded by total query-runs (queries × runs) so it both fits
+// the serverless timeout (at concurrency 8) AND has predictable cost/margin.
+const MAX_QUERY_RUNS_PER_SWEEP = 15;
 const MAX_RUNS_PER_SWEEP = 3;
 
 class HttpError extends Error {
@@ -165,12 +166,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       runsPerQuery = 1;
       persist = false;
     } else if (access.tier !== 'admin') {
-      // Bound one paid sweep's size so its cost (and margin) is predictable:
-      // total queries ≤ MAX_QUERIES_PER_SWEEP, runs ≤ MAX_RUNS_PER_SWEEP.
-      brandedQueries = brandedQueries.slice(0, MAX_QUERIES_PER_SWEEP);
-      const remaining = Math.max(0, MAX_QUERIES_PER_SWEEP - brandedQueries.length);
-      categoryQueries = categoryQueries.slice(0, remaining);
+      // Bound total query-runs (queries × runs) so the sweep fits the timeout and
+      // has predictable cost: e.g. 5 queries × N3, or 15 queries × N1.
       runsPerQuery = Math.min(runsPerQuery, MAX_RUNS_PER_SWEEP);
+      const maxQueries = Math.max(1, Math.floor(MAX_QUERY_RUNS_PER_SWEEP / runsPerQuery));
+      brandedQueries = brandedQueries.slice(0, maxQueries);
+      const remaining = Math.max(0, maxQueries - brandedQueries.length);
+      categoryQueries = categoryQueries.slice(0, remaining);
     }
 
     const configured = configuredEngines();
@@ -204,7 +206,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         for (let r = 0; r < runsPerQuery; r++) tasks.push({ engine, query, queryType: 'category', runIndex: r });
     }
 
-    const CONCURRENCY = Number(process.env.SWEEP_CONCURRENCY || 4);
+    const CONCURRENCY = Number(process.env.SWEEP_CONCURRENCY || 8);
     const runs: SweepRunResult[] = await pool(tasks, CONCURRENCY, async (t) => {
       const base: SweepRunResult = {
         engine: t.engine, query: t.query, queryType: t.queryType, runIndex: t.runIndex,

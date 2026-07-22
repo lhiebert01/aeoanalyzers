@@ -241,7 +241,7 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
             <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">What one Sweep covers</div>
             <ul className="space-y-2 text-sm text-zinc-600">
               <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>One domain, all 4 engines (ChatGPT, Claude, Perplexity, Gemini)</span></li>
-              <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>Up to 15 questions × 3 runs each, with stored transcripts</span></li>
+              <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>Up to 15 query-runs (e.g., 5 questions × 3 runs), with stored transcripts</span></li>
               <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>Same price for a 1-page site or a 100,000-page site — a sweep asks the engines, it doesn't crawl your pages</span></li>
             </ul>
           </div>
