@@ -67,7 +67,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     <div className="space-y-24 pb-24">
       <SEO
         title="Be the Answer AI Gives"
-        description="AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — powered by Google Gemini 3.5 frontier model — and gives you the exact fixes, in 90 seconds."
+        description="AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — powered by Google Gemini frontier models — and gives you the exact fixes, in 90 seconds."
         ogType="website"
         author="Lindsay Hiebert"
         publishedDate="2026-03-22T00:00:00Z"
@@ -110,7 +110,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           transition={{ delay: 0.1 }}
           className="text-zinc-500 text-xl md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. Most AEO tools hand you a score and walk away. AEO Analyzers shows you exactly <em>why</em> AI overlooks you — and gives you the fixes to change it: paste-ready schema, content rewrites, and a developer-ready report. In ~90 seconds, powered by Google Gemini 3.5.
+          Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. Most AEO tools hand you a score and walk away. AEO Analyzers shows you exactly <em>why</em> AI overlooks you — and gives you the fixes to change it: paste-ready schema, content rewrites, and a developer-ready report. In ~90 seconds, powered by Google Gemini.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -223,7 +223,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
               <Target className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-black mb-4">Built for Every Answer Engine</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini 3.5, we analyze the universal signals every major answer engine — Gemini, ChatGPT, Perplexity — uses to decide what to cite. ~90 seconds, not hundreds of manual hours.</p>
+            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini, we analyze the universal signals every major answer engine — Gemini, ChatGPT, Perplexity — uses to decide what to cite. ~90 seconds, not hundreds of manual hours.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">
