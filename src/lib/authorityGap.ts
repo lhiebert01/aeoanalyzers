@@ -12,7 +12,15 @@
 //
 // Deterministic: it counts and ranks the sources the engines returned.
 
-import { normalizeDomain } from './citationSweep';
+// Local copy (kept standalone so this module has no runtime intra-lib import —
+// required for the ESM serverless functions that import it to resolve on Vercel).
+function normalizeDomain(input: string): string {
+  let s = String(input || '').trim().toLowerCase();
+  s = s.replace(/^[a-z]+:\/\//, '');
+  s = s.replace(/^www\./, '');
+  s = s.split('/')[0].split('?')[0].split('#')[0].split(':')[0];
+  return s;
+}
 
 export interface AuthoritySource {
   domain: string;

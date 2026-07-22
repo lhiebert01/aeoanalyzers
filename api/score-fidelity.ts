@@ -5,9 +5,9 @@
 // about you" list with the correction source for each.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { extractTruthRecord } from '../src/lib/truthRecord';
-import { scoreFidelity } from '../src/lib/fidelity';
-import { classifyFalseFact } from '../src/lib/factClassification';
+import { extractTruthRecord } from '../src/lib/truthRecord.js';
+import { scoreFidelity } from '../src/lib/fidelity.js';
+import { classifyFalseFact } from '../src/lib/factClassification.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });

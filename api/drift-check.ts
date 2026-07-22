@@ -7,8 +7,8 @@
 // Cron-friendly: a weekly job can fetch each client's page and POST here. (Wire a
 // vercel cron to a small iterator over truth_records if you want it hands-off.)
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { extractTruthRecord } from '../src/lib/truthRecord';
-import { diffTruthRecords } from '../src/lib/driftDiff';
+import { extractTruthRecord } from '../src/lib/truthRecord.js';
+import { diffTruthRecords } from '../src/lib/driftDiff.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });

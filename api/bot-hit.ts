@@ -10,7 +10,7 @@
 // answer-engine crawlers, so it stays small and meaningful.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { classifyUserAgent } from '../src/lib/botClassify';
+import { classifyUserAgent } from '../src/lib/botClassify.js';
 
 function hostFromUrl(u: string): string {
   try {

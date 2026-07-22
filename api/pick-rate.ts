@@ -2,7 +2,7 @@
 // Joins WO-3 crawl counts (bot_hits, by AI company) with the latest WO-1 sweep's
 // per-engine citation-win %. Heavy crawling != endorsement (see caption).
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { computePickRate } from '../src/lib/pickRate';
+import { computePickRate } from '../src/lib/pickRate.js';
 
 // Map sweep engine keys → the AI-company label used in bot_hits.engine.
 const ENGINE_COMPANY: Record<string, string> = {

@@ -12,14 +12,14 @@
 // transcript (returned, and persisted when a Supabase service key is present).
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { ENGINE_ADAPTERS, MissingKeyError, configuredEngines, type Engine } from './_lib/engines';
+import { ENGINE_ADAPTERS, MissingKeyError, configuredEngines, type Engine } from './_lib/engines.js';
 import {
   scoreRun,
   aggregateSweep,
   type SweepRunResult,
   type Competitor,
   type QueryType,
-} from '../src/lib/citationSweep';
+} from '../src/lib/citationSweep.js';
 
 // Vercel Fluid Compute allows long runs; a full sweep is many sequential calls.
 export const config = { maxDuration: 300 };
