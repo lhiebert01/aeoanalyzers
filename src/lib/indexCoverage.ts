@@ -33,6 +33,8 @@
  *  false positives. */
 export const THIN_TEXT_THRESHOLD = 600;
 
+import { namespaceCollisionRisk, type NamespaceCollisionResult } from './namespaceCollision';
+
 export interface IndexCoverageResult {
   // --- Bing Webmaster (measured: on-page signal only) ---
   /** A `<meta name="msvalidate.01">` Bing site-verification tag is present. */
@@ -50,6 +52,8 @@ export interface IndexCoverageResult {
   brandNameCandidate: string | null;
   /** Count of on-page `sameAs` profile URLs (already grounded to the page). */
   sameAsCount: number;
+  /** Name-based namespace-collision risk (entity-conflation pre-flag). */
+  collisionRisk: NamespaceCollisionResult;
 
   /** 0–100 index-coverage sub-score, for the report card. */
   score: number;
@@ -127,6 +131,7 @@ export function evaluateIndexCoverage(input: {
   const renderedTextLength = extractVisibleText(html).length;
   const clientRenderedShell = isCustomCoded && renderedTextLength < THIN_TEXT_THRESHOLD;
   const brandNameCandidate = extractBrandName(html, input.url);
+  const collisionRisk = namespaceCollisionRisk(brandNameCandidate);
 
   let score = 100;
   const recommendations: string[] = [];
@@ -176,6 +181,19 @@ export function evaluateIndexCoverage(input: {
     summaryParts.push(`${sameAsCount} sameAs profile link(s) present — entity graph could be stronger.`);
   }
 
+  // --- 4. Namespace-collision risk (entity conflation) ---------------------
+  if (collisionRisk.risk === 'high') {
+    score = Math.max(0, score - 10);
+    recommendations.push(
+      `HIGH entity-conflation risk: ${collisionRisk.reasons[0]} Answer engines may merge ${brandLabel} with similarly named tools/extensions (or a third party publishing schema under the same name). ${collisionRisk.recommendations[0]}`
+    );
+    summaryParts.push('The brand name is descriptive/near-generic — high risk of being conflated with similarly named entities.');
+  } else if (collisionRisk.risk === 'medium') {
+    recommendations.push(
+      `Moderate entity-conflation risk from category terms in the name. ${collisionRisk.recommendations[0] || 'Use fully-disambiguated naming and a connected @id graph.'}`
+    );
+  }
+
   score = Math.max(0, Math.min(100, score));
   const status: IndexCoverageResult['status'] = clientRenderedShell
     ? 'critical'
@@ -194,6 +212,7 @@ export function evaluateIndexCoverage(input: {
     clientRenderedShell,
     brandNameCandidate,
     sameAsCount,
+    collisionRisk,
     score,
     status,
     summary: summaryParts.join(' '),

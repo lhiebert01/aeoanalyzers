@@ -13,16 +13,27 @@ const PIGENAI_ORG_ID = 'https://pigenai.com/#org';
 const APP_DESCRIPTION =
   'AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, Perplexity, and Claude — and gives you the exact fixes, in 90 seconds.';
 
+// WO-DOGFOOD-001: atomic, quotable disambiguation sentence. "AEO Analyzer" is a
+// crowded near-generic name (browser extensions, other tools, even a same-named
+// WebApplication schema on a third-party domain), which let a reranker fuse a
+// stranger onto our entity. This declarative sentence — verbatim in schema AND
+// visible HTML — gives engines a first-party fact to resolve the collision.
+// Exploit the plural: ours is the only "AEO Analyzer​s".
+const DISAMBIGUATION =
+  'AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.';
+
 // Node builders (no @context — that lives on the wrapping object / @graph).
 function organizationNode() {
   return {
     '@type': 'Organization',
     '@id': ORG_ID,
-    name: 'AEO Analyzers',
+    name: 'AEO Analyzers by PI GenAI LLC',
+    alternateName: 'AEO Analyzers',
     legalName: 'PI GenAI LLC',
     url: SITE_URL,
     logo: `${SITE_URL}/aeo-og-bta-2026b.png`,
     description: APP_DESCRIPTION,
+    disambiguatingDescription: DISAMBIGUATION,
     parentOrganization: { '@type': 'Organization', '@id': PIGENAI_ORG_ID, name: 'PI GenAI LLC', url: 'https://pigenai.com' },
     founder: { '@id': FOUNDER_ID },
     sameAs: [
@@ -47,7 +58,7 @@ function founderNode() {
     '@type': 'Person',
     '@id': FOUNDER_ID,
     name: 'Lindsay Hiebert',
-    jobTitle: 'Founder',
+    jobTitle: 'Founder & Sole Creator',
     worksFor: { '@id': ORG_ID },
     sameAs: [
       'https://www.linkedin.com/in/lindsayhiebert/',
@@ -67,7 +78,8 @@ function webSiteNode() {
   return {
     '@type': 'WebSite',
     '@id': WEBSITE_ID,
-    name: 'AEO Analyzers',
+    name: 'AEO Analyzers by PI GenAI LLC',
+    alternateName: 'AEO Analyzers',
     url: SITE_URL,
     publisher: { '@id': ORG_ID },
     description: 'AI-powered Answer Engine Optimization powered by a Google Gemini frontier model. Real frontier-model analysis. Real-world results. 90 seconds.',
@@ -78,17 +90,20 @@ function softwareApplicationNode() {
   return {
     '@type': 'SoftwareApplication',
     '@id': APP_ID,
-    name: 'AEO Analyzers',
+    name: 'AEO Analyzers by PI GenAI LLC',
+    alternateName: 'AEO Analyzers',
     url: SITE_URL,
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
     provider: { '@id': ORG_ID },
+    publisher: { '@id': ORG_ID },
     // Explicit sole authorship of the software. Without this, answer engines
     // infer the creator from third-party sources and can misattribute a
     // co-founder that does not exist. Lindsay Hiebert is the sole creator.
     author: { '@id': FOUNDER_ID },
     creator: { '@id': FOUNDER_ID },
     description: APP_DESCRIPTION,
+    disambiguatingDescription: DISAMBIGUATION,
     // Real, public pricing (Free / $24 Day Pass / $49 Pro / $199 Business).
     offers: {
       '@type': 'AggregateOffer',

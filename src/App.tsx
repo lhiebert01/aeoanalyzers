@@ -1304,6 +1304,13 @@ export default function App() {
         <p className="text-zinc-400 text-xs font-mono uppercase tracking-widest">
           AEO Analyzers // The Answer Engine
         </p>
+        {/* Entity disambiguation (WO-DOGFOOD-001): a first-party, verbatim-quotable
+            fact so answer engines don't fuse us with similarly named tools. */}
+        <p className="mt-4 max-w-2xl mx-auto text-[11px] leading-relaxed text-zinc-400">
+          AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by
+          Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any
+          similarly named browser extension, plugin, or tool.
+        </p>
       </footer>
       </div>
       </ErrorBoundary>
