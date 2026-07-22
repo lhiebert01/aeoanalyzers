@@ -44,7 +44,10 @@ async function askClaude(query: string): Promise<EngineAnswer> {
   // Pick per model so any SWEEP_CLAUDE_MODEL value works.
   const advancedSearch = /opus-4-8|opus-4-7|opus-4-6|sonnet-5|sonnet-4-6/.test(model);
   const searchType = advancedSearch ? 'web_search_20260209' : 'web_search_20250305';
-  const tools = [{ type: searchType, name: 'web_search' as const }];
+  // Cap web-search uses to bound per-call cost (Claude is the cost driver; each
+  // search injects large input token volume). Override with SWEEP_MAX_SEARCHES.
+  const maxUses = Number(process.env.SWEEP_MAX_SEARCHES || 5);
+  const tools = [{ type: searchType, name: 'web_search' as const, max_uses: maxUses }];
 
   let messages: any[] = [{ role: 'user', content: query }];
   let resp: any = await client.messages.create({ model, max_tokens: 2048, tools: tools as any, messages });

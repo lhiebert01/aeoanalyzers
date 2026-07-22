@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import type { SweepSummary, SweepRunResult } from '../lib/citationSweep';
+import { getAccessToken } from '../supabase';
 
 // WO-1 (+WO-3/WO-7) client dashboard: run a tested citation sweep, then show
 // branded retrievability, category citation-rate, competitor displacement,
@@ -11,13 +12,16 @@ interface SweepResponse {
   domain: string; brand: string | null; runsPerQuery: number;
   engines: string[]; skippedEngines: string[]; configured: string[];
   summary: SweepSummary; runs: SweepRunResult[]; persisted: boolean;
+  quickCheck?: boolean; tier?: string;
+  provisional?: { score: number; label: string; message: string } | null;
+  upgrade?: string | null;
 }
 
 const ENGINE_LABEL: Record<string, string> = {
   claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini',
 };
 
-export default function SweepDashboard() {
+export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }) {
   const [domain, setDomain] = useState('');
   const [brand, setBrand] = useState('');
   const [branded, setBranded] = useState('who is {domain}\nwhat is {domain}');
@@ -42,8 +46,10 @@ export default function SweepDashboard() {
     try {
       const d = domain.trim().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
       const expand = (q: string) => q.replace(/\{domain\}/g, d);
+      const token = getAccessToken();
       const res = await fetch('/api/run-sweep', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({
           domain: d, brand: brand.trim() || undefined,
           brandedQueries: parseLines(branded).map(expand),
@@ -109,7 +115,22 @@ export default function SweepDashboard() {
 
       {result && (
         <>
-          {result.skippedEngines?.length > 0 && (
+          {result.quickCheck && (
+            <div className="rounded-3xl p-6 border-2 border-amber-300 bg-amber-50 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="text-4xl font-black text-amber-700 leading-none">{result.provisional?.score ?? '—'}</div>
+                <div className="flex-1">
+                  <div className="font-bold text-amber-900">Free quick check · {result.provisional?.label}</div>
+                  <p className="text-sm text-amber-800 mt-1">{result.provisional?.message}</p>
+                  <p className="text-sm text-amber-900 mt-3 font-semibold">{result.upgrade}</p>
+                  <button onClick={onUpgrade} className="mt-3 bg-zinc-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-zinc-800 transition-colors">
+                    Get a Day Pass or subscribe →
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {result.skippedEngines?.length > 0 && !result.quickCheck && (
             <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
               Skipped (no API key set): {result.skippedEngines.join(', ')}. Configured: {result.configured.join(', ') || 'none'}.
             </div>

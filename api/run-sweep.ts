@@ -26,6 +26,67 @@ export const config = { maxDuration: 300 };
 
 const ALL_ENGINES: Engine[] = ['claude', 'openai', 'perplexity', 'gemini'];
 
+const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com'];
+// Monthly sweep quota per tier — the real-money spend guardrail.
+const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, Business: 40, Pro: 8, daypass: 3 };
+
+class HttpError extends Error {
+  constructor(public status: number, message: string) { super(message); }
+}
+
+/** Resolve the caller's access level. Sweeps spend real money, so:
+ *  - Paid (Pro/Business/Day Pass) or admin → FULL sweep (all engines, N up to 5,
+ *    competitors, transcripts, persisted), subject to a per-tier monthly quota.
+ *  - Free / unauthenticated → DOWNGRADED to a near-zero-cost QUICK CHECK
+ *    (Gemini-only, 1 branded + 1 category, N=1, not persisted) — a teaser, not a
+ *    hard paywall. Only paid users hitting their quota get an error. */
+async function resolveAccess(req: VercelRequest): Promise<{ userId: string | null; tier: string; quickCheck: boolean }> {
+  const supaUrl = process.env.VITE_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const anon = process.env.VITE_SUPABASE_ANON_KEY;
+  const FREE = { userId: null, tier: 'free', quickCheck: true };
+
+  // Admin/service bypass (cron, internal testing).
+  const adminToken = process.env.ADMIN_SWEEP_TOKEN;
+  if (adminToken && req.headers['x-admin-token'] === adminToken) return { userId: null, tier: 'admin', quickCheck: false };
+
+  const authHeader = String(req.headers['authorization'] || '');
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  if (!token || !supaUrl || !anon || !serviceKey) return FREE; // no session → free quick check
+
+  // Verify the Supabase JWT; an invalid/expired token just gets the free teaser.
+  const ures = await fetch(`${supaUrl}/auth/v1/user`, { headers: { apikey: anon, Authorization: `Bearer ${token}` } });
+  if (!ures.ok) return FREE;
+  const u: any = await ures.json();
+  const userId: string = u.id;
+  const email = String(u.email || '').toLowerCase();
+  if (ADMIN_EMAILS.includes(email)) return { userId, tier: 'admin', quickCheck: false };
+
+  // Look up the user's plan (service role).
+  const H = { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
+  const rowRes = await fetch(`${supaUrl}/rest/v1/users?id=eq.${userId}&select=subscription_status,report_pass_until`, { headers: H });
+  const [row] = rowRes.ok ? await rowRes.json() : [null];
+  const sub = row?.subscription_status || 'free';
+  const dayPassActive = row?.report_pass_until && new Date(row.report_pass_until) > new Date();
+  let tier: string | null = null;
+  if (sub === 'Business' || sub === 'Pro') tier = sub;
+  else if (dayPassActive) tier = 'daypass';
+  if (!tier) return { userId, tier: 'free', quickCheck: true }; // signed-in free user → quick check
+
+  // Paid: enforce the monthly quota (this is the only hard error).
+  const monthStart = new Date();
+  monthStart.setUTCDate(1); monthStart.setUTCHours(0, 0, 0, 0);
+  const cntRes = await fetch(
+    `${supaUrl}/rest/v1/citation_sweeps?user_id=eq.${userId}&created_at=gte.${monthStart.toISOString()}&select=id`,
+    { headers: { ...H, Prefer: 'count=exact', Range: '0-0' } }
+  );
+  const used = Number((cntRes.headers.get('content-range') || '0-0/0').split('/')[1] || 0);
+  const quota = MONTHLY_QUOTA[tier] ?? 0;
+  if (used >= quota) throw new HttpError(429, `Monthly sweep limit reached for your ${tier} plan (${quota}/mo). Upgrade or wait for next month.`);
+
+  return { userId, tier, quickCheck: false };
+}
+
 interface Task {
   engine: Engine;
   query: string;
@@ -52,26 +113,45 @@ async function pool<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
+  // Access gate FIRST — this endpoint spends real money per call. Free/unauthed
+  // callers are downgraded to a near-zero-cost quick check (not rejected).
+  let access: { userId: string | null; tier: string; quickCheck: boolean };
+  try {
+    access = await resolveAccess(req);
+  } catch (e: any) {
+    if (e instanceof HttpError) return res.status(e.status).json({ error: e.message });
+    access = { userId: null, tier: 'free', quickCheck: true };
+  }
+
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
     const domain: string = (body.domain || '').trim();
     const brand: string | undefined = body.brand?.trim() || undefined;
-    const brandedQueries: string[] = (body.brandedQueries || []).filter(Boolean);
-    const categoryQueries: string[] = (body.categoryQueries || []).filter(Boolean);
+    let brandedQueries: string[] = (body.brandedQueries || []).filter(Boolean);
+    let categoryQueries: string[] = (body.categoryQueries || []).filter(Boolean);
     const competitors: Competitor[] = (body.competitors || []).filter((c: any) => c?.name);
-    const runsPerQuery: number = Math.max(1, Math.min(5, body.runsPerQuery || 3));
-    const persist: boolean = body.persist !== false;
-    const userId: string | undefined = body.userId;
+    let runsPerQuery: number = Math.max(1, Math.min(5, body.runsPerQuery || 3));
+    let persist: boolean = body.persist !== false;
+    // Attribute persistence to the authenticated user (not a client-supplied id).
+    const userId: string | undefined = access.userId || undefined;
 
     if (!domain) return res.status(400).json({ error: 'domain is required' });
     if (!brandedQueries.length && !categoryQueries.length) {
       return res.status(400).json({ error: 'at least one branded or category query is required' });
     }
 
+    // Free quick check: Gemini-only, 1 branded + 1 category, N=1, no persist.
+    if (access.quickCheck) {
+      brandedQueries = brandedQueries.slice(0, 1);
+      categoryQueries = categoryQueries.slice(0, 1);
+      runsPerQuery = 1;
+      persist = false;
+    }
+
     const configured = configuredEngines();
-    const requested: Engine[] = (body.engines?.length ? body.engines : configured).filter(
-      (e: Engine) => ALL_ENGINES.includes(e)
-    );
+    const requested: Engine[] = access.quickCheck
+      ? (['gemini'] as Engine[])
+      : (body.engines?.length ? body.engines : configured).filter((e: Engine) => ALL_ENGINES.includes(e));
     const engines = requested.filter((e) => configured.includes(e));
     const skippedEngines = requested.filter((e) => !configured.includes(e));
 
@@ -123,6 +203,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
+    // Free quick check: a grounded, single-engine PROVISIONAL read + upgrade CTA.
+    let provisional: { score: number; label: string; message: string } | null = null;
+    let upgrade: string | null = null;
+    if (access.quickCheck) {
+      const g = summary.engines.find((e) => e.engine === 'gemini');
+      const brandedCited = !!g && g.brandedCited > 0;
+      const catCited = !!g && g.categoryCited > 0;
+      const score = (brandedCited ? 60 : 20) + (catCited ? 30 : 0); // 20 / 50 / 80 / 90
+      const label = score >= 80 ? 'Strong initial signal' : score >= 50 ? 'Retrievable — low citation win' : 'Weak initial signal';
+      provisional = {
+        score,
+        label,
+        message:
+          `Initial results (Gemini only) suggest: ${brandedCited ? 'AI can retrieve your brand' : 'AI struggles to retrieve your brand'}` +
+          `${catCited ? ', and already cites you for a category query.' : ', but does not yet cite you for category queries.'}` +
+          ' This is a provisional read from a single engine on one query each.',
+      };
+      upgrade =
+        'To run a complete sweep — Claude, ChatGPT, Perplexity and Gemini, multiple runs per query, competitor "cited instead" displacement, and full stored transcripts — start a Day Pass or subscribe.';
+    }
+
     return res.status(200).json({
       domain,
       brand: brand || null,
@@ -130,6 +231,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       engines,
       skippedEngines,
       configured,
+      tier: access.tier,
+      quickCheck: access.quickCheck,
+      provisional,
+      upgrade,
       summary,
       runs, // full transcripts for drill-down
       persisted,

@@ -909,7 +909,7 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="px-6"
             >
-              <SweepDashboard />
+              <SweepDashboard onUpgrade={() => navigateTo('payments')} />
             </motion.div>
           )}
 
