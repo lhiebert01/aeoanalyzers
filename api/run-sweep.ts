@@ -28,7 +28,7 @@ const ALL_ENGINES: Engine[] = ['claude', 'openai', 'perplexity', 'gemini'];
 
 const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com'];
 // Monthly sweep quota per tier — the real-money spend guardrail.
-const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, Business: 40, Pro: 8, daypass: 3 };
+const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, Business: 20, Pro: 8, daypass: 3 };
 
 class HttpError extends Error {
   constructor(public status: number, message: string) { super(message); }
