@@ -138,19 +138,30 @@ async function askGemini(query: string): Promise<EngineAnswer> {
   const key = process.env.GEMINI_API_KEY || (process.env.VITE_DEV_GEMINI_KEY as string);
   if (!key) throw new MissingKeyError('GEMINI_API_KEY');
   const ai = new GoogleGenAI({ apiKey: key });
-  const model = process.env.SWEEP_GEMINI_MODEL || 'gemini-3.6-flash';
-  const resp: any = await ai.models.generateContent({
-    model,
-    contents: query,
-    config: { tools: [{ googleSearch: {} }] } as any,
-  });
-  const transcript = (resp.text || '').trim();
-  const chunks = resp.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-  const sources: string[] = chunks.map((c: any) => c.web?.uri).filter(Boolean);
-  const um = resp.usageMetadata || {};
-  const costUsd = ((um.promptTokenCount || 0) + (um.candidatesTokenCount || 0)) / 1e6 * 0.3; // flash approx
-
-  return { transcript, sources: uniq(sources), costUsd, model };
+  // Resilient chain: prefer the newest, fall back on a per-model quota (429) or
+  // availability error — Gemini is the priority + free-quick-check engine, so it
+  // must not die on a single model's quota.
+  const primary = process.env.SWEEP_GEMINI_MODEL || 'gemini-3.6-flash';
+  const models = [...new Set([primary, 'gemini-2.5-flash', 'gemini-2.5-flash-lite'])];
+  let lastErr: any;
+  for (const model of models) {
+    try {
+      const resp: any = await ai.models.generateContent({
+        model,
+        contents: query,
+        config: { tools: [{ googleSearch: {} }] } as any,
+      });
+      const transcript = (resp.text || '').trim();
+      const chunks = resp.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+      const sources: string[] = chunks.map((c: any) => c.web?.uri).filter(Boolean);
+      const um = resp.usageMetadata || {};
+      const costUsd = ((um.promptTokenCount || 0) + (um.candidatesTokenCount || 0)) / 1e6 * 0.3; // flash approx
+      return { transcript, sources: uniq(sources), costUsd, model };
+    } catch (e: any) {
+      lastErr = e; // 429 quota / model-not-available → try the next model
+    }
+  }
+  throw lastErr || new Error('Gemini request failed');
 }
 
 export const ENGINE_ADAPTERS: Record<Engine, (q: string) => Promise<EngineAnswer>> = {
