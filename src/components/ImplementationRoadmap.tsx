@@ -46,7 +46,16 @@ interface ImplementationRoadmapProps {
 export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, analysisResult, displayName, citationProbability, recommendations }: ImplementationRoadmapProps) {
   const [copied, setCopied] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'summary' | 'handoff' | 'platforms'>('summary');
-  const [platform, setPlatform] = useState<'wordpress' | 'shopify' | 'hubspot' | 'wix' | 'custom'>('wordpress');
+  // Default the platform tab to the DETECTED stack so we don't lead a
+  // custom-coded (Vercel/React) site with WordPress plugin instructions.
+  const detectedPlatform = analysisResult.detectedPlatform;
+  const initialPlatform: 'wordpress' | 'shopify' | 'hubspot' | 'wix' | 'custom' =
+    detectedPlatform?.isCustomCoded ? 'custom'
+    : detectedPlatform && ['wordpress', 'shopify', 'hubspot', 'wix'].includes(detectedPlatform.platform)
+      ? (detectedPlatform.platform as 'wordpress' | 'shopify' | 'hubspot' | 'wix')
+    : detectedPlatform && ['squarespace', 'webflow'].includes(detectedPlatform.platform) ? 'custom'
+    : 'wordpress';
+  const [platform, setPlatform] = useState<'wordpress' | 'shopify' | 'hubspot' | 'wix' | 'custom'>(initialPlatform);
   const [downloading, setDownloading] = useState(false);
 
   const handleDownloadReport = async () => {
@@ -525,6 +534,19 @@ ${cleanDisplayName}`;
 
         {activeTab === 'platforms' && (
           <div className="space-y-12">
+            {detectedPlatform && detectedPlatform.platform !== 'unknown' && (
+              <div className={`rounded-2xl p-4 text-sm border ${detectedPlatform.isCustomCoded ? 'bg-blue-50 border-blue-200 text-blue-800' : 'bg-zinc-50 border-zinc-200 text-zinc-700'}`}>
+                <span className="font-bold">Detected stack: {detectedPlatform.platform === 'custom' ? 'Custom-coded' : detectedPlatform.platform}</span>
+                {detectedPlatform.isCustomCoded ? (
+                  <span> — this looks like a hand/framework-coded site (e.g. Next.js/React). The CMS instructions below (WordPress/Shopify/Wix/HubSpot) likely don't apply; target your code repository and paste the JSON-LD into your root layout <code className="bg-blue-100 px-1 rounded">&lt;head&gt;</code>. We've selected the Custom Code guide for you.</span>
+                ) : (
+                  <span> — we've selected the matching guide below.</span>
+                )}
+                {detectedPlatform.signals.length > 0 && (
+                  <span className="block text-xs opacity-70 mt-1">Signals: {detectedPlatform.signals.join('; ')}</span>
+                )}
+              </div>
+            )}
             <div className="flex flex-wrap justify-center gap-3">
               <PlatformButton active={platform === 'wordpress'} onClick={() => setPlatform('wordpress')} icon={<Layout className="w-5 h-5" />} label="WordPress" />
               <PlatformButton active={platform === 'shopify'} onClick={() => setPlatform('shopify')} icon={<ShoppingBag className="w-5 h-5" />} label="Shopify" />

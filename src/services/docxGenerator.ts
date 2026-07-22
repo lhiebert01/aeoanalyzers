@@ -214,6 +214,26 @@ export async function generateDocxReport(
     spacer()
   );
 
+  // Crawler Access (foundational — an AI engine that can't crawl you can't cite you)
+  if (result.crawlerAccess) {
+    const ca = result.crawlerAccess;
+    children.push(
+      sectionHeading('AI Crawler Access'),
+      bodyText(`Crawler-access score: ${ca.score}/100. ${ca.summary}`),
+    );
+    if (result.scoreBeforeCrawlerCap != null) {
+      children.push(
+        bodyText(`NOTE: The headline AEO score was capped at ${result.score}/100 (from ${result.scoreBeforeCrawlerCap}) because citation-critical AI crawlers are blocked. A page the answer engines cannot read cannot be their source of truth.`)
+      );
+    }
+    if (ca.blockedBots.length > 0) {
+      children.push(bodyText(`Blocked AI crawlers: ${ca.blockedBots.map(b => b.name).join(', ')}.`));
+    }
+    children.push(bodyText(`robots.txt: ${ca.robotsFound ? 'found' : 'not found (default-allow)'}. llms.txt: ${ca.llmsTxtFound ? 'present' : 'missing'}.`));
+    for (const rec of ca.recommendations) children.push(bodyText(`• ${rec}`));
+    children.push(spacer());
+  }
+
   // Score Breakdown (if available)
   if (result.scoreBreakdown) {
     const sb = result.scoreBreakdown;

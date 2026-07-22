@@ -12,6 +12,8 @@ import {
   Minus,
   Lock,
   ArrowRight,
+  Share2,
+  ScanText,
 } from 'lucide-react';
 import type { AnalysisResult } from '../services/geminiService';
 import { recommendationFor } from '../services/geminiService';
@@ -79,7 +81,8 @@ function AlignmentBadge({ alignment }: { alignment: string }) {
 
 export default function AdvancedAnalysisCards({ result, isPaid = true, onUpgrade }: Props) {
   const hasAnyAdvanced = result.citationHookDensity || result.eatAudit || result.llmSummarizationTest ||
-    result.zeroClickPredictor || result.queryContentGap || result.semanticChunking;
+    result.zeroClickPredictor || result.queryContentGap || result.semanticChunking ||
+    result.entityGraphAudit || result.passageExtractability;
 
   if (!hasAnyAdvanced) return null;
 
@@ -144,6 +147,73 @@ export default function AdvancedAnalysisCards({ result, isPaid = true, onUpgrade
             ))}
           </div>
           {!isPaid && <div className="mt-3"><LockedFix label="See why each schema helps + how to add it" onUpgrade={onUpgrade} /></div>}
+        </CardWrapper>
+      )}
+
+      {/* Entity-graph / portfolio audit */}
+      {result.entityGraphAudit && (
+        <CardWrapper icon={<Share2 className="w-5 h-5 text-zinc-900" />} title="Entity Graph & Portfolio">
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            <ScoreBadge score={result.entityGraphAudit.score} />
+            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${result.entityGraphAudit.sameAsFound ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+              {result.entityGraphAudit.sameAsFound ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />} sameAs links
+            </span>
+            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${result.entityGraphAudit.founderEntityFound ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+              {result.entityGraphAudit.founderEntityFound ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />} founder entity
+            </span>
+          </div>
+          <p className="text-xs text-zinc-500 mb-4">
+            AI engines resolve a brand to one authoritative entity via reciprocal <code className="bg-zinc-100 px-1 rounded">sameAs</code> links, a single canonical founder <code className="bg-zinc-100 px-1 rounded">Person</code>, and consistent NAP across all your properties. Citation is won at the portfolio level, not the page.
+          </p>
+          {result.entityGraphAudit.napConsistencyNote && (
+            <p className="text-sm text-zinc-600 mb-3">{result.entityGraphAudit.napConsistencyNote}</p>
+          )}
+          {result.entityGraphAudit.sameAsUrls?.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {result.entityGraphAudit.sameAsUrls.map((u) => (
+                <span key={u} className="text-xs bg-zinc-50 border border-zinc-200 rounded-full px-2.5 py-1 text-zinc-600 truncate max-w-full">{u}</span>
+              ))}
+            </div>
+          )}
+          {isPaid ? (
+            <ul className="space-y-2">
+              {result.entityGraphAudit.recommendations.map((rec, i) => (
+                <li key={i} className="text-sm text-zinc-600 flex gap-2"><ArrowRight className="w-4 h-4 mt-0.5 shrink-0 text-zinc-400" />{rec}</li>
+              ))}
+            </ul>
+          ) : (
+            <LockedFix label="See the portfolio-level entity-resolution fixes" onUpgrade={onUpgrade} />
+          )}
+        </CardWrapper>
+      )}
+
+      {/* Passage-level extractability */}
+      {result.passageExtractability && (
+        <CardWrapper icon={<ScanText className="w-5 h-5 text-zinc-900" />} title="Passage Extractability">
+          <div className="flex items-center gap-2 mb-4">
+            <ScoreBadge score={result.passageExtractability.selfContainedScore} label="self-contained" />
+          </div>
+          <p className="text-xs text-zinc-500 mb-4">
+            When an AI lifts a standalone chunk of your page, a "We build…" sentence has no entity anchor. Surgically insert self-contained, entity-named answer sentences under question-shaped headings — this is anchoring, not a voice change.
+          </p>
+          {result.passageExtractability.guidance && (
+            <p className="text-sm text-zinc-600 mb-4">{result.passageExtractability.guidance}</p>
+          )}
+          {result.passageExtractability.pronounHeavyPassages.length > 0 && (
+            isPaid ? (
+              <div className="space-y-3">
+                {result.passageExtractability.pronounHeavyPassages.map((p, i) => (
+                  <div key={i} className="bg-zinc-50 border border-zinc-100 rounded-xl p-4">
+                    <p className="text-sm text-zinc-500 line-through">{p.excerpt}</p>
+                    <p className="text-sm text-zinc-900 font-medium mt-1 flex gap-2"><Quote className="w-4 h-4 mt-0.5 shrink-0 text-emerald-500" />{p.suggestedRewrite}</p>
+                    <p className="text-xs text-zinc-400 mt-1">{p.issue}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <LockedFix label={`Unlock ${result.passageExtractability.pronounHeavyPassages.length} entity-anchored rewrites`} onUpgrade={onUpgrade} />
+            )
+          )}
         </CardWrapper>
       )}
 

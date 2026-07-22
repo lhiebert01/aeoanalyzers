@@ -1,5 +1,61 @@
 # Release Notes
 
+## v1.6.0 — July 1, 2026
+
+### Closing the AEO blind spots an independent Claude.ai audit found
+
+An independent review of a real analyzer report (pigenai.com) flagged five gaps
+where the report scored a site strongly while missing foundational AEO factors.
+All five are now addressed:
+
+- **AI crawler access (foundational, can silently zero out everything else).**
+  The analyzer now fetches the site's `robots.txt` and probes for `/llms.txt`,
+  then audits them against the major AI/answer-engine user-agents (`GPTBot`,
+  `OAI-SearchBot`, `ChatGPT-User`, `ClaudeBot`, `Claude-User`, `Google-Extended`,
+  `PerplexityBot`, and more — see `src/lib/crawlerAccess.ts`). **If a
+  citation-critical bot is blocked, the headline AEO score is CAPPED at 40** and
+  a red "AI crawlers are blocked" banner leads the report — no site can score 90
+  while the engines it's optimizing for are locked out. Also detects the *edge*
+  failure modes a robots.txt read alone can't see (the ones from FIX 0 of the
+  remediation guide): `X-Robots-Tag: noindex` / `<meta robots noindex>`, the
+  Cloudflare *managed* robots.txt / `Content-Signal: ai-train=no` edge block
+  (surfaced with the exact Cloudflare-dashboard fix steps, since it can't be
+  fixed in the repo). 100% deterministic; the LLM is not involved in this gate.
+- **Connected-`@graph` schema with correct `@type` discipline.** Generated
+  JSON-LD is now ONE `@graph` with `@id` cross-references instead of disconnected
+  blocks: `Organization` ↔ `WebSite` (with `SearchAction` when search exists) ↔
+  `SoftwareApplication`/`Service` (chosen by product type) ↔ founder `Person`.
+  Real prices become a structured `Offer` + `priceSpecification` instead of the
+  weak `"priceRange": "$5,000+"` string. The offer-catalog cap/architecture
+  filter now traverses `@graph`.
+- **Entity-graph / portfolio audit.** New card assessing reciprocal `sameAs`, a
+  single canonical founder `Person`, and NAP consistency — because AI resolves a
+  brand to one authoritative entity at the portfolio level, not the page level.
+  `sameAs` URLs are stripped unless they actually appear on the page.
+- **Passage-level extractability.** New diagnostic that flags pronoun-led
+  passages ("We build…") with no entity anchor and proposes self-contained,
+  entity-named answer sentences — grounded (no invented numbers), surgical
+  anchoring, not a voice change.
+- **Custom-stack detection.** The Implementation Roadmap now detects the
+  publishing stack (WordPress/Shopify/Wix/HubSpot vs. custom-coded Next.js/React)
+  and leads with the right guidance — no more WordPress-plugin instructions for a
+  hand-coded Vercel site.
+
+Regression coverage added in `src/__tests__/aeoGaps.test.ts` (22 tests).
+
+### Dogfooding: applied the same playbook to aeoanalyzers.com's own site
+
+- `public/robots.txt` now carries an explicit AI-bot allowlist (ClaudeBot,
+  GPTBot, OAI-SearchBot, PerplexityBot, Google-Extended, …) — the exact fix the
+  product recommends.
+- `public/llms.txt` corrected: removed the inaccurate "simulates multiple AI
+  engines" claim (it uses a single Gemini frontier model), added the $24 Day
+  Pass, and a verifiable founder/portfolio line.
+- `src/lib/json-ld.ts` is now one connected `@graph` (`Organization` ↔ founder
+  `Person` w/ Credly + CISSP `hasCredential` ↔ `WebSite` ↔ `SoftwareApplication`)
+  with `parentOrganization`/`sameAs` reciprocity to `pigenai.com/#org`.
+  (Founder street address intentionally omitted from public schema.)
+
 ## v1.5.1 — June 21, 2026
 
 ### Grounded-Only Output: the analyzer (and our own site) never fabricate a fact

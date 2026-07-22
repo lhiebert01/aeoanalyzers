@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRight, Globe, Cpu, Swords, User as UserIcon, BookOpen, Code, ShoppingBag, Building2, HelpCircle, ShieldAlert, Target, ChevronDown, Share2, Linkedin, Copy, ExternalLink } from 'lucide-react';
 import SEO from './SEO';
-import { getFAQJsonLd, getSoftwareApplicationJsonLd, getOrganizationJsonLd, getWebSiteJsonLd } from '../lib/json-ld';
+import { getFAQJsonLd, getGraphJsonLd } from '../lib/json-ld';
 
 interface MarketingLandingProps {
   onGetStarted: () => void;
@@ -72,9 +72,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         author="Lindsay Hiebert"
         publishedDate="2026-03-22T00:00:00Z"
         jsonLd={[
-          getOrganizationJsonLd(),
-          getWebSiteJsonLd(),
-          getSoftwareApplicationJsonLd(),
+          getGraphJsonLd(),
           getFAQJsonLd(faqs.map(f => ({ question: f.q, answer: f.a })))
         ]}
       />

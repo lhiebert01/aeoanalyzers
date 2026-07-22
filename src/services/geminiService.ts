@@ -15,6 +15,9 @@ import {
   recommendationFor,
   type GapCategory,
 } from "../lib/queryGap";
+import { evaluateCrawlerAccess, type CrawlerAccessResult } from "../lib/crawlerAccess";
+import { detectPlatform } from "../lib/platformDetect";
+import { evaluateIndexCoverage, type IndexCoverageResult } from "../lib/indexCoverage";
 
 const apiKey = (import.meta.env.VITE_DEV_GEMINI_KEY as string) || (process.env.GEMINI_API_KEY as string) || "";
 const ai = new GoogleGenAI({ apiKey });
@@ -118,6 +121,53 @@ export interface AnalysisResult {
   // Change 6: for editorial/news sites, replaces voice rewrites with structured
   // data suggestions (the path to higher AEO for editorial brands).
   schemaDensityRecommendations?: { schemaType: string; reason: string; benefit: string }[];
+
+  // Entity-graph / portfolio audit: AEO leverage is won at the entity level, not
+  // the page level. Reciprocal sameAs, a single canonical founder Person reused
+  // across a brand's properties, and consistent NAP let an LLM resolve the brand
+  // to ONE authoritative knowledge-graph entity instead of a loose cluster.
+  entityGraphAudit?: {
+    sameAsFound: boolean;
+    sameAsUrls: string[];        // profile URLs actually present on the page
+    founderEntityFound: boolean;
+    founderName: string | null;
+    napConsistencyNote: string;
+    recommendations: string[];   // portfolio-level entity-resolution actions
+    score: number;               // 0-100 entity-graph strength
+  };
+
+  // Passage-level extractability: when an LLM lifts a standalone chunk, a
+  // "We build…" sentence has no entity anchor. This flags pronoun-led passages
+  // and proposes self-contained, entity-named answer sentences (re-expressing
+  // only what's on the page) placed under question-shaped headings.
+  passageExtractability?: {
+    pronounHeavyPassages: { excerpt: string; issue: string; suggestedRewrite: string }[];
+    selfContainedScore: number;  // 0-100
+    guidance: string;
+  };
+
+  // Detected publishing stack (custom-coded vs a CMS). Drives whether the
+  // Implementation Roadmap leads with code-repo guidance or CMS instructions.
+  detectedPlatform?: {
+    platform: 'wordpress' | 'shopify' | 'wix' | 'squarespace' | 'hubspot' | 'webflow' | 'custom' | 'unknown';
+    isCustomCoded: boolean;
+    signals: string[];
+  };
+
+  // Crawler access: deterministic robots.txt / llms.txt audit. When a
+  // citation-critical AI bot is blocked, the headline score is CAPPED — a site
+  // AI engines cannot read cannot be a "source of truth" no matter how good its
+  // schema is. Computed from the site's robots.txt, not the LLM.
+  crawlerAccess?: CrawlerAccessResult;
+  // Set when the crawler-access gate capped the headline score; preserves the
+  // model's original (uncapped) score for transparency.
+  scoreBeforeCrawlerCap?: number;
+
+  // Index-coverage & entity-disambiguation audit (WO-8): Bing Webmaster
+  // verification signal, the non-JS server-render test (a client-rendered SPA
+  // shell is invisible to answer engines), and sameAs/authority disambiguation.
+  // Deterministic; complements crawlerAccess (allowed to crawl ≠ visible + found).
+  indexCoverage?: IndexCoverageResult;
 }
 
 export interface CompetitiveResult {
@@ -206,8 +256,32 @@ async function generateWithFallback(prompt: string, schema: any): Promise<string
   throw lastError || new Error("All AI models are currently unavailable. Please try again in a few minutes.");
 }
 
-export async function analyzeWebsite(url: string, html: string): Promise<AnalysisResult> {
+export interface CrawlerInputs {
+  robotsTxt?: string | null;
+  llmsTxtFound?: boolean;
+  xRobotsTag?: string | null;
+  contentSignal?: string | null;
+  isCloudflare?: boolean;
+}
+
+/** Detect a page-level noindex directive in raw HTML (meta robots/googlebot). */
+export function hasNoindexMeta(html: string): boolean {
+  return /<meta[^>]+name=["'](?:robots|googlebot)["'][^>]*content=["'][^"']*\b(?:noindex|none)\b/i.test(String(html || ''));
+}
+
+export async function analyzeWebsite(url: string, html: string, crawler?: CrawlerInputs): Promise<AnalysisResult> {
   const truncatedHtml = html.substring(0, 15000);
+
+  // Deterministic crawler-access audit from robots.txt / llms.txt / edge signals.
+  // Computed regardless of the LLM; feeds the score cap in applyAccuracyGuards.
+  const crawlerAccess = evaluateCrawlerAccess({
+    robotsTxt: crawler?.robotsTxt,
+    llmsTxtFound: crawler?.llmsTxtFound,
+    xRobotsTag: crawler?.xRobotsTag,
+    contentSignal: crawler?.contentSignal,
+    isCloudflare: crawler?.isCloudflare,
+    metaRobotsNoindex: hasNoindexMeta(html),
+  });
 
   // --- Change 1: classify the brand/register type BEFORE generating any
   // recommendations. This gates whether voice rewrites are allowed. ---
@@ -477,11 +551,39 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     PROVENANCE-TAGGED SCHEMA (Change 2 — the most important discipline here):
     You will produce TWO separate JSON-LD blocks. NEVER mix detected and inferred values in the same block.
 
-    - verifiedSchema (string): A COMPLETE, paste-ready JSON-LD block containing ONLY values that literally appear in the page content. Use @type Organization with the actual business name, url, and logo (actual logo URL if present, else a placeholder path). Include hasOfferCatalog listing ONLY user-facing services a customer can actually sign up for / buy / use. EXCLUDE internal architecture (names containing Layer/Engine/Framework/Model/Pipeline/System/Architecture/Algorithm/Module are internal modules, NOT buyable services). List AT MOST 4 offers (keep the strongest if more). Every "name" and "description" must use terminology and specifics drawn from the page — NO invented status names, enums, tiers, prices, or specs. NEVER include aggregateRating, ratingValue, reviewCount, or review objects unless those exact rating numbers literally appear on the page. If you cannot verify a value on the page, it does NOT belong in this block. Valid JSON only, no script tags, no markdown.
+    - verifiedSchema (string): A COMPLETE, paste-ready JSON-LD document that connects EVERY detected entity into ONE @graph (not disconnected blocks). Shape:
+      {"@context":"https://schema.org","@graph":[ ...nodes... ]}
+      GRAPH + @id DISCIPLINE:
+        * Give each node a stable @id anchored to the site URL (e.g. "${url}#organization", "${url}#website", "${url}#founder", "${url}#product-1") and CROSS-REFERENCE nodes with {"@id":"..."} instead of duplicating objects. The WebSite's publisher is {"@id":".../#organization"}; each product's provider/publisher is {"@id":".../#organization"}; the Organization's founder is {"@id":".../#founder"}.
+      @type DISCIPLINE (choose correctly — this is a common failure):
+        * The company/brand entity → Organization (use a specific subtype like ProfessionalService only when clearly applicable).
+        * A SaaS product, app, downloadable, or online tool → SoftwareApplication (include applicationCategory + operatingSystem when derivable from the page).
+        * A human-delivered offering (assessment, consulting, done-for-you work) → Service.
+        * The site itself → WebSite (name, url, publisher {@id organization}). Add "potentialAction" of @type SearchAction ONLY if the page actually exposes an on-site search box/endpoint.
+        * The founder/author, when a real person's name appears on the page → Person (name; add "sameAs" ONLY for profile URLs that literally appear as links on the page).
+      PRICES (do NOT use the weak "priceRange" string): when a real price literally appears on the page, express it as a structured Offer. Recurring: "offers":{"@type":"Offer","price":"49","priceCurrency":"USD","priceSpecification":{"@type":"UnitPriceSpecification","price":"49","priceCurrency":"USD","referenceQuantity":{"@type":"QuantitativeValue","value":1,"unitCode":"MON"}}}. One-time: a plain Offer with price + priceCurrency. If NO real price is on the page, OMIT offers entirely — never invent a price or a range.
+      OFFER CATALOG: hasOfferCatalog lists ONLY user-facing services a customer can sign up for / buy / use. EXCLUDE internal architecture (names containing Layer/Engine/Framework/Model/Pipeline/System/Architecture/Algorithm/Module). List AT MOST 4 (keep the strongest).
+      GROUNDING: every name/description/price/sameAs uses values drawn from the page. NEVER include aggregateRating, ratingValue, reviewCount, or review unless those exact numbers literally appear on the page. If you cannot verify a value, it does NOT belong here. Valid JSON only, no script tags, no markdown.
 
-    - candidateSchema (string): A SEPARATE JSON-LD block (or "" if none) containing inferred STRUCTURE only — plausible service names, descriptions, or schema types you could not verify on the page. Each inferred itemOffered should carry a "_meta": {"provenance":"inferred","warning":"Inferred, not detected on the page. Verify before publishing."}. ABSOLUTE RULE: NEVER put a concrete fabricated NUMBER in this block — no ratingValue, reviewCount, ratingCount, aggregateRating, price, user/student/customer count, founding year, or any statistic that is not literally on the page. Do NOT emit "plausible" or "example" numbers (e.g. ratingValue "4.9", reviewCount "120") even though this block is labeled "verify before pasting" — a labeled fake is still pasted. If a field needs a value you cannot verify, use an explicit empty placeholder string like "<only if you have real, verifiable reviews>", never a number. If everything was detected, return "".
+    - candidateSchema (string): A SEPARATE JSON-LD block (same {"@context":...,"@graph":[...]} shape, or "" if none) containing inferred STRUCTURE only — schema nodes the site SHOULD add but whose values need human confirmation. Good candidates: a WebSite SearchAction if search likely exists, a BreadcrumbList reflecting the site's real navigation, plausible additional service names/descriptions. Each inferred node should carry "_meta":{"provenance":"inferred","warning":"Inferred structure, not detected on the page. Verify before publishing."}. ABSOLUTE RULE: NEVER put a concrete fabricated NUMBER in this block — no ratingValue, reviewCount, ratingCount, aggregateRating, price, user/student/customer count, founding year, or any statistic not literally on the page. Do NOT emit "plausible"/"example" numbers (e.g. ratingValue "4.9", reviewCount "120") even though this block is labeled "verify before pasting" — a labeled fake is still pasted. If a field needs a value you cannot verify, use an explicit empty placeholder string like "<only if you have real, verifiable reviews>", never a number. If everything was detected, return "".
 
     - schemaProvenance (array): For each significant field you put in EITHER block, an object {field, value, provenance ("detected"|"inferred"|"user_required"), sourceQuote (exact page text supporting a detected value, else ""), confidence (0.0-1.0)}. This lets the user audit the schema.
+
+    ENTITY-GRAPH / PORTFOLIO AUDIT (entityGraphAudit object):
+    AEO leverage is won at the ENTITY level, not the page level. An LLM should resolve this brand to ONE authoritative knowledge-graph entity, not a loose cluster. Assess:
+    - sameAsFound (bool): does the page link to the brand's own profiles (LinkedIn, X/Twitter, GitHub, YouTube, Crunchbase, etc.) OR include sameAs in existing schema?
+    - sameAsUrls (string[]): the profile/social URLs that LITERALLY appear as links on the page (empty array if none — do NOT invent URLs).
+    - founderEntityFound (bool): is a real, named founder/author (a Person) present on the page?
+    - founderName (string|null): that person's name if present, else null.
+    - napConsistencyNote (string): one line on whether the business name / contact / location (NAP) or a canonical identifier is presented consistently and unambiguously.
+    - recommendations (string[]): 2-4 PORTFOLIO-level actions to strengthen entity resolution — e.g. reciprocal sameAs linking sibling properties back to a single hub entity, ONE canonical founder Person (same @id) reused across all properties, consistent NAP + @id cross-references. Ground strictly in what's on the page; never fabricate profile URLs, counts, or a portfolio the page doesn't imply.
+    - score (0-100): entity-graph strength.
+
+    PASSAGE-LEVEL EXTRACTABILITY (passageExtractability object):
+    When an LLM lifts a standalone chunk to cite it, a pronoun-led sentence ("We build and operate…") has no entity anchor and is far less citable than "<BrandName> builds and operates…". Assess:
+    - pronounHeavyPassages (array of {excerpt, issue, suggestedRewrite}): 2-4 passages from the ACTUAL page that lead with we/our/us/it and lack a self-contained entity anchor. excerpt = the exact page text (<=200 chars). issue = why it fails when extracted out of context. suggestedRewrite = the SAME sentence made self-contained by naming the entity/subject — re-express ONLY what is on the page; do NOT add any number, statistic, rating, or claim not already present. This is surgical entity-anchoring, NOT a voice change.
+    - selfContainedScore (0-100): how well passages stand alone with entity anchors.
+    - guidance (string): one line recommending self-contained, entity-named answer sentences placed under question-shaped (H2/H3) headings.
 
     META DESCRIPTION REWRITE (metaDescriptionRewrite object):
     - current: Extract the actual meta description from the page (or note if missing)
@@ -548,6 +650,39 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
           required: ["schemaType", "reason", "benefit"]
         }
       },
+      entityGraphAudit: {
+        type: Type.OBJECT,
+        properties: {
+          sameAsFound: { type: Type.BOOLEAN },
+          sameAsUrls: { type: Type.ARRAY, items: { type: Type.STRING } },
+          founderEntityFound: { type: Type.BOOLEAN },
+          founderName: { type: Type.STRING, nullable: true },
+          napConsistencyNote: { type: Type.STRING },
+          recommendations: { type: Type.ARRAY, items: { type: Type.STRING } },
+          score: { type: Type.NUMBER }
+        },
+        required: ["sameAsFound", "founderEntityFound", "recommendations", "score"]
+      },
+      passageExtractability: {
+        type: Type.OBJECT,
+        properties: {
+          pronounHeavyPassages: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                excerpt: { type: Type.STRING },
+                issue: { type: Type.STRING },
+                suggestedRewrite: { type: Type.STRING }
+              },
+              required: ["excerpt", "issue", "suggestedRewrite"]
+            }
+          },
+          selfContainedScore: { type: Type.NUMBER },
+          guidance: { type: Type.STRING }
+        },
+        required: ["pronounHeavyPassages", "selfContainedScore", "guidance"]
+      },
       metaDescriptionRewrite: {
         type: Type.OBJECT,
         properties: {
@@ -591,7 +726,12 @@ export async function analyzeWebsite(url: string, html: string): Promise<Analysi
     }
   }
 
-  return applyAccuracyGuards(coreResult, brand, html);
+  coreResult.crawlerAccess = crawlerAccess;
+  coreResult.detectedPlatform = detectPlatform(html);
+
+  // Index-coverage audit (WO-8) is computed inside applyAccuracyGuards (after the
+  // sameAs grounding step), using the FULL server HTML + the analyzed URL.
+  return applyAccuracyGuards(coreResult, brand, html, url);
 }
 
 /**
@@ -605,13 +745,38 @@ export function applyAccuracyGuards(
   // The analyzed page's raw HTML. When provided, the grounded-only claims-safety
   // backstop runs: no number/rating/claim survives unless it is on the page.
   // Optional so unit tests of the other guards can omit it.
-  pageHtml?: string
+  pageHtml?: string,
+  // The analyzed URL — only used to phrase index-coverage disambiguation advice
+  // (brand-name domain fallback). Optional; omitted by unit tests of other guards.
+  pageUrl?: string
 ): AnalysisResult {
   const isEditorial = brand.type === 'editorial' || brand.type === 'news';
 
   // Change 1: record the detected brand type for the UI/report.
   result.siteType = brand.type;
   result.brandTypeSignals = brand.signals;
+
+  // Crawler-access gate: if a citation-critical AI bot is blocked, CAP the
+  // headline score. A page the answer engines cannot read cannot be their
+  // "source of truth", regardless of how strong its schema/content is. We cap
+  // only the headline `score` (scoreBreakdown stays diagnostic) and surface the
+  // fix at the top of the recommendations so it's impossible to miss.
+  const CRAWLER_BLOCK_SCORE_CAP = 40;
+  if (result.crawlerAccess) {
+    const ca = result.crawlerAccess;
+    if (ca.criticalBlock && typeof result.score === 'number' && result.score > CRAWLER_BLOCK_SCORE_CAP) {
+      result.scoreBeforeCrawlerCap = result.score;
+      result.score = CRAWLER_BLOCK_SCORE_CAP;
+      const capNote = `⚠️ AI crawlers are blocked: ${ca.summary} (Score capped at ${CRAWLER_BLOCK_SCORE_CAP} until crawler access is fixed.) `;
+      result.summary = capNote + (result.summary || '');
+    }
+    // Surface crawler-access fixes at the top of the recommendation list.
+    if (ca.recommendations.length > 0 && Array.isArray(result.recommendations)) {
+      const existing = new Set(result.recommendations);
+      const toAdd = ca.recommendations.filter((r) => !existing.has(r));
+      result.recommendations = [...toAdd, ...result.recommendations];
+    }
+  }
 
   // Change 3: strip internal-architecture offers and cap the catalog at 4 on
   // EVERY generated JSON-LD block. Disclose what was removed.
@@ -752,7 +917,51 @@ export function applyAccuracyGuards(
       });
     }
 
+    // 5. Passage rewrites re-express page prose — strip any number they invent.
+    if (result.passageExtractability?.pronounHeavyPassages) {
+      for (const p of result.passageExtractability.pronounHeavyPassages) {
+        const { text, removed: nums } = stripUngroundedNumbers(p.suggestedRewrite, pageText, p.excerpt);
+        if (nums.length > 0) {
+          p.suggestedRewrite = text;
+          removed.push({ field: 'passageExtractability', reason: `ungrounded number(s) removed: ${nums.join(', ')}` });
+        }
+      }
+    }
+
+    // 6. Entity-graph sameAs URLs must actually appear on the page (no invented
+    //    profile links). Compare against the raw HTML (hrefs), not stripped text.
+    if (result.entityGraphAudit?.sameAsUrls?.length) {
+      const haystack = pageHtml.toLowerCase();
+      const keep = result.entityGraphAudit.sameAsUrls.filter((u) => {
+        const needle = String(u).toLowerCase().replace(/^https?:\/\//, '').replace(/\/+$/, '');
+        return needle.length > 3 && haystack.includes(needle);
+      });
+      if (keep.length !== result.entityGraphAudit.sameAsUrls.length) {
+        removed.push({ field: 'entityGraphAudit.sameAsUrls', reason: 'profile URL(s) not found on the page were removed' });
+      }
+      result.entityGraphAudit.sameAsUrls = keep;
+      if (keep.length === 0) result.entityGraphAudit.sameAsFound = false;
+    }
+
     if (removed.length > 0) result.claimsSafetyRemoved = removed;
+
+    // Index-coverage audit (WO-8): Bing verification signal + non-JS render test
+    // + entity disambiguation. Runs here so the sameAs URLs it reads are already
+    // grounded to the page (above). Uses the full server HTML — exactly what a
+    // JS-less bot receives.
+    result.indexCoverage = evaluateIndexCoverage({
+      html: pageHtml,
+      url: pageUrl || '',
+      isCustomCoded: result.detectedPlatform?.isCustomCoded,
+      sameAsUrls: result.entityGraphAudit?.sameAsUrls,
+    });
+    // Surface its recommendations in the main list (appended: the crawler-access
+    // block, if any, stays first, and the dedicated card renders these up top).
+    if (result.indexCoverage.recommendations.length > 0 && Array.isArray(result.recommendations)) {
+      const existing = new Set(result.recommendations);
+      const toAdd = result.indexCoverage.recommendations.filter((r) => !existing.has(r));
+      result.recommendations = [...result.recommendations, ...toAdd];
+    }
   }
 
   return result;
@@ -761,10 +970,13 @@ export function applyAccuracyGuards(
 /** Exposed for the UI/DOCX so recommendation copy lives in one place. */
 export { recommendationFor };
 
-export async function performCompetitiveDuel(url1: string, html1: string, url2: string, html2: string): Promise<CompetitiveResult> {
+export async function performCompetitiveDuel(
+  url1: string, html1: string, url2: string, html2: string,
+  crawler1?: CrawlerInputs, crawler2?: CrawlerInputs
+): Promise<CompetitiveResult> {
   const [res1, res2] = await Promise.all([
-    analyzeWebsite(url1, html1),
-    analyzeWebsite(url2, html2)
+    analyzeWebsite(url1, html1, crawler1),
+    analyzeWebsite(url2, html2, crawler2)
   ]);
 
   const duelPrompt = `

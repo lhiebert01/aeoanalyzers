@@ -2,7 +2,15 @@
 
 **App:** AEO Analyzers · **Live:** https://www.aeoanalyzers.com · **Repo:** lhiebert01/aeoanalyzers
 **Publisher:** PI GenAI LLC · **Founder:** Lindsay Hiebert
-**Version:** v1.5.1 · **Last updated:** 2026-06-21 · **Hosting:** Vercel (project `aeo-app1`)
+**Version:** v1.6.0 · **Last updated:** 2026-07-01 · **Hosting:** Vercel (project `aeo-app1`)
+
+> **v1.6.0 (2026-07-01):** Closed five AEO blind spots from an independent audit:
+> (1) **AI crawler-access gate** — `api/fetch-site` now returns robots.txt + llms.txt;
+> `src/lib/crawlerAccess.ts` audits AI-bot allow/deny and **caps the headline score at 40**
+> (with a red banner) when a citation-critical bot is blocked. (2) Connected-`@graph` schema
+> with correct `@type`, `Offer`/`priceSpecification`, WebSite+SearchAction, founder Person.
+> (3) Entity-graph/portfolio audit. (4) Passage-level extractability. (5) Custom-stack detection
+> in the Implementation Roadmap (`src/lib/platformDetect.ts`). See RELEASE-NOTES.md.
 
 > **v1.5.1 (2026-06-21):** Grounded-only output — the analyzer never emits a number/rating/claim
 > not on the analyzed page (new `src/lib/claimsSafety.ts` backstop in `applyAccuracyGuards`), and
@@ -56,6 +64,9 @@ Values are NOT recorded here — names + purpose only.
 
 **Analysis**
 - 0–100 AEO score (Entity×0.3 + Density×0.3 + Clarity×0.2 + Structure×0.2), Citation Probability, brand-type detection (editorial/news/saas/ecommerce/service), Competitive Duel.
+- **AI crawler-access gate (v1.6):** robots.txt/llms.txt audit vs. major AI bots; blocked citation-critical bot → headline score capped at 40 + red banner. Deterministic (`src/lib/crawlerAccess.ts`).
+- **Entity-graph/portfolio audit + passage-level extractability (v1.6):** sameAs/founder/NAP resolution; pronoun-led passages get entity-anchored rewrites.
+- **Connected-`@graph` JSON-LD (v1.6):** single graph, `@id` cross-refs, correct `@type`, `Offer`/`priceSpecification`. Platform detection (`src/lib/platformDetect.ts`) tailors the roadmap.
 
 **Trust & accuracy (v1.4)**
 - Brand-aware recommendations (editorial voice protected), provenance-split JSON-LD (Verified vs Candidate), honest OfferCatalog (≤4 user-facing services), `SCHEMA_MISSING` gap category, capability-scoped questions, calibrated/isolated scoring. Regression suite: `npm test` (vitest).

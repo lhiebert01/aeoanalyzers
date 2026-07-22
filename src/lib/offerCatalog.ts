@@ -94,13 +94,32 @@ export function filterOfferCatalogObject(schema: any): {
 } {
   if (!schema || typeof schema !== 'object') return { schema, removed: [] };
   const clone = JSON.parse(JSON.stringify(schema));
+  const removed: OfferFilterResult['removed'] = [];
 
-  const catalog = clone.hasOfferCatalog;
-  const list: OfferLike[] | undefined = catalog?.itemListElement;
-  if (!Array.isArray(list)) return { schema: clone, removed: [] };
+  // Walk the whole tree so the filter works whether hasOfferCatalog sits at the
+  // top level (legacy single-Organization block) or nested inside an @graph node
+  // (the connected-graph schema the analyzer now emits).
+  const visit = (node: any): void => {
+    if (Array.isArray(node)) {
+      node.forEach(visit);
+      return;
+    }
+    if (!node || typeof node !== 'object') return;
 
-  const { kept, removed } = filterOffers(list);
-  clone.hasOfferCatalog.itemListElement = kept;
+    const list: OfferLike[] | undefined = node.hasOfferCatalog?.itemListElement;
+    if (Array.isArray(list)) {
+      const { kept, removed: r } = filterOffers(list);
+      node.hasOfferCatalog.itemListElement = kept;
+      removed.push(...r);
+    }
+
+    for (const key of Object.keys(node)) {
+      if (key === 'hasOfferCatalog') continue; // already handled
+      visit(node[key]);
+    }
+  };
+
+  visit(clone);
   return { schema: clone, removed };
 }
 

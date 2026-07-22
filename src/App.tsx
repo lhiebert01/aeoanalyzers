@@ -18,6 +18,8 @@ import MarketingLanding from './components/MarketingLanding';
 import PressKit from './components/PressKit';
 import SEO from './components/SEO';
 import AdvancedAnalysisCards from './components/AdvancedAnalysisCards';
+import CrawlerAccessCard from './components/CrawlerAccessCard';
+import IndexCoverageCard from './components/IndexCoverageCard';
 import { getOrganizationJsonLd, getWebSiteJsonLd, getBreadcrumbJsonLd } from './lib/json-ld';
 
 type View = 'analyzer' | 'history' | 'payments' | 'settings' | 'auth' | 'admin' | 'guide' | 'landing' | 'privacy' | 'terms' | 'press';
@@ -345,8 +347,17 @@ export default function App() {
       const errData = await response.json();
       throw new Error(errData.error || `Failed to fetch ${targetUrl}`);
     }
-    const { html } = await response.json();
-    return html;
+    const { html, robotsTxt, llmsTxtFound, xRobotsTag, contentSignal, isCloudflare } = await response.json();
+    return {
+      html,
+      crawler: {
+        robotsTxt: robotsTxt ?? null,
+        llmsTxtFound: !!llmsTxtFound,
+        xRobotsTag: xRobotsTag ?? null,
+        contentSignal: contentSignal ?? null,
+        isCloudflare: !!isCloudflare,
+      },
+    };
   };
 
   const updateUsageCount = async () => {
@@ -411,11 +422,11 @@ export default function App() {
     try {
       trackEvent('analysis_start', { isDuel, url });
       if (isDuel && competitorUrl) {
-        const [html1, html2] = await Promise.all([
+        const [site1, site2] = await Promise.all([
           fetchHtml(url),
           fetchHtml(competitorUrl)
         ]);
-        const duel = await performCompetitiveDuel(url, html1, competitorUrl, html2);
+        const duel = await performCompetitiveDuel(url, site1.html, competitorUrl, site2.html, site1.crawler, site2.crawler);
         setDuelResult(duel);
         setLoading(false);
 
@@ -440,8 +451,8 @@ export default function App() {
         }
         trackEvent('analysis_complete', { type: 'duel', winner: duel.winner });
       } else {
-        const html = await fetchHtml(url);
-        const analysis = await analyzeWebsite(url, html);
+        const site = await fetchHtml(url);
+        const analysis = await analyzeWebsite(url, site.html, site.crawler);
         setResult(analysis);
         setLoading(false);
 
@@ -1148,6 +1159,16 @@ export default function App() {
                       animate={{ opacity: 1, scale: 1 }}
                       className="space-y-8"
                     >
+                      {/* Crawler access — foundational, rendered first */}
+                      <CrawlerAccessCard
+                        crawlerAccess={result.crawlerAccess}
+                        scoreBeforeCap={result.scoreBeforeCrawlerCap}
+                        cappedScore={result.score}
+                      />
+
+                      {/* Index coverage — allowed-to-crawl ≠ visible-and-found */}
+                      <IndexCoverageCard indexCoverage={result.indexCoverage} />
+
                       {/* Score & Citation Probability */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="md:col-span-1 bg-white border border-zinc-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center shadow-sm">

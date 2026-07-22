@@ -1,0 +1,107 @@
+// Regression suite for the WO-1 citation-sweep analytical core. Pins the
+// grounded (LLM-free) citation/competitor detection and the three-layer roll-up.
+
+import { describe, it, expect } from 'vitest';
+import {
+  normalizeDomain,
+  containsWord,
+  domainCited,
+  scoreRun,
+  aggregateSweep,
+  type SweepRunResult,
+} from '../lib/citationSweep';
+
+describe('normalizeDomain', () => {
+  it('strips protocol, www, path, query, and port', () => {
+    expect(normalizeDomain('https://www.Foo.com/bar?x=1')).toBe('foo.com');
+    expect(normalizeDomain('http://foo.com:8080')).toBe('foo.com');
+    expect(normalizeDomain('foo.com')).toBe('foo.com');
+  });
+});
+
+describe('containsWord', () => {
+  it('matches a brand as a whole word, case-insensitive', () => {
+    expect(containsWord('We recommend Ford trucks.', 'ford')).toBe(true);
+    expect(containsWord('AEO Analyzers is great', 'AEO Analyzers')).toBe(true);
+  });
+  it('does NOT match a brand embedded in another word', () => {
+    // The classic false positive: "Ford" inside "afford".
+    expect(containsWord('You can afford it.', 'Ford')).toBe(false);
+  });
+});
+
+describe('domainCited', () => {
+  it('detects the domain in the answer text', () => {
+    expect(domainCited('See aeoanalyzers.com for details', [], 'aeoanalyzers.com')).toBe(true);
+  });
+  it('detects the domain as a source host, including subdomains', () => {
+    expect(domainCited('no mention', ['https://blog.foo.com/x'], 'foo.com')).toBe(true);
+    expect(domainCited('no mention', ['https://foo.com'], 'foo.com')).toBe(true);
+  });
+  it('does not match an unrelated domain', () => {
+    expect(domainCited('bar.com is nice', ['https://bar.com'], 'foo.com')).toBe(false);
+  });
+});
+
+const run = (over: Partial<SweepRunResult>): SweepRunResult => ({
+  engine: 'perplexity', query: 'q', queryType: 'category', runIndex: 0,
+  transcript: '', sources: [], costUsd: 0, ...over,
+});
+
+describe('scoreRun', () => {
+  it('marks cited when the client domain appears', () => {
+    const r = scoreRun(run({ transcript: 'Try aeoanalyzers.com' }), { domain: 'aeoanalyzers.com' }, []);
+    expect(r.cited).toBe(true);
+  });
+  it('marks cited when the client brand name appears (no domain)', () => {
+    const r = scoreRun(run({ transcript: 'AEO Analyzers audits your site' }), { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' }, []);
+    expect(r.cited).toBe(true);
+  });
+  it('collects "cited instead" competitors by name and domain', () => {
+    const r = scoreRun(
+      run({ transcript: 'Rivals include Otterly and see peec.ai', sources: ['https://peec.ai/x'] }),
+      { domain: 'aeoanalyzers.com' },
+      [{ name: 'Otterly' }, { name: 'Peec', domain: 'peec.ai' }, { name: 'Nozzle' }]
+    );
+    expect(r.cited).toBe(false);
+    expect(r.citedCompetitors).toEqual(expect.arrayContaining(['Otterly', 'Peec']));
+    expect(r.citedCompetitors).not.toContain('Nozzle');
+  });
+});
+
+describe('aggregateSweep — three-layer roll-up', () => {
+  const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+  const competitors = [{ name: 'Otterly' }];
+
+  it('separates retrievability (branded) from citation win (category) and rounds', () => {
+    const runs: SweepRunResult[] = [
+      // Branded: 3/3 cited → retrievability 100%
+      run({ engine: 'claude', queryType: 'branded', transcript: 'AEO Analyzers ...', costUsd: 0.01 }),
+      run({ engine: 'claude', queryType: 'branded', transcript: 'aeoanalyzers.com ...', costUsd: 0.01 }),
+      run({ engine: 'claude', queryType: 'branded', transcript: 'AEO Analyzers ...', costUsd: 0.01 }),
+      // Category: 1/3 cited → citation win 33%
+      run({ engine: 'claude', queryType: 'category', transcript: 'AEO Analyzers is one option', costUsd: 0.01 }),
+      run({ engine: 'claude', queryType: 'category', transcript: 'Otterly is best', costUsd: 0.01 }),
+      run({ engine: 'claude', queryType: 'category', transcript: 'Use Otterly', costUsd: 0.01 }),
+    ];
+    const summary = aggregateSweep(runs, client, competitors);
+    const claude = summary.engines.find((e) => e.engine === 'claude')!;
+    expect(claude.retrievabilityPct).toBe(100);
+    expect(claude.citationWinPct).toBe(33);
+    // Competitor displacement counted only on the 2 category runs that named Otterly.
+    expect(claude.competitorCounts.Otterly).toBe(2);
+    expect(summary.topCompetitors[0]).toEqual({ name: 'Otterly', count: 2 });
+    expect(summary.totalRuns).toBe(6);
+    expect(summary.totalCostUsd).toBeCloseTo(0.06, 5);
+  });
+
+  it('does not count competitor displacement on branded queries', () => {
+    const runs: SweepRunResult[] = [
+      run({ engine: 'gemini', queryType: 'branded', transcript: 'Otterly also exists', costUsd: 0 }),
+    ];
+    const summary = aggregateSweep(runs, client, competitors);
+    const gem = summary.engines.find((e) => e.engine === 'gemini')!;
+    expect(gem.competitorCounts.Otterly).toBeUndefined();
+    expect(summary.topCompetitors).toHaveLength(0);
+  });
+});

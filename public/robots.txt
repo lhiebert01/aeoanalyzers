@@ -1,3 +1,32 @@
+# AEO Analyzers — robots.txt
+# Explicit allowlist for AI answer engines (we practice what the product preaches).
+
+# --- AI answer engines / AI search (ALLOW — live citation) ---
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+Allow: /
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api
+Disallow: /login
+Disallow: /signup
+
+# --- Training corpora (owner decision; default: allow) ---
+User-agent: CCBot
+Allow: /
+
+# --- Classic search + default ---
+User-agent: Googlebot
+User-agent: Bingbot
 User-agent: *
 Allow: /
 Disallow: /dashboard
