@@ -141,11 +141,24 @@ export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }
             {result.summary.engines.map((e) => (
               <div key={e.engine} className="bg-white border border-zinc-200 rounded-3xl p-5 shadow-sm">
                 <div className="font-bold flex items-center gap-2"><Bot className="w-4 h-4 text-zinc-400" />{ENGINE_LABEL[e.engine] || e.engine}</div>
-                <div className="mt-3 text-sm text-zinc-500">Retrievability (branded)</div>
-                <div className="text-2xl font-black">{e.brandedCited}/{e.brandedRuns} <span className="text-base font-semibold text-zinc-400">({e.retrievabilityPct}%)</span></div>
-                <div className="mt-2 text-sm text-zinc-500">Citation win (category)</div>
-                <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}%</div>
-                <div className="mt-2 text-xs text-zinc-400 flex items-center gap-1"><DollarSign className="w-3 h-3" />${e.costUsd.toFixed(3)}</div>
+                {(e as { errored?: boolean }).errored ? (
+                  // The engine itself failed to run (bad/expired key, config) — show
+                  // "Service unavailable", NOT a fake 0% that looks like a real result.
+                  <div className="mt-3">
+                    <div className="inline-flex items-center gap-1.5 text-sm font-bold text-red-600">
+                      <span className="w-2 h-2 rounded-full bg-red-500" /> Service unavailable
+                    </div>
+                    <div className="mt-2 text-xs text-zinc-500">This engine couldn&apos;t run (bad/expired key or config). This is <b>not</b> a real 0% — retry once the engine is restored.</div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mt-3 text-sm text-zinc-500">Retrievability (branded)</div>
+                    <div className="text-2xl font-black">{e.brandedCited}/{e.brandedRuns} <span className="text-base font-semibold text-zinc-400">({e.retrievabilityPct}%)</span></div>
+                    <div className="mt-2 text-sm text-zinc-500">Citation win (category)</div>
+                    <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}%</div>
+                    <div className="mt-2 text-xs text-zinc-400 flex items-center gap-1"><DollarSign className="w-3 h-3" />${e.costUsd.toFixed(3)}</div>
+                  </>
+                )}
               </div>
             ))}
           </div>

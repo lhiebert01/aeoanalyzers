@@ -26,6 +26,21 @@ export const config = { maxDuration: 300 };
 
 const ALL_ENGINES: Engine[] = ['claude', 'openai', 'perplexity', 'gemini'];
 
+// Throttled sweep-engine-down alert: ONE loud, greppable line at most once per
+// ~72h per running instance, so a dead/expired engine key is visible without
+// firing on every sweep. Wire a Vercel log-alert on "[SWEEP-ENGINE-FAIL]".
+let lastSweepEngineFailAlert = 0;
+const SWEEP_ENGINE_FAIL_ALERT_MS = 72 * 60 * 60 * 1000; // ~3 days
+function alertSweepEngineFail(engine: string, total: number, sample: string) {
+  const now = Date.now();
+  if (now - lastSweepEngineFailAlert < SWEEP_ENGINE_FAIL_ALERT_MS) return;
+  lastSweepEngineFailAlert = now;
+  console.error(
+    `[SWEEP-ENGINE-FAIL] engine=${engine} — ALL ${total} runs errored (reported as UNAVAILABLE, NOT a real 0%). ` +
+      `Likely a bad/expired key or config. Sample: ${sample}`,
+  );
+}
+
 const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com'];
 // Monthly sweep quota per tier — the real-money spend guardrail. A size-capped
 // sweep MEASURED at ~$1.34 COGS (Haiku + economical engines, max_searches 3), so
@@ -227,6 +242,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const summary = aggregateSweep(runs, { domain, brand }, competitors);
+
+    // Flag engines whose runs ALL errored (dead/expired key, 401, missing config)
+    // so a BROKEN engine is never reported as a real "0% retrievability". A run is
+    // an error when the adapter threw and we stored the "[error: …]" sentinel
+    // transcript. Surfaced as engine.errored + logged for alerting. This is the
+    // "$0.000 cost / 0-of-6 masquerading as a real zero" case.
+    for (const eng of summary.engines || []) {
+      const engRuns = runs.filter((r) => r.engine === eng.engine);
+      const erroredRuns = engRuns.filter((r) => /^\[error:/.test(r.transcript || ''));
+      if (engRuns.length > 0 && erroredRuns.length === engRuns.length) {
+        (eng as any).errored = true;
+        (eng as any).status = 'unavailable'; // UI renders "Service unavailable", not 0%
+        (eng as any).errorSample = (erroredRuns[0].transcript || '').slice(0, 200);
+        alertSweepEngineFail(eng.engine, engRuns.length, (eng as any).errorSample);
+      }
+    }
 
     let persisted = false;
     if (persist) {
