@@ -51,10 +51,11 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
     if (!user) return;
     setPortalLoading(true);
     try {
-      const response = await fetch('/api/create-portal-session', {
+      // Billing portal is served by the merged Stripe endpoint (action:'portal').
+      const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, email: user.email }),
+        body: JSON.stringify({ action: 'portal', userId: user.id, email: user.email }),
       });
       const { url, error } = await response.json();
       if (error) throw new Error(error);

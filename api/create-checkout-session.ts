@@ -1,14 +1,45 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 
+// Merged Stripe endpoint: checkout (default) + billing portal ({ action:'portal' }).
+// Kept as ONE serverless function so the deployment stays within the Vercel Hobby
+// 12-function cap (folding the former create-portal-session.ts in here freed the
+// slot for api/llm-generate.ts). Both branches are POST-only and were previously
+// called only from src/components/Payments.tsx.
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { planId, userId, email } = req.body;
   const stripeKey = process.env.STRIPE_SECRET_KEY;
+  const { action, planId, userId, email } = req.body || {};
 
+  // --- Billing portal branch (was create-portal-session.ts) ---
+  if (action === 'portal') {
+    if (!stripeKey) {
+      const appUrl = process.env.VITE_APP_URL || 'https://aeoanalyzers.com';
+      return res.json({ url: `${appUrl}/?portal=mock` });
+    }
+    const stripe = new Stripe(stripeKey);
+    try {
+      const customers = await stripe.customers.list({ email, limit: 1 });
+      const customerId = customers.data.length > 0 ? customers.data[0].id : null;
+      if (!customerId) {
+        return res.status(404).json({ error: 'No active subscription found for this email.' });
+      }
+      const appUrl = process.env.VITE_APP_URL || 'https://aeoanalyzers.com';
+      const session = await stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: `${appUrl}/payments`,
+      });
+      return res.json({ url: session.url });
+    } catch (error: any) {
+      console.error('Portal Error:', error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  // --- Checkout branch (default) ---
   if (!stripeKey) {
     // Fallback for demo if no key is set
     console.warn('STRIPE_SECRET_KEY is missing. Using mock response.');
