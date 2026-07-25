@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search } from 'lucide-react';
+import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import type { SweepSummary, SweepRunResult } from '../lib/citationSweep';
 import { getAccessToken } from '../supabase';
@@ -33,6 +33,7 @@ export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }
   const [authority, setAuthority] = useState<AuthorityGapReport | null>(null);
   const [bots, setBots] = useState<any | null>(null);
   const [openRun, setOpenRun] = useState<number | null>(null);
+  const [expandAll, setExpandAll] = useState(false);
 
   const parseLines = (s: string) => s.split('\n').map((l) => l.trim()).filter(Boolean);
   const parseCompetitors = (s: string) =>
@@ -67,6 +68,84 @@ export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }
     } finally {
       setRunning(false);
     }
+  }
+
+  // Build a single human-readable report of the whole sweep — summary scores,
+  // competitors, authority gap, crawler hits, and every transcript — so it can
+  // be saved/shared/pasted in one shot instead of expanding runs one at a time.
+  function buildReport(r: SweepResponse): string {
+    const L = (eng: string) => ENGINE_LABEL[eng] || eng;
+    const out: string[] = [];
+    out.push(`# Citation Sweep — ${r.domain}`);
+    if (r.brand) out.push(`Brand: ${r.brand}`);
+    out.push(`Generated: ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC`);
+    out.push(`Runs per query: ${r.runsPerQuery}`);
+    out.push(`Engines: ${r.configured.join(', ') || 'none'}`);
+    if (r.skippedEngines?.length) out.push(`Skipped (no API key): ${r.skippedEngines.join(', ')}`);
+    out.push(`Total sweep cost: ~$${r.summary.totalCostUsd.toFixed(3)}`);
+    out.push('');
+
+    out.push('## Scores by engine');
+    for (const e of r.summary.engines) {
+      out.push(`### ${L(e.engine)}`);
+      if ((e as { errored?: boolean }).errored) {
+        out.push('- Service unavailable (engine failed to run — bad/expired key or config; NOT a real 0%)');
+      } else {
+        out.push(`- Retrievability (branded): ${e.brandedCited}/${e.brandedRuns} (${e.retrievabilityPct}%)`);
+        out.push(`- Citation win (category): ${e.citationWinPct}%`);
+        out.push(`- Cost: $${e.costUsd.toFixed(3)}`);
+      }
+      out.push('');
+    }
+
+    if (r.summary.topCompetitors.length) {
+      out.push('## Cited instead of you (category queries)');
+      for (const c of r.summary.topCompetitors) out.push(`- ${c.name} · ${c.count}×`);
+      out.push('');
+    }
+
+    if (authority && authority.authorityDomains.length) {
+      out.push('## Authority gap — sources the engines trust');
+      for (const d of authority.authorityDomains.slice(0, 12)) out.push(`- ${d.domain} · ${d.citations}`);
+      if (authority.recommendations.length) {
+        out.push('');
+        out.push('Recommendations:');
+        for (const rec of authority.recommendations) out.push(`- ${rec}`);
+      }
+      out.push('');
+    }
+
+    if (bots && bots.configured) {
+      out.push(`## AI crawler hits (${bots.days}d) — ${bots.totalHits} total`);
+      for (const t of ['live', 'search', 'training']) out.push(`- ${t}: ${bots.tierTotals?.[t] || 0}`);
+      out.push('');
+    }
+
+    out.push(`## Transcripts (${r.runs.length} runs)`);
+    out.push('');
+    for (const run of r.runs) {
+      out.push(`### [${run.cited ? 'cited' : 'not cited'}] ${L(run.engine)} · ${run.queryType}: ${run.query}`);
+      out.push(run.transcript || '(no answer)');
+      if (run.sources?.length) out.push(`Sources: ${run.sources.join(' · ')}`);
+      out.push('');
+      out.push('---');
+      out.push('');
+    }
+    return out.join('\n');
+  }
+
+  function downloadReport() {
+    if (!result) return;
+    const stamp = new Date().toISOString().slice(0, 10);
+    const blob = new Blob([buildReport(result)], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `citation-sweep-${result.domain}-${stamp}.md`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   }
 
   return (
@@ -190,21 +269,31 @@ export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }
 
           {/* Cost + transcripts */}
           <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <h3 className="font-bold">Transcripts ({result.runs.length} runs)</h3>
-              <span className="text-sm font-semibold text-zinc-500">Sweep cost ≈ ${result.summary.totalCostUsd.toFixed(3)}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-zinc-500 mr-1">Sweep cost ≈ ${result.summary.totalCostUsd.toFixed(3)}</span>
+                <button onClick={() => setExpandAll((v) => !v)}
+                  className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-700 px-3 py-1.5 rounded-xl text-sm font-semibold hover:bg-zinc-50">
+                  <ChevronsUpDown className="w-4 h-4" />{expandAll ? 'Collapse all' : 'Expand all'}
+                </button>
+                <button onClick={downloadReport}
+                  className="inline-flex items-center gap-1.5 bg-zinc-900 text-white px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-zinc-800">
+                  <Download className="w-4 h-4" />Download report
+                </button>
+              </div>
             </div>
             <div className="space-y-2">
               {result.runs.map((r, i) => (
                 <div key={i} className="border border-zinc-200 rounded-xl">
                   <button onClick={() => setOpenRun(openRun === i ? null : i)} className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm">
-                    {openRun === i ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                    {openRun === i || expandAll ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                     <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.cited ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-500'}`}>{r.cited ? 'cited' : 'not cited'}</span>
                     <span className="font-semibold">{ENGINE_LABEL[r.engine] || r.engine}</span>
                     <span className="text-zinc-400">·</span>
                     <span className="text-zinc-500 truncate">{r.queryType}: {r.query}</span>
                   </button>
-                  {openRun === i && (
+                  {(openRun === i || expandAll) && (
                     <div className="px-4 pb-3 text-sm text-zinc-700 whitespace-pre-wrap border-t border-zinc-100 pt-2">
                       {r.transcript || '(no answer)'}
                       {r.sources?.length > 0 && (
