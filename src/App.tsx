@@ -1264,18 +1264,18 @@ export default function App() {
                               { label: 'Clarity', value: result.scoreBreakdown.clarity, weight: '20%', desc: 'Direct Answerability' },
                               { label: 'Structure', value: result.scoreBreakdown.structure, weight: '20%', desc: 'Semantic HTML' },
                             ] as const).map((item) => (
-                              <div key={item.label} className="text-center">
-                                <div className="text-3xl font-bold text-zinc-900">{item.value}</div>
-                                <div className="text-sm font-bold text-zinc-700 mt-1">{item.label}</div>
-                                <div className="text-[10px] text-zinc-400 uppercase tracking-widest">{item.weight} weight</div>
-                                <div className="mt-2 h-2 w-full bg-zinc-100 rounded-full overflow-hidden">
+                              <div key={item.label} className="text-center bg-zinc-50 border border-zinc-300 rounded-2xl p-4 shadow-sm">
+                                <div className="text-3xl font-black text-zinc-900">{item.value}</div>
+                                <div className="text-sm font-bold text-zinc-900 mt-1">{item.label}</div>
+                                <div className="text-[10px] font-semibold text-zinc-600 uppercase tracking-widest">{item.weight} weight</div>
+                                <div className="mt-2 h-2 w-full bg-zinc-200 rounded-full overflow-hidden">
                                   <div className="h-full bg-zinc-900 rounded-full transition-all" style={{ width: `${item.value}%` }} />
                                 </div>
-                                <div className="text-[10px] text-zinc-400 mt-1">{item.desc}</div>
+                                <div className="text-[11px] text-zinc-700 mt-2 font-medium">{item.desc}</div>
                               </div>
                             ))}
                           </div>
-                          <p className="text-center text-xs text-zinc-400 font-mono">
+                          <p className="text-center text-sm text-zinc-800 font-mono font-semibold">
                             Score = E×0.3 + D×0.3 + C×0.2 + S×0.2
                           </p>
                         </div>
@@ -1365,7 +1365,7 @@ function NavButton({ active, onClick, icon, label }: { active: boolean, onClick:
     <button 
       onClick={onClick}
       aria-label={label}
-      className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2.5 transition-all duration-300 ${active ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-900/20' : 'text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50'}`}
+      className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2.5 transition-all duration-300 ${active ? 'bg-zinc-900 text-white shadow-lg shadow-zinc-900/20' : 'text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100'}`}
     >
       <span className={`transition-transform duration-300 ${active ? 'scale-110' : 'group-hover:scale-110'}`}>{icon}</span>
       {label}

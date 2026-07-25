@@ -38,7 +38,12 @@ async function askClaude(query: string): Promise<EngineAnswer> {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) throw new MissingKeyError('ANTHROPIC_API_KEY');
   const client = new Anthropic({ apiKey: key });
-  const model = process.env.SWEEP_CLAUDE_MODEL || 'claude-opus-4-8';
+  // Default to Haiku: the sweep only needs an engine that searches the web and
+  // answers — it does NOT need Opus-tier reasoning. Opus made Claude cost ~20×
+  // the other engines (Opus $5/$25 per MTok + web-search results billed back as
+  // input tokens). Haiku is the COGS the sweep was actually priced against
+  // (see run-sweep.ts COGS note). Override with SWEEP_CLAUDE_MODEL.
+  const model = process.env.SWEEP_CLAUDE_MODEL || 'claude-haiku-4-5';
   // Model-aware web-search tool: the _20260209 dynamic-filtering variant is
   // Opus/Sonnet-tier only (400s on Haiku); the basic _20250305 works everywhere.
   // Pick per model so any SWEEP_CLAUDE_MODEL value works.
@@ -72,7 +77,11 @@ async function askClaude(query: string): Promise<EngineAnswer> {
   }
 
   const u = resp.usage || {};
-  const priceIn = 5, priceOut = 25; // Opus 4.8 $/MTok
+  // Model-aware $/MTok (input, output) so the displayed cost matches the model
+  // actually used — otherwise a Haiku run shows Opus prices (or vice-versa).
+  const [priceIn, priceOut] = /opus/.test(model) ? [5, 25]
+    : /sonnet/.test(model) ? [3, 15]
+    : [1, 5]; // haiku 4.5
   const searchReqs = u.server_tool_use?.web_search_requests || 0;
   const costUsd =
     (u.input_tokens || 0) / 1e6 * priceIn +

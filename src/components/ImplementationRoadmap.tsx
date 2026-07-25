@@ -650,7 +650,7 @@ function TabButton({ active, onClick, icon, label }: { active: boolean, onClick:
   return (
     <button 
       onClick={onClick}
-      className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all ${active ? 'bg-zinc-900 text-white shadow-lg' : 'text-zinc-400 hover:text-zinc-900'}`}
+      className={`px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all ${active ? 'bg-zinc-900 text-white shadow-lg' : 'text-zinc-700 border border-zinc-300 bg-white hover:text-zinc-900 hover:bg-zinc-100'}`}
     >
       {icon}
       {label}
