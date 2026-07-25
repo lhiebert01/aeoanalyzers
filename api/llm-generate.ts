@@ -26,8 +26,10 @@ const GEMINI_MODELS = [
   'gemini-3.5-flash-lite',
   'gemini-2.5-flash',
 ];
-const OPENAI_MODEL = process.env.LLM_OPENAI_MODEL || 'gpt-4o';
-const ANTHROPIC_MODEL = process.env.LLM_ANTHROPIC_MODEL || 'claude-sonnet-5';
+// Reuse the sweep's already-validated model env vars when present, so this route
+// uses model IDs known to work on this account.
+const OPENAI_MODEL = process.env.LLM_OPENAI_MODEL || process.env.SWEEP_OPENAI_MODEL || 'gpt-4o';
+const ANTHROPIC_MODEL = process.env.LLM_ANTHROPIC_MODEL || process.env.SWEEP_CLAUDE_MODEL || 'claude-sonnet-5';
 const MAX_OUTPUT_TOKENS = 32768;
 
 // A Gemini per-model failure is retryable (try the next model / next provider)
@@ -74,24 +76,32 @@ async function tryGemini(prompt: string, schema: any): Promise<string | null> {
 async function tryOpenAI(prompt: string): Promise<string | null> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return null;
-  try {
-    const client = new OpenAI({ apiKey });
-    const resp = await client.chat.completions.create({
-      model: OPENAI_MODEL,
-      max_tokens: 16384,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: 'You are a JSON API. Respond with a single valid JSON object only — no markdown fences, no prose. Follow every field and rule described in the user message exactly.' },
-        { role: 'user', content: prompt },
-      ],
-    });
-    const text = resp.choices?.[0]?.message?.content;
-    if (text) {
-      console.log(`[llm-generate] served by OpenAI ${OPENAI_MODEL}`);
-      return text;
+  const client = new OpenAI({ apiKey });
+  // Retry once on a transient 5xx/429 — OpenAI intermittently returns a 500
+  // "server had an error" that succeeds on a second attempt.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const resp = await client.chat.completions.create({
+        model: OPENAI_MODEL,
+        max_tokens: 8192,
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: 'You are a JSON API. Respond with a single valid JSON object only — no markdown fences, no prose. Follow every field and rule described in the user message exactly.' },
+          { role: 'user', content: prompt },
+        ],
+      });
+      const text = resp.choices?.[0]?.message?.content;
+      if (text) {
+        console.log(`[llm-generate] served by OpenAI ${OPENAI_MODEL}`);
+        return text;
+      }
+      return null;
+    } catch (err: any) {
+      const status = err?.status || err?.statusCode;
+      if (attempt === 0 && (status >= 500 || status === 429)) continue; // transient — retry once
+      console.warn('[llm-generate] OpenAI fallback failed:', err?.message);
+      return null;
     }
-  } catch (err: any) {
-    console.warn('[llm-generate] OpenAI fallback failed:', err?.message);
   }
   return null;
 }
@@ -101,14 +111,16 @@ async function tryAnthropic(prompt: string): Promise<string | null> {
   if (!apiKey) return null;
   try {
     const client = new Anthropic({ apiKey });
+    // NOTE: no assistant-message prefill — newer Claude models (claude-sonnet-5)
+    // reject it ("does not support assistant message prefill"). The system prompt
+    // asks for JSON-only, and the caller's tolerant safeJsonParse strips any stray
+    // prose/fences, so a prefill isn't needed to get clean JSON.
     const resp: any = await client.messages.create({
       model: ANTHROPIC_MODEL,
       max_tokens: 16384,
-      system: 'You are a JSON API. Respond with a single valid JSON object only — no markdown fences, no prose. Follow every field and rule described in the user message exactly.',
-      // Assistant prefill "{" forces the response to open as a JSON object.
+      system: 'You are a JSON API. Respond with a single valid JSON object only — no markdown fences, no prose, no preamble. Start your response with "{". Follow every field and rule described in the user message exactly.',
       messages: [
         { role: 'user', content: prompt },
-        { role: 'assistant', content: '{' },
       ],
     });
     const body = (resp.content || [])
@@ -117,7 +129,7 @@ async function tryAnthropic(prompt: string): Promise<string | null> {
       .join('');
     if (body) {
       console.log(`[llm-generate] served by Anthropic ${ANTHROPIC_MODEL}`);
-      return '{' + body; // re-attach the prefilled opening brace
+      return body;
     }
   } catch (err: any) {
     console.warn('[llm-generate] Anthropic fallback failed:', err?.message);
