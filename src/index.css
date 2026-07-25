@@ -5,3 +5,81 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
+
+/* ------------------------------------------------------------------ *
+ * Global readability & section-separation pass
+ * ------------------------------------------------------------------
+ * The app leaned on very light zinc-400/500 text and hairline
+ * zinc-100/200 borders, so on white pages the copy was hard to read
+ * and the cards had no visible edges — everything ran together.
+ *
+ * This layer (unlayered CSS after the Tailwind import → wins over
+ * utilities) does three things, app-wide, without touching component
+ * markup:
+ *   1. darkens washed-out secondary text on LIGHT backgrounds,
+ *   2. RESTORES the intentional light text inside DARK cards
+ *      (higher specificity beats rule 1, so the landing-page black
+ *      panels stay correct),
+ *   3. strengthens card borders + shadows so sections read as
+ *      distinct, delineated blocks.
+ * ------------------------------------------------------------------ */
+
+/* Solid, readable default for any untinted body copy. */
+body {
+  color: var(--color-zinc-800);
+  background-color: #eceef2;
+}
+
+/* Tint the app canvas off-white so white cards visibly separate from
+ * the page instead of blending into it. The app root hardcodes
+ * bg-[#fafafa] (near-white) — lift it to a clean light gray. */
+.bg-\[\#fafafa\] {
+  background-color: #eceef2 !important;
+}
+
+/* 1. Lift the washed-out grays to readable weights (light bg).
+ *    zinc-300 was used as near-invisible decoration (section numbers,
+ *    "&" glyphs, tiny weight/label captions) — pull it up too. */
+.text-zinc-300 { color: var(--color-zinc-500) !important; }
+.text-zinc-400 { color: var(--color-zinc-600) !important; }
+.text-zinc-500 { color: var(--color-zinc-700) !important; }
+.text-zinc-600 { color: var(--color-zinc-700) !important; }
+
+/* 2. Keep light-on-dark text inside dark cards exactly as designed.
+ *    Two-class specificity (0,2,0) overrides rule 1 (0,1,0). */
+.bg-zinc-900 .text-zinc-300,
+.bg-zinc-800 .text-zinc-300,
+.bg-zinc-950 .text-zinc-300 { color: var(--color-zinc-300) !important; }
+.bg-zinc-900 .text-zinc-400,
+.bg-zinc-800 .text-zinc-400,
+.bg-zinc-950 .text-zinc-400 { color: var(--color-zinc-400) !important; }
+.bg-zinc-900 .text-zinc-500,
+.bg-zinc-800 .text-zinc-500,
+.bg-zinc-950 .text-zinc-500 { color: var(--color-zinc-400) !important; }
+.bg-zinc-900 .text-zinc-600,
+.bg-zinc-800 .text-zinc-600 { color: var(--color-zinc-300) !important; }
+
+/* 3a. Give card edges a clearly visible border on the light canvas. */
+.border-zinc-100 { border-color: var(--color-zinc-200) !important; }
+.border-zinc-200 { border-color: var(--color-zinc-300) !important; }
+/* Dark cards keep their own subtle borders. */
+.bg-zinc-900 .border-zinc-200,
+.bg-zinc-800 .border-zinc-200 { border-color: rgb(255 255 255 / 0.12) !important; }
+
+/* 3b. Make every white card lift clearly off the canvas so each section
+ *     reads as its own delineated block, not one long run of text.
+ *     shadow-sm is the card shadow used app-wide. */
+.shadow-sm {
+  box-shadow: 0 1px 3px 0 rgb(24 24 27 / 0.08),
+              0 10px 28px -8px rgb(24 24 27 / 0.14) !important;
+}
+
+/* 3c. Header + footer are structural dividers — give them a real,
+ *     visible separating edge instead of a hairline. */
+header.sticky {
+  border-bottom-color: var(--color-zinc-300) !important;
+  box-shadow: 0 2px 8px -4px rgb(24 24 27 / 0.12);
+}
+footer {
+  border-top-color: var(--color-zinc-300) !important;
+}
