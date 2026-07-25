@@ -1,5 +1,3 @@
-/// <reference types="vite/client" />
-import { GoogleGenAI, Type } from "@google/genai";
 import { classifySiteType, type SiteType } from "../lib/brandType";
 import { filterOfferCatalogString, type OfferFilterResult } from "../lib/offerCatalog";
 import {
@@ -19,8 +17,19 @@ import { evaluateCrawlerAccess, type CrawlerAccessResult } from "../lib/crawlerA
 import { detectPlatform } from "../lib/platformDetect";
 import { evaluateIndexCoverage, type IndexCoverageResult } from "../lib/indexCoverage";
 
-const apiKey = (import.meta.env.VITE_DEV_GEMINI_KEY as string) || (process.env.GEMINI_API_KEY as string) || "";
-const ai = new GoogleGenAI({ apiKey });
+// SECURITY: this client module no longer holds any API key and no longer imports
+// the Gemini SDK. The LLM call runs SERVER-SIDE in api/llm-generate.ts (keys in
+// server-only env vars, never in the browser bundle — that inlining was the
+// vector that got the sibling GCP project suspended). These string tags mirror
+// the @google/genai `Type` enum values so the response schemas below are
+// unchanged; the server passes them straight to Gemini's responseSchema.
+const Type = {
+  OBJECT: 'OBJECT',
+  STRING: 'STRING',
+  NUMBER: 'NUMBER',
+  ARRAY: 'ARRAY',
+  BOOLEAN: 'BOOLEAN',
+} as const;
 
 export interface AnalysisResult {
   score: number;
@@ -177,19 +186,9 @@ export interface CompetitiveResult {
   winner: 'user' | 'competitor' | 'tie';
 }
 
-// Flash models in priority order — best quality first, then stable fallbacks.
-// Verified against https://ai.google.dev/gemini-api/docs/models (2026-07-22).
-// 1. gemini-3.6-flash:       Latest (Jul 21 2026) — better quality + fewer output
-//                            tokens than 3.5-flash, and cheaper ($1.50/$7.50 vs $1.50/$9.00).
-// 2. gemini-3.5-flash:       Stable, most intelligent prior gen (fallback).
-// 3. gemini-3.5-flash-lite:  Fastest/cheapest 3.5-class ($0.30/$2.50) (fallback).
-// 4. gemini-2.5-flash:       Stable production fallback, always available.
-const MODELS = [
-  "gemini-3.6-flash",
-  "gemini-3.5-flash",
-  "gemini-3.5-flash-lite",
-  "gemini-2.5-flash",
-];
+// The Gemini→OpenAI→Anthropic model chain now lives SERVER-SIDE in
+// api/llm-generate.ts (see generateWithFallback below). This module no longer
+// references model names or any key.
 
 // Tolerant JSON parse for model output. Even with responseMimeType:json +
 // responseSchema, the fallback flash models occasionally emit a trailing comma
@@ -222,36 +221,26 @@ export function safeJsonParse(raw: string | null | undefined): any {
   return JSON.parse(s);
 }
 
+// Calls the server-side LLM route (api/llm-generate.ts), which tries
+// Gemini → OpenAI → Anthropic with the keys held ONLY in server env vars. No API
+// key ever reaches the browser — the fix for the client-bundle key leak. The
+// server returns raw model text; the tolerant safeJsonParse below normalizes any
+// per-provider formatting differences. Signature is unchanged so analyzeWebsite
+// and performCompetitiveDuel are untouched.
 async function generateWithFallback(prompt: string, schema: any): Promise<string> {
-  let lastError: any;
-  for (const model of MODELS) {
-    try {
-      const response = await ai.models.generateContent({
-        model,
-        contents: prompt,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: schema,
-          // Generous ceiling: the report payload (two JSON-LD blocks, provenance,
-          // gap analysis, checklist) is large, AND Gemini 3.x Flash uses "medium"
-          // thinking by default whose tokens also count against this budget. Too
-          // low a cap truncates the JSON mid-string and breaks parsing. 3.5 Flash
-          // supports up to 65k output tokens; 32k leaves ample headroom.
-          maxOutputTokens: 32768
-        }
-      });
-      if (response.text) return response.text;
-    } catch (err: any) {
-      lastError = err;
-      const status = err?.status || err?.code || err?.httpStatusCode;
-      // Only fallback on capacity/rate errors — not on bad request or auth errors
-      if (status === 503 || status === 429 || status === 'UNAVAILABLE' || err?.message?.includes('503') || err?.message?.includes('high demand')) {
-        continue;
-      }
-      throw err; // Non-capacity error — don't retry with a different model
-    }
+  const resp = await fetch('/api/llm-generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, schema }),
+  });
+  if (!resp.ok) {
+    let detail = '';
+    try { detail = (await resp.json())?.error || ''; } catch { /* non-JSON error body */ }
+    throw new Error(detail || `AI service is unavailable (${resp.status}). Please try again in a few minutes.`);
   }
-  throw lastError || new Error("All AI models are currently unavailable. Please try again in a few minutes.");
+  const data = await resp.json().catch(() => null);
+  if (!data?.text) throw new Error('The AI service returned an empty response. Please try again.');
+  return data.text as string;
 }
 
 export interface CrawlerInputs {
