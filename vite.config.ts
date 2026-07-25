@@ -7,9 +7,12 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
     plugins: [react(), tailwindcss()],
-    define: {
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-    },
+    // SECURITY: never inline GEMINI_API_KEY into the client bundle. The old
+    // `define` here baked the plaintext key into the browser JS, where it was
+    // harvested from the deployed site and caused GCP project suspension
+    // (2026-07-24). All Gemini calls must go through the server-side api/
+    // functions (api/_lib/engines.ts reads process.env server-side). The
+    // browser must never hold the key. See docs/security-incidents/.
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
