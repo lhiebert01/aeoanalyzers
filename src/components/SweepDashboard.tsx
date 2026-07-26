@@ -160,27 +160,44 @@ export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }
 
       {/* Input */}
       <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm space-y-4">
+        {/* How to fill this in — plain-language explainer with a worked example */}
+        <div className="rounded-xl bg-zinc-50 border border-zinc-200 p-3.5 text-xs leading-relaxed text-zinc-600">
+          <p className="font-bold text-zinc-800 mb-1">How a sweep works</p>
+          <p>
+            We ask each real answer engine your questions, several times each, and measure two things:
+            <b> branded</b> queries (that name you) test whether engines <b>know you</b> when asked directly;
+            <b> category</b> queries (that don&apos;t name you) test whether engines <b>cite you</b> for your
+            space — and who gets cited <i>instead</i>. Example: for SanctumShield, a branded query is
+            <span className="font-mono"> &ldquo;who is sanctumshield.com&rdquo;</span> and a category query is
+            <span className="font-mono"> &ldquo;best AI governance tools&rdquo;</span>.
+          </p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className="text-sm font-semibold">Domain
+            <span className="mt-0.5 block text-xs font-normal text-zinc-500">Your website — no https:// needed. e.g. <span className="font-mono">sanctumshield.com</span></span>
             <input value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="example.com"
               className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
           </label>
           <label className="text-sm font-semibold">Brand name (optional)
+            <span className="mt-0.5 block text-xs font-normal text-zinc-500">Catches mentions even without a link. e.g. <span className="font-mono">SanctumShield</span></span>
             <input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Example Inc"
               className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
           </label>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className="text-sm font-semibold">Branded queries (one per line; {'{domain}'} expands)
+            <span className="mt-0.5 block text-xs font-normal text-zinc-500">Questions that <b>name you</b> — do engines know you when asked directly? e.g. <span className="font-mono">who is {'{domain}'}</span></span>
             <textarea value={branded} onChange={(e) => setBranded(e.target.value)} rows={3}
               className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
           </label>
           <label className="text-sm font-semibold">Category queries (unbranded buyer-intent)
+            <span className="mt-0.5 block text-xs font-normal text-zinc-500">Buyer questions that <b>don&apos;t name you</b> but where you want to be cited. e.g. <span className="font-mono">best AI governance tools</span></span>
             <textarea value={category} onChange={(e) => setCategory(e.target.value)} rows={3}
               className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
           </label>
         </div>
         <label className="text-sm font-semibold block">Competitors (one per line: <span className="font-mono">Name, domain.com</span>)
+          <span className="mt-0.5 block text-xs font-normal text-zinc-500">Rivals to track — the sweep counts each time they&apos;re cited instead of you. e.g. <span className="font-mono">Knostic, knostic.ai</span></span>
           <textarea value={competitors} onChange={(e) => setCompetitors(e.target.value)} rows={2}
             className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
         </label>

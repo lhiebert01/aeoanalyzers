@@ -50,8 +50,11 @@ async function askClaude(query: string): Promise<EngineAnswer> {
   const advancedSearch = /opus-4-8|opus-4-7|opus-4-6|sonnet-5|sonnet-4-6/.test(model);
   const searchType = advancedSearch ? 'web_search_20260209' : 'web_search_20250305';
   // Cap web-search uses to bound per-call cost (Claude is the cost driver; each
-  // search injects large input token volume). Override with SWEEP_MAX_SEARCHES.
-  const maxUses = Number(process.env.SWEEP_MAX_SEARCHES || 3);
+  // search injects large input token volume as billed input tokens). Branded
+  // queries ("who is X" / "what is X") only need ONE lookup, so cap them at 1;
+  // category queries get 2. Override the whole thing with SWEEP_MAX_SEARCHES.
+  const isBranded = /^\s*(who|what)\s+is\s/i.test(query);
+  const maxUses = Number(process.env.SWEEP_MAX_SEARCHES || (isBranded ? 1 : 2));
   const tools = [{ type: searchType, name: 'web_search' as const, max_uses: maxUses }];
 
   let messages: any[] = [{ role: 'user', content: query }];
