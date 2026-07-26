@@ -14,6 +14,8 @@
 >
 > **Activation:** provider API keys in Vercel + local `.env` (ANTHROPIC/OPENAI/PERPLEXITY/GEMINI). Supabase migrations run (query_panels, citation_sweeps, sweep_results, bot_hits, truth_records, action_plans). **Pending user action:** Bing Webmaster verification + recrawl (gates DOGFOOD-001 Part B N=5 re-measure). See RELEASE-NOTES.md.
 
+> **Next — WO-AEO-EXECREPORT-001 (productize the sweep as an executive report):** Turn the sweep into a 3-rung ladder — free snapshot → **$250 AI Visibility Executive Report** (Mazda-style: 60-run sweep + transcripts, competitor citation counts, authority-gap analysis, plain-English narrative, 5 prioritized actions, exec-ready email draft; 48h delivery) → monthly monitoring subscription (the report's Rec #5 is the upsell). One generator, **two doors** (Stripe self-serve + super-admin outreach), a **human review queue gates BOTH** (no auto-sends), courtesy/outreach version watermarked "SAMPLE". WO + approved golden-master template live in `templates/exec-report/` (`WO-AEO-EXECREPORT-001.md`, `mazda-sample.md`, `REVIEW-NOTES.md`). Sequenced AFTER the dogfood WOs; build target: Fable. Validated against a real Mazda dogfood sweep 2026-07-26.
+
 > **v1.6.0 (2026-07-01):** Closed five AEO blind spots from an independent audit:
 > (1) **AI crawler-access gate** — `api/fetch-site` now returns robots.txt + llms.txt;
 > `src/lib/crawlerAccess.ts` audits AI-bot allow/deny and **caps the headline score at 40**
