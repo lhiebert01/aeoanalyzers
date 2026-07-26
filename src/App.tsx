@@ -1267,11 +1267,11 @@ export default function App() {
                               <div key={item.label} className="text-center bg-zinc-50 border border-zinc-300 rounded-2xl p-4 shadow-sm">
                                 <div className="text-3xl font-black text-zinc-900">{item.value}</div>
                                 <div className="text-sm font-bold text-zinc-900 mt-1">{item.label}</div>
-                                <div className="text-[10px] font-semibold text-zinc-600 uppercase tracking-widest">{item.weight} weight</div>
+                                <div className="text-[10px] font-bold text-zinc-800 uppercase tracking-widest">{item.weight} weight</div>
                                 <div className="mt-2 h-2 w-full bg-zinc-200 rounded-full overflow-hidden">
                                   <div className="h-full bg-zinc-900 rounded-full transition-all" style={{ width: `${item.value}%` }} />
                                 </div>
-                                <div className="text-[11px] text-zinc-700 mt-2 font-medium">{item.desc}</div>
+                                <div className="text-[11px] text-zinc-800 mt-2 font-semibold">{item.desc}</div>
                               </div>
                             ))}
                           </div>

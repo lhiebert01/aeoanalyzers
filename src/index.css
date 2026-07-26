@@ -37,13 +37,14 @@ body {
   background-color: #eceef2 !important;
 }
 
-/* 1. Lift the washed-out grays to readable weights (light bg).
- *    zinc-300 was used as near-invisible decoration (section numbers,
- *    "&" glyphs, tiny weight/label captions) — pull it up too. */
-.text-zinc-300 { color: var(--color-zinc-500) !important; }
-.text-zinc-400 { color: var(--color-zinc-600) !important; }
-.text-zinc-500 { color: var(--color-zinc-700) !important; }
-.text-zinc-600 { color: var(--color-zinc-700) !important; }
+/* 1. Lift the washed-out grays to DARK, high-contrast weights (light bg).
+ *    Pushed further toward black per feedback — secondary text was still reading
+ *    as light grey. zinc-300 (faint decoration) → zinc-600; everything else lands
+ *    at zinc-700/800 (near body-text density). */
+.text-zinc-300 { color: var(--color-zinc-600) !important; }
+.text-zinc-400 { color: var(--color-zinc-700) !important; }
+.text-zinc-500 { color: var(--color-zinc-800) !important; }
+.text-zinc-600 { color: var(--color-zinc-800) !important; }
 
 /* 2. Keep light-on-dark text inside dark cards exactly as designed.
  *    Two-class specificity (0,2,0) overrides rule 1 (0,1,0). */
@@ -59,19 +60,23 @@ body {
 .bg-zinc-900 .text-zinc-600,
 .bg-zinc-800 .text-zinc-600 { color: var(--color-zinc-300) !important; }
 
-/* 3a. Give card edges a clearly visible border on the light canvas. */
-.border-zinc-100 { border-color: var(--color-zinc-200) !important; }
-.border-zinc-200 { border-color: var(--color-zinc-300) !important; }
+/* 3a. Give card edges a clearly visible ("Strongest"/Option C) border on the
+ *     light canvas — a distinct mid-gray edge so every tile reads as its own block. */
+.border-zinc-100 { border-color: var(--color-zinc-300) !important; }
+.border-zinc-200 { border-color: #a8afbd !important; }
+.border-zinc-300 { border-color: #b6bcc7 !important; } /* inner boxes / inputs */
 /* Dark cards keep their own subtle borders. */
 .bg-zinc-900 .border-zinc-200,
 .bg-zinc-800 .border-zinc-200 { border-color: rgb(255 255 255 / 0.12) !important; }
+.bg-zinc-900 .border-zinc-300,
+.bg-zinc-800 .border-zinc-300 { border-color: rgb(255 255 255 / 0.12) !important; }
 
-/* 3b. Make every white card lift clearly off the canvas so each section
- *     reads as its own delineated block, not one long run of text.
+/* 3b. Make every white card lift clearly off the canvas (Option C shadow) so each
+ *     section reads as its own delineated block, not one long run of text.
  *     shadow-sm is the card shadow used app-wide. */
 .shadow-sm {
-  box-shadow: 0 1px 3px 0 rgb(24 24 27 / 0.08),
-              0 10px 28px -8px rgb(24 24 27 / 0.14) !important;
+  box-shadow: 0 2px 4px 0 rgb(24 24 27 / 0.10),
+              0 18px 40px -12px rgb(24 24 27 / 0.28) !important;
 }
 
 /* 3c. Header + footer are structural dividers — give them a real,
