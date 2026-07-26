@@ -1141,8 +1141,12 @@ export default function App() {
                     <div className={`grid gap-2 p-2 bg-white border-2 border-zinc-900 rounded-[2rem] shadow-2xl focus-within:ring-8 focus-within:ring-zinc-900/5 transition-all ${isDuel ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
                       <div className="flex items-center pl-4 border-r border-zinc-100 last:border-0">
                         <Globe className="w-6 h-6 text-zinc-400 mr-4" />
-                        <input 
-                          type="url" 
+                        <input
+                          type="text"
+                          inputMode="url"
+                          autoCapitalize="none"
+                          autoCorrect="off"
+                          spellCheck={false}
                           placeholder="Your website — e.g. example.com"
                           aria-label="Your Website URL"
                           className="w-full bg-transparent border-none focus:ring-0 text-zinc-900 font-bold placeholder:text-zinc-300 py-4 text-lg"
@@ -1154,8 +1158,12 @@ export default function App() {
                       {isDuel && (
                         <div className="flex items-center pl-4">
                           <Swords className="w-6 h-6 text-zinc-400 mr-4" />
-                          <input 
-                            type="url" 
+                          <input
+                            type="text"
+                            inputMode="url"
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            spellCheck={false}
                             placeholder="Competitor URL"
                             aria-label="Competitor URL"
                             className="w-full bg-transparent border-none focus:ring-0 text-zinc-900 font-bold placeholder:text-zinc-300 py-4 text-lg"
