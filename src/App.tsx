@@ -934,7 +934,7 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="px-6"
             >
-              <SweepDashboard onUpgrade={() => navigateTo('payments')} />
+              <SweepDashboard onUpgrade={() => navigateTo('payments')} isAdmin={isAdmin} />
             </motion.div>
           )}
 
@@ -1042,7 +1042,7 @@ export default function App() {
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Domain</th>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Branded</th>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Category</th>
-                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Cost</th>
+                        {isAdmin && <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Cost</th>}
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Date</th>
                       </tr>
                     </thead>
@@ -1058,7 +1058,7 @@ export default function App() {
                             <td className="px-6 py-4 font-medium text-sm text-zinc-900 truncate max-w-[220px]">{s.domain}</td>
                             <td className="px-6 py-4"><span className="text-sm font-bold">{branded === null ? '—' : `${branded}%`}</span></td>
                             <td className="px-6 py-4"><span className={`text-sm font-bold ${category && category >= 50 ? 'text-emerald-600' : category ? 'text-amber-600' : 'text-zinc-500'}`}>{category === null ? '—' : `${category}%`}</span></td>
-                            <td className="px-6 py-4 text-xs text-zinc-500">${Number(s.total_cost_usd || 0).toFixed(2)}</td>
+                            {isAdmin && <td className="px-6 py-4 text-xs text-zinc-500">${Number(s.total_cost_usd || 0).toFixed(2)}</td>}
                             <td className="px-6 py-4 text-xs text-zinc-500">{new Date(s.created_at).toLocaleDateString()}</td>
                           </tr>
                         );

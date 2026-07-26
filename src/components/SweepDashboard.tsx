@@ -21,7 +21,7 @@ const ENGINE_LABEL: Record<string, string> = {
   claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini',
 };
 
-export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }) {
+export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () => void; isAdmin?: boolean }) {
   const [domain, setDomain] = useState('');
   const [brand, setBrand] = useState('');
   const [branded, setBranded] = useState('who is {domain}\nwhat is {domain}');
@@ -82,7 +82,7 @@ export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }
     out.push(`Runs per query: ${r.runsPerQuery}`);
     out.push(`Engines: ${r.configured.join(', ') || 'none'}`);
     if (r.skippedEngines?.length) out.push(`Skipped (no API key): ${r.skippedEngines.join(', ')}`);
-    out.push(`Total sweep cost: ~$${r.summary.totalCostUsd.toFixed(3)}`);
+    if (isAdmin) out.push(`Total sweep cost: ~$${r.summary.totalCostUsd.toFixed(3)}`);
     out.push('');
 
     out.push('## Scores by engine');
@@ -93,7 +93,7 @@ export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }
       } else {
         out.push(`- Retrievability (branded): ${e.brandedCited}/${e.brandedRuns} (${e.retrievabilityPct}%)`);
         out.push(`- Citation win (category): ${e.citationWinPct}%`);
-        out.push(`- Cost: $${e.costUsd.toFixed(3)}`);
+        if (isAdmin) out.push(`- Cost: $${e.costUsd.toFixed(3)}`);
       }
       out.push('');
     }
@@ -252,7 +252,7 @@ export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }
                     <div className="text-2xl font-black">{e.brandedCited}/{e.brandedRuns} <span className="text-base font-semibold text-zinc-400">({e.retrievabilityPct}%)</span></div>
                     <div className="mt-2 text-sm text-zinc-500">Citation win (category)</div>
                     <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}%</div>
-                    <div className="mt-2 text-xs text-zinc-400 flex items-center gap-1"><DollarSign className="w-3 h-3" />${e.costUsd.toFixed(3)}</div>
+                    {isAdmin && <div className="mt-2 text-xs text-zinc-400 flex items-center gap-1"><DollarSign className="w-3 h-3" />${e.costUsd.toFixed(3)}</div>}
                   </>
                 )}
               </div>
@@ -289,7 +289,7 @@ export default function SweepDashboard({ onUpgrade }: { onUpgrade?: () => void }
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <h3 className="font-bold">Transcripts ({result.runs.length} runs)</h3>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-zinc-500 mr-1">Sweep cost ≈ ${result.summary.totalCostUsd.toFixed(3)}</span>
+                {isAdmin && <span className="text-sm font-semibold text-zinc-500 mr-1">Sweep cost ≈ ${result.summary.totalCostUsd.toFixed(3)}</span>}
                 <button onClick={() => setExpandAll((v) => !v)}
                   className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-700 px-3 py-1.5 rounded-xl text-sm font-semibold hover:bg-zinc-50">
                   <ChevronsUpDown className="w-4 h-4" />{expandAll ? 'Collapse all' : 'Expand all'}
