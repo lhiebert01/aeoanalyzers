@@ -179,6 +179,10 @@ export default function App() {
   const [history, setHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [isViewingHistory, setIsViewingHistory] = useState(false);
+  // Sweep history (Citation Sweeps) — a second tab in the History view.
+  const [historyTab, setHistoryTab] = useState<'analyses' | 'sweeps'>('analyses');
+  const [sweepHistory, setSweepHistory] = useState<any[]>([]);
+  const [loadingSweeps, setLoadingSweeps] = useState(false);
 
   const navigateTo = (newView: View) => {
     setView(newView);
@@ -326,12 +330,33 @@ export default function App() {
     setLoadingHistory(false);
   };
 
+  const fetchSweepHistory = async (userId?: string) => {
+    const id = userId || user?.id;
+    if (!id) { setLoadingSweeps(false); setSweepHistory([]); return; }
+    setLoadingSweeps(true);
+    try {
+      const { data, error } = await supabaseQuery(
+        'citation_sweeps',
+        `select=*&user_id=eq.${id}&order=created_at.desc&limit=20`,
+        10000
+      );
+      if (error) throw new Error(error.message);
+      setSweepHistory(data || []);
+    } catch (err) {
+      console.error('[History] Error fetching sweep history:', err);
+      setSweepHistory([]);
+    }
+    setLoadingSweeps(false);
+  };
+
   useEffect(() => {
     if (view === 'history' && user?.id) {
       fetchHistory(user.id);
+      fetchSweepHistory(user.id);
     } else if (view === 'history') {
       setLoadingHistory(false);
       setHistory([]);
+      setSweepHistory([]);
     }
   }, [view, user?.id]);
 
@@ -921,18 +946,33 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="max-w-5xl mx-auto px-6"
             >
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-bold tracking-tight">Analysis History</h2>
-                <button 
-                  onClick={() => fetchHistory()}
-                  disabled={loadingHistory}
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-3xl font-bold tracking-tight">History</h2>
+                <button
+                  onClick={() => { fetchHistory(); fetchSweepHistory(); }}
+                  disabled={loadingHistory || loadingSweeps}
                   className="p-2 hover:bg-zinc-100 rounded-full transition-all"
                 >
-                  <Loader2 className={`w-5 h-5 ${loadingHistory ? 'animate-spin' : ''}`} />
+                  <Loader2 className={`w-5 h-5 ${(loadingHistory || loadingSweeps) ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+              {/* Tabs: analyses (single-page AEO scores) vs citation sweeps */}
+              <div className="flex gap-2 mb-6">
+                <button
+                  onClick={() => setHistoryTab('analyses')}
+                  className={`px-4 py-2 rounded-xl text-sm font-bold transition ${historyTab === 'analyses' ? 'bg-zinc-900 text-white shadow' : 'border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50'}`}
+                >
+                  Analyses
+                </button>
+                <button
+                  onClick={() => setHistoryTab('sweeps')}
+                  className={`px-4 py-2 rounded-xl text-sm font-bold transition ${historyTab === 'sweeps' ? 'bg-zinc-900 text-white shadow' : 'border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50'}`}
+                >
+                  Citation Sweeps
                 </button>
               </div>
 
-              {loadingHistory ? (
+              {historyTab === 'analyses' && (loadingHistory ? (
                 <div className="flex items-center justify-center py-20">
                   <Loader2 className="w-8 h-8 animate-spin text-zinc-300" />
                 </div>
@@ -988,7 +1028,49 @@ export default function App() {
                 <div className="text-center py-20 bg-white border border-zinc-200 rounded-3xl border-dashed">
                   <p className="text-zinc-400">No analysis history found. Start by analyzing a website!</p>
                 </div>
-              )}
+              ))}
+
+              {historyTab === 'sweeps' && (loadingSweeps ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="w-8 h-8 animate-spin text-zinc-300" />
+                </div>
+              ) : sweepHistory.length > 0 ? (
+                <div className="bg-white border border-zinc-200 rounded-3xl overflow-hidden shadow-sm">
+                  <table className="w-full text-left">
+                    <thead className="bg-zinc-50 border-b border-zinc-100">
+                      <tr>
+                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Domain</th>
+                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Branded</th>
+                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Category</th>
+                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Cost</th>
+                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-100">
+                      {sweepHistory.map((s) => {
+                        const engines = (s.summary?.engines || []) as Array<{ retrievabilityPct?: number; citationWinPct?: number }>;
+                        const avg = (k: 'retrievabilityPct' | 'citationWinPct') =>
+                          engines.length ? Math.round(engines.reduce((a, e) => a + (e[k] || 0), 0) / engines.length) : null;
+                        const branded = avg('retrievabilityPct');
+                        const category = avg('citationWinPct');
+                        return (
+                          <tr key={s.id} className="hover:bg-zinc-50 transition-all">
+                            <td className="px-6 py-4 font-medium text-sm text-zinc-900 truncate max-w-[220px]">{s.domain}</td>
+                            <td className="px-6 py-4"><span className="text-sm font-bold">{branded === null ? '—' : `${branded}%`}</span></td>
+                            <td className="px-6 py-4"><span className={`text-sm font-bold ${category && category >= 50 ? 'text-emerald-600' : category ? 'text-amber-600' : 'text-zinc-500'}`}>{category === null ? '—' : `${category}%`}</span></td>
+                            <td className="px-6 py-4 text-xs text-zinc-500">${Number(s.total_cost_usd || 0).toFixed(2)}</td>
+                            <td className="px-6 py-4 text-xs text-zinc-500">{new Date(s.created_at).toLocaleDateString()}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-20 bg-white border border-zinc-200 rounded-3xl border-dashed">
+                  <p className="text-zinc-400">No citation sweeps yet — run one from the Sweeps tab.</p>
+                </div>
+              ))}
             </motion.div>
           )}
 
