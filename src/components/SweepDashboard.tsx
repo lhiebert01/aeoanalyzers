@@ -35,7 +35,22 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   const [openRun, setOpenRun] = useState<number | null>(null);
   const [expandAll, setExpandAll] = useState(false);
 
-  const parseLines = (s: string) => s.split('\n').map((l) => l.trim()).filter(Boolean);
+  // Robust query parse. Strips box-drawing / table-border characters (U+2500–U+259F and the
+  // ASCII pipe) and rejoins a line that STARTS with one — a wrapped table-cell continuation
+  // from a pasted markdown table. This is how "most reliable small SUV" once split into
+  // "most reliable small" + "│ │ SUV" (a bogus extra query). De-dupes identical lines.
+  const BORDER = /[─-▟|]/g;
+  const parseLines = (s: string) => {
+    const out: string[] = [];
+    for (const raw of s.split('\n')) {
+      const isContinuation = /^\s*[─-▟|]/.test(raw);
+      const cleaned = raw.replace(BORDER, ' ').replace(/\s+/g, ' ').trim();
+      if (!cleaned) continue;
+      if (isContinuation && out.length) out[out.length - 1] = `${out[out.length - 1]} ${cleaned}`.trim();
+      else out.push(cleaned);
+    }
+    return [...new Set(out)];
+  };
   const parseCompetitors = (s: string) =>
     parseLines(s).map((l) => {
       const [name, dom] = l.split(',').map((x) => x.trim());
