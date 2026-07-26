@@ -42,6 +42,10 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
       a: "Answer Engine Optimization (AEO) is the process of making your site 'AI-Readable'. As users move from typing keywords into Google to asking questions to AI agents like ChatGPT, Gemini, and Perplexity, your site must be semantically structured to be cited as the primary source of truth."
     },
     {
+      q: "Is it AEO or GEO? Isn't GEO newer and better?",
+      a: "They're two names for the same thing. GEO (Generative Engine Optimization) comes from a 2023 academic paper; AEO (Answer Engine Optimization) comes from the SEO world — and you'll also hear LLMO, AIO, and 'AI SEO'. All describe one goal: being the source AI engines cite when they answer. The claim that 'GEO is newer, more comprehensive, or that AEO is passé' is marketing positioning, not a technical distinction — the things you actually optimize are identical: structured data, citable facts, a clear entity identity, crawlability, and authority the engines already trust. Anyone telling you 'you don't need AEO, you need GEO' is selling a relabel, not a different practice. What actually matters is the outcome — do the engines cite you? — and that is exactly what AEO Analyzers measures directly with live Citation Sweeps, whatever you call the category."
+    },
+    {
       q: "What does AEO Analyzers actually do?",
       a: "Two things. First, it diagnoses your site — an AEO Score, a Citation Probability, and the exact fixes (paste-ready JSON-LD schema, content rewrites, a developer-ready report). Second, it proves the result with live Citation Sweeps: it asks the real AI engines — ChatGPT, Claude, Perplexity, and Gemini — your buyers' questions and shows whether they actually cite you, who they cite instead, and the exact answers they gave."
     },
