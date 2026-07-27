@@ -326,10 +326,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                     <span className="text-zinc-500 truncate">{r.queryType}: {r.query}</span>
                   </button>
                   {(openRun === i || expandAll) && (
-                    <div className="px-4 pb-3 text-sm text-zinc-700 whitespace-pre-wrap border-t border-zinc-100 pt-2">
+                    <div className="px-4 pb-3 text-sm text-zinc-700 whitespace-pre-wrap break-words border-t border-zinc-100 pt-2">
                       {r.transcript || '(no answer)'}
                       {r.sources?.length > 0 && (
-                        <div className="mt-2 text-xs text-zinc-400">Sources: {r.sources.join(' · ')}</div>
+                        <div className="mt-2 text-xs text-zinc-400 break-all">Sources: {r.sources.join(' · ')}</div>
                       )}
                     </div>
                   )}
