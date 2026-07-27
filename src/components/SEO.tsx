@@ -15,7 +15,7 @@ interface SEOProps {
 
 const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://aeoanalyzers.com';
 const DEFAULT_TITLE = 'AEO Analyzers | Be the Answer AI Gives';
-const DEFAULT_DESCRIPTION = 'AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — and gives you the exact fixes, in 90 seconds.';
+const DEFAULT_DESCRIPTION = 'AEO Analyzers scores how citable your site is by ChatGPT, Gemini, Perplexity & Claude — then proves it with live Citation Sweeps and the exact fixes.';
 const DEFAULT_AUTHOR = 'Lindsay Hiebert';
 
 const SEO: React.FC<SEOProps> = ({
@@ -30,7 +30,9 @@ const SEO: React.FC<SEOProps> = ({
   jsonLd,
 }) => {
   const fullTitle = title ? `${title} | AEO Analyzers` : DEFAULT_TITLE;
-  const currentUrl = canonical ? canonical : (typeof window !== 'undefined' ? window.location.href : SITE_URL);
+  // Canonical: strip query/hash + trailing slash so "/" and "/…/" never disagree.
+  const rawUrl = canonical || (typeof window !== 'undefined' ? window.location.origin + window.location.pathname : SITE_URL);
+  const currentUrl = rawUrl.replace(/\/+$/, '') || SITE_URL;
   const imageUrl = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`;
   const imageType = /\.png(\?|$)/i.test(imageUrl) ? 'image/png'
     : /\.webp(\?|$)/i.test(imageUrl) ? 'image/webp'
@@ -58,6 +60,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:image:width" content="1735" />
       <meta property="og:image:height" content="906" />
       <meta property="og:image:type" content={imageType} />
+      <meta property="og:image:alt" content="AEO Analyzers — Be the Answer AI Gives: scores your site's AI citability and proves it with live Citation Sweeps." />
       <meta property="og:locale" content="en_US" />
       
       {/* Article Metadata (if applicable) */}

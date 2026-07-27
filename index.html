@@ -5,31 +5,12 @@
     <meta name="google-site-verification" content="DlwSt_OuvQ-dstXq7wOK02NovwvI4inn1qqUN2wNpws" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- AEO / SEO Meta Tags. FALLBACK set, used as-is only when prerender is skipped
-         (fail-open). When prerender runs, react-helmet (src/components/SEO.tsx) injects
-         its own canonical set and scripts/prerender.mjs dedupes (keep-first), so the
-         live HTML carries exactly one title, description and OG block. Do not put
-         literal angle-bracket tag names in this comment — the dedupe matches them. -->
-    <title>AEO Analyzers | Be the Answer AI Gives</title>
-    <meta name="description" content="AEO Analyzers scores how citable your site is by ChatGPT, Gemini, Perplexity, and Claude — then proves it with live Citation Sweeps that show whether AI actually cites you, who's cited instead, and the exact fixes to become the source AI cites." />
-    <link rel="canonical" href="https://aeoanalyzers.com" />
-    <meta property="og:title" content="AEO Analyzers | Be the Answer AI Gives" />
-    <meta property="og:description" content="AEO Analyzers scores how citable your site is by ChatGPT, Gemini, Perplexity, and Claude — then proves it with live Citation Sweeps that show whether AI actually cites you, who's cited instead, and the exact fixes to become the source AI cites." />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="AEO Analyzers" />
-    <meta property="og:url" content="https://aeoanalyzers.com" />
-    <meta name="author" content="Lindsay Hiebert" />
-    <meta property="article:author" content="Lindsay Hiebert" />
-    <meta property="article:published_time" content="2026-03-22T00:00:00Z" />
-    <meta property="og:image" content="https://aeoanalyzers.com/aeo-og-bta-2026b.png" />
-    <meta property="og:image:width" content="1735" />
-    <meta property="og:image:height" content="906" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:alt" content="AEO Analyzers — Be the Answer AI Gives: scores your site's AI citability and proves it with live Citation Sweeps." />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="AEO Analyzers | Be the Answer AI Gives" />
-    <meta name="twitter:description" content="Don't guess whether AI cites your brand — see it. AEO Analyzers scores your citability across ChatGPT, Gemini, Perplexity, and Claude, runs live Citation Sweeps that reveal who AI cites instead of you, and hands you the exact fixes to become the source." />
-    <meta name="twitter:image" content="https://aeoanalyzers.com/aeo-og-bta-2026b.png" />
+    <!-- SEO head tags (title, description, canonical, OpenGraph, Twitter, JSON-LD) are
+         owned ENTIRELY by react-helmet via src/components/SEO.tsx — a single source of
+         truth, so the rendered DOM never carries duplicate or stale title/description/
+         canonical tags. The prerender bakes helmet's output into the static HTML and
+         react-helmet adopts it on hydration. Do NOT re-add static SEO tags here; only
+         google-site-verification (above) stays static so verification never needs JS. -->
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="https://api.dicebear.com/7.x/shapes/svg?seed=Analyzers&backgroundColor=000000" />
