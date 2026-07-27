@@ -75,7 +75,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     <div className="space-y-24 pb-24">
       <SEO
         title="Be the Answer AI Gives"
-        description="AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — powered by Google Gemini frontier models — and gives you the exact fixes, in 90 seconds."
+        description="AEO Analyzers scores how citable your site is by ChatGPT, Gemini, Perplexity & Claude — then proves it with live Citation Sweeps and the exact fixes."
         ogType="website"
         author="Lindsay Hiebert"
         publishedDate="2026-03-22T00:00:00Z"
