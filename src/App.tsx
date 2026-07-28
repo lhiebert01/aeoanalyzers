@@ -648,7 +648,7 @@ export default function App() {
                   <NavButton active={view === 'payments'} onClick={() => navigateTo('payments')} icon={<CreditCard className="w-4 h-4" />} label="Pricing" />
                 </>
               )}
-              <NavButton active={view === 'guide' && guideType === 'faq'} onClick={() => { setView('guide'); setGuideType('faq'); }} icon={<BookOpen className="w-4 h-4" />} label="FAQ" />
+              <NavButton active={view === 'guide'} onClick={() => { setView('guide'); setGuideType('user'); }} icon={<BookOpen className="w-4 h-4" />} label="Resources" />
               {isAdmin && (
                 <NavButton active={view === 'admin'} onClick={() => setView('admin')} icon={<ShieldAlert className="w-4 h-4" />} label="Admin" />
               )}
@@ -726,7 +726,7 @@ export default function App() {
                     <NavButton active={view === 'payments'} onClick={() => navigateTo('payments')} icon={<CreditCard className="w-4 h-4" />} label="Pricing" />
                   </>
                 )}
-                <NavButton active={view === 'guide' && guideType === 'faq'} onClick={() => { setView('guide'); setGuideType('faq'); setIsMenuOpen(false); }} icon={<BookOpen className="w-4 h-4" />} label="FAQ" />
+                <NavButton active={view === 'guide'} onClick={() => { setView('guide'); setGuideType('user'); setIsMenuOpen(false); }} icon={<BookOpen className="w-4 h-4" />} label="Resources" />
                 {isAdmin && (
                   <NavButton active={view === 'admin'} onClick={() => { setView('admin'); setIsMenuOpen(false); }} icon={<ShieldAlert className="w-4 h-4" />} label="Admin" />
                 )}
@@ -1427,22 +1427,68 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      <footer className="max-w-6xl mx-auto px-6 py-12 border-t border-zinc-200 text-center">
-        <div className="flex items-center justify-center gap-6 mb-4">
-          <button onClick={() => navigateTo('press')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Press Kit</button>
-          <button onClick={() => navigateTo('privacy')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Privacy Policy</button>
-          <button onClick={() => navigateTo('terms')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Terms of Service</button>
+      <footer className="border-t border-zinc-200 mt-16">
+        <div className="max-w-6xl mx-auto px-6 py-14">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1">
+              <div className="font-black tracking-tight text-lg">AEO Analyzers</div>
+              <p className="mt-3 text-sm text-zinc-500 leading-relaxed max-w-xs">
+                Be the answer AI gives. We measure how citable your site is across ChatGPT, Claude, Perplexity, and Gemini — and hand you the fixes.
+              </p>
+            </div>
+
+            {/* Product */}
+            <div>
+              <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Product</div>
+              <ul className="space-y-2 text-sm">
+                <li><button onClick={() => navigateTo('landing')} className="text-zinc-600 hover:text-zinc-900 transition-all">Why AEO?</button></li>
+                <li><button onClick={() => navigateTo('analyzer')} className="text-zinc-600 hover:text-zinc-900 transition-all">Analyzer</button></li>
+                <li><button onClick={() => navigateTo('sweeps')} className="text-zinc-600 hover:text-zinc-900 transition-all">Citation Sweeps</button></li>
+                <li><button onClick={() => navigateTo('history')} className="text-zinc-600 hover:text-zinc-900 transition-all">History</button></li>
+                <li><button onClick={() => navigateTo('payments')} className="text-zinc-600 hover:text-zinc-900 transition-all">Pricing</button></li>
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Resources</div>
+              <ul className="space-y-2 text-sm">
+                <li><a href="/blog/are-you-the-answer-ai-gives" className="text-zinc-600 hover:text-zinc-900 transition-all">Blog</a></li>
+                <li><button onClick={() => { setView('guide'); setGuideType('user'); }} className="text-zinc-600 hover:text-zinc-900 transition-all">User Guide</button></li>
+                <li><button onClick={() => { setView('guide'); setGuideType('faq'); }} className="text-zinc-600 hover:text-zinc-900 transition-all">FAQ</button></li>
+                <li><button onClick={() => navigateTo('press')} className="text-zinc-600 hover:text-zinc-900 transition-all">Press Kit</button></li>
+              </ul>
+            </div>
+
+            {/* Connect */}
+            <div>
+              <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Connect</div>
+              <ul className="space-y-2 text-sm">
+                <li><a href="https://www.linkedin.com/in/lindsayhiebert/" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 transition-all">LinkedIn</a></li>
+                <li><a href="mailto:lindsay.hiebert@gmail.com?subject=AEO%20Analyzers%20inquiry" className="text-zinc-600 hover:text-zinc-900 transition-all">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-6 border-t border-zinc-200 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-5">
+              <button onClick={() => navigateTo('privacy')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Privacy Policy</button>
+              <button onClick={() => navigateTo('terms')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Terms of Service</button>
+            </div>
+            <p className="text-zinc-400 text-xs font-mono uppercase tracking-widest">
+              AEO Analyzers // The Answer Engine
+            </p>
+          </div>
+
+          {/* Entity disambiguation (WO-DOGFOOD-001): a first-party, verbatim-quotable
+              fact so answer engines don't fuse us with similarly named tools. */}
+          <p className="mt-6 max-w-2xl text-[11px] leading-relaxed text-zinc-400">
+            AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by
+            Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any
+            similarly named browser extension, plugin, or tool.
+          </p>
         </div>
-        <p className="text-zinc-400 text-xs font-mono uppercase tracking-widest">
-          AEO Analyzers // The Answer Engine
-        </p>
-        {/* Entity disambiguation (WO-DOGFOOD-001): a first-party, verbatim-quotable
-            fact so answer engines don't fuse us with similarly named tools. */}
-        <p className="mt-4 max-w-2xl mx-auto text-[11px] leading-relaxed text-zinc-400">
-          AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by
-          Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any
-          similarly named browser extension, plugin, or tool.
-        </p>
       </footer>
       </div>
       </ErrorBoundary>

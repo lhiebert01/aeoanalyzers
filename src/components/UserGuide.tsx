@@ -52,12 +52,16 @@ export default function UserGuide({ isAdmin, initialGuide = 'user' }: UserGuideP
                        type === 'assets' ? 'assets-prompts.md' :
                        type === 'summary' ? 'executive-summary.md' : 'personas-and-faq.md';
       const response = await fetch(`/docs/${fileName}`);
-      if (!response.ok) throw new Error('Failed to fetch guide');
+      const contentType = response.headers.get('content-type') || '';
+      if (!response.ok || contentType.includes('text/html')) throw new Error('Doc not published');
       const text = await response.text();
+      // Guard: the SPA fallback returns index.html with a 200 for a missing file —
+      // never render raw page source as a doc.
+      if (/^\s*<!doctype html/i.test(text)) throw new Error('Doc not published');
       setContent(text);
     } catch (err) {
       console.error('Error fetching guide:', err);
-      setContent('# Error\nFailed to load the guide. Please try again later.');
+      setContent('# Not available yet\nThis document has not been published to the site yet.');
     } finally {
       setLoading(false);
     }
@@ -90,41 +94,22 @@ export default function UserGuide({ isAdmin, initialGuide = 'user' }: UserGuideP
             label="User Guide" 
           />
 
-          <GuideNavItem 
-            active={activeGuide === 'faq'} 
-            onClick={() => setActiveGuide('faq')} 
-            icon={<HelpCircle className="w-4 h-4" />} 
-            label="Personas & FAQ" 
+          <GuideNavItem
+            active={activeGuide === 'faq'}
+            onClick={() => setActiveGuide('faq')}
+            icon={<HelpCircle className="w-4 h-4" />}
+            label="Personas & FAQ"
           />
-          
-          {isAdmin && (
-            <>
-              <GuideNavItem 
-                active={activeGuide === 'summary'} 
-                onClick={() => setActiveGuide('summary')} 
-                icon={<BarChart className="w-4 h-4" />} 
-                label="Exec Summary" 
-              />
-              <GuideNavItem 
-                active={activeGuide === 'admin'} 
-                onClick={() => setActiveGuide('admin')} 
-                icon={<ShieldCheck className="w-4 h-4" />} 
-                label="Admin Guide" 
-              />
-              <GuideNavItem 
-                active={activeGuide === 'launch'} 
-                onClick={() => setActiveGuide('launch')} 
-                icon={<Rocket className="w-4 h-4" />} 
-                label="Launch Plan" 
-              />
-              <GuideNavItem 
-                active={activeGuide === 'assets'} 
-                onClick={() => setActiveGuide('assets')} 
-                icon={<ImageIcon className="w-4 h-4" />} 
-                label="Asset Prompts" 
-              />
-            </>
-          )}
+
+          <GuideNavItem
+            active={false}
+            onClick={() => { window.location.href = '/blog/are-you-the-answer-ai-gives'; }}
+            icon={<Rocket className="w-4 h-4" />}
+            label="Blog"
+          />
+          {/* Internal ops docs (Exec Summary / Admin Guide / Launch Plan / Asset Prompts)
+              were removed from the in-app Resources — they live in the repo /docs and were
+              never published to a fetchable path (which produced a raw-HTML render). */}
         </div>
       </div>
 

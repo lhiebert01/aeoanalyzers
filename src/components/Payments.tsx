@@ -229,40 +229,40 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
         <h3 className="text-2xl font-bold tracking-tight text-center mb-2">What's included — and what counts as a Sweep</h3>
         <p className="text-zinc-500 text-center mb-8 max-w-2xl mx-auto">The AEO diagnostic (score + fixes) is unlimited on every paid plan. <strong className="text-zinc-700">Citation Sweeps</strong> — the live multi-engine measurement — are the metered entitlement.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white border border-zinc-200 rounded-2xl p-6">
-            <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Included Citation Sweeps</div>
+          <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm">
+            <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Included Citation Sweeps</div>
             <ul className="space-y-2 text-sm text-zinc-700">
-              <li className="flex justify-between"><span>Free</span><span className="font-bold text-zinc-500">1 Quick Check (Google/Gemini)</span></li>
+              <li className="flex justify-between"><span>Free</span><span className="font-bold text-zinc-700">1 Quick Check (Google/Gemini)</span></li>
               <li className="flex justify-between"><span>Day Pass ($24)</span><span className="font-bold">3 full sweeps</span></li>
               <li className="flex justify-between"><span>Pro ($49/mo)</span><span className="font-bold">8 full sweeps / month</span></li>
               <li className="flex justify-between"><span>Business ($199/mo)</span><span className="font-bold">20 full sweeps / month</span></li>
             </ul>
           </div>
-          <div className="bg-white border border-zinc-200 rounded-2xl p-6">
-            <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">What one Sweep covers</div>
-            <ul className="space-y-2 text-sm text-zinc-600">
+          <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm">
+            <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">What one Sweep covers</div>
+            <ul className="space-y-2 text-sm text-zinc-700">
               <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>One domain, all 4 engines (ChatGPT, Claude, Perplexity, Gemini)</span></li>
               <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>Up to 15 query-runs (e.g., 5 questions × 3 runs), with stored transcripts</span></li>
               <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>Same price for a 1-page site or a 100,000-page site — a sweep asks the engines, it doesn't crawl your pages</span></li>
             </ul>
           </div>
         </div>
-        <p className="text-center text-zinc-400 text-sm mt-6">Need more sweeps than your plan includes? <strong className="text-zinc-600">Add-on sweep credits</strong> and higher-volume monitoring are available — <a href="#" onClick={(e) => e.preventDefault()} className="underline">contact us</a> or upgrade your plan.</p>
+        <p className="text-center text-zinc-500 text-sm mt-6">Need more sweeps than your plan includes? <strong className="text-zinc-700">Add-on sweep credits</strong> and higher-volume monitoring are available — <a href="mailto:lindsay.hiebert@gmail.com?subject=AEO%20Analyzers%20%E2%80%94%20sweep%20credits%20%2F%20higher-volume%20inquiry" className="underline hover:text-zinc-900">contact us</a> or upgrade your plan.</p>
       </div>
 
-      <div className="mt-12 p-8 bg-zinc-50 border border-zinc-200 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8">
+      <div className="mt-12 p-8 bg-zinc-50 border border-zinc-300 rounded-3xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
         <div className="flex items-center gap-6">
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-zinc-100">
             <ShieldCheck className="w-8 h-8 text-zinc-900" />
           </div>
           <div>
             <h4 className="font-bold text-lg">Enterprise & Agencies</h4>
-            <p className="text-zinc-500 text-sm">Need high-volume sweeps, more monitored domains, or white-label reports?</p>
+            <p className="text-zinc-600 text-sm">Need high-volume sweeps, more monitored domains, or white-label reports?</p>
           </div>
         </div>
-        <button className="px-8 py-3 bg-white border border-zinc-200 rounded-xl font-bold hover:bg-zinc-50 transition-all">
+        <a href="mailto:lindsay.hiebert@gmail.com?subject=AEO%20Analyzers%20%E2%80%94%20Enterprise%20%26%20Agencies%20inquiry" className="px-8 py-3 bg-white border border-zinc-300 rounded-xl font-bold hover:bg-zinc-50 transition-all whitespace-nowrap">
           Contact Sales
-        </button>
+        </a>
       </div>
     </div>
   );

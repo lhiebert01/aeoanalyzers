@@ -19,7 +19,7 @@ export default function UserGuideDashboard() {
           Mastering the <span className="text-zinc-300 italic font-serif lowercase">&</span> Answer Engine Era
         </h1>
         <p className="text-zinc-500 text-lg max-w-xl mx-auto leading-relaxed">
-          How to optimize your website for the next generation of search: Gemini, GPT-4, and Perplexity.
+          How to optimize your website for the next generation of search: ChatGPT, Claude, Gemini, and Perplexity.
         </p>
       </section>
 
@@ -223,6 +223,41 @@ export default function UserGuideDashboard() {
             icon={<Zap className="w-5 h-5" />}
           />
         </div>
+      </section>
+
+      {/* 6. Citation Sweeps */}
+      <section className="space-y-12">
+        <div className="flex items-center gap-4">
+          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">06</span>
+          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Citation Sweeps</h2>
+          <div className="h-px flex-1 bg-zinc-100" />
+        </div>
+
+        <p className="text-zinc-600 max-w-2xl leading-relaxed">
+          A score predicts; a Citation Sweep proves. We ask the real answer engines — ChatGPT, Claude, Perplexity, and Gemini — your buyers' questions, multiple times each, and store every transcript. A sweep measures three separable layers:
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <PracticeCard
+            title="Retrievability"
+            description="Ask AI about your brand by name — does it return a real answer? A health check that should sit near 100%. A miss here is an indexing emergency."
+            icon={<Target className="w-5 h-5" />}
+          />
+          <PracticeCard
+            title="Fidelity"
+            description="Does AI's answer match the real facts about you? We catch fabricated founders, stale prices, and invented features — with the correct value and the fix."
+            icon={<ShieldCheck className="w-5 h-5" />}
+          />
+          <PracticeCard
+            title="Citation Win"
+            description="For unbranded category questions ('best [category] tools'), does AI pick you — and if not, exactly who is cited instead? Your real competitive gap."
+            icon={<Swords className="w-5 h-5" />}
+          />
+        </div>
+
+        <p className="text-zinc-600 max-w-2xl leading-relaxed">
+          Plus AI-crawler telemetry and drift monitoring, so you know you're being read — and stay that way. Re-run sweeps monthly to track your progress over time. Every result is backed by the actual transcript: run the query yourself and you'll get what the report says.
+        </p>
       </section>
 
       {/* Footer */}
