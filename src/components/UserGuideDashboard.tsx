@@ -26,28 +26,31 @@ export default function UserGuideDashboard() {
       {/* 1. AEO Score */}
       <section className="space-y-12">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">01</span>
-          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">The AEO Score</h2>
-          <div className="h-px flex-1 bg-zinc-100" />
+          <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">01</span>
+          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">The AEO Score</h2>
+          <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <ScoreLevel 
-            range="80-100" 
-            label="Excellent" 
-            color="bg-emerald-500" 
+            range="80-100"
+            label="Excellent"
+            color="bg-emerald-500"
+            accent="border-t-emerald-500"
             description="AI agents can easily parse and cite your site as a primary source."
           />
           <ScoreLevel 
-            range="50-79" 
-            label="Good" 
-            color="bg-amber-500" 
+            range="50-79"
+            label="Good"
+            color="bg-amber-500"
+            accent="border-t-amber-500"
             description="Solid foundation, but needs improvement in structured data or semantic clarity."
           />
           <ScoreLevel 
-            range="Below 50" 
-            label="Poor" 
-            color="bg-red-500" 
+            range="Below 50"
+            label="Poor"
+            color="bg-red-500"
+            accent="border-t-red-500"
             description="AI agents may struggle to find, parse, or trust your content."
           />
         </div>
@@ -56,9 +59,9 @@ export default function UserGuideDashboard() {
       {/* 2. Citation Probability */}
       <section className="space-y-12">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">02</span>
-          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Citation Probability</h2>
-          <div className="h-px flex-1 bg-zinc-100" />
+          <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">02</span>
+          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Citation Probability</h2>
+          <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
         <div className="bg-zinc-900 text-white rounded-[2.5rem] p-10 md:p-16 relative overflow-hidden">
@@ -91,10 +94,10 @@ export default function UserGuideDashboard() {
             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 space-y-8">
               <div className="flex justify-between items-end">
                 <div className="space-y-1">
-                  <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Probability</div>
+                  <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Probability · illustrative</div>
                   <div className="text-5xl font-black tracking-tighter text-emerald-400">94%</div>
                 </div>
-                <div className="text-[10px] font-black text-emerald-500/50 uppercase tracking-widest mb-2">High Confidence</div>
+                <div className="text-[10px] font-black text-emerald-500/60 uppercase tracking-widest mb-2">Example</div>
               </div>
               <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
                 <motion.div 
@@ -114,9 +117,9 @@ export default function UserGuideDashboard() {
       {/* 3. Competitive Duel */}
       <section className="space-y-12">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">03</span>
-          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">The Competitive Duel</h2>
-          <div className="h-px flex-1 bg-zinc-100" />
+          <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">03</span>
+          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">The Competitive Duel</h2>
+          <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -144,9 +147,9 @@ export default function UserGuideDashboard() {
       {/* 4. JSON-LD Fix */}
       <section className="space-y-12">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">04</span>
-          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">The Instant Fix</h2>
-          <div className="h-px flex-1 bg-zinc-100" />
+          <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">04</span>
+          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">The Instant Fix</h2>
+          <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
         <div className="bg-indigo-50 border border-indigo-100 rounded-[2.5rem] p-10 md:p-16 flex flex-col md:flex-row gap-16 items-center">
@@ -196,9 +199,9 @@ export default function UserGuideDashboard() {
       {/* 5. Best Practices */}
       <section className="space-y-12">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">05</span>
-          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">AEO Best Practices</h2>
-          <div className="h-px flex-1 bg-zinc-100" />
+          <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">05</span>
+          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">AEO Best Practices</h2>
+          <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -228,9 +231,9 @@ export default function UserGuideDashboard() {
       {/* 6. Citation Sweeps */}
       <section className="space-y-12">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">06</span>
-          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Citation Sweeps</h2>
-          <div className="h-px flex-1 bg-zinc-100" />
+          <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">06</span>
+          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Citation Sweeps</h2>
+          <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
         <p className="text-zinc-600 max-w-2xl leading-relaxed">
@@ -270,16 +273,16 @@ export default function UserGuideDashboard() {
   );
 }
 
-function ScoreLevel({ range, label, color, description }: { range: string, label: string, color: string, description: string }) {
+function ScoreLevel({ range, label, color, accent, description }: { range: string, label: string, color: string, accent: string, description: string }) {
   return (
-    <div className="bg-white border border-zinc-100 rounded-3xl p-8 space-y-4 hover:border-zinc-900 transition-all group">
+    <div className={`bg-white border border-zinc-300 border-t-4 ${accent} rounded-3xl shadow-sm p-8 space-y-4 hover:shadow-md hover:border-zinc-400 transition-all`}>
       <div className="flex items-center justify-between">
-        <span className="text-xs font-black text-zinc-400 uppercase tracking-widest">{range}</span>
+        <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">{range}</span>
         <div className={`${color} px-3 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest`}>
           {label}
         </div>
       </div>
-      <p className="text-zinc-500 text-sm leading-relaxed group-hover:text-zinc-900 transition-colors">
+      <p className="text-zinc-600 text-sm leading-relaxed">
         {description}
       </p>
     </div>
@@ -288,19 +291,19 @@ function ScoreLevel({ range, label, color, description }: { range: string, label
 
 function Step({ number, title, description, icon }: { number: string, title: string, description: string, icon: React.ReactNode }) {
   return (
-    <div className="space-y-6">
+    <div className="bg-white border border-zinc-300 border-t-4 border-t-zinc-900 rounded-3xl shadow-sm p-8 space-y-4 hover:shadow-md hover:border-zinc-400 transition-all">
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 bg-zinc-900 text-white rounded-xl flex items-center justify-center text-xs font-black">
           {number}
         </div>
-        <div className="h-px flex-1 bg-zinc-100" />
+        <div className="h-px flex-1 bg-zinc-200" />
       </div>
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-zinc-900">
           {icon}
           <h3 className="font-black text-lg uppercase tracking-tight">{title}</h3>
         </div>
-        <p className="text-zinc-500 text-sm leading-relaxed">{description}</p>
+        <p className="text-zinc-600 text-sm leading-relaxed">{description}</p>
       </div>
     </div>
   );
@@ -308,13 +311,13 @@ function Step({ number, title, description, icon }: { number: string, title: str
 
 function PracticeCard({ title, description, icon }: { title: string, description: string, icon: React.ReactNode }) {
   return (
-    <div className="flex gap-6 p-8 bg-zinc-50/50 border border-zinc-100 rounded-3xl hover:bg-white hover:border-zinc-900 transition-all group">
-      <div className="w-12 h-12 bg-white border border-zinc-100 rounded-2xl flex items-center justify-center text-zinc-400 group-hover:text-zinc-900 group-hover:border-zinc-900 transition-all shrink-0">
+    <div className="p-8 bg-white border border-zinc-300 border-t-4 border-t-emerald-500 rounded-3xl shadow-sm hover:shadow-md hover:border-zinc-400 transition-all">
+      <div className="w-12 h-12 bg-zinc-50 border border-zinc-300 rounded-2xl flex items-center justify-center text-zinc-700 mb-4">
         {icon}
       </div>
       <div className="space-y-2">
         <h3 className="font-black text-zinc-900 uppercase tracking-tight">{title}</h3>
-        <p className="text-sm text-zinc-500 leading-relaxed">{description}</p>
+        <p className="text-sm text-zinc-600 leading-relaxed">{description}</p>
       </div>
     </div>
   );

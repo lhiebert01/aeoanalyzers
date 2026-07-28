@@ -103,7 +103,7 @@ export default function UserGuide({ isAdmin, initialGuide = 'user' }: UserGuideP
 
           <GuideNavItem
             active={false}
-            onClick={() => { window.location.href = '/blog/are-you-the-answer-ai-gives'; }}
+            onClick={() => { window.location.href = '/blog/'; }}
             icon={<Rocket className="w-4 h-4" />}
             label="Blog"
           />

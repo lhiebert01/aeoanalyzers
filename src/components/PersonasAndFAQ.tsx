@@ -171,9 +171,9 @@ export default function PersonasAndFAQ() {
       {/* Personas Section */}
       <section className="space-y-12">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">01</span>
-          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">User Personas</h2>
-          <div className="h-px flex-1 bg-zinc-100" />
+          <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">01</span>
+          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">User Personas</h2>
+          <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -183,7 +183,7 @@ export default function PersonasAndFAQ() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="group bg-zinc-50/50 border border-zinc-100 rounded-[2.5rem] p-8 hover:bg-white hover:border-zinc-900 hover:shadow-2xl transition-all duration-500"
+              className="group bg-white border border-zinc-300 shadow-sm rounded-[2.5rem] p-8 hover:shadow-lg hover:border-zinc-400 transition-all duration-500"
             >
               <div className="flex items-start gap-6 mb-8">
                 <div className={`${persona.color} w-14 h-14 rounded-2xl text-white shadow-lg flex items-center justify-center shrink-0 group-hover:rotate-6 transition-transform`}>
@@ -191,13 +191,13 @@ export default function PersonasAndFAQ() {
                 </div>
                 <div>
                   <h3 className="font-black text-xl text-zinc-900 leading-tight">{persona.name}</h3>
-                  <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mt-1">{persona.role}</p>
+                  <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">{persona.role}</p>
                 </div>
               </div>
 
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <div className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">The Challenge</div>
+                  <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">The Challenge</div>
                   <p className="text-sm text-zinc-600 leading-relaxed italic border-l-2 border-zinc-200 pl-4">"{persona.painPoint}"</p>
                 </div>
                 <div className="space-y-2">
@@ -213,9 +213,9 @@ export default function PersonasAndFAQ() {
       {/* FAQ Section */}
       <section className="space-y-12">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">02</span>
-          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Frequently Asked Questions</h2>
-          <div className="h-px flex-1 bg-zinc-100" />
+          <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">02</span>
+          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Frequently Asked Questions</h2>
+          <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
         <div className="max-w-3xl mx-auto space-y-16">
@@ -263,15 +263,15 @@ export default function PersonasAndFAQ() {
       {/* Glossary Section */}
       <section className="space-y-12">
         <div className="flex items-center gap-4">
-          <span className="text-[10px] font-black text-zinc-300 uppercase tracking-widest">03</span>
-          <h2 className="text-xs font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Glossary</h2>
-          <div className="h-px flex-1 bg-zinc-100" />
+          <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">03</span>
+          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Glossary</h2>
+          <div className="h-px flex-1 bg-zinc-200" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
           {glossary.map((g) => (
-            <div key={g.term} className="bg-zinc-50/50 border border-zinc-100 rounded-2xl p-5">
+            <div key={g.term} className="bg-white border border-zinc-300 shadow-sm rounded-2xl p-5">
               <div className="font-black text-sm text-zinc-900">{g.term}</div>
-              <p className="text-sm text-zinc-500 leading-relaxed mt-1.5">{g.def}</p>
+              <p className="text-sm text-zinc-600 leading-relaxed mt-1.5">{g.def}</p>
             </div>
           ))}
         </div>
@@ -289,7 +289,7 @@ export default function PersonasAndFAQ() {
 
 function AccordionItem({ question, answer, isOpen, onToggle }: FAQItem & { isOpen: boolean, onToggle: () => void, idx: number }) {
   return (
-    <div className={`group border rounded-[1.5rem] transition-all duration-500 ${isOpen ? 'bg-white border-zinc-900 shadow-2xl shadow-zinc-900/5' : 'bg-white border-zinc-100 hover:border-zinc-300'}`}>
+    <div className={`group border rounded-[1.5rem] transition-all duration-500 ${isOpen ? 'bg-white border-zinc-900 shadow-2xl shadow-zinc-900/5' : 'bg-white border-zinc-300 shadow-sm hover:border-zinc-400'}`}>
       <button 
         onClick={onToggle}
         className="w-full px-6 py-5 flex items-center justify-between text-left"
