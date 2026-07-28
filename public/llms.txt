@@ -25,6 +25,7 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - Home / Why AEO: https://www.aeoanalyzers.com/
 - Pricing: https://www.aeoanalyzers.com/ (Pricing view)
 - FAQ: https://www.aeoanalyzers.com/ (FAQ view)
+- Blog — Is your brand the answer AI gives, or is a competitor? (a walkthrough of a sample AI Visibility Executive Report): https://www.aeoanalyzers.com/blog/are-you-the-answer-ai-gives
 
 ## Publisher
 AEO Analyzers is operated by PI GenAI LLC (https://pigenai.com), a portfolio of AI products.
