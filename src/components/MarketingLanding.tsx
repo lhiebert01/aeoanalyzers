@@ -397,12 +397,12 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           <div className="relative z-10">
             <h2 className="text-4xl md:text-5xl font-bold mb-8">Ready to close the gap?</h2>
             <p className="text-xl text-zinc-400 mb-12">Join the brands, businesses, and developers securing their AI future.</p>
-            <button 
+            <button
               onClick={onGetStarted}
-              aria-label="Start your free AEO analysis"
+              aria-label="Take your first step to become the answer AI gives"
               className="bg-white text-zinc-900 px-12 py-5 rounded-2xl font-bold hover:bg-zinc-100 transition-all text-xl shadow-xl shadow-white/10"
             >
-              Start Free Analysis
+              Start now →
             </button>
           </div>
         </div>
