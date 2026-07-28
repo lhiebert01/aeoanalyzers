@@ -145,21 +145,6 @@ const glossary: { term: string; def: string }[] = [
   { term: "AI Crawler Tiers", def: "Live (a human just asked, the engine fetched your page now), Search (indexing), Training (knowledge ingestion) — each means something different for your visibility." },
 ];
 
-const adminFaqs: FAQItem[] = [
-  {
-    question: "How do I manage users who have lost their passwords?",
-    answer: "Go to the Admin Dashboard (accessible via the sidebar if you are logged in as an admin). You can search for the user and click 'Reset Password' to send them an automated email."
-  },
-  {
-    question: "How can I see how many people are using the app right now?",
-    answer: "The Admin Dashboard provides real-time metrics on total users and subscription status. For detailed real-time traffic, click the 'Open GA4' link in the dashboard."
-  },
-  {
-    question: "What should I do if the AI analysis seems slow?",
-    answer: "The analysis speed depends on the Gemini API. If it's consistently slow, check the 'Admin Guide' for instructions on monitoring API quotas and latency in the Google Cloud Console."
-  }
-];
-
 export default function PersonasAndFAQ() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -272,24 +257,6 @@ export default function PersonasAndFAQ() {
             </div>
           </div>
 
-          {/* Admin FAQ */}
-          <div className="space-y-6">
-            <h3 className="text-xl font-black tracking-tight flex items-center gap-3 px-4">
-              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-              For Administrators
-            </h3>
-            <div className="space-y-3">
-              {adminFaqs.map((faq, idx) => (
-                <AccordionItem 
-                  key={idx + 100}
-                  idx={idx + 100}
-                  isOpen={openFaq === idx + 100}
-                  onToggle={() => setOpenFaq(openFaq === idx + 100 ? null : idx + 100)}
-                  {...faq}
-                />
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 

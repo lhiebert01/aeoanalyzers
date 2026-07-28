@@ -41,9 +41,10 @@ interface PaymentsProps {
   user: any;
   userProfile?: any;
   onAuthRequired: () => void;
+  onContact?: (subject?: string) => void;
 }
 
-export default function Payments({ user, userProfile, onAuthRequired }: PaymentsProps) {
+export default function Payments({ user, userProfile, onAuthRequired, onContact }: PaymentsProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
 
@@ -247,7 +248,7 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
             </ul>
           </div>
         </div>
-        <p className="text-center text-zinc-500 text-sm mt-6">Need more sweeps than your plan includes? <strong className="text-zinc-700">Add-on sweep credits</strong> and higher-volume monitoring are available — <a href="mailto:lindsay.hiebert@gmail.com?subject=AEO%20Analyzers%20%E2%80%94%20sweep%20credits%20%2F%20higher-volume%20inquiry" className="underline hover:text-zinc-900">contact us</a> or upgrade your plan.</p>
+        <p className="text-center text-zinc-500 text-sm mt-6">Need more sweeps than your plan includes? <strong className="text-zinc-700">Add-on sweep credits</strong> and higher-volume monitoring are available — <button type="button" onClick={() => onContact?.('Sweep credits / higher-volume monitoring')} className="underline hover:text-zinc-900">contact us</button> or upgrade your plan.</p>
       </div>
 
       <div className="mt-12 p-8 bg-zinc-50 border border-zinc-300 rounded-3xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
@@ -260,9 +261,9 @@ export default function Payments({ user, userProfile, onAuthRequired }: Payments
             <p className="text-zinc-600 text-sm">Need high-volume sweeps, more monitored domains, or white-label reports?</p>
           </div>
         </div>
-        <a href="mailto:lindsay.hiebert@gmail.com?subject=AEO%20Analyzers%20%E2%80%94%20Enterprise%20%26%20Agencies%20inquiry" className="px-8 py-3 bg-white border border-zinc-300 rounded-xl font-bold hover:bg-zinc-50 transition-all whitespace-nowrap">
+        <button type="button" onClick={() => onContact?.('Enterprise & Agencies')} className="px-8 py-3 bg-white border border-zinc-300 rounded-xl font-bold hover:bg-zinc-50 transition-all whitespace-nowrap">
           Contact Sales
-        </a>
+        </button>
       </div>
     </div>
   );

@@ -16,6 +16,7 @@ import AdminDashboard from './components/AdminDashboard';
 import UserGuide from './components/UserGuide';
 import MarketingLanding from './components/MarketingLanding';
 import PressKit from './components/PressKit';
+import ContactModal from './components/ContactModal';
 import SEO from './components/SEO';
 import AdvancedAnalysisCards from './components/AdvancedAnalysisCards';
 import CrawlerAccessCard from './components/CrawlerAccessCard';
@@ -103,6 +104,9 @@ export default function App() {
     return saved ? parseInt(saved) : 0;
   });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [contactSubject, setContactSubject] = useState<string | undefined>(undefined);
+  const openContact = (subject?: string) => { setContactSubject(subject); setContactOpen(true); };
   const { trackEvent } = useGA4();
 
   const FREE_LIMIT = 3; // Free signed-in users: 3 analyses (score + gaps; fixes are gated server-side)
@@ -792,10 +796,11 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <Payments 
-                user={user} 
+              <Payments
+                user={user}
                 userProfile={userProfile}
-                onAuthRequired={() => setView('auth')} 
+                onAuthRequired={() => setView('auth')}
+                onContact={openContact}
               />
             </motion.div>
           )}
@@ -1483,7 +1488,7 @@ export default function App() {
               <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Connect</div>
               <ul className="space-y-2 text-sm">
                 <li><a href="https://www.linkedin.com/in/lindsayhiebert/" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 transition-all">LinkedIn</a></li>
-                <li><a href="mailto:lindsay.hiebert@gmail.com?subject=AEO%20Analyzers%20inquiry" className="text-zinc-600 hover:text-zinc-900 transition-all">Contact</a></li>
+                <li><button onClick={() => openContact()} className="text-zinc-600 hover:text-zinc-900 transition-all">Contact</button></li>
               </ul>
             </div>
           </div>
@@ -1518,6 +1523,7 @@ export default function App() {
         </div>
       </footer>
       </div>
+      <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} subject={contactSubject} />
       </ErrorBoundary>
     </HelmetProvider>
   );
