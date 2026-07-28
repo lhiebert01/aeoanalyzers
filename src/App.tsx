@@ -1480,7 +1480,17 @@ export default function App() {
             </div>
           </div>
 
-          <div className="mt-12 pt-6 border-t border-zinc-200 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="mt-10 pt-6 border-t border-zinc-200">
+            <p className="text-[11px] leading-relaxed text-zinc-500 max-w-3xl">
+              <span className="font-semibold text-zinc-700">Using AI responsibly in your own company?</span>{' '}
+              PI GenAI also builds{' '}
+              <a href="https://sanctumshield.com" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 underline underline-offset-2">SanctumShield</a> (AI governance),{' '}
+              <a href="https://academy.sanctumshield.com" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 underline underline-offset-2">SanctumShield Academy</a> (governance training), and{' '}
+              <a href="https://ad-flash.com" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 underline underline-offset-2">Ad-Flash</a> (AI ad creative).
+            </p>
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-zinc-200 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-5">
               <button onClick={() => navigateTo('privacy')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Privacy Policy</button>
               <button onClick={() => navigateTo('terms')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Terms of Service</button>

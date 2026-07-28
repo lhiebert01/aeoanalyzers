@@ -167,12 +167,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
+    const ent = await entP;
+
+    // REQUIRE SIGN-IN: an anonymous caller cannot use the analysis proxy — guests
+    // get the "sign in for your complimentary AEO score" prompt in the UI, and this
+    // closes the open-proxy abuse vector server-side. Only block when we've
+    // CONCLUSIVELY resolved an anonymous, non-admin caller (fail-open on an
+    // indeterminate result so a signed-in user is never locked out during an outage).
+    if (ent.determined && !ent.userId && !ent.paid) {
+      return res.status(401).json({ error: 'Sign in for your complimentary AEO score.' });
+    }
+
     // PAYWALL (server-side): strip the paid "fix" fields for non-entitled callers
     // so a free user cannot read them from the network response — a UI blur is not
     // a control. Paid callers (verified Supabase JWT, same as run-sweep) get the
     // full object. Fail-open when entitlement is indeterminate so a paying
     // customer is never stripped during a transient Supabase outage.
-    const ent = await entP;
     if (!ent.paid && ent.determined) text = redactFixFields(text);
 
     return res.status(200).json({ text, provider });

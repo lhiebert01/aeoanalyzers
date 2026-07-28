@@ -13,150 +13,127 @@ export default function PressKit() {
   };
 
   const blogContent = `
-# The End of SEO as We Know It: Why AEO Analyzers is the Only Platform That Actually Works
+# The next generation of AEOAnalyzers: prove it, don't just score it
 
-**By Lindsay Hiebert**
-*March 22, 2026*
+**By Lindsay Hiebert · PI GenAI LLC**
+*July 2026*
 
-The digital marketing landscape just shifted. Permanently.
+Search is becoming answers. When someone asks ChatGPT, Gemini, Perplexity, or Claude about your category, they get one answer — one or two names. If it isn't you, your customers never see you.
 
-For two decades, we've played the SEO game: keywords, backlinks, and meta tags. But while you were busy optimizing for a 10-blue-link search result, the world moved on. AI agents—Gemini, ChatGPT, Perplexity—are now the primary interface between your customers and your brand.
+A score predicts. A Citation Sweep proves.
 
-If an AI doesn't cite you, you don't exist. Period.
+The new AEOAnalyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity, and Gemini — and stores every transcript. Then it measures three separable layers:
 
-### The Problem with "Traditional" AEO Tools
-Most "AEO Analyzers" on the market today are glorified keyword counters. They look at your text and tell you if it's "readable." That's not optimization; that's a spell-check.
+- **Retrievability** — ask AI about your brand by name; does it return a real answer? A health check that should sit near 100%.
+- **Fidelity** — is what AI says about you actually true? We flag fabricated founders, stale prices, and invented features, with the correct value and the fix.
+- **Citation Win** — on the unbranded category questions that sell ("best [category] tools"), does AI pick you — and if not, exactly who is cited instead?
 
-AI doesn't care about your readability score. It cares about **Authority, Verifiability, and Citation Probability.**
+And we don't stop at the number. We hand you the fixes — paste-ready JSON-LD, content rewrites, and a developer-ready report — plus a crawler-access check so you know AI can even read you.
 
-### Why AEO Analyzers is Superior
-We didn't build just another checklist. When you run an analysis, your site is evaluated by a frontier AI model to assess how answer engines would read and cite your brand — and exactly what to fix.
+Every result is backed by the actual transcript. Run the query yourself and you'll get what the report says.
 
-**1. The Competitive Duel: Stop Guessing, Start Winning**
-Our "Competitive Duel" feature is a market first. It allows you to put your URL head-to-head against your biggest rival. We don't just give you two scores; we give you a **Verdict**. We tell you exactly why the AI chose them over you—and how to steal that citation back.
+Re-run your sweep monthly and track your share of the AI answer over time. Inputs are the checklist. Citation rate is the score.
 
-**2. Citation Probability: The New North Star**
-Forget "Ranking." In 2026, the metric that matters most is **Citation Probability** — an estimate of how likely an AI agent is to attribute a claim to your website.
-
-**3. The Implementation Roadmap**
-Knowledge without action is useless. Every analysis generates a surgical Implementation Roadmap. We don't give you vague advice like "write better content." We give you technical, structural, and semantic directives that move the needle.
-
-### Solve Your Most Urgent Problem
-The "AI Search Gap" is the most urgent crisis in digital marketing today. Your traffic is dropping because AI is answering the questions before users ever click. 
-
-AEO Analyzers is the only platform built to close that gap. It's smarter, it's faster, and it's built for one thing: **Growth.**
-
-Stop optimizing for 2015. Start winning in 2026.
-
----
+Start free at https://aeoanalyzers.com
 `;
 
   const pressReleaseContent = `
 FOR IMMEDIATE RELEASE
 
-# AEO Analyzers Launches AI-Powered AEO Platform to Solve Digital Marketing’s Most Urgent Crisis: The AI Search Gap
+# AEOAnalyzers adds real-time Citation Sweeps — measuring whether AI answer engines actually cite your brand
 
-**SILICON VALLEY, CA — March 22, 2026** — AEO Analyzers, the next-generation digital marketing platform, today announced the launch of its AI-powered Answer Engine Optimization platform. Designed to address the rapid decline of traditional organic search traffic, AEO Analyzers provides businesses with the first-ever "Citation Probability" metric—a breakthrough in how brands secure visibility in AI-generated search results.
+**PI GenAI LLC — July 2026** — AEOAnalyzers today released the next generation of its Answer Engine Optimization platform, adding live Citation Sweeps that ask real AI answer engines — ChatGPT, Claude, Perplexity, and Google Gemini — a brand's buyer questions and record what each one answers.
 
-As AI agents like Google Gemini and OpenAI’s SearchGPT become the primary gatekeepers of information, traditional SEO strategies are failing. AEO Analyzers solves this "AI Search Gap" by simulating how Large Language Models (LLMs) perceive, categorize, and cite web content.
+As buyers increasingly ask AI assistants for recommendations instead of scrolling search results, being the source an engine cites has become a growth priority. AEOAnalyzers measures that outcome directly, with stored transcripts a customer can reproduce.
 
-"The most urgent problem in marketing today isn't ranking on page one; it's being the cited source of truth for an AI agent," said Lindsay Hiebert, Founder of AEO Analyzers. "Most tools are still looking at keywords. We are looking at semantic authority. Our platform doesn't just analyze; it shows you how to win the future of search."
+"A score predicts; a sweep proves," said Lindsay Hiebert, founder of PI GenAI LLC. "We ask the real engines your buyers' questions, show whether they cite you or a competitor, and hand you the specific fixes. Our promise is simple — run the query yourself and you'll get what the report says."
 
-### Key Innovations Include:
-*   **Competitive Duel Engine:** A head-to-head AEO comparison that provides a definitive "Verdict" on which brand an AI will cite and why.
-*   **Citation Probability Score:** A metric that estimates the likelihood of AI attribution for your content.
-*   **AEO Implementation Roadmap:** A step-by-step technical guide to closing the semantic gap between a brand and an AI’s knowledge base.
-*   **Persona-Based Optimization:** Tailoring content to specific AI "personas" to ensure maximum reach across different LLM architectures.
+### What the platform does
+*   **Citation Sweeps:** buyers' questions run across four live answer engines, multiple times each, with every transcript stored.
+*   **Three separable layers:** Retrievability (does AI find you by name), Fidelity (is its answer about you accurate), and Citation Win (does AI pick you for category questions — and who's cited instead).
+*   **The fixes, not just a score:** paste-ready JSON-LD, content rewrites, and a developer-ready report; plus a crawler-access audit of robots.txt and llms.txt.
+*   **Progressive monitoring:** re-run monthly to track share of the AI answer over time.
 
-Early adopters of the platform have reported a 40% increase in AI-driven referral traffic within the first 30 days of implementation.
-
-"AEO Analyzers is far superior to any other platform on the market because it’s built on real-time AI reasoning, not static rules," Hiebert added. "It’s smarter, more effective, and built specifically to grow businesses in the post-search era."
-
-### About AEO Analyzers
-AEO Analyzers is the leading platform for Answer Engine Optimization. Founded in 2026, the company provides advanced AEO tools for brands, agencies, and developers looking to secure their future in the AI-driven digital landscape.
+### About PI GenAI LLC
+AEOAnalyzers (aeoanalyzers.com) is built and maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.
 
 **Media Contact:**
 Lindsay Hiebert
-Founder, AEO Analyzers
 Lindsay.Hiebert@gmail.com
 https://aeoanalyzers.com
 `;
 
   const linkedinPostContent = `
-🚀 The "AI Search Gap" is the biggest threat to your organic traffic in 2026. 📉
+Search is becoming answers.
 
-When AI agents like ChatGPT, Gemini, or Perplexity answer a user's question using your content but **fail to cite you**, you lose the customer. You’ve provided the expertise, but the AI takes the credit.
+When a buyer asks ChatGPT, Gemini, Perplexity, or Claude for the best option in your category, they get one answer. If it isn't you, a competitor just won the customer.
 
-Today, we are launching **AEO Analyzers** — an AI-powered platform for Answer Engine Optimization.
+Today we're releasing the next generation of AEOAnalyzers — real-time Citation Sweeps.
 
-Stop guessing if your site is "AI-Ready." Start measuring it.
+A score predicts. A sweep proves. We ask the real engines your buyers' questions, store every transcript, and measure three things:
+• Retrievability — does AI find you by name?
+• Fidelity — is what it says about you true?
+• Citation Win — on category questions, does it pick you, or name a competitor instead?
 
-🚀 **What you can do with AEO Analyzers:**
-- **Get your AEO Score:** A real-time audit of your site's semantic density and citation probability.
-- **Competitive Duels:** See exactly how you stack up against your competitors in the eyes of AI.
-- **Technical Roadmap:** Get the exact JSON-LD and metadata fixes needed to secure your citations.
+Then we hand you the fixes — paste-ready schema, rewrites, and a developer-ready report — and you can re-run monthly to track your progress.
 
-The era of "Keywords" is over. The era of "Answers" is here.
+Run the query yourself and you'll get what the report says.
 
-Try your first analysis for free: https://aeoanalyzers.com
+Start free: https://aeoanalyzers.com
 
-#AEO #SEO #AISearch #DigitalMarketing #AnswerEngineOptimization #ChatGPT #Gemini #AEOAnalyzers
+#AEO #AnswerEngineOptimization #AISearch
 `;
 
   const twitterPostContent = `
-1/ SEO as we know it is dead. 💀
+1/ Search is becoming answers.
 
-Users aren't clicking links anymore; they're asking AI for answers. If you aren't the cited source, you're invisible.
+Ask ChatGPT, Gemini, Perplexity, or Claude for the best option in a category and you get one answer. If it isn't your brand, a competitor just won the customer.
 
-Introducing **AEO Analyzers**: The first tool built to help you dominate the Answer Engine era. 🧵👇
+The next generation of AEOAnalyzers is here: real-time Citation Sweeps. 🧵
 
-2/ What is the "Attribution Gap"?
-It's when an LLM uses your data to answer a prompt but gives you 0 traffic.
+2/ A score predicts. A sweep proves.
 
-AEO Analyzers closes that gap by auditing your site's semantic structure and JSON-LD schema.
+We ask the real engines your buyers' questions — multiple times each — and store every transcript. You can re-run any answer and get the same result.
 
-3/ ⚔️ **Competitive Duels**
-Ever wonder why Gemini cites your competitor instead of you?
-Run a Duel. We'll show you the exact score difference and why they're winning the citation.
+3/ Three separable layers:
+• Retrievability — does AI find you by name?
+• Fidelity — is what it says about you true?
+• Citation Win — does it pick you for category questions, or name a competitor instead?
 
-4/ 🛠️ **The Roadmap**
-We don't just give you a score. We give you the code.
-Get custom JSON-LD snippets and technical fixes to make your site "AI-Readable" in minutes.
+4/ We don't stop at the number. Paste-ready JSON-LD, content rewrites, a developer-ready report, and a crawler-access check — so you can move your AI visibility, then track it monthly.
 
-5/ The future of search is here. Don't get left behind in the transition from Google to Answer Engines.
+5/ Run the query yourself and you'll get what the report says.
 
-Analyze your site for free today: https://aeoanalyzers.com
+Start free: https://aeoanalyzers.com
 
-#AEO #SEO #BuildInPublic #AI #AEOAnalyzers
+#AEO #AISearch #AEOAnalyzers
 `;
 
   const facebookPostContent = `
-Is your business invisible to AI? 🤖🔍
+Is your business the answer AI gives?
 
-More and more people are using AI like ChatGPT and Gemini to find products, services, and answers. But if your website isn't set up correctly, these AI tools might not even know you exist—or worse, they might use your information without telling people where they got it!
+More people are asking ChatGPT, Gemini, Perplexity, and Claude for recommendations instead of scrolling search results. If those assistants don't name you, your customers may never find you.
 
-We just launched **AEO Analyzers** to help you fix this.
+The new AEOAnalyzers measures it directly. We ask the real engines your buyers' questions and show whether they cite you or a competitor — with the transcripts to prove it. Then we hand you the exact fixes.
 
-It’s a simple tool that scores your website on how "AI-friendly" it is. We show you exactly what to change so that when someone asks an AI a question, YOUR business is the one it recommends.
+✅ See whether AI names you or a competitor
+✅ Catch when AI gets your facts wrong
+✅ Get paste-ready fixes and re-check monthly
 
-✅ Run a free audit
-✅ Compare yourself to competitors
-✅ Get a simple checklist of fixes
-
-Check it out here: https://aeoanalyzers.com
+Start free: https://aeoanalyzers.com
 `;
 
   const slackBlurbContent = `
-🚀 **New Tool Alert:** Check out **AEO Analyzers**, a new platform designed to help websites get cited by AI models like ChatGPT and Gemini. It audits your site, gives you an "AEO Score," and provides a technical roadmap to improve your visibility in AI search results. Try your first analysis for free at https://aeoanalyzers.com.
+🚀 New: the next generation of AEOAnalyzers adds real-time Citation Sweeps — it asks ChatGPT, Claude, Perplexity, and Gemini your buyers' questions and shows whether they cite you or a competitor, with stored transcripts and the exact fixes. Start free at https://aeoanalyzers.com.
 `;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
-      <SEO 
-        title="Press Kit & Announcements - AEO Analyzers"
-        description="Official blog announcement and press release for AEO Analyzers. Learn why we are the superior platform for AI Search Optimization."
+      <SEO
+        title="Press Kit & Announcements - AEOAnalyzers"
+        description="Announcement and press resources for AEOAnalyzers — real-time Citation Sweeps across ChatGPT, Claude, Perplexity, and Gemini, backed by stored transcripts, plus the exact fixes."
         author="Lindsay Hiebert"
-        publishedDate="2026-03-22T00:00:00Z"
+        publishedDate="2026-07-28T00:00:00Z"
       />
 
       <div className="flex flex-col md:flex-row items-start gap-12">
@@ -165,7 +142,7 @@ Check it out here: https://aeoanalyzers.com
           <div className="p-6 bg-zinc-900 rounded-3xl text-white">
             <Megaphone className="w-8 h-8 mb-4 text-emerald-400" />
             <h2 className="text-xl font-black mb-2 tracking-tight">Press Kit</h2>
-            <p className="text-zinc-400 text-xs leading-relaxed">Official resources for media, partners, and early adopters.</p>
+            <p className="text-zinc-400 text-xs leading-relaxed">Announcement resources for media, partners, and early adopters.</p>
           </div>
 
           <nav className="space-y-2">
@@ -204,7 +181,7 @@ Check it out here: https://aeoanalyzers.com
                 <FileText className="w-3 h-3" />
                 Official Blog
               </div>
-              <button 
+              <button
                 onClick={() => handleCopy(blogContent, 'blog')}
                 className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
               >
@@ -215,40 +192,40 @@ Check it out here: https://aeoanalyzers.com
 
             <div className="prose prose-zinc prose-sm md:prose-base max-w-none bg-white border border-zinc-200 rounded-[3rem] p-10 md:p-16 shadow-sm">
               <h1 className="text-4xl md:text-6xl font-black mb-8 tracking-tight leading-none">
-                The End of SEO as We Know It: Why AEO Analyzers is the Only Platform That <span className="text-zinc-400">Actually Works</span>
+                The next generation of AEOAnalyzers: <span className="text-zinc-400">prove it, don't just score it</span>
               </h1>
-              
+
               <div className="flex items-center gap-4 mb-12 pb-12 border-b border-zinc-100">
                 <div className="w-12 h-12 rounded-full bg-zinc-900 flex items-center justify-center text-white font-black">LH</div>
                 <div>
-                  <div className="font-bold text-zinc-900">Lindsay Hiebert</div>
-                  <div className="text-xs text-zinc-400">March 22, 2026 • 6 min read</div>
+                  <div className="font-bold text-zinc-900">Lindsay Hiebert · PI GenAI LLC</div>
+                  <div className="text-xs text-zinc-400">July 2026 • 4 min read</div>
                 </div>
               </div>
 
               <div className="space-y-6 text-zinc-600 leading-relaxed">
-                <p className="text-xl font-medium text-zinc-900 italic">The digital marketing landscape just shifted. Permanently.</p>
-                <p>For two decades, we've played the SEO game: keywords, backlinks, and meta tags. But while you were busy optimizing for a 10-blue-link search result, the world moved on. AI agents—Gemini, ChatGPT, Perplexity—are now the primary interface between your customers and your brand.</p>
-                <p className="font-bold text-zinc-900">If an AI doesn't cite you, you don't exist. Period.</p>
-                
-                <h3 className="text-2xl font-black text-zinc-900 mt-12">The Problem with "Traditional" AEO Tools</h3>
-                <p>Most "AEO Analyzers" on the market today are glorified keyword counters. They look at your text and tell you if it's "readable." That's not optimization; that's a spell-check.</p>
-                
-                <h3 className="text-2xl font-black text-zinc-900 mt-12">Why AEO Analyzers is Superior</h3>
-                <p>We didn't build just another checklist. When you run an analysis, your site is evaluated by a frontier AI model to assess how answer engines would read and cite your brand — and exactly what to fix.</p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-12">
-                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-100">
-                    <h4 className="font-black text-zinc-900 mb-2">Competitive Duel</h4>
-                    <p className="text-sm">Put your URL head-to-head against your biggest rival. We tell you exactly why the AI chose them over you—and how to steal that citation back.</p>
+                <p className="text-xl font-medium text-zinc-900">Search is becoming answers. When someone asks ChatGPT, Gemini, Perplexity, or Claude about your category, they get one answer — one or two names. If it isn't you, your customers never see you.</p>
+                <p className="font-bold text-zinc-900">A score predicts. A Citation Sweep proves.</p>
+                <p>The new AEOAnalyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity, and Gemini — and stores every transcript. Then it measures three separable layers.</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
+                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-200">
+                    <h4 className="font-black text-zinc-900 mb-2">Retrievability</h4>
+                    <p className="text-sm">Ask AI about your brand by name — does it return a real answer? A health check that should sit near 100%.</p>
                   </div>
-                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-100">
-                    <h4 className="font-black text-zinc-900 mb-2">Citation Probability</h4>
-                    <p className="text-sm">The only metric that matters in 2026. We calculate the exact likelihood of an AI agent attributing a claim to your website.</p>
+                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-200">
+                    <h4 className="font-black text-zinc-900 mb-2">Fidelity</h4>
+                    <p className="text-sm">Is what AI says about you actually true? We flag fabricated founders, stale prices, and invented features — with the correct value and the fix.</p>
+                  </div>
+                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-200">
+                    <h4 className="font-black text-zinc-900 mb-2">Citation Win</h4>
+                    <p className="text-sm">On the category questions that sell, does AI pick you — and if not, exactly who is cited instead?</p>
                   </div>
                 </div>
 
-                <p>AEO Analyzers is the only platform built to close the "AI Search Gap." It's smarter, it's faster, and it's built for one thing: <strong>Growth.</strong></p>
+                <p>And we don't stop at the number. We hand you the fixes — paste-ready JSON-LD, content rewrites, and a developer-ready report — plus a crawler-access check so you know AI can even read you.</p>
+                <p className="font-bold text-zinc-900">Every result is backed by the actual transcript. Run the query yourself and you'll get what the report says.</p>
+                <p>Re-run your sweep monthly and track your share of the AI answer over time. Inputs are the checklist. Citation rate is the score.</p>
               </div>
             </div>
           </section>
@@ -260,7 +237,7 @@ Check it out here: https://aeoanalyzers.com
                 <Newspaper className="w-3 h-3" />
                 Press Release
               </div>
-              <button 
+              <button
                 onClick={() => handleCopy(pressReleaseContent, 'press')}
                 className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
               >
@@ -272,29 +249,32 @@ Check it out here: https://aeoanalyzers.com
             <div className="bg-zinc-50 border border-zinc-200 rounded-[3rem] p-10 md:p-16 font-mono text-sm text-zinc-600 space-y-8">
               <div className="text-center space-y-2 mb-12">
                 <div className="font-black text-zinc-900 uppercase tracking-[0.3em]">For Immediate Release</div>
-                <div className="text-xs">March 22, 2026</div>
+                <div className="text-xs">July 2026</div>
               </div>
 
               <h2 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight leading-tight uppercase">
-                AEO Analyzers Launches AI-Powered AEO Platform to Solve Digital Marketing’s Most Urgent Crisis: The AI Search Gap
+                AEOAnalyzers adds real-time Citation Sweeps — measuring whether AI answer engines actually cite your brand
               </h2>
 
-              <p><strong>SILICON VALLEY, CA — March 22, 2026</strong> — AEO Analyzers, the next-generation digital marketing platform, today announced the launch of its AI-powered Answer Engine Optimization platform. Designed to address the rapid decline of traditional organic search traffic, AEO Analyzers provides businesses with the first-ever "Citation Probability" metric—a breakthrough in how brands secure visibility in AI-generated search results.</p>
+              <p><strong>PI GenAI LLC — July 2026</strong> — AEOAnalyzers today released the next generation of its Answer Engine Optimization platform, adding live Citation Sweeps that ask real AI answer engines — ChatGPT, Claude, Perplexity, and Google Gemini — a brand's buyer questions and record what each one answers.</p>
 
-              <p>"The most urgent problem in marketing today isn't ranking on page one; it's being the cited source of truth for an AI agent," said Lindsay Hiebert, Founder of AEO Analyzers. "Most tools are still looking at keywords. We are looking at semantic authority. Our platform doesn't just analyze; it shows you how to win the future of search."</p>
+              <p>As buyers increasingly ask AI assistants for recommendations instead of scrolling search results, being the source an engine cites has become a growth priority. AEOAnalyzers measures that outcome directly, with stored transcripts a customer can reproduce.</p>
+
+              <p>"A score predicts; a sweep proves," said Lindsay Hiebert, founder of PI GenAI LLC. "We ask the real engines your buyers' questions, show whether they cite you or a competitor, and hand you the specific fixes. Our promise is simple — run the query yourself and you'll get what the report says."</p>
 
               <div className="space-y-4">
-                <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">Key Innovations Include:</p>
+                <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">What the platform does:</p>
                 <ul className="list-disc pl-5 space-y-2">
-                  <li><strong>Competitive Duel Engine:</strong> A head-to-head AEO comparison that provides a definitive "Verdict" on which brand an AI will cite and why.</li>
-                  <li><strong>Citation Probability Score:</strong> A metric that estimates the likelihood of AI attribution for your content.</li>
-                  <li><strong>AEO Implementation Roadmap:</strong> A step-by-step technical guide to closing the semantic gap.</li>
+                  <li><strong>Citation Sweeps:</strong> buyers' questions run across four live answer engines, multiple times each, with every transcript stored.</li>
+                  <li><strong>Three separable layers:</strong> Retrievability (does AI find you by name), Fidelity (is its answer about you accurate), and Citation Win (does AI pick you for category questions — and who's cited instead).</li>
+                  <li><strong>The fixes, not just a score:</strong> paste-ready JSON-LD, content rewrites, and a developer-ready report; plus a crawler-access audit of robots.txt and llms.txt.</li>
+                  <li><strong>Progressive monitoring:</strong> re-run monthly to track share of the AI answer over time.</li>
                 </ul>
               </div>
 
               <div className="pt-12 border-t border-zinc-200 space-y-4">
-                <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">About AEO Analyzers</p>
-                <p>AEO Analyzers is the leading platform for Answer Engine Optimization. Founded in 2026, the company provides advanced AEO tools for brands, agencies, and developers looking to secure their future in the AI-driven digital landscape.</p>
+                <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">About PI GenAI LLC</p>
+                <p>AEOAnalyzers (aeoanalyzers.com) is built and maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</p>
               </div>
 
               <div className="pt-8 space-y-1">
@@ -317,7 +297,7 @@ Check it out here: https://aeoanalyzers.com
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="text-sm font-bold text-zinc-900">LinkedIn Post</div>
-                <button 
+                <button
                   onClick={() => handleCopy(linkedinPostContent, 'linkedin')}
                   className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
                 >
@@ -336,7 +316,7 @@ Check it out here: https://aeoanalyzers.com
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="text-sm font-bold text-zinc-900">X / Twitter Thread</div>
-                <button 
+                <button
                   onClick={() => handleCopy(twitterPostContent, 'twitter')}
                   className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
                 >
@@ -355,7 +335,7 @@ Check it out here: https://aeoanalyzers.com
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="text-sm font-bold text-zinc-900">Facebook Post</div>
-                <button 
+                <button
                   onClick={() => handleCopy(facebookPostContent, 'facebook')}
                   className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
                 >
@@ -374,7 +354,7 @@ Check it out here: https://aeoanalyzers.com
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="text-sm font-bold text-zinc-900">Slack / Newsletter Blurb</div>
-                <button 
+                <button
                   onClick={() => handleCopy(slackBlurbContent, 'slack')}
                   className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
                 >
