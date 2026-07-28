@@ -1,0 +1,10 @@
+# Vercel Hobby allows max 12 Serverless Functions per deployment. We were at 12,
+# and adding api/contact.ts (the working contact form) made 13 → deploy rejected.
+#
+# These two v1.7 "measurement-loop" endpoints have ZERO client callers (dormant/
+# experimental — verified with grep). Excluding them from the deploy frees the slot
+# for the contact form and leaves headroom. The code stays in the repo unchanged;
+# re-enable by removing the line here. The real fix is upgrading this project to a
+# Pro team (lifts the 12-function cap) — see the errorLink vercel.link/function-count-limit.
+api/pick-rate.ts
+api/action-plan.ts
