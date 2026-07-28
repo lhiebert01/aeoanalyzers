@@ -161,7 +161,7 @@ Start free: https://aeoanalyzers.com
           </nav>
 
           <div className="pt-8 border-t border-zinc-100">
-            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Media Contact</p>
+            <p className="text-xs font-black text-zinc-600 uppercase tracking-widest mb-4">Media Contact</p>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center font-black text-zinc-400">LH</div>
               <div>
@@ -177,20 +177,20 @@ Start free: https://aeoanalyzers.com
           {/* Blog Section */}
           <section id="blog" className="scroll-mt-24">
             <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+              <div className="flex items-center gap-2 text-xs font-black text-zinc-600 uppercase tracking-widest">
                 <FileText className="w-3 h-3" />
                 Official Blog
               </div>
               <button
                 onClick={() => handleCopy(blogContent, 'blog')}
-                className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-800 text-[11px] font-black uppercase tracking-widest shadow-sm hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-all"
               >
                 {copied === 'blog' ? <CheckCircle2 className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
                 {copied === 'blog' ? 'Copied' : 'Copy Text'}
               </button>
             </div>
 
-            <div className="prose prose-zinc prose-sm md:prose-base max-w-none bg-white border border-zinc-200 rounded-[3rem] p-10 md:p-16 shadow-sm">
+            <div className="prose prose-zinc prose-sm md:prose-base max-w-none bg-white border border-zinc-300 rounded-[3rem] p-10 md:p-16 shadow-sm">
               <h1 className="text-4xl md:text-6xl font-black mb-8 tracking-tight leading-none">
                 The next generation of AEOAnalyzers: <span className="text-zinc-400">prove it, don't just score it</span>
               </h1>
@@ -209,15 +209,15 @@ Start free: https://aeoanalyzers.com
                 <p>The new AEOAnalyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity, and Gemini — and stores every transcript. Then it measures three separable layers.</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
-                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-200">
+                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-300">
                     <h4 className="font-black text-zinc-900 mb-2">Retrievability</h4>
                     <p className="text-sm">Ask AI about your brand by name — does it return a real answer? A health check that should sit near 100%.</p>
                   </div>
-                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-200">
+                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-300">
                     <h4 className="font-black text-zinc-900 mb-2">Fidelity</h4>
                     <p className="text-sm">Is what AI says about you actually true? We flag fabricated founders, stale prices, and invented features — with the correct value and the fix.</p>
                   </div>
-                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-200">
+                  <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-300">
                     <h4 className="font-black text-zinc-900 mb-2">Citation Win</h4>
                     <p className="text-sm">On the category questions that sell, does AI pick you — and if not, exactly who is cited instead?</p>
                   </div>
@@ -233,20 +233,20 @@ Start free: https://aeoanalyzers.com
           {/* Press Release Section */}
           <section id="press" className="scroll-mt-24">
             <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+              <div className="flex items-center gap-2 text-xs font-black text-zinc-600 uppercase tracking-widest">
                 <Newspaper className="w-3 h-3" />
                 Press Release
               </div>
               <button
                 onClick={() => handleCopy(pressReleaseContent, 'press')}
-                className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-800 text-[11px] font-black uppercase tracking-widest shadow-sm hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-all"
               >
                 {copied === 'press' ? <CheckCircle2 className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
                 {copied === 'press' ? 'Copied' : 'Copy Text'}
               </button>
             </div>
 
-            <div className="bg-zinc-50 border border-zinc-200 rounded-[3rem] p-10 md:p-16 font-mono text-sm text-zinc-600 space-y-8">
+            <div className="bg-zinc-50 border border-zinc-300 rounded-[3rem] p-10 md:p-16 font-mono text-sm text-zinc-600 space-y-8">
               <div className="text-center space-y-2 mb-12">
                 <div className="font-black text-zinc-900 uppercase tracking-[0.3em]">For Immediate Release</div>
                 <div className="text-xs">July 2026</div>
@@ -288,7 +288,7 @@ Start free: https://aeoanalyzers.com
 
           {/* Social Media Section */}
           <section id="social" className="scroll-mt-24 space-y-12">
-            <div className="flex items-center gap-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-8">
+            <div className="flex items-center gap-2 text-xs font-black text-zinc-600 uppercase tracking-widest mb-8">
               <Share2 className="w-3 h-3" />
               Social Media Announcements
             </div>
@@ -296,16 +296,16 @@ Start free: https://aeoanalyzers.com
             {/* LinkedIn */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <div className="text-sm font-bold text-zinc-900">LinkedIn Post</div>
+                <div className="text-base font-black text-zinc-900">LinkedIn Post</div>
                 <button
                   onClick={() => handleCopy(linkedinPostContent, 'linkedin')}
-                  className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-800 text-[11px] font-black uppercase tracking-widest shadow-sm hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-all"
                 >
                   {copied === 'linkedin' ? <CheckCircle2 className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
                   {copied === 'linkedin' ? 'Copied' : 'Copy Post'}
                 </button>
               </div>
-              <div className="bg-white border border-zinc-200 rounded-[3rem] p-10 shadow-sm">
+              <div className="bg-white border border-zinc-300 rounded-[3rem] p-10 shadow-sm">
                 <div className="space-y-4 text-zinc-600 whitespace-pre-wrap font-sans leading-relaxed">
                   {linkedinPostContent}
                 </div>
@@ -315,16 +315,16 @@ Start free: https://aeoanalyzers.com
             {/* X / Twitter */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <div className="text-sm font-bold text-zinc-900">X / Twitter Thread</div>
+                <div className="text-base font-black text-zinc-900">X / Twitter Thread</div>
                 <button
                   onClick={() => handleCopy(twitterPostContent, 'twitter')}
-                  className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-800 text-[11px] font-black uppercase tracking-widest shadow-sm hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-all"
                 >
                   {copied === 'twitter' ? <CheckCircle2 className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
                   {copied === 'twitter' ? 'Copied' : 'Copy Thread'}
                 </button>
               </div>
-              <div className="bg-white border border-zinc-200 rounded-[3rem] p-10 shadow-sm">
+              <div className="bg-white border border-zinc-300 rounded-[3rem] p-10 shadow-sm">
                 <div className="space-y-4 text-zinc-600 whitespace-pre-wrap font-sans leading-relaxed">
                   {twitterPostContent}
                 </div>
@@ -334,16 +334,16 @@ Start free: https://aeoanalyzers.com
             {/* Facebook */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <div className="text-sm font-bold text-zinc-900">Facebook Post</div>
+                <div className="text-base font-black text-zinc-900">Facebook Post</div>
                 <button
                   onClick={() => handleCopy(facebookPostContent, 'facebook')}
-                  className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-800 text-[11px] font-black uppercase tracking-widest shadow-sm hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-all"
                 >
                   {copied === 'facebook' ? <CheckCircle2 className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
                   {copied === 'facebook' ? 'Copied' : 'Copy Post'}
                 </button>
               </div>
-              <div className="bg-white border border-zinc-200 rounded-[3rem] p-10 shadow-sm">
+              <div className="bg-white border border-zinc-300 rounded-[3rem] p-10 shadow-sm">
                 <div className="space-y-4 text-zinc-600 whitespace-pre-wrap font-sans leading-relaxed">
                   {facebookPostContent}
                 </div>
@@ -353,10 +353,10 @@ Start free: https://aeoanalyzers.com
             {/* Slack / Newsletter */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <div className="text-sm font-bold text-zinc-900">Slack / Newsletter Blurb</div>
+                <div className="text-base font-black text-zinc-900">Slack / Newsletter Blurb</div>
                 <button
                   onClick={() => handleCopy(slackBlurbContent, 'slack')}
-                  className="flex items-center gap-2 text-[10px] font-black text-zinc-900 uppercase tracking-widest hover:text-emerald-600 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-300 bg-white text-zinc-800 text-[11px] font-black uppercase tracking-widest shadow-sm hover:bg-zinc-900 hover:text-white hover:border-zinc-900 transition-all"
                 >
                   {copied === 'slack' ? <CheckCircle2 className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
                   {copied === 'slack' ? 'Copied' : 'Copy Blurb'}
