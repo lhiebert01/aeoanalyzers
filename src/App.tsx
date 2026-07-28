@@ -658,6 +658,10 @@ export default function App() {
                 </>
               )}
               <NavButton active={view === 'guide'} onClick={() => { setView('guide'); setGuideType('user'); }} icon={<BookOpen className="w-4 h-4" />} label="Resources" />
+              <a href="/blog/" aria-label="Blog" className="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2.5 transition-all duration-300 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100">
+                <FileText className="w-4 h-4" />
+                Blog
+              </a>
               {isAdmin && (
                 <NavButton active={view === 'admin'} onClick={() => setView('admin')} icon={<ShieldAlert className="w-4 h-4" />} label="Admin" />
               )}
@@ -736,6 +740,10 @@ export default function App() {
                   </>
                 )}
                 <NavButton active={view === 'guide'} onClick={() => { setView('guide'); setGuideType('user'); setIsMenuOpen(false); }} icon={<BookOpen className="w-4 h-4" />} label="Resources" />
+                <a href="/blog/" aria-label="Blog" className="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2.5 transition-all duration-300 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100">
+                  <FileText className="w-4 h-4" />
+                  Blog
+                </a>
                 {isAdmin && (
                   <NavButton active={view === 'admin'} onClick={() => { setView('admin'); setIsMenuOpen(false); }} icon={<ShieldAlert className="w-4 h-4" />} label="Admin" />
                 )}
@@ -1463,7 +1471,7 @@ export default function App() {
             <div>
               <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Resources</div>
               <ul className="space-y-2 text-sm">
-                <li><a href="/blog/are-you-the-answer-ai-gives" className="text-zinc-600 hover:text-zinc-900 transition-all">Blog</a></li>
+                <li><a href="/blog/" className="text-zinc-600 hover:text-zinc-900 transition-all">Blog</a></li>
                 <li><button onClick={() => { setView('guide'); setGuideType('user'); }} className="text-zinc-600 hover:text-zinc-900 transition-all">User Guide</button></li>
                 <li><button onClick={() => { setView('guide'); setGuideType('faq'); }} className="text-zinc-600 hover:text-zinc-900 transition-all">FAQ</button></li>
                 <li><button onClick={() => navigateTo('press')} className="text-zinc-600 hover:text-zinc-900 transition-all">Press Kit</button></li>
