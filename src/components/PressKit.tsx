@@ -36,7 +36,7 @@ We didn't build just another checklist. When you run an analysis, your site is e
 Our "Competitive Duel" feature is a market first. It allows you to put your URL head-to-head against your biggest rival. We don't just give you two scores; we give you a **Verdict**. We tell you exactly why the AI chose them over you—and how to steal that citation back.
 
 **2. Citation Probability: The New North Star**
-Forget "Ranking." The only metric that matters in 2026 is **Citation Probability**. Our proprietary algorithm calculates the exact likelihood of an AI agent attributing a claim to your website. If your score is below 80%, you are losing revenue every single second.
+Forget "Ranking." In 2026, the metric that matters most is **Citation Probability** — an estimate of how likely an AI agent is to attribute a claim to your website.
 
 **3. The Implementation Roadmap**
 Knowledge without action is useless. Every analysis generates a surgical Implementation Roadmap. We don't give you vague advice like "write better content." We give you technical, structural, and semantic directives that move the needle.
@@ -64,7 +64,7 @@ As AI agents like Google Gemini and OpenAI’s SearchGPT become the primary gate
 
 ### Key Innovations Include:
 *   **Competitive Duel Engine:** A head-to-head AEO comparison that provides a definitive "Verdict" on which brand an AI will cite and why.
-*   **Citation Probability Score:** A proprietary metric that predicts the likelihood of AI attribution with 94% accuracy.
+*   **Citation Probability Score:** A metric that estimates the likelihood of AI attribution for your content.
 *   **AEO Implementation Roadmap:** A step-by-step technical guide to closing the semantic gap between a brand and an AI’s knowledge base.
 *   **Persona-Based Optimization:** Tailoring content to specific AI "personas" to ensure maximum reach across different LLM architectures.
 
@@ -287,7 +287,7 @@ Check it out here: https://aeoanalyzers.com
                 <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">Key Innovations Include:</p>
                 <ul className="list-disc pl-5 space-y-2">
                   <li><strong>Competitive Duel Engine:</strong> A head-to-head AEO comparison that provides a definitive "Verdict" on which brand an AI will cite and why.</li>
-                  <li><strong>Citation Probability Score:</strong> A proprietary metric that predicts the likelihood of AI attribution with 94% accuracy.</li>
+                  <li><strong>Citation Probability Score:</strong> A metric that estimates the likelihood of AI attribution for your content.</li>
                   <li><strong>AEO Implementation Roadmap:</strong> A step-by-step technical guide to closing the semantic gap.</li>
                 </ul>
               </div>
