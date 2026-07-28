@@ -18,6 +18,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI } from '@google/genai';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
+import { isPaidRequest } from './_lib/entitlement.js';
+import { redactFixFields } from '../src/lib/fixGating.js';
 
 // Gemini flash models in priority order (best quality first, stable fallbacks).
 const GEMINI_MODELS = [
@@ -148,6 +150,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // Resolve entitlement in parallel with generation (no added latency).
+    const entP = isPaidRequest(req);
+
     // Provider order: Gemini (cheapest, resumes automatically when GCP is
     // restored) → OpenAI → Anthropic. Each returns null when its key is missing
     // or it fails, so the chain degrades cleanly to whatever is configured.
@@ -161,6 +166,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         error: 'No LLM provider is available. Set GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY.',
       });
     }
+
+    // PAYWALL (server-side): strip the paid "fix" fields for non-entitled callers
+    // so a free user cannot read them from the network response — a UI blur is not
+    // a control. Paid callers (verified Supabase JWT, same as run-sweep) get the
+    // full object. Fail-open when entitlement is indeterminate so a paying
+    // customer is never stripped during a transient Supabase outage.
+    const ent = await entP;
+    if (!ent.paid && ent.determined) text = redactFixFields(text);
+
     return res.status(200).json({ text, provider });
   } catch (err: any) {
     console.error('[llm-generate] fatal:', err?.message);

@@ -105,7 +105,7 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { trackEvent } = useGA4();
 
-  const FREE_LIMIT = 1; // Changed from 3 to 1 as per user request to protect value
+  const FREE_LIMIT = 3; // Free signed-in users: 3 analyses (score + gaps; fixes are gated server-side)
 
   const isAdmin = user?.email?.toLowerCase() === 'lindsay.hiebert@gmail.com' ||
                   user?.email?.toLowerCase() === 'liindsay.hiebert@gmail.com';
@@ -453,6 +453,15 @@ export default function App() {
       return;
     }
     if (aCompetitor && aCompetitor !== competitorUrl) setCompetitorUrl(aCompetitor);
+
+    // Guests must sign in — the free AEO score is a complimentary account benefit,
+    // not anonymous. (A free account is a far better throttle than IP — anonymous
+    // browsers/VPNs defeat IP — and it captures the lead.)
+    if (!user) {
+      setError('Sign in for your complimentary AEO score — free with an account.');
+      setView('auth');
+      return;
+    }
 
     // Check Free Tier Limit (Day Pass also grants full access during its 24h window)
     const isPro = isPaidUser;

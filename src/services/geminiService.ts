@@ -16,6 +16,7 @@ import {
 import { evaluateCrawlerAccess, type CrawlerAccessResult } from "../lib/crawlerAccess";
 import { detectPlatform } from "../lib/platformDetect";
 import { evaluateIndexCoverage, type IndexCoverageResult } from "../lib/indexCoverage";
+import { getAccessToken } from "../supabase";
 
 // SECURITY: this client module no longer holds any API key and no longer imports
 // the Gemini SDK. The LLM call runs SERVER-SIDE in api/llm-generate.ts (keys in
@@ -228,9 +229,13 @@ export function safeJsonParse(raw: string | null | undefined): any {
 // per-provider formatting differences. Signature is unchanged so analyzeWebsite
 // and performCompetitiveDuel are untouched.
 async function generateWithFallback(prompt: string, schema: any): Promise<string> {
+  // Attach the Supabase session token (same source SweepDashboard uses) so the
+  // server can recognize paid users and return the full response; free/guest
+  // callers get the paid "fix" fields stripped server-side (api/llm-generate.ts).
+  const token = getAccessToken();
   const resp = await fetch('/api/llm-generate', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify({ prompt, schema }),
   });
   if (!resp.ok) {
