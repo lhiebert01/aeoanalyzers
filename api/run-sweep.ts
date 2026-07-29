@@ -50,6 +50,12 @@ const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, Business: 20, Pro
 // the serverless timeout (at concurrency 8) AND has predictable cost/margin.
 const MAX_QUERY_RUNS_PER_SWEEP = 15;
 const MAX_RUNS_PER_SWEEP = 3;
+// Hard wall-clock guard (the real 504 fix): the TOTAL engine calls = engines ×
+// queries × runsPerQuery. This must finish within maxDuration=300s. Sized for
+// ~concurrency 12 × ~7 waves × ≤30s/call ≈ well under 300s. Applies to EVERY
+// non-quick sweep — including admin, which previously skipped all caps and 504'd.
+const SWEEP_TASK_BUDGET = Number(process.env.SWEEP_TASK_BUDGET || 84);
+const SWEEP_CALL_TIMEOUT_MS = Number(process.env.SWEEP_CALL_TIMEOUT_MS || 30000);
 
 class HttpError extends Error {
   constructor(public status: number, message: string) { super(message); }
@@ -131,6 +137,16 @@ async function pool<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>
   return results;
 }
 
+/** Reject if a single engine call hangs, so one stuck provider can't hold a
+ *  concurrency slot for the whole function budget — a top cause of sweep 504s.
+ *  A timed-out call is recorded as an UNAVAILABLE run, not a silent drop. */
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    p.then((v) => { clearTimeout(t); resolve(v); }, (e) => { clearTimeout(t); reject(e); });
+  });
+}
+
 /** Pre-flight: confirm the domain actually resolves before a paid sweep spends
  *  money/quota on a typo. Any HTTP response (even 403) means the host exists;
  *  only a DNS/connection failure (throw on both attempts) means "unreachable". */
@@ -180,14 +196,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       categoryQueries = categoryQueries.slice(0, 1);
       runsPerQuery = 1;
       persist = false;
-    } else if (access.tier !== 'admin') {
-      // Bound total query-runs (queries × runs) so the sweep fits the timeout and
-      // has predictable cost: e.g. 5 queries × N3, or 15 queries × N1.
-      runsPerQuery = Math.min(runsPerQuery, MAX_RUNS_PER_SWEEP);
-      const maxQueries = Math.max(1, Math.floor(MAX_QUERY_RUNS_PER_SWEEP / runsPerQuery));
-      brandedQueries = brandedQueries.slice(0, maxQueries);
-      const remaining = Math.max(0, maxQueries - brandedQueries.length);
-      categoryQueries = categoryQueries.slice(0, remaining);
     }
 
     const configured = configuredEngines();
@@ -203,6 +211,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         detail: 'Set ANTHROPIC_API_KEY / OPENAI_API_KEY / PERPLEXITY_API_KEY / GEMINI_API_KEY in the environment.',
         configured,
       });
+    }
+
+    // Size the sweep to fit maxDuration: TOTAL engine calls = engines × queries ×
+    // runsPerQuery. Trim runs first (keep query breadth), then queries — so a big
+    // set completes as a broad sample instead of 504-ing. Paid keeps its cost cap;
+    // admin is bounded by time only (no monthly quota, but still finite).
+    if (!access.quickCheck) {
+      const engN = Math.max(1, engines.length);
+      const timeQueryRuns = Math.max(engN, Math.floor(SWEEP_TASK_BUDGET / engN));
+      const costQueryRuns = access.tier === 'admin' ? Number.POSITIVE_INFINITY : MAX_QUERY_RUNS_PER_SWEEP;
+      const maxQueryRuns = Math.min(timeQueryRuns, costQueryRuns);
+      const totalQueries = brandedQueries.length + categoryQueries.length;
+      // Prefer breadth: if N>1 would overflow the budget, drop to N=1 first.
+      if (runsPerQuery > 1 && Math.ceil(maxQueryRuns / runsPerQuery) < totalQueries) runsPerQuery = 1;
+      runsPerQuery = Math.min(runsPerQuery, access.tier === 'admin' ? 5 : MAX_RUNS_PER_SWEEP);
+      const maxQueries = Math.max(1, Math.floor(maxQueryRuns / runsPerQuery));
+      brandedQueries = brandedQueries.slice(0, maxQueries);
+      const remaining = Math.max(0, maxQueries - brandedQueries.length);
+      categoryQueries = categoryQueries.slice(0, remaining);
     }
 
     // Pre-flight for PAID sweeps: a domain that doesn't resolve is almost always
@@ -221,14 +248,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         for (let r = 0; r < runsPerQuery; r++) tasks.push({ engine, query, queryType: 'category', runIndex: r });
     }
 
-    const CONCURRENCY = Number(process.env.SWEEP_CONCURRENCY || 8);
+    const CONCURRENCY = Number(process.env.SWEEP_CONCURRENCY || 12);
     const runs: SweepRunResult[] = await pool(tasks, CONCURRENCY, async (t) => {
       const base: SweepRunResult = {
         engine: t.engine, query: t.query, queryType: t.queryType, runIndex: t.runIndex,
         transcript: '', sources: [], costUsd: 0,
       };
       try {
-        const answer = await ENGINE_ADAPTERS[t.engine](t.query);
+        const answer = await withTimeout(
+          ENGINE_ADAPTERS[t.engine](t.query),
+          SWEEP_CALL_TIMEOUT_MS,
+          `${t.engine}:${t.queryType}`
+        );
         return scoreRun({ ...base, ...answer }, { domain, brand }, competitors);
       } catch (err: any) {
         // Missing key or transient engine error: record a failed run (not cited)
