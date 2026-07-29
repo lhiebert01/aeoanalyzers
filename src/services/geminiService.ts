@@ -7,6 +7,7 @@ import {
   stripUngroundedNumbers,
   conditionalizeMetricInstruction,
 } from "../lib/claimsSafety";
+import { extractJsonLdNodes } from "../lib/truthRecord";
 import {
   categoryFromAnswerQuality,
   filterCandidateQueries,
@@ -262,7 +263,20 @@ export function hasNoindexMeta(html: string): boolean {
 }
 
 export async function analyzeWebsite(url: string, html: string, crawler?: CrawlerInputs): Promise<AnalysisResult> {
-  const truncatedHtml = html.substring(0, 15000);
+  // JSON-LD is frequently rendered at the END of the <body> (below the fold), so a
+  // naive first-15k-chars truncation would drop it and mis-score Structured Data as
+  // "none found" even when the page ships rich schema. Detect it from the FULL HTML
+  // (deterministic parser) and PREPEND the detected blocks so the analyzer always
+  // sees exactly what the page actually ships — no false negatives by position.
+  const jsonLdNodes = extractJsonLdNodes(html);
+  const jsonLdTypes = [...new Set(jsonLdNodes.map((n) => String(n?.['@type'] || '')).filter(Boolean))];
+  const jsonLdBlock = jsonLdNodes.length
+    ? `=== DETECTED JSON-LD STRUCTURED DATA (parsed from the FULL shipped page — these ARE present; score "Structured Data" on THIS, not on whether it appears in the truncated HTML below) ===\n`
+      + `Types present: ${jsonLdTypes.join(', ')}\n`
+      + JSON.stringify(jsonLdNodes).slice(0, 6000)
+      + `\n=== END DETECTED JSON-LD ===\n\n`
+    : `=== DETECTED JSON-LD STRUCTURED DATA: none found in the shipped page. ===\n\n`;
+  const truncatedHtml = jsonLdBlock + html.substring(0, 15000);
 
   // Deterministic crawler-access audit from robots.txt / llms.txt / edge signals.
   // Computed regardless of the LLM; feeds the score cap in applyAccuracyGuards.
