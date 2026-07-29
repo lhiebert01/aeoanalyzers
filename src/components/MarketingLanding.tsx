@@ -358,7 +358,8 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
   "applicationCategory": "BusinessApplication",
   "offers": {
     "@type": "Offer",
-    "price": "49.00",
+    "name": "Day Pass",
+    "price": "24.00",
     "priceCurrency": "USD"
   }
 }`}
