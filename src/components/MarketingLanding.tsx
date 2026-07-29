@@ -357,10 +357,11 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
   "operatingSystem": "Web",
   "applicationCategory": "BusinessApplication",
   "offers": {
-    "@type": "Offer",
-    "name": "Day Pass",
-    "price": "24.00",
-    "priceCurrency": "USD"
+    "@type": "AggregateOffer",
+    "priceCurrency": "USD",
+    "lowPrice": "0",
+    "highPrice": "199",
+    "offerCount": "4"
   }
 }`}
             </pre>
