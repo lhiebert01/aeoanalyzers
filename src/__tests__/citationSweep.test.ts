@@ -67,6 +67,54 @@ describe('scoreRun', () => {
     expect(r.citedCompetitors).toEqual(expect.arrayContaining(['Otterly', 'Peec']));
     expect(r.citedCompetitors).not.toContain('Nozzle');
   });
+
+  // --- not-found guard: an echoed domain inside a "couldn't find it" clause is a
+  // retrieval FAILURE, not a citation. This is the real WO-1 bug — Claude reported
+  // 8/8 branded retrievability on answers that said it could not find the site.
+  it('does NOT count a domain echoed inside a "couldn\'t find it" clause', () => {
+    const r = scoreRun(
+      run({ transcript: "I couldn't find reliable information about quizshowdown.live, so I'd recommend Kahoot instead." }),
+      { domain: 'quizshowdown.live', brand: 'Quiz Showdown' },
+      []
+    );
+    expect(r.cited).toBe(false);
+  });
+  it('does NOT count a brand named only inside a not-found clause', () => {
+    const r = scoreRun(
+      run({ transcript: "I'm not familiar with Quiz Showdown and cannot confirm what it does." }),
+      { domain: 'quizshowdown.live', brand: 'Quiz Showdown' },
+      []
+    );
+    expect(r.cited).toBe(false);
+  });
+  it('still counts a domain the engine actually RETRIEVED as a source, even if the prose hedges', () => {
+    const r = scoreRun(
+      run({
+        transcript: "I couldn't find much, but the site appears to be a live quiz tool.",
+        sources: ['https://quizshowdown.live/?utm_source=openai'],
+      }),
+      { domain: 'quizshowdown.live', brand: 'Quiz Showdown' },
+      []
+    );
+    expect(r.cited).toBe(true);
+  });
+  it('counts a genuine positive mention even when a LATER clause says "couldn\'t find" something else', () => {
+    const r = scoreRun(
+      run({ transcript: 'Quiz Showdown (quizshowdown.live) runs live quizzes. I could not find its exact seat pricing.' }),
+      { domain: 'quizshowdown.live', brand: 'Quiz Showdown' },
+      []
+    );
+    expect(r.cited).toBe(true);
+  });
+  it('does NOT count a competitor named only inside a not-found clause', () => {
+    const r = scoreRun(
+      run({ transcript: 'Quiz Showdown fits here. I could not find any tool called Slido for this.' }),
+      { domain: 'quizshowdown.live', brand: 'Quiz Showdown' },
+      [{ name: 'Slido' }]
+    );
+    expect(r.cited).toBe(true);
+    expect(r.citedCompetitors).not.toContain('Slido');
+  });
 });
 
 describe('aggregateSweep — three-layer roll-up', () => {

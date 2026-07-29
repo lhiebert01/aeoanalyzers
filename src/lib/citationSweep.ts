@@ -15,8 +15,13 @@
 //
 // Design rule (mirrors the rest of this codebase): the LLM produces the ANSWER
 // TEXT; this module never asks an LLM whether a citation happened — a citation is
-// the client's domain/brand literally appearing in the answer or its sources.
-// That keeps the headline numbers reproducible and defensible ("run the query
+// the client's domain/brand appearing in a SOURCE the engine actually retrieved,
+// or named in the answer text in a clause that is NOT a "couldn't find it" clause.
+// That last guard matters: engines routinely echo the domain straight back from
+// the question ("I couldn't find reliable information about quizshowdown.live")
+// while disclaiming any knowledge of it — a literal-substring test scores that as
+// 100% retrievable, which is exactly backwards. See scoreRun + NOT_FOUND_PHRASES.
+// The rule keeps the headline numbers reproducible and defensible ("run the query
 // yourself — you'll get what our report says").
 
 export type Engine = 'claude' | 'openai' | 'perplexity' | 'gemini';
@@ -115,23 +120,97 @@ export function domainCited(text: string, sources: string[], domain: string): bo
   });
 }
 
+// Phrases that mean the engine could NOT find, or is unsure about, the subject.
+// A brand/domain string sitting inside a clause like this is a retrieval FAILURE,
+// not a citation — the engine is typically echoing the domain back from the
+// question while saying it can't find it. Kept as lowercased substrings (matched
+// after apostrophe-normalization) so the list is easy to read, extend, and test.
+// (Real WO-1 finding: Claude reported 8/8 branded retrievability on answers that
+// explicitly said it couldn't find reliable information about the site.)
+const NOT_FOUND_PHRASES = [
+  "couldn't find", 'could not find', 'cannot find', "can't find", 'can not find',
+  "couldn't locate", 'could not locate', 'unable to find', 'unable to locate',
+  'unable to verify', 'unable to confirm', 'unable to determine', 'not able to find',
+  'not able to locate', "wasn't able to find", 'was not able to find', "didn't find",
+  'did not find', "couldn't verify", 'could not verify', "couldn't confirm",
+  'could not confirm', 'no information about', 'no information on', 'no reliable information',
+  'no details about', 'no record of', 'no results for', 'not familiar with',
+  "i'm not familiar", 'unfamiliar with', "doesn't appear", 'does not appear',
+  "doesn't seem", 'does not seem', "doesn't exist", 'does not exist', 'no such',
+  'not sure whether', 'not sure if', 'unclear whether', 'unclear if',
+  "don't have information", 'do not have information', "couldn't find any",
+  'could not find any', "i don't have", 'i do not have',
+];
+
+/** Normalize curly/backtick apostrophes to ' so "couldn’t" matches "couldn't". */
+function normApostrophe(s: string): string {
+  return String(s || '').toLowerCase().replace(/[‘’′`]/g, "'");
+}
+
+/** True if this clause expresses inability to find / uncertainty about a subject. */
+function isNotFoundClause(clause: string): boolean {
+  const c = normApostrophe(clause);
+  return NOT_FOUND_PHRASES.some((p) => c.includes(p));
+}
+
+/** Split answer text into rough clauses so a "couldn't find" is scoped to the
+ *  clause it's in — a negation two sentences away must not suppress a genuine
+ *  citation elsewhere in the same answer ("I found it at foo.com. I couldn't find
+ *  its pricing." → still cited). */
+function toClauses(text: string): string[] {
+  // Split on ! ? ; newlines, and on a period ONLY when it terminates a sentence
+  // (followed by whitespace or end-of-string). A bare `.` splitter would break
+  // "aeoanalyzers.com" into "aeoanalyzers"/"com" and "$4.99" into "$4"/"99",
+  // silently dropping real domain/price mentions.
+  return String(text || '').split(/[!?\n;]+|\.(?=\s|$)/);
+}
+
+/** True if the subject is named in at least ONE clause that is NOT a not-found
+ *  clause. `matchesSubject` tests a single clause for the brand/domain. A subject
+ *  that appears ONLY inside "couldn't find …" clauses returns false — that's the
+ *  fix for engines that echo the domain back while disclaiming knowledge of it. */
+function positivelyMentioned(text: string, matchesSubject: (clause: string) => boolean): boolean {
+  for (const clause of toClauses(text)) {
+    if (matchesSubject(clause) && !isNotFoundClause(clause)) return true;
+  }
+  return false;
+}
+
 /** Decide, for one run, whether the client was cited and which competitors were
- *  "cited instead". A citation = the client's domain in text/sources, OR the
- *  client's brand name as a whole word in the text. Grounded — no LLM. */
+ *  "cited instead". A citation = the client's domain in a SOURCE the engine
+ *  actually retrieved (authoritative — stands even if the prose hedges), OR the
+ *  client's domain/brand named in the answer text in a clause that is NOT a
+ *  "couldn't find it" clause. Grounded — no LLM. The not-found guard is what stops
+ *  an engine that merely echoes the domain back while disclaiming knowledge from
+ *  scoring as a citation (the inflated-retrievability bug this module had). */
 export function scoreRun(
   run: SweepRunResult,
   client: { domain: string; brand?: string },
   competitors: Competitor[]
 ): SweepRunResult {
+  const clientDomain = normalizeDomain(client.domain);
+  // A domain present in the SOURCES the engine pulled is real retrieval — the
+  // engine fetched that page — so it counts regardless of how the prose hedges.
+  const inSources = (host: string): boolean =>
+    !!host && (run.sources || []).some((u) => {
+      const h = hostOf(u);
+      return h === host || h.endsWith('.' + host);
+    });
+
   const cited =
-    domainCited(run.transcript, run.sources, client.domain) ||
-    (!!client.brand && containsWord(run.transcript, client.brand));
+    inSources(clientDomain) ||
+    positivelyMentioned(run.transcript, (clause) =>
+      (!!clientDomain && clause.toLowerCase().includes(clientDomain)) ||
+      (!!client.brand && containsWord(clause, client.brand)));
 
   const citedCompetitors: string[] = [];
   for (const c of competitors || []) {
+    const cDomain = c.domain ? normalizeDomain(c.domain) : '';
     const hit =
-      containsWord(run.transcript, c.name) ||
-      (!!c.domain && domainCited(run.transcript, run.sources, c.domain));
+      inSources(cDomain) ||
+      positivelyMentioned(run.transcript, (clause) =>
+        containsWord(clause, c.name) ||
+        (!!cDomain && clause.toLowerCase().includes(cDomain)));
     if (hit) citedCompetitors.push(c.name);
   }
 
