@@ -116,7 +116,7 @@ function softwareApplicationNode() {
       'AI Crawler-Access Audit',
       'AI-Powered AEO Analysis',
       'Competitive Duel Engine',
-      'Citation Probability Scoring',
+      'Citation Readiness Scoring',
       'AEO Implementation Roadmaps',
       'AI Search Visibility Reports',
       'Semantic Authority Audit',

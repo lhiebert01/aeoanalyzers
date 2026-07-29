@@ -275,11 +275,16 @@ export function evaluateCrawlerAccess(input: {
   }
 
   if (!llmsTxtFound) {
-    score = Math.max(0, score - 10);
+    // Low-priority, supplemental. Google Search has confirmed it does NOT use
+    // llms.txt, and no major answer engine has committed to consuming it — so a
+    // missing file is a minor, optional gap, not a material AEO failure. Keep only
+    // a small nudge (not the old -10) so it can't out-weight indexing, structured
+    // data, or independent authority, which are what actually move citations.
+    score = Math.max(0, score - 2);
     recommendations.push(
-      'Add an /llms.txt (and optionally /llms-full.txt) file. It is becoming table-stakes for AEO: a concise, LLM-friendly index of your key pages and facts that answer engines can consume directly.'
+      'Optional (low priority): add an /llms.txt file — a concise, LLM-friendly index of your key pages and facts. Note that Google Search does not use llms.txt and no major answer engine currently commits to consuming it, so treat this as a cheap experiment, not a priority. Indexing, structured data, and independent citations matter far more.'
     );
-    summaryParts.push('No /llms.txt was found.');
+    summaryParts.push('No /llms.txt was found (optional — low priority).');
   }
 
   if (!robotsFound) {

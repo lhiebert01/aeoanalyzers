@@ -60,7 +60,7 @@ export default function UserGuideDashboard() {
       <section className="space-y-12">
         <div className="flex items-center gap-4">
           <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">02</span>
-          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Citation Probability</h2>
+          <h2 className="text-sm font-black text-zinc-900 uppercase tracking-[0.3em] whitespace-nowrap">Citation Readiness</h2>
           <div className="h-px flex-1 bg-zinc-200" />
         </div>
 
@@ -71,10 +71,10 @@ export default function UserGuideDashboard() {
           <div className="relative z-10 grid md:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <h3 className="text-3xl font-black tracking-tight leading-tight">
-                Our most <span className="text-emerald-400 italic font-serif lowercase">critical</span> metric.
+                A <span className="text-emerald-400 italic font-serif lowercase">readiness</span> estimate.
               </h3>
               <p className="text-zinc-400 text-lg leading-relaxed">
-                This predicts the likelihood of an AI agent attributing a specific claim or answer directly to your website.
+                A technical-readiness estimate of how citable your page is — how well its structure, schema, and factual density prepare it to be attributed by an AI engine. It is not a measured or guaranteed citation rate; run a live Citation Sweep to measure what engines actually do.
               </p>
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-sm font-bold">

@@ -20,7 +20,7 @@ const personas: Persona[] = [
     role: "Agency SEO Lead",
     goal: "Retain clients by proving her agency is at the forefront of the AI shift.",
     painPoint: "Clients are seeing a drop in organic traffic and are asking, 'Why aren't we showing up in ChatGPT or Gemini?'",
-    benefit: "Sarah uses the platform to provide clients with a 'Citation Probability' score and a technical roadmap. It transforms a vague 'AI is changing things' conversation into a concrete strategy.",
+    benefit: "Sarah uses the platform to provide clients with a 'Citation Readiness' score and a technical roadmap. It transforms a vague 'AI is changing things' conversation into a concrete strategy.",
     icon: <Users className="w-6 h-6" />,
     color: "bg-blue-500"
   },
@@ -81,8 +81,8 @@ const userFaqs: FAQItem[] = [
     answer: "They're overlapping names for the same goal: getting your business cited when AI engines answer questions. AEO (Answer Engine Optimization) and GEO (Generative Engine Optimization) are the two most common — GEO comes from a 2023 research paper, AEO from the SEO world — and you'll also see LLMO, AIO, and 'AI SEO'. Despite the different branding, what you actually optimize is identical: structured data (JSON-LD), citable facts, clear entity identity, crawlability, and authority signals engines trust. There is no fundamental difference between GEO and AEO in practice — being 'the generative answer an LLM gives' is exactly what AEO targets. We use AEO as the umbrella term, and everything this tool measures and fixes applies equally whether you call it GEO, LLMO, or AEO."
   },
   {
-    question: "How does the 'Citation Probability' score work?",
-    answer: "Our analysis uses a frontier LLM to reason through your website's semantic structure. We analyze your JSON-LD Schema, content density, and technical meta-tags to determine the mathematical likelihood of an AI agent choosing your site as its primary reference."
+    question: "How does the 'Citation Readiness' score work?",
+    answer: "Our analysis uses a frontier LLM to reason through your website's semantic structure — your JSON-LD Schema, content density, and technical meta-tags — and returns a technical-readiness estimate of how citable your page is. It is a readiness score, not a measured or guaranteed real-world citation rate: it tells you how well-prepared the page is to be cited, not the odds an engine will cite it. To measure what engines actually do, run a live Citation Sweep, which queries real answer engines and reports whether your site is cited."
   },
   {
     question: "I'm a developer. What are the technical requirements for AEO?",

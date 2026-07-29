@@ -16,7 +16,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
       role: "Digital Marketing Agency",
       goal: "Retain clients by proving her agency is at the forefront of the AI shift.",
       pain: "Clients are seeing a drop in organic traffic and are asking, 'Why aren't we showing up in ChatGPT or Gemini?'",
-      solution: "Sarah uses the platform to provide clients with a 'Citation Probability' score and a technical roadmap."
+      solution: "Sarah uses the platform to provide clients with a 'Citation Readiness' score and a technical roadmap."
     },
     {
       icon: <ShoppingBag className="w-6 h-6 text-emerald-500" />,
@@ -47,7 +47,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     },
     {
       q: "What does AEO Analyzers actually do?",
-      a: "Two things. First, it diagnoses your site — an AEO Score, a Citation Probability, and the exact fixes (paste-ready JSON-LD schema, content rewrites, a developer-ready report). Second, it proves the result with live Citation Sweeps: it asks the real AI engines — ChatGPT, Claude, Perplexity, and Gemini — your buyers' questions and shows whether they actually cite you, who they cite instead, and the exact answers they gave."
+      a: "Two things. First, it diagnoses your site — an AEO Score, a Citation Readiness estimate (a technical-readiness score, not a measured rate), and the exact fixes (paste-ready JSON-LD schema, content rewrites, a developer-ready report). Second, it proves the result with live Citation Sweeps: it asks the real AI engines — ChatGPT, Claude, Perplexity, and Gemini — your buyers' questions and shows whether they actually cite you, who they cite instead, and the exact answers they gave."
     },
     {
       q: "What is a Citation Sweep and what does it measure?",

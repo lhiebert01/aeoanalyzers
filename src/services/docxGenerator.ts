@@ -120,7 +120,7 @@ export async function generateDocxReport(
     new Paragraph({
       children: [
         new TextRun({
-          text: `Citation Probability: ${result.citationProbability}%`,
+          text: `Citation Readiness: ${result.citationProbability}% (technical-readiness estimate — not a measured citation rate)`,
           bold: true,
           size: 28,
           color: result.citationProbability >= 60 ? '16a34a' : result.citationProbability >= 30 ? 'ca8a04' : 'dc2626',
@@ -173,7 +173,7 @@ export async function generateDocxReport(
     }),
     new Paragraph({
       children: [
-        new TextRun({ text: `Your score of ${result.score}/100 with ${result.citationProbability}% citation probability places you in the `, size: 22, color: '333333' }),
+        new TextRun({ text: `Your score of ${result.score}/100 with ${result.citationProbability}% citation readiness (a technical estimate, not a measured citation rate) places you in the `, size: 22, color: '333333' }),
         new TextRun({ text: scoreRatingTiers[activeTierIdx][1], bold: true, size: 22, color: '1a1a2e' }),
         new TextRun({ text: ' range.', size: 22, color: '333333' }),
       ],
@@ -389,15 +389,23 @@ export async function generateDocxReport(
   children.push(
     sectionHeading('Rollout Plan'),
     new Paragraph({
-      children: [new TextRun({ text: 'Phase 1: High-Impact Technical Changes (1-2 days)', bold: true, size: 24, color: '1a1a2e' })],
+      children: [new TextRun({ text: 'Phase 1: Indexing & Verification (highest leverage, 1-2 days)', bold: true, size: 24, color: '1a1a2e' })],
       spacing: { before: 200, after: 100 },
     }),
-    bulletPoint('Add JSON-LD structured data to priority pages'),
+    bulletPoint('Confirm the site is crawlable and indexed — no stray noindex/canonical blocks'),
+    bulletPoint('Verify in Bing Webmaster Tools (now reports AI citation performance) and Google Search Console'),
+    bulletPoint('Submit or refresh your sitemap'),
+
+    new Paragraph({
+      children: [new TextRun({ text: 'Phase 2: Structured Data & On-Page Technical (1-2 days)', bold: true, size: 24, color: '1a1a2e' })],
+      spacing: { before: 200, after: 100 },
+    }),
+    bulletPoint('Add and validate JSON-LD structured data on priority pages'),
     bulletPoint('Improve semantic HTML structure'),
     bulletPoint('Review titles, meta descriptions, and alt text'),
 
     new Paragraph({
-      children: [new TextRun({ text: 'Phase 2: Core Page Rewrites (1-2 weeks)', bold: true, size: 24, color: '1a1a2e' })],
+      children: [new TextRun({ text: 'Phase 3: Core Page Rewrites (1-2 weeks)', bold: true, size: 24, color: '1a1a2e' })],
       spacing: { before: 200, after: 100 },
     }),
     bulletPoint('Homepage content optimization'),
@@ -405,12 +413,13 @@ export async function generateDocxReport(
     bulletPoint('About page with specific company facts'),
 
     new Paragraph({
-      children: [new TextRun({ text: 'Phase 3: Citation-Building Content (ongoing)', bold: true, size: 24, color: '1a1a2e' })],
+      children: [new TextRun({ text: 'Phase 4: Independent Authority & Citation-Building (ongoing, highest long-term impact)', bold: true, size: 24, color: '1a1a2e' })],
       spacing: { before: 200, after: 100 },
     }),
-    bulletPoint('Publish FAQ pages with structured data'),
-    bulletPoint('Create technical explainer content'),
+    bulletPoint('Earn real third-party citations, listings, reviews, and mentions'),
+    bulletPoint('Publish FAQ pages with structured data and technical explainer content'),
     bulletPoint('Add use-case and deployment documentation'),
+    bulletPoint('(Optional, low priority) add an llms.txt — Google Search does not use it; treat as a cheap experiment, not a priority'),
     spacer()
   );
 

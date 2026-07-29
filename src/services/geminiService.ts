@@ -337,7 +337,7 @@ export async function analyzeWebsite(url: string, html: string, crawler?: Crawle
     2. Presence of structured data (Schema.org).
     3. Clear metadata (OpenGraph).
     4. Content clarity and factual density.
-    5. Citation Likelihood: How likely is an AI to cite this page as a source?
+    5. Citation Readiness: a TECHNICAL-READINESS estimate of how citable this page is (structure, schema, factual density) — NOT a measured or predicted real-world citation rate. Do not phrase it as an actual probability that engines will cite the site; a live Citation Sweep is what measures that.
 
     Return a JSON object with ALL of the following fields:
 
@@ -346,7 +346,7 @@ export async function analyzeWebsite(url: string, html: string, crawler?: Crawle
     - summary: Executive summary for a CMO.
     - criteria: Array of {name, score (0-10), feedback}.
     - recommendations: List of specific, actionable steps.
-    - citationProbability: Percentage (0-100) of how likely this site is to be cited for its core topic.
+    - citationProbability: A 0-100 TECHNICAL-READINESS score for citation on the site's core topic — how well-structured/extractable the page is for an answer engine. This is a readiness estimate, NOT a measured or guaranteed real-world citation rate (a live Citation Sweep measures the actual rate). Do not present it as odds that the site will be cited.
     - schemaSnippet: A COMPLETE, ready-to-deploy JSON-LD block using ONLY values that literally appear on the page (no inferred names). Use @type Organization with name, url, and logo (use actual logo URL if found in the HTML, otherwise use a placeholder path). Include hasOfferCatalog with @type OfferCatalog listing ONLY user-facing services — things a customer can actually sign up for, buy, or use (a dedicated page, a CTA, or something the hero says you "get"). DO NOT list internal architecture as services (anything named "...Layer", "...Engine", "...Framework", "...Model", "...Pipeline", "...System" is internal, not a buyable service). List AT MOST 4 offers; if the page has more user-facing services, keep the 4 strongest. Each item MUST have a "name" using industry-standard terminology and a "description" with technical specifics drawn from the page (not marketing adjectives, not invented specs). Include areaServed. Output valid JSON only (no script tags).
 
     ${scoringDiscipline}
@@ -610,6 +610,7 @@ export async function analyzeWebsite(url: string, html: string, crawler?: Crawle
     - category: One of "Technical", "Authority", "Structural", "Editorial", "Coverage"
     - action: The specific action to take (e.g., "Paste the VERIFIED JSON-LD into the site header")
     - priority: "High", "Medium", or "Low"
+    PRIORITY ORDERING (assign High/Medium/Low and order items by this leverage, highest first): (1) indexability — the page is actually crawlable/indexed, no stray noindex/canonical blocks; (2) verification in Bing Webmaster Tools and Google Search Console (Bing now reports AI citation performance — the single highest-leverage, most-neglected step); (3) structured data / JSON-LD correctness; (4) independent authority — real third-party citations, listings, reviews, and mentions; (5) on-page structure and content clarity. Rank an /llms.txt file LAST and as "Low" — Google Search does not use it and no major answer engine commits to consuming it; never present llms.txt as high priority or "table stakes".
     NEVER instruct the site to ADD statistics, ratings, reviews, star counts, pass rates, or performance metrics it may not actually have. If surfacing metrics is relevant, phrase it conditionally — e.g. "If you have verifiable, substantiated metrics (real pass rates, real review counts), surface them in schema; otherwise do not add them." Do not advise publishing any number a site cannot prove.
   `;
 

@@ -124,7 +124,7 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, 
 We recently completed an Answer Engine Optimization (AEO) review of ${siteUrl} using AEO Analyzers.
 
 **Current AEO Score:** ${analysisResult.score}/100
-**Citation Probability:** Based on the analysis, this score reflects how likely AI agents are to cite this website when answering questions in your domain.
+**Citation Readiness:** A technical-readiness estimate of how citable this site is (structure, schema, factual density) — not a measured or guaranteed real-world citation rate. A live Citation Sweep measures what engines actually do.
 
 ---
 
@@ -138,7 +138,7 @@ We recently completed an Answer Engine Optimization (AEO) review of ${siteUrl} u
 | 71–85 | Good | Strong structure + content — AI will cite this for many relevant queries |
 | 86–100 | Excellent | Source of Truth — AI engines actively prefer this site as a primary reference |
 
-Your score of ${analysisResult.score}/100 with ${analysisResult.citationProbability}% citation probability places you in the **${scoreRating}** range.
+Your score of ${analysisResult.score}/100 with ${analysisResult.citationProbability}% citation readiness (a technical estimate, not a measured citation rate) places you in the **${scoreRating}** range.
 
 ---
 
@@ -307,19 +307,25 @@ ${analysisResult.implementationChecklist.map(item => `- [ ] [${item.priority.toU
 
 ` : ''}## Recommended rollout order
 
-### Phase 1: High-impact technical changes (1-2 days)
-* Add JSON-LD structured data to priority pages
+### Phase 1: Indexing & verification (highest leverage, 1-2 days)
+* Confirm the site is crawlable and indexed — no stray noindex/canonical blocks
+* Verify in Bing Webmaster Tools (now reports AI citation performance) and Google Search Console
+* Submit/refresh your sitemap
+
+### Phase 2: Structured data & on-page technical (1-2 days)
+* Add/validate JSON-LD structured data on priority pages
 * Improve semantic HTML structure
 * Review titles, meta descriptions, and alt text
 
-### Phase 2: Core page rewrites (1-2 weeks)
+### Phase 3: Core page rewrites (1-2 weeks)
 * Homepage content optimization
 * Main product and service pages
 * About page with specific company facts
 
-### Phase 3: Citation-building content (ongoing)
-* Publish FAQ pages with structured data
-* Create technical explainer content
+### Phase 4: Independent authority & citation-building (ongoing, highest long-term impact)
+* Earn real third-party citations, listings, reviews, and mentions
+* Publish FAQ pages with structured data and technical explainer content
+* (Optional, low priority) add an llms.txt — Google Search does not use it; treat as a cheap experiment, not a priority
 * Add use-case and deployment documentation
 
 ---
@@ -631,10 +637,10 @@ ${cleanDisplayName}`;
                   <ExternalLink className="w-5 h-5 text-emerald-400" />
                   Validation Tools
                 </h4>
-                <p className="text-zinc-400 text-sm mb-8">After implementing, use these official tools to verify your AEO readiness.</p>
+                <p className="text-zinc-400 text-sm mb-8">After implementing, validate your structured data with these tools. Note: Google has retired FAQ and HowTo rich results from general Search, so schema is for entity clarity and answer-engine extraction — not for earning those SERP cards. Use the Schema Markup Validator to confirm your JSON-LD is valid; the Rich Results Test only covers the result types Google still renders.</p>
                 <div className="space-y-4">
-                  <ValidationLink title="Google Rich Results Test" url="https://search.google.com/test/rich-results" />
-                  <ValidationLink title="Schema Markup Validator" url="https://validator.schema.org/" />
+                  <ValidationLink title="Schema Markup Validator (validates all JSON-LD)" url="https://validator.schema.org/" />
+                  <ValidationLink title="Google Rich Results Test (only types Google still renders)" url="https://search.google.com/test/rich-results" />
                   <ValidationLink title="AEO Analyzers (Re-run)" url="#" />
                 </div>
               </div>

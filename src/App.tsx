@@ -1339,8 +1339,8 @@ export default function App() {
                             <CircularProgress score={result.citationProbability} color="text-emerald-500" />
                             <span className="absolute text-4xl font-bold text-emerald-500">{result.citationProbability}%</span>
                           </div>
-                          <h3 className="text-xl font-bold mb-2">Citation Prob.</h3>
-                          <p className="text-sm text-zinc-400">Likelihood of AI Attribution</p>
+                          <h3 className="text-xl font-bold mb-2">Citation Readiness</h3>
+                          <p className="text-sm text-zinc-400">Technical-readiness estimate — not a measured citation rate (run a Citation Sweep to measure that)</p>
                         </div>
 
                         <div className="md:col-span-1 bg-white border border-zinc-200 rounded-3xl p-8 shadow-sm flex flex-col justify-center">
