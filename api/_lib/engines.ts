@@ -33,6 +33,18 @@ export class MissingKeyError extends Error {
 
 const uniq = (arr: string[]) => [...new Set(arr.filter(Boolean))];
 
+// The sweep only measures WHO gets named/cited (scoring is grounded & LLM-free
+// downstream) — it does NOT need a research essay. Instruct every engine to be
+// brief and just name the tools/sites it would cite, and cap output tokens. This
+// cuts output-token spend several-fold and shortens each call (helps the timeout),
+// while keeping exactly the signal the sweep scores on.
+const CONCISE_SYS =
+  'You are a concise research assistant with web access. Answer in at most 3 short ' +
+  'sentences. Name the specific products, tools, companies, or websites you would ' +
+  'recommend or cite for this question, including their domains when you know them. ' +
+  'Do not write an essay, background, disclaimers, or caveats — just the direct answer.';
+const SWEEP_MAX_OUTPUT = Number(process.env.SWEEP_MAX_OUTPUT_TOKENS || 400);
+
 // --- Anthropic / Claude (authoritative web_search_20260209 shape) ----------
 async function askClaude(query: string): Promise<EngineAnswer> {
   const key = process.env.ANTHROPIC_API_KEY;
@@ -58,12 +70,12 @@ async function askClaude(query: string): Promise<EngineAnswer> {
   const tools = [{ type: searchType, name: 'web_search' as const, max_uses: maxUses }];
 
   let messages: any[] = [{ role: 'user', content: query }];
-  let resp: any = await client.messages.create({ model, max_tokens: 2048, tools: tools as any, messages });
+  let resp: any = await client.messages.create({ model, max_tokens: SWEEP_MAX_OUTPUT, system: CONCISE_SYS, tools: tools as any, messages });
   let guard = 0;
   // Server-tool loops can pause; re-send to resume (skill: handling pause_turn).
   while (resp.stop_reason === 'pause_turn' && guard++ < 4) {
     messages = [{ role: 'user', content: query }, { role: 'assistant', content: resp.content }];
-    resp = await client.messages.create({ model, max_tokens: 2048, tools: tools as any, messages });
+    resp = await client.messages.create({ model, max_tokens: SWEEP_MAX_OUTPUT, system: CONCISE_SYS, tools: tools as any, messages });
   }
 
   const transcript = (resp.content || [])
@@ -103,6 +115,8 @@ async function askOpenAI(query: string): Promise<EngineAnswer> {
   const resp: any = await client.responses.create({
     model,
     tools: [{ type: 'web_search_preview' }] as any,
+    instructions: CONCISE_SYS,
+    max_output_tokens: SWEEP_MAX_OUTPUT,
     input: query,
   });
 
@@ -130,7 +144,11 @@ async function askPerplexity(query: string): Promise<EngineAnswer> {
   const r = await fetch('https://api.perplexity.ai/chat/completions', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, messages: [{ role: 'user', content: query }] }),
+    body: JSON.stringify({
+      model,
+      max_tokens: SWEEP_MAX_OUTPUT,
+      messages: [{ role: 'system', content: CONCISE_SYS }, { role: 'user', content: query }],
+    }),
   });
   if (!r.ok) throw new Error(`Perplexity ${r.status}: ${(await r.text()).slice(0, 200)}`);
   const j: any = await r.json();
@@ -161,7 +179,7 @@ async function askGemini(query: string): Promise<EngineAnswer> {
       const resp: any = await ai.models.generateContent({
         model,
         contents: query,
-        config: { tools: [{ googleSearch: {} }] } as any,
+        config: { tools: [{ googleSearch: {} }], systemInstruction: CONCISE_SYS, maxOutputTokens: SWEEP_MAX_OUTPUT } as any,
       });
       const transcript = (resp.text || '').trim();
       const chunks = resp.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
