@@ -24,7 +24,7 @@ const SEO: React.FC<SEOProps> = ({
   keywords = ['AEO', 'Answer Engine Optimization', 'AI Search', 'Brand Citations', 'SEO for AI', 'LLM Optimization', 'Gemini SEO', 'ChatGPT SEO', 'Perplexity SEO', 'AI Search Optimization', 'Generative Engine Optimization', 'GEO', 'AI Citation', 'AI Attribution', 'Semantic SEO', 'Knowledge Graph Optimization'],
   canonical,
   ogType = 'website',
-  ogImage = '/aeo-og-bta-2026b.png',
+  ogImage = '/aeo-og-sweep-2026c.png',
   author = DEFAULT_AUTHOR,
   publishedDate = '2026-03-22T00:00:00Z',
   jsonLd,
@@ -57,10 +57,10 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={currentUrl} />
       <meta property="og:image" content={imageUrl} />
-      <meta property="og:image:width" content="1735" />
-      <meta property="og:image:height" content="906" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
       <meta property="og:image:type" content={imageType} />
-      <meta property="og:image:alt" content="AEO Analyzers — Be the Answer AI Gives: scores your site's AI citability and proves it with live Citation Sweeps." />
+      <meta property="og:image:alt" content="AEO Analyzers — Be the Answer AI Gives. A phone shows a real AEO score of 93/100 with Citation Sweep results across ChatGPT, Claude, Gemini, and Perplexity: retrievability, fidelity, and who gets cited instead." />
       <meta property="og:locale" content="en_US" />
       
       {/* Article Metadata (if applicable) */}
@@ -74,6 +74,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
+      <meta name="twitter:image:alt" content="AEO Analyzers — Be the Answer AI Gives. A phone shows a real AEO score of 93/100 with Citation Sweep results across ChatGPT, Claude, Gemini, and Perplexity: retrievability, fidelity, and who gets cited instead." />
 
       {/* Robots */}
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
