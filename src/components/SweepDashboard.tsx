@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
-import type { SweepSummary, SweepRunResult } from '../lib/citationSweep';
+import { sweepScorecard } from '../lib/citationSweep';
+import type { SweepSummary, SweepRunResult, SweepScorecard } from '../lib/citationSweep';
 import { getAccessToken } from '../supabase';
 
 // WO-1 (+WO-3/WO-7) client dashboard: run a tested citation sweep, then show
@@ -34,6 +35,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   const [bots, setBots] = useState<any | null>(null);
   const [openRun, setOpenRun] = useState<number | null>(null);
   const [expandAll, setExpandAll] = useState(false);
+  const [showTranscripts, setShowTranscripts] = useState(false);
 
   // Robust query parse. Strips box-drawing / table-border characters (U+2500–U+259F and the
   // ASCII pipe) and rejoins a line that STARTS with one — a wrapped table-cell continuation
@@ -100,6 +102,20 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
     if (isAdmin) out.push(`Total sweep cost: ~$${r.summary.totalCostUsd.toFixed(3)}`);
     out.push('');
 
+    // Lead the report with the plain-English summary + the buyer-facing scorecard,
+    // not raw scores (UX-PRINCIPLES §4).
+    const sc = sweepScorecard(r.runs, { domain: r.domain, brand: r.brand || undefined }, parseCompetitors(competitors));
+    out.push('## Summary — in plain English');
+    out.push(sc.plainSummary);
+    out.push('');
+    out.push('| What it measures | Score |');
+    out.push('| --- | --- |');
+    out.push(`| Found when asked by name (retrievability) | ${sc.brandedRetrievabilityPct}% |`);
+    out.push(`| Recommended to new buyers (category win) | ${sc.categoryRecommendationWinPct}% |`);
+    out.push(`| Your own site cited (owned citation rate) | ${sc.ownedCitationRatePct === null ? '—' : sc.ownedCitationRatePct + '%'} |`);
+    out.push(`| Your share of the category | ${sc.competitiveSharePct === null ? '—' : sc.competitiveSharePct + '%'} |`);
+    out.push('');
+
     out.push('## Scores by engine');
     for (const e of r.summary.engines) {
       out.push(`### ${L(e.engine)}`);
@@ -162,6 +178,15 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
     a.remove();
     URL.revokeObjectURL(url);
   }
+
+  const scorecard: SweepScorecard | null =
+    result && !result.quickCheck
+      ? sweepScorecard(result.runs, { domain: result.domain, brand: result.brand || undefined }, parseCompetitors(competitors))
+      : null;
+
+  // Color a 0–100 score green (good) / amber (some) / red (weak) — used on the stat cards.
+  const tone = (v: number | null): string =>
+    v === null ? 'text-zinc-400' : v >= 60 ? 'text-emerald-500' : v > 0 ? 'text-amber-500' : 'text-red-500';
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
@@ -247,6 +272,30 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
             </div>
           )}
 
+          {/* Plain-English headline (UX-PRINCIPLES §4): lead with what it MEANS, not a data dump. */}
+          {scorecard && (
+            <div className="rounded-3xl overflow-hidden shadow-sm border border-zinc-200">
+              <div className="bg-gradient-to-br from-indigo-950 via-zinc-900 to-zinc-900 text-white p-6 sm:p-8">
+                <div className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-300 mb-3">Your AI visibility · in plain English</div>
+                <p className="text-lg sm:text-xl leading-relaxed font-medium text-zinc-100">{scorecard.plainSummary}</p>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-zinc-100 bg-white">
+                {[
+                  { label: 'Found when asked by name', hint: 'Branded retrievability', value: scorecard.brandedRetrievabilityPct },
+                  { label: 'Recommended to new buyers', hint: 'Category win — the metric that drives sales', value: scorecard.categoryRecommendationWinPct, hero: true },
+                  { label: 'Your own site cited', hint: 'Owned citation rate', value: scorecard.ownedCitationRatePct },
+                  { label: 'Your share of the category', hint: 'You vs. competitors', value: scorecard.competitiveSharePct },
+                ].map((s) => (
+                  <div key={s.label} className={`p-4 sm:p-5 ${s.hero ? 'bg-emerald-50/60' : ''}`}>
+                    <div className={`text-3xl font-black ${tone(s.value)}`}>{s.value === null ? '—' : `${s.value}%`}</div>
+                    <div className="text-sm font-bold text-zinc-800 mt-1 leading-tight">{s.label}</div>
+                    <div className="text-[11px] text-zinc-400 mt-0.5 leading-tight">{s.hint}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Per-engine scores */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {result.summary.engines.map((e) => (
@@ -302,19 +351,29 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
           {/* Cost + transcripts */}
           <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <h3 className="font-bold">Transcripts ({result.runs.length} runs)</h3>
+              <div>
+                <h3 className="font-bold">Evidence — every answer, stored</h3>
+                <p className="text-xs text-zinc-500 mt-0.5">{result.runs.length} transcripts back the scores above — run any query yourself and you&apos;ll get what the report says.</p>
+              </div>
               <div className="flex items-center gap-2">
                 {isAdmin && <span className="text-sm font-semibold text-zinc-500 mr-1">Sweep cost ≈ ${result.summary.totalCostUsd.toFixed(3)}</span>}
-                <button onClick={() => setExpandAll((v) => !v)}
+                <button onClick={() => setShowTranscripts((v) => !v)}
                   className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-700 px-3 py-1.5 rounded-xl text-sm font-semibold hover:bg-zinc-50">
-                  <ChevronsUpDown className="w-4 h-4" />{expandAll ? 'Collapse all' : 'Expand all'}
+                  {showTranscripts ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}{showTranscripts ? 'Hide details' : 'Show details'}
                 </button>
+                {showTranscripts && (
+                  <button onClick={() => setExpandAll((v) => !v)}
+                    className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-700 px-3 py-1.5 rounded-xl text-sm font-semibold hover:bg-zinc-50">
+                    <ChevronsUpDown className="w-4 h-4" />{expandAll ? 'Collapse all' : 'Expand all'}
+                  </button>
+                )}
                 <button onClick={downloadReport}
                   className="inline-flex items-center gap-1.5 bg-zinc-900 text-white px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-zinc-800">
                   <Download className="w-4 h-4" />Download report
                 </button>
               </div>
             </div>
+            {showTranscripts && (
             <div className="space-y-2">
               {result.runs.map((r, i) => (
                 <div key={i} className="border border-zinc-200 rounded-xl">
@@ -336,6 +395,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                 </div>
               ))}
             </div>
+            )}
           </div>
         </>
       )}
