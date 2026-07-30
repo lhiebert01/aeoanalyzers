@@ -8,6 +8,7 @@ import {
   domainCited,
   scoreRun,
   aggregateSweep,
+  sweepScorecard,
   type SweepRunResult,
 } from '../lib/citationSweep';
 
@@ -185,5 +186,55 @@ describe('aggregateSweep — three-layer roll-up', () => {
     const gem = summary.engines.find((e) => e.engine === 'gemini')!;
     expect(gem.competitorCounts.Otterly).toBeUndefined();
     expect(summary.topCompetitors).toHaveLength(0);
+  });
+});
+
+describe('scoreRun — domainCited (own domain vs brand-only mention)', () => {
+  const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+  it('is true when the domain is surfaced in text or sources', () => {
+    expect(scoreRun(run({ transcript: 'see aeoanalyzers.com' }), client, []).domainCited).toBe(true);
+    expect(scoreRun(run({ transcript: 'great tool', sources: ['https://aeoanalyzers.com/'] }), client, []).domainCited).toBe(true);
+  });
+  it('is false when only the brand NAME is mentioned (no domain)', () => {
+    const r = scoreRun(run({ transcript: 'AEO Analyzers is a solid option' }), client, []);
+    expect(r.cited).toBe(true);        // brand mention → cited
+    expect(r.domainCited).toBe(false); // but the site itself was not surfaced
+  });
+});
+
+describe('sweepScorecard — five buyer-facing scores + plain summary', () => {
+  const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+  const competitors = [{ name: 'Profound', domain: 'tryprofound.com' }];
+  const runs: SweepRunResult[] = [
+    run({ queryType: 'branded', transcript: 'AEO Analyzers is great' }),          // cited, no domain
+    run({ queryType: 'branded', transcript: 'see aeoanalyzers.com for details' }), // cited + domain
+    run({ queryType: 'category', transcript: 'Try AEO Analyzers or Profound' }),   // cited + competitor
+    run({ queryType: 'category', transcript: 'Use Profound' }),                    // not cited, competitor
+  ];
+
+  it('computes retrievability, category win, owned-citation rate, and competitive share', () => {
+    const sc = sweepScorecard(runs, client, competitors);
+    expect(sc.brandedRetrievabilityPct).toBe(100);        // 2/2 branded cited
+    expect(sc.categoryRecommendationWinPct).toBe(50);     // 1/2 category cited
+    expect(sc.ownedCitationRatePct).toBe(33);             // 1 of 3 surfaced runs cited the domain
+    expect(sc.competitiveSharePct).toBe(33);              // 1 brand rec / (1 + 2 Profound)
+    expect(sc.topCompetitors[0]).toEqual({ name: 'Profound', count: 2 });
+  });
+
+  it('writes a plain-English summary that names the numbers and the top competitor', () => {
+    const { plainSummary } = sweepScorecard(runs, client, competitors);
+    expect(plainSummary).toContain('AEO Analyzers');
+    expect(plainSummary).toContain('100%');
+    expect(plainSummary).toContain('50%');
+    expect(plainSummary).toMatch(/Profound wins most often \(2×\)/);
+  });
+
+  it('reports 0% category win in plain English when nothing is recommended', () => {
+    const zero = sweepScorecard(
+      [run({ queryType: 'category', transcript: 'Use Profound' })],
+      client, competitors
+    );
+    expect(zero.categoryRecommendationWinPct).toBe(0);
+    expect(zero.plainSummary).toContain('does not yet recommend');
   });
 });

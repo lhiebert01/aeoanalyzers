@@ -48,6 +48,9 @@ export interface SweepRunResult {
   costUsd: number;
   /** Populated by scoreRun(); absent on the raw adapter output. */
   cited?: boolean;
+  /** Whether the client's own DOMAIN (not just its brand name) was cited — the
+   *  engine surfaced aeoanalyzers.com specifically. Powers Owned Citation Rate. */
+  domainCited?: boolean;
   citedCompetitors?: string[];
 }
 
@@ -240,6 +243,13 @@ export function scoreRun(
       (!!client.brand && containsWord(clause, client.brand)) ||
       (clientToken.length >= 5 && despace(clause).includes(clientToken)));
 
+  // Owned Citation Rate signal: was the DOMAIN itself surfaced (in sources or
+  // named in a positive clause), as opposed to only the brand name being echoed?
+  const domainCited =
+    inSources(clientDomain) ||
+    positivelyMentioned(run.transcript, (clause) =>
+      !!clientDomain && clause.toLowerCase().includes(clientDomain));
+
   const citedCompetitors: string[] = [];
   for (const c of competitors || []) {
     const cDomain = c.domain ? normalizeDomain(c.domain) : '';
@@ -251,7 +261,7 @@ export function scoreRun(
     if (hit) citedCompetitors.push(c.name);
   }
 
-  return { ...run, cited, citedCompetitors };
+  return { ...run, cited, domainCited, citedCompetitors };
 }
 
 /** Roll scored runs up into per-engine aggregates + a cross-engine summary.
@@ -311,4 +321,124 @@ export function aggregateSweep(
     .sort((a, b) => b.count - a.count);
 
   return { engines, totalRuns: scored.length, totalCostUsd, topCompetitors };
+}
+
+// ─── Commercial scorecard (UX-PRINCIPLES §4) ────────────────────────────────
+// The five buyer-facing questions, computed from the SAME scored runs — no extra
+// engine calls, no LLM. Brand Fidelity (score 2) is intentionally omitted here
+// until the WO-2 fidelity module is wired in; everything else is derivable now.
+
+export interface SweepScorecard {
+  /** 1. Known when asked by name (branded cite-rate). */
+  brandedRetrievabilityPct: number;
+  /** 3. Recommended to new buyers (unbranded category cite-rate). THE metric. */
+  categoryRecommendationWinPct: number;
+  /** 4. Of answers that surface the brand at all, how often the OWN DOMAIN is
+   *  cited as the source. null when the brand was never surfaced. */
+  ownedCitationRatePct: number | null;
+  /** 5. Brand's share of all category recommendations (brand vs competitors).
+   *  null when no category recommendations were seen at all. */
+  competitiveSharePct: number | null;
+  /** Who wins the category instead, most-frequent first. */
+  topCompetitors: { name: string; count: number }[];
+  brandedRuns: number;
+  categoryRuns: number;
+  /** A short, plain-English read of the result — the headline, not a data dump. */
+  plainSummary: string;
+}
+
+const pct = (num: number, den: number): number => (den ? Math.round((num / den) * 100) : 0);
+
+/** Compute the buyer-facing scorecard + a grounded plain-English summary from the
+ *  scored runs. Deterministic — the numbers are reproducible from the transcripts. */
+export function sweepScorecard(
+  runs: SweepRunResult[],
+  client: { domain: string; brand?: string },
+  competitors: Competitor[]
+): SweepScorecard {
+  const scored = runs.map((r) =>
+    typeof r.cited === 'boolean' ? r : scoreRun(r, client, competitors)
+  );
+
+  let brandedRuns = 0, brandedCited = 0, categoryRuns = 0, categoryCited = 0;
+  let surfaced = 0, domainCited = 0;          // for Owned Citation Rate
+  let brandCatRecs = 0, competitorCatRecs = 0; // for Competitive Share
+  const competitorCounts: Record<string, number> = {};
+
+  for (const r of scored) {
+    if (r.queryType === 'branded') {
+      brandedRuns++; if (r.cited) brandedCited++;
+    } else {
+      categoryRuns++; if (r.cited) { categoryCited++; brandCatRecs++; }
+      for (const name of r.citedCompetitors || []) {
+        competitorCatRecs++;
+        competitorCounts[name] = (competitorCounts[name] || 0) + 1;
+      }
+    }
+    if (r.cited) { surfaced++; if (r.domainCited) domainCited++; }
+  }
+
+  const topCompetitors = Object.entries(competitorCounts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const brandedRetrievabilityPct = pct(brandedCited, brandedRuns);
+  const categoryRecommendationWinPct = pct(categoryCited, categoryRuns);
+  const ownedCitationRatePct = surfaced ? pct(domainCited, surfaced) : null;
+  const competitiveSharePct =
+    brandCatRecs + competitorCatRecs ? pct(brandCatRecs, brandCatRecs + competitorCatRecs) : null;
+
+  const who = client.brand || normalizeDomain(client.domain) || 'your brand';
+  const plainSummary = buildPlainSummary({
+    who,
+    brandedRetrievabilityPct,
+    categoryRecommendationWinPct,
+    ownedCitationRatePct,
+    topCompetitor: topCompetitors[0] || null,
+    hasCategory: categoryRuns > 0,
+    hasBranded: brandedRuns > 0,
+  });
+
+  return {
+    brandedRetrievabilityPct,
+    categoryRecommendationWinPct,
+    ownedCitationRatePct,
+    competitiveSharePct,
+    topCompetitors,
+    brandedRuns,
+    categoryRuns,
+    plainSummary,
+  };
+}
+
+/** Turn the numbers into two or three plain sentences a non-expert understands.
+ *  Grounded templating only — states nothing the runs didn't measure. */
+function buildPlainSummary(s: {
+  who: string;
+  brandedRetrievabilityPct: number;
+  categoryRecommendationWinPct: number;
+  ownedCitationRatePct: number | null;
+  topCompetitor: { name: string; count: number } | null;
+  hasCategory: boolean;
+  hasBranded: boolean;
+}): string {
+  const parts: string[] = [];
+  if (s.hasBranded) {
+    const b = s.brandedRetrievabilityPct;
+    const knows = b >= 80 ? 'reliably finds' : b >= 40 ? 'sometimes finds' : 'often cannot find';
+    parts.push(`When buyers ask about ${s.who} by name, AI ${knows} it (${b}%).`);
+  }
+  if (s.hasCategory) {
+    const c = s.categoryRecommendationWinPct;
+    let line = `On unbranded buyer questions, AI recommends ${s.who} ${c}% of the time`;
+    if (c === 0) line = `On unbranded buyer questions, AI does not yet recommend ${s.who} (0%)`;
+    if (s.topCompetitor && s.topCompetitor.count > 0) {
+      line += ` — when it doesn't, ${s.topCompetitor.name} wins most often (${s.topCompetitor.count}×)`;
+    }
+    parts.push(line + '.');
+  }
+  if (s.ownedCitationRatePct !== null) {
+    parts.push(`When ${s.who} is mentioned, its own site is cited as the source ${s.ownedCitationRatePct}% of the time.`);
+  }
+  return parts.join(' ');
 }
