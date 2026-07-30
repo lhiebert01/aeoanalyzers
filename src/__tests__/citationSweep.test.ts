@@ -115,6 +115,40 @@ describe('scoreRun', () => {
     expect(r.cited).toBe(true);
     expect(r.citedCompetitors).not.toContain('Slido');
   });
+
+  // --- dogfood-surfaced cases (AEO-on-itself sweep, 2026-07-30). Client = AEO
+  // Analyzers, whose name doubles as a generic noun and whose domain has no space.
+  const AEO = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+
+  it('does NOT count a brand echoed only in a search-narration preamble that then fails', () => {
+    // Claude narrates "I'll search…", echoing the brand, then says it can't find it.
+    const r = scoreRun(
+      run({ transcript: 'I\'ll search for information about AEO Analyzers and which answer engines they test.\nI don\'t see a specific tool called "AEO Analyzers" in the results.' }),
+      AEO, []
+    );
+    expect(r.cited).toBe(false);
+  });
+  it('does NOT count a "cannot confirm" answer that only echoes the domain from the question', () => {
+    const r = scoreRun(
+      run({ transcript: "The search results don't show specific information about aeoanalyzers.com itself. I cannot confirm whether aeoanalyzers.com is specifically an Answer Engine Optimization tool." }),
+      AEO, []
+    );
+    expect(r.cited).toBe(false);
+  });
+  it('DOES count the brand written without a space ("AEOAnalyzers") — brand normalization', () => {
+    const r = scoreRun(
+      run({ transcript: 'AEOAnalyzers is a product built and operated by PIGENAI LLC that provides AI visibility scans across the four major answer engines.' }),
+      AEO, []
+    );
+    expect(r.cited).toBe(true);
+  });
+  it('still counts a genuine positive mention even after a search-narration line', () => {
+    const r = scoreRun(
+      run({ transcript: 'Let me search for that. AEO Analyzers is a legitimate AEO tool at aeoanalyzers.com that runs live citation sweeps.' }),
+      AEO, []
+    );
+    expect(r.cited).toBe(true);
+  });
 });
 
 describe('aggregateSweep — three-layer roll-up', () => {

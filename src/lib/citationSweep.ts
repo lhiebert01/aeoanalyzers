@@ -140,6 +140,16 @@ const NOT_FOUND_PHRASES = [
   'not sure whether', 'not sure if', 'unclear whether', 'unclear if',
   "don't have information", 'do not have information', "couldn't find any",
   'could not find any', "i don't have", 'i do not have',
+  // Dogfood-surfaced patterns (AEO-on-itself sweep, 2026-07-30): engines that
+  // hedge or ask for clarification while echoing the brand back.
+  'cannot confirm', "can't confirm", 'can not confirm', "don't see", 'do not see',
+  "didn't see", 'did not see', "don't mention", 'does not mention', "doesn't mention",
+  "don't show", 'does not show', "doesn't show", 'no specific information',
+  'not a specific product', "isn't a specific product", 'is not a specific product',
+  'not a product name', "couldn't find a specific", 'could not find a specific',
+  "don't see a specific", 'no specific tool', "isn't a specific tool",
+  'clarify what tool', 'clarify which', 'could you clarify', 'which specific tool',
+  "don't have specific information", 'not sure what',
 ];
 
 /** Normalize curly/backtick apostrophes to ' so "couldn’t" matches "couldn't". */
@@ -151,6 +161,29 @@ function normApostrophe(s: string): string {
 function isNotFoundClause(clause: string): boolean {
   const c = normApostrophe(clause);
   return NOT_FOUND_PHRASES.some((p) => c.includes(p));
+}
+
+// Tool-use / search narration. Some engines (esp. Claude) narrate their search —
+// "I'll search for information about {brand}…" — which echoes the brand positively
+// even when the actual answer then says it can't find the site. A brand mention
+// that sits ONLY in a narration clause must NOT score as a citation.
+const SEARCH_NARRATION_PHRASES = [
+  "i'll search", 'i will search', 'let me search', "i'll look", 'let me look',
+  'searching for', "i'll research", 'let me research', "i'll find", 'let me find',
+  "i'll check", 'let me check', 'let me look into', "i'll investigate", "i'll dig",
+  'let me dig', 'i can search', 'let me pull', 'let me look up', "i'll look up",
+];
+/** True if this clause is just the engine narrating that it will search. */
+function isSearchNarration(clause: string): boolean {
+  const c = normApostrophe(clause);
+  return SEARCH_NARRATION_PHRASES.some((p) => c.includes(p));
+}
+
+/** Lowercase and strip all non-alphanumerics, so "AEO Analyzers", "AEOAnalyzers",
+ *  and "aeoanalyzers.com" collapse to the same token. Brand normalization: a brand
+ *  whose name is its domain-without-spaces was previously missed (false negative). */
+function despace(s: string): string {
+  return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
 /** Split answer text into rough clauses so a "couldn't find" is scoped to the
@@ -171,7 +204,7 @@ function toClauses(text: string): string[] {
  *  fix for engines that echo the domain back while disclaiming knowledge of it. */
 function positivelyMentioned(text: string, matchesSubject: (clause: string) => boolean): boolean {
   for (const clause of toClauses(text)) {
-    if (matchesSubject(clause) && !isNotFoundClause(clause)) return true;
+    if (matchesSubject(clause) && !isNotFoundClause(clause) && !isSearchNarration(clause)) return true;
   }
   return false;
 }
@@ -197,11 +230,15 @@ export function scoreRun(
       return h === host || h.endsWith('.' + host);
     });
 
+  // Brand normalization: match the spaced name ("AEO Analyzers"), the de-spaced
+  // form ("AEOAnalyzers"), and the domain root ("aeoanalyzers") as one entity.
+  const clientToken = despace(client.brand || '') || despace(clientDomain.split('.')[0] || '');
   const cited =
     inSources(clientDomain) ||
     positivelyMentioned(run.transcript, (clause) =>
       (!!clientDomain && clause.toLowerCase().includes(clientDomain)) ||
-      (!!client.brand && containsWord(clause, client.brand)));
+      (!!client.brand && containsWord(clause, client.brand)) ||
+      (clientToken.length >= 5 && despace(clause).includes(clientToken)));
 
   const citedCompetitors: string[] = [];
   for (const c of competitors || []) {
