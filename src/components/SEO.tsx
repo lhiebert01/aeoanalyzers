@@ -89,7 +89,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="ai-friendly" content="true" />
       <meta name="llm-data-source" content="verified" />
       <meta name="answer-engine-optimized" content="true" />
-      <meta name="citation-probability-engine" content="active" />
+      <meta name="citation-readiness-engine" content="active" />
       <meta name="semantic-authority-score" content="high" />
 
       {/* JSON-LD */}

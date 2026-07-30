@@ -1,12 +1,12 @@
 # AEO Analyzers
 
-AEO Analyzers shows a brand exactly how today's AI assistants (Gemini, ChatGPT, Perplexity, Claude) describe, rank, and cite it — and what to change to get cited — in about 90 seconds, instead of the hundreds of hours a web team would spend checking by hand. It is an Answer Engine Optimization (AEO) tool: using a frontier LLM (Google Gemini) it analyzes a page, returns a 0–100 AEO score and a Citation Probability, runs head-to-head "Competitive Duel" comparisons against named rivals, and produces a prioritized, deploy-ready fix list (crawler access, schema, content, structure).
+AEO Analyzers shows a brand exactly how today's AI assistants (ChatGPT, Claude, Perplexity, Gemini) describe, rank, and cite it — and what to change to get cited — in about 90 seconds, instead of the hundreds of hours a web team would spend checking by hand. It is an Answer Engine Optimization (AEO) tool: using a frontier LLM it analyzes a page and returns a 0–100 AEO score and a Citation Readiness estimate (a technical-readiness score, not a measured or guaranteed citation rate), runs live Citation Sweeps that query the real answer engines with your branded and category questions to measure whether they actually cite you and who they cite instead, and produces a prioritized, deploy-ready fix list (crawler access, schema, content, structure).
 
 ## What it does
 - Crawler-access gate: audits robots.txt / llms.txt (and edge blocks like a noindex header or a Cloudflare AI block) against the major answer-engine bots — a blocked bot caps the score, because a page AI can't read can't be cited.
 - AEO score (0–100) with a transparent formula: Entity×0.3 + Density×0.3 + Clarity×0.2 + Structure×0.2.
-- Citation Probability: how likely AI assistants are to cite the site for its core topic.
-- Competitive Duel: side-by-side AEO comparison against a competitor URL.
+- Citation Readiness: a technical-readiness estimate of how citable the page is (structure, schema, factual density) — not a measured or guaranteed citation rate.
+- Citation Sweeps: query the real answer engines (ChatGPT, Claude, Perplexity, Gemini) with your branded and category questions and report whether they cite you, who they cite instead, and the exact answers — measured and reproducible.
 - Brand-aware analysis: editorial/news/SaaS/ecommerce/service sites each get the correct recommendations (editorial voice is preserved, never corporatized).
 - Provenance-safe JSON-LD: a "verified, safe to paste" schema block (detected values only) separate from a "candidate, verify first" block (inferred values).
 - Advanced diagnostics: Citation Hook Density, E-E-A-T Author Audit, LLM Summarization Test, Zero-Click/Snippet Predictor, Query-to-Content Gap, Semantic Chunking.

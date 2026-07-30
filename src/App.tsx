@@ -1643,7 +1643,7 @@ function ScoreRatingExplainer({ score, citationProbability }: { score: number; c
             </tbody>
           </table>
           <p className="text-sm text-zinc-600">
-            Your score of <strong>{score}/100</strong> with <strong>{citationProbability}%</strong> citation probability places you in the <strong>{activeRating}</strong> range.
+            Your score of <strong>{score}/100</strong> with <strong>{citationProbability}%</strong> citation readiness — a technical estimate, not a measured citation rate — places you in the <strong>{activeRating}</strong> range.
           </p>
         </div>
       )}

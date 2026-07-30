@@ -7,7 +7,7 @@
 
 ## A score tells you your odds. A sweep shows you the outcome.
 
-For the last year, AEO Analyzers has answered one question better than anyone: *how citable is your site by AI answer engines?* You paste a URL, and in **90 seconds** you get an AEO score, a citation-probability read, and the exact fixes — corrected schema, rewritten passages, a developer-ready report.
+For the last year, AEO Analyzers has answered one question better than anyone: *how citable is your site by AI answer engines?* You paste a URL, and in **90 seconds** you get an AEO score, a Citation Readiness estimate (a technical-readiness read, not a measured rate), and the exact fixes — corrected schema, rewritten passages, a developer-ready report.
 
 That score is a genuinely useful prediction. But it is a prediction. And the first question every sharp operator asks back is the right one:
 
