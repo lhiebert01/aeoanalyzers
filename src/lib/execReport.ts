@@ -25,6 +25,7 @@ import { summarizeFidelity, type FidelitySummary } from './fidelity';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from './entityLinking';
 import { aggregateAuthorityGap, type AuthorityGapReport } from './authorityGap';
 import { tierForDomain, TIER_LABEL, type AttainabilityTier } from './authorityTiers';
+import { segmentBreakdown, winnableSegment, SEGMENT_LABEL, type SegmentStat } from './querySegment';
 import type { TruthRecord } from './truthRecord';
 
 export type ReportVariant = 'paid' | 'courtesy';
@@ -43,6 +44,9 @@ export interface ExecReportData {
   fidelity: FidelitySummary | null;
   entityLinking: EntityLinkingReport | null;
   authority: AuthorityGapReport;
+  /** Category win broken down by buyer segment (C3) — so an out-of-segment 0% reads
+   *  as out-of-segment, not failure. */
+  segments: SegmentStat[];
   runCount: number;
   costUsd: number;
   /** The worst defensible gap — drives the subject line + Finding 3 (WO 1.2). */
@@ -78,9 +82,10 @@ export function assembleReportData(input: {
   const fidelity = truth ? summarizeFidelity(branded, truth) : null;
   const entityLinking = detectEntityLinkingFailures(branded, client, truth);
   const authority = aggregateAuthorityGap(runs, domain);
+  const segments = segmentBreakdown(runs);
 
   return {
-    brand, domain, sweepDate, scorecard, summary, fidelity, entityLinking, authority,
+    brand, domain, sweepDate, scorecard, summary, fidelity, entityLinking, authority, segments,
     runCount: runs.length,
     costUsd: input.costUsd ?? summary.totalCostUsd,
     headline: {
@@ -171,13 +176,17 @@ export const NARRATIVE_SCHEMA = {
 export function defaultNarrative(d: ExecReportData): ExecNarrative {
   const comp = d.headline.topCompetitor;
   const win = d.headline.categoryWinPct;
+  const winSeg = winnableSegment(d.segments);
+  const segClause = winSeg
+    ? ` Your most winnable segment is ${SEGMENT_LABEL[winSeg.segment]} (${winSeg.winPct}%) — start there.`
+    : '';
   return {
     subject: `How AI answer engines describe ${d.brand} to your buyers`,
     headlineFinding: `When buyers ask for ${d.brand} by name, AI finds it ${d.headline.brandedPct}% of the time. But on unbranded buyer questions, AI recommends ${d.brand} ${win}% of the time${comp ? `; ${comp.name} is named instead most often (${comp.count}×)` : ''}.`,
     whyThisMatters: `Buyers increasingly ask AI assistants "what's the best tool for X" instead of searching. If the answer never names you, the buyer never learns you exist — and you never see the lost opportunity.`,
     findings: [
       `Good news: AI reliably identifies ${d.brand} when asked by name (${d.headline.brandedPct}% branded retrievability).`,
-      `The gap that costs sales: on category questions, AI recommends ${d.brand} ${win}% of the time${comp ? ` — ${comp.name} wins those answers most often (${comp.count}×)` : ''}.`,
+      `The gap that costs sales: on category questions, AI recommends ${d.brand} ${win}% of the time${comp ? ` — ${comp.name} wins those answers most often (${comp.count}×)` : ''}.${segClause}`,
       d.headline.ownedCitationPct === null ? `Your own site was not cited in these answers.` : `When ${d.brand} is mentioned, your own site is the cited source ${d.headline.ownedCitationPct}% of the time.`,
       d.headline.entityCollisions.length ? `Engines confuse ${d.brand} with: ${d.headline.entityCollisions.join(', ')} — a name/acronym collision that needs explicit disambiguation.` : `No entity-linking collisions were detected.`,
       d.headline.driftedCount ? `${d.headline.driftedCount} answer(s) that named you asserted a false fact — worth correcting at the source.` : `Answers that named you were factually accurate.`,
@@ -221,6 +230,20 @@ export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, va
   out.push(`| Your own site cited | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
   out.push(`| Your share of the category | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
   out.push('');
+
+  // C3: category win by buyer segment — an out-of-segment 0% is not failure.
+  if (d.segments.length > 1) {
+    out.push('### Category win by buyer segment');
+    out.push('| Segment | Win | N |');
+    out.push('| --- | --- | --- |');
+    for (const s of d.segments) out.push(`| ${SEGMENT_LABEL[s.segment]} | ${s.winPct}% | ${s.categoryRuns} |`);
+    const win = winnableSegment(d.segments);
+    out.push('');
+    out.push(win
+      ? `Your most winnable segment is **${SEGMENT_LABEL[win.segment]}** (${win.winPct}%). Concentrate content and listings there first.`
+      : `No segment is winning yet — but the gaps are not equal. Enterprise-framed questions are the hardest to win for a self-serve tool; start where your positioning actually fits.`);
+    out.push('');
+  }
 
   out.push('## Findings');
   narrative.findings.forEach((f, i) => { out.push(`**${i + 1}.** ${mark ? '' : ''}${f}`); out.push(''); });

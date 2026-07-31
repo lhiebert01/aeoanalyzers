@@ -3,6 +3,7 @@ import { Type } from '@google/genai';
 import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
+import { segmentBreakdown, winnableSegment, SEGMENT_LABEL } from '../lib/querySegment';
 import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard } from '../lib/citationSweep';
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
@@ -105,6 +106,12 @@ Generate exactly 10 queries by intent:
 - Category Discovery (3): broad "best solutions in this category" questions
 - Problem/Solution (3): a problem this category solves, asking for recommendations
 - Comparative (4): "vs" / "alternative to {competitor}" questions
+
+Make the set span buyer SEGMENTS so results aren't one blended number: include at
+least ONE small-business/affordable-framed question (e.g. "affordable ... for
+startups", "free ... checker") and at least ONE "alternative to {a competitor}"
+question. Favor questions this specific brand can realistically win given its
+apparent positioning and price point — not only enterprise-framed questions.
 
 OUTPUT: valid JSON
 {"sweep_queries":[{"intent_type":"Discovery|Problem|Comparative","query":"..."}]}`;
@@ -305,6 +312,21 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       out.push('');
     }
 
+    // C3: category win by buyer segment.
+    const segs = segmentBreakdown(r.runs);
+    if (segs.length > 1) {
+      out.push('### Category win by buyer segment');
+      out.push('| Segment | Win | N |');
+      out.push('| --- | --- | --- |');
+      for (const s of segs) out.push(`| ${SEGMENT_LABEL[s.segment]} | ${s.winPct}% | ${s.categoryRuns} |`);
+      const ws = winnableSegment(segs);
+      out.push('');
+      out.push(ws
+        ? `Most winnable segment: **${SEGMENT_LABEL[ws.segment]}** (${ws.winPct}%).`
+        : `No segment is winning yet — enterprise-framed questions are the hardest to win for a self-serve tool.`);
+      out.push('');
+    }
+
     // Fidelity (B1): of the branded answers that named the brand, which got facts wrong.
     if (fidelity && (fidelity.citedAccurate > 0 || fidelity.citedDrifted > 0)) {
       out.push('## Fidelity — is AI accurate about you?');
@@ -401,6 +423,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
     result && !result.quickCheck
       ? sweepScorecard(result.runs, { domain: result.domain, brand: result.brand || undefined }, parseCompetitors(competitors))
       : null;
+
+  // C3: category win by buyer segment (an out-of-segment 0% isn't failure).
+  const segments = result && !result.quickCheck ? segmentBreakdown(result.runs) : [];
+  const winSeg = winnableSegment(segments);
 
   // Color a 0–100 score green (good) / amber (some) / red (weak) — used on the stat cards.
   const tone = (v: number | null): string =>
@@ -733,6 +759,29 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
               </div>
             ))}
           </div>
+
+          {/* Category win by buyer segment (C3) — an out-of-segment 0% isn't failure. */}
+          {segments.length > 1 && (
+            <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
+              <h3 className="font-bold flex items-center gap-2 mb-1"><Search className="w-4 h-4 text-zinc-400" />Category win by buyer segment</h3>
+              <p className="text-xs text-zinc-500 mb-3">
+                {winSeg
+                  ? <>Your most winnable segment is <b className="text-emerald-600">{SEGMENT_LABEL[winSeg.segment]}</b> ({winSeg.winPct}%) — concentrate there first.</>
+                  : <>No segment is winning yet — but enterprise-framed questions are the hardest to win for a self-serve tool; start where your positioning fits.</>}
+              </p>
+              <div className="flex flex-col gap-1.5">
+                {segments.map((s) => (
+                  <div key={s.segment} className="flex items-center gap-3 text-sm">
+                    <span className="w-40 shrink-0 text-zinc-600">{SEGMENT_LABEL[s.segment]}</span>
+                    <div className="flex-1 h-2 rounded-full bg-zinc-100 overflow-hidden">
+                      <div className={`h-full ${s.winPct >= 50 ? 'bg-emerald-500' : s.winPct > 0 ? 'bg-amber-500' : 'bg-red-400'}`} style={{ width: `${Math.max(2, s.winPct)}%` }} />
+                    </div>
+                    <span className="w-20 shrink-0 text-right font-semibold text-zinc-700">{s.winPct}% <span className="text-xs font-normal text-zinc-400">N={s.categoryRuns}</span></span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Competitors displacing you. Prefer the scorecard's list: when the user
               entered no competitors it auto-detects them from the answers, so this

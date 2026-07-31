@@ -61,6 +61,20 @@ describe('renderExecReport', () => {
     expect(paid).toContain('Engines are confusing you with');
   });
 
+  it('renders category win by buyer segment (C3)', () => {
+    const segData = assembleReportData({
+      brand: 'AEO Analyzers', domain: 'aeoanalyzers.com', sweepDate: '2026-07-31', competitors: [], truth,
+      runs: [
+        run({ queryType: 'category', query: 'best AEO for enterprise brands', transcript: 'Conductor.' }),
+        run({ queryType: 'category', query: 'affordable AEO for startups', transcript: 'AEO Analyzers is great.' }),
+      ],
+    });
+    const md = renderExecReport(segData, defaultNarrative(segData), 'paid');
+    expect(md).toContain('Category win by buyer segment');
+    expect(md).toContain('Enterprise');
+    expect(md).toContain('SMB / affordable');
+  });
+
   it('groups authority sources by attainability tier (C2)', () => {
     const withAuth = assembleReportData({
       brand: 'AEO Analyzers', domain: 'aeoanalyzers.com', sweepDate: '2026-07-31', competitors: [], truth,
