@@ -112,7 +112,7 @@ Values are NOT recorded here — names + purpose only.
 ## Known pending / follow-ups
 
 - [ ] **Confirm payments end-to-end** with one real (or Stripe-test-mode) purchase → webhook delivery should flip to "succeeded".
-- [ ] **Rotate the GitHub PAT** embedded in the git remote URL (plaintext `ghp_…`).
+- [x] ~~Rotate the GitHub PAT embedded in the git remote URL~~ — DONE. Verified 2026-07-28: remote is `https://github.com/lhiebert01/aeoanalyzers.git` with **no token embedded**; PATs deleted GitHub-side. Clean.
 - [ ] Approval-gated copy fixes: drop "Official"/"world's first"; reconcile `og:title` vs `<title>` (both crawlable now).
 - [ ] Optional: add a small Stripe product image + "Marketing feature list" bullets to the Day Pass product in Stripe.
 - [ ] Other portfolio sites (getmacrolens apex/canonical, bookmobile pricing, sanctumshield head+Colorado law) — see `c:\src\macrolens\docs\` audit + runbook.
