@@ -18,12 +18,15 @@
   Nothing is auto-sent — human review gate; admin sends manually from their own
   client (per WO-AEO-EXECREPORT-001 Phase 4 hard rule).
 
-## Current build state (AEO measurement loop)
+## Current build state (AEO measurement loop) — WO-QA-003 COMPLETE, FROZEN 2026-07-31
 
 - Lane A (A1 truncation, A2 model-prior, A3 N+confidence) ✅ shipped + dogfood-verified.
 - Lane B (B1 fidelity on branded answers, B2 entity-linking collisions) ✅ shipped + verified.
-- C1 competitor detection refined (named-in-text rivals + display names) ✅ (`65a6a58`).
+- Lane C (C1 competitor detection, C2 attainability tiers, C3 ICP segmentation) ✅.
+- Lane E (E1 PAWC, E2 fact-density auditor, E3 llms.txt generator) ✅ — the freeze set.
+- Courtesy-sweep generator + N=5 baseline + blog ✅. See `FREEZE-REPORT-2026-07-31.md`.
 - Two dogfood false positives fixed (own-org founder flag; vertexaisearch authority) ✅.
+- **FEATURE FREEZE in effect** — bug fixes + paying-customer blockers only until it lifts.
 
 ## Backlog (post-freeze unless a paying customer requires it)
 
@@ -33,7 +36,10 @@
   the four-way language (currently: "accurate, drifted from the facts, or confused
   with another entity entirely").
 
-## Next, in order (per founder direction 2026-07-31)
+## Next — FROZEN. Product is in maintenance mode; founder time is on GTM-90 outbound.
+(History below kept for the record; all items shipped 2026-07-31.)
+
+## Was next, in order (per founder direction 2026-07-31) — ALL DONE
 
 1. **Courtesy-sweep generation path — build FIRST** (before C2/C3). Target ~Aug 20:
    one command turns a domain into a review-ready report + email draft with the

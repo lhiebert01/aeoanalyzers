@@ -2,7 +2,16 @@
 
 **App:** AEO Analyzers · **Live:** https://www.aeoanalyzers.com · **Repo:** lhiebert01/aeoanalyzers
 **Publisher:** PI GenAI LLC · **Founder:** Lindsay Hiebert
-**Version:** v1.7.0 · **Last updated:** 2026-07-22 · **Hosting:** Vercel (project `aeo-app1`)
+**Version:** v1.8.0 · **Last updated:** 2026-07-31 · **Hosting:** Vercel (project `aeo-app1`)
+
+> **v1.8.0 (2026-07-31) — Sweep measurement integrity + fidelity + productization (WO-AEO-SWEEP-QA-003, FROZEN):**
+> Hardened the Citation Sweep into a defensible measurement + turned it into a sendable report. All deterministic cores tested (178 tests). See `docs/FREEZE-REPORT-2026-07-31.md`.
+> - **Measurement integrity:** truncated answers excluded + badged, columns >20% truncated flagged (A1); search-grounded vs model-prior split, model-prior kept out of citation-win (A2); N + confidence on every cell, low-N hedged (A3).
+> - **Fidelity:** branded answers classified cited-accurate/drifted (B1); entity-linking collisions surfaced — Wikipedia acronym pages, ticker collisions, near-name domains (B2).
+> - **Recommendation quality:** competitors auto-detected from answers (named-in-text, display names) (C1); authority sources tiered Now/Earn/Aspirational (C2); query-set ICP segmentation (C3).
+> - **Research anchors:** PAWC prominence scoring (E1); fact-density page auditor with Princeton-GEO-cited consequences (E2); llms.txt/llms-full.txt generator + validator + drift-diff (E3).
+> - **Productization:** `scripts/exec-report.ts` — domain → review-ready executive report + DRAFT outreach email (draft-only, CAN-SPAM footer; numbers from the sweep JSON, model authors only prose). **N=5 baseline of record** stored (`docs/baselines/`). Blog `/blog/what-you-actually-get` published.
+> - **FEATURE FREEZE (GTM-90):** bug fixes + paying-customer blockers only; backlog in the freeze report.
 
 > **v1.7.0 (2026-07-22) — Measurement-loop platform (WO-AEO-PLATFORM-001 + DOGFOOD-001 + ADDENDUM-002):**
 > Adds the post-fix measurement loop on top of the diagnostic. All deterministic cores tested (96 tests).
