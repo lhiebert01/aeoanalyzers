@@ -61,6 +61,20 @@ describe('renderExecReport', () => {
     expect(paid).toContain('Engines are confusing you with');
   });
 
+  it('computes + renders PAWC answer-share as a Princeton-cited companion (E1)', () => {
+    const pd = assembleReportData({
+      brand: 'Acme', domain: 'acme.com', sweepDate: '2026-07-31', competitors: [], truth: null,
+      runs: [
+        run({ queryType: 'category', query: 'best widget tool', transcript: 'Acme is the leading widget tool by far. It dominates.' }),
+      ],
+    });
+    expect(pd.pawc.clientAnswers).toBe(1);
+    expect(pd.pawc.clientAvgShare).toBeGreaterThan(0);
+    const md = renderExecReport(pd, defaultNarrative(pd), 'paid');
+    expect(md).toContain('Answer share (PAWC)');
+    expect(md).toContain('Princeton GEO study');
+  });
+
   it('renders category win by buyer segment (C3)', () => {
     const segData = assembleReportData({
       brand: 'AEO Analyzers', domain: 'aeoanalyzers.com', sweepDate: '2026-07-31', competitors: [], truth,

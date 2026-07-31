@@ -4,6 +4,7 @@ import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, D
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, SEGMENT_LABEL } from '../lib/querySegment';
+import { avgPawc } from '../lib/pawc';
 import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard } from '../lib/citationSweep';
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
@@ -428,6 +429,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   const segments = result && !result.quickCheck ? segmentBreakdown(result.runs) : [];
   const winSeg = winnableSegment(segments);
 
+  // E1 (PAWC): when cited in category answers, how much of the answer you own.
+  const pawcClient = result && !result.quickCheck
+    ? avgPawc(
+        result.runs.filter((r) => r.queryType === 'category' && !r.truncated && r.grounding !== 'model-prior').map((r) => r.transcript || ''),
+        (s) => { const l = s.toLowerCase(); const d = result.domain.toLowerCase(); const b = (result.brand || '').toLowerCase(); return l.includes(d) || (b.length >= 3 && l.includes(b)); },
+      )
+    : { avgShare: 0, answers: 0 };
+
   // Color a 0–100 score green (good) / amber (some) / red (weak) — used on the stat cards.
   const tone = (v: number | null): string =>
     v === null ? 'text-zinc-400' : v >= 60 ? 'text-emerald-500' : v > 0 ? 'text-amber-500' : 'text-red-500';
@@ -670,6 +679,11 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                 <div className="bg-white border-t border-zinc-100 px-4 sm:px-5 py-3 text-[11px] text-zinc-500">
                   <b>{scorecard.modelPriorRuns}</b> category answer{scorecard.modelPriorRuns > 1 ? 's' : ''} came from the model&apos;s memory (no live web search) and {scorecard.modelPriorRuns > 1 ? 'are' : 'is'} <b>not</b> counted in the score above.
                   {scorecard.modelPriorVisibilityPct !== null && <> Of those, the model named you {scorecard.modelPriorVisibilityPct}% of the time (<i>model-prior visibility</i>).</>}
+                </div>
+              )}
+              {pawcClient.answers > 0 && (
+                <div className="bg-white border-t border-zinc-100 px-4 sm:px-5 py-3 text-[11px] text-zinc-500">
+                  <b>Answer share:</b> when you&apos;re named in a category answer, you own ~{Math.round(pawcClient.avgShare * 100)}% of it (position-weighted). <span className="text-zinc-400">Position-Adjusted Word Count — a prominence measure from the Princeton GEO study, not a guarantee.</span>
                 </div>
               )}
             </div>

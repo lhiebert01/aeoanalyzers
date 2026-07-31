@@ -18,9 +18,10 @@
 // later template session; the mechanics + slots are what ship now.
 
 import {
-  sweepScorecard, aggregateSweep, scoreRun, confidenceLevel,
+  sweepScorecard, aggregateSweep, scoreRun, detectCompetitors, normalizeDomain, confidenceLevel,
   type SweepRunResult, type Competitor, type SweepScorecard, type SweepSummary,
 } from './citationSweep';
+import { avgPawc } from './pawc';
 import { summarizeFidelity, type FidelitySummary } from './fidelity';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from './entityLinking';
 import { aggregateAuthorityGap, type AuthorityGapReport } from './authorityGap';
@@ -47,6 +48,14 @@ export interface ExecReportData {
   /** Category win broken down by buyer segment (C3) — so an out-of-segment 0% reads
    *  as out-of-segment, not failure. */
   segments: SegmentStat[];
+  /** Position-Adjusted Word Count (E1) — when cited, how much of the answer you
+   *  own, vs competitors. Shares are 0–1 (fraction of the position-weighted answer).
+   *  Framed as the Princeton GEO metric, never as a guarantee. */
+  pawc: {
+    clientAvgShare: number;
+    clientAnswers: number;
+    competitors: { name: string; avgShare: number }[];
+  };
   runCount: number;
   costUsd: number;
   /** The worst defensible gap — drives the subject line + Finding 3 (WO 1.2). */
@@ -84,8 +93,31 @@ export function assembleReportData(input: {
   const authority = aggregateAuthorityGap(runs, domain);
   const segments = segmentBreakdown(runs);
 
+  // E1 (PAWC): over the grounded category answers, how much of the answer the
+  // client vs. each competitor actually owns (position-weighted). Zero API spend.
+  const groundedCat = runs.filter((r) => r.queryType === 'category' && !r.truncated && r.grounding !== 'model-prior' && r.grounding !== 'indeterminate');
+  const catTranscripts = groundedCat.map((r) => r.transcript || '');
+  const clientDomain = normalizeDomain(domain);
+  const clientToken = (brand || '').toLowerCase();
+  const clientMatch = (s: string) => {
+    const l = s.toLowerCase();
+    return (!!clientDomain && l.includes(clientDomain)) || (clientToken.length >= 3 && l.includes(clientToken));
+  };
+  const clientPawc = avgPawc(catTranscripts, clientMatch);
+  const effComp = (competitors || []).filter((c) => c && c.name).length ? competitors : detectCompetitors(runs, client);
+  const compPawc = effComp
+    .map((c) => {
+      const cDomain = c.domain ? normalizeDomain(c.domain) : '';
+      const m = (s: string) => { const l = s.toLowerCase(); return (!!cDomain && l.includes(cDomain)) || l.includes(c.name.toLowerCase()); };
+      return { name: c.name, avgShare: avgPawc(catTranscripts, m).avgShare };
+    })
+    .filter((c) => c.avgShare > 0)
+    .sort((a, b) => b.avgShare - a.avgShare)
+    .slice(0, 5);
+
   return {
     brand, domain, sweepDate, scorecard, summary, fidelity, entityLinking, authority, segments,
+    pawc: { clientAvgShare: clientPawc.avgShare, clientAnswers: clientPawc.answers, competitors: compPawc },
     runCount: runs.length,
     costUsd: input.costUsd ?? summary.totalCostUsd,
     headline: {
@@ -230,6 +262,16 @@ export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, va
   out.push(`| Your own site cited | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
   out.push(`| Your share of the category | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
   out.push('');
+
+  // E1: PAWC answer-share companion — prominence when cited, not just yes/no.
+  if (d.pawc.clientAnswers > 0 || d.pawc.competitors.length) {
+    const p = (x: number) => Math.round(x * 100);
+    let line = `**Answer share (PAWC).** When ${d.brand} is named, it owns ~${p(d.pawc.clientAvgShare)}% of the answer (position-weighted).`;
+    if (d.pawc.competitors.length) line += ` For comparison: ${d.pawc.competitors.slice(0, 3).map((c) => `${c.name} ~${p(c.avgShare)}%`).join(', ')}.`;
+    out.push(line);
+    out.push('_Position-Adjusted Word Count — a prominence measure from the Princeton GEO study (arXiv:2311.09735), not a guarantee of future placement._');
+    out.push('');
+  }
 
   // C3: category win by buyer segment — an out-of-segment 0% is not failure.
   if (d.segments.length > 1) {
