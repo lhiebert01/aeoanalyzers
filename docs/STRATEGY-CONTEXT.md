@@ -5,6 +5,15 @@
 > by the identity-site session). This file only records decisions that land in
 > THIS repo's code/build. (Created 2026-07-31 — it did not previously exist here.)
 
+## Numbering convention for published content (2026-07-31)
+
+**Narrative numbers cite the stored baseline with its date; live numbers appear only
+in live dashboards.** A blog/social claim is a snapshot that belongs to the story's
+moment — anchor it (e.g. "98% branded retrievability across the stored runs", "265
+crawls in the thirty days to July 31") and cite the reproducible baseline of record
+(`docs/baselines/`), never the ever-drifting live value. The live number (e.g. 270
+crawls now) lives in the dashboard, not the story.
+
 ## Identity / distribution decisions that bind this repo
 
 - **PIGENAI LLC legal + postal address (CONFIRMED by founder 2026-07-31, use verbatim
