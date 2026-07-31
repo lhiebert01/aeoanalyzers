@@ -57,6 +57,11 @@ export interface SweepRunResult {
    *  mid-sentence). A truncated answer is unmeasured, not measured-zero — it is
    *  EXCLUDED from every scored metric and badged in the UI (WO-QA-003 A1). */
   truncated?: boolean;
+  /** Whether the engine actually searched the web for this answer, or answered from
+   *  its weights alone. Only `search-grounded` runs count toward citation-win /
+   *  owned-citation; `model-prior` runs are reported as a separate "model-prior
+   *  visibility" metric (WO-QA-003 A2). Absent = treat as grounded (back-compat). */
+  grounding?: 'search-grounded' | 'model-prior' | 'indeterminate';
 }
 
 export interface EngineAggregate {
@@ -78,6 +83,9 @@ export interface EngineAggregate {
    *  truncated — the column is unreliable and the UI should not present its score
    *  as a real measurement (WO-QA-003 A1). */
   truncatedBlocked: boolean;
+  /** Category runs where the engine answered from weights (no web search) — kept
+   *  out of citationWinPct and reported separately (WO-QA-003 A2). */
+  modelPriorRuns: number;
 }
 
 export interface SweepSummary {
@@ -178,6 +186,13 @@ const NOT_FOUND_PHRASES = [
 /** Above this fraction of an engine's attempted runs being truncated, its column
  *  is flagged unreliable (score not presented as a real measurement). */
 export const TRUNCATION_BLOCK_RATIO = 0.2;
+
+/** True when a run answered from the model's weights instead of a live web search.
+ *  Such runs are kept out of citation-win (grounded-only) and reported separately.
+ *  Absent grounding is treated as grounded, so pre-A2 data/tests are unaffected. */
+export function isModelPrior(run: SweepRunResult): boolean {
+  return run.grounding === 'model-prior' || run.grounding === 'indeterminate';
+}
 
 /** True if an answer looks CUT OFF by a token cap — used together with the engine's
  *  own finish_reason (which the adapter records on `run.truncated`). Conservative:
@@ -412,7 +427,7 @@ export function aggregateSweep(
         brandedRuns: 0, brandedCited: 0, retrievabilityPct: 0,
         categoryRuns: 0, categoryCited: 0, citationWinPct: 0,
         competitorCounts: {}, costUsd: 0,
-        truncatedRuns: 0, truncatedBlocked: false,
+        truncatedRuns: 0, truncatedBlocked: false, modelPriorRuns: 0,
       };
       byEngine.set(r.engine, agg);
     }
@@ -424,12 +439,12 @@ export function aggregateSweep(
       agg.brandedRuns++;
       if (r.cited) agg.brandedCited++;
     } else {
+      // Model-prior category answers (no live search) don't measure citation-win —
+      // count them separately and keep them out of the win denominator (A2).
+      if (isModelPrior(r)) { agg.modelPriorRuns++; continue; }
       agg.categoryRuns++;
       if (r.cited) agg.categoryCited++;
-    }
-    // Only count competitor displacement on CATEGORY queries — being "cited
-    // instead" on a branded query for your own brand isn't a competitive loss.
-    if (r.queryType === 'category') {
+      // Only count competitor displacement on grounded CATEGORY queries.
       for (const name of r.citedCompetitors || []) {
         agg.competitorCounts[name] = (agg.competitorCounts[name] || 0) + 1;
         globalCompetitors[name] = (globalCompetitors[name] || 0) + 1;
@@ -470,6 +485,12 @@ export interface SweepScorecard {
   /** 5. Brand's share of all category recommendations (brand vs competitors).
    *  null when no category recommendations were seen at all. */
   competitiveSharePct: number | null;
+  /** Cite-rate among model-prior category runs (the model recommends you from
+   *  weights alone, no web search). Reported separately from citation-win, which is
+   *  grounded-only. null when there were no model-prior runs (WO-QA-003 A2). */
+  modelPriorVisibilityPct: number | null;
+  /** How many category runs were model-prior (kept out of citation-win). */
+  modelPriorRuns: number;
   /** Who wins the category instead, most-frequent first. */
   topCompetitors: { name: string; count: number }[];
   /** True when `topCompetitors`/Competitive Share came from auto-detection (the
@@ -503,22 +524,27 @@ export function sweepScorecard(
   const competitorsAutoDetected = !provided.length && effectiveCompetitors.length > 0;
 
   let brandedRuns = 0, brandedCited = 0, categoryRuns = 0, categoryCited = 0;
-  let surfaced = 0, domainCited = 0;          // for Owned Citation Rate
+  let surfaced = 0, domainCited = 0;          // for Owned Citation Rate (grounded only)
   let brandCatRecs = 0, competitorCatRecs = 0; // for Competitive Share
+  let modelPriorRuns = 0, modelPriorCited = 0; // model-prior visibility (separate)
   const competitorCounts: Record<string, number> = {};
 
   for (const r of scored) {
     if (r.truncated) continue; // cut-off answer — unmeasured, never scored (A1)
     if (r.queryType === 'branded') {
       brandedRuns++; if (r.cited) brandedCited++;
+      if (r.cited) { surfaced++; if (r.domainCited) domainCited++; }
+    } else if (isModelPrior(r)) {
+      // No live search — report as model-prior visibility, keep out of citation-win.
+      modelPriorRuns++; if (r.cited) modelPriorCited++;
     } else {
       categoryRuns++; if (r.cited) { categoryCited++; brandCatRecs++; }
       for (const name of competitorsCited(r, effectiveCompetitors)) {
         competitorCatRecs++;
         competitorCounts[name] = (competitorCounts[name] || 0) + 1;
       }
+      if (r.cited) { surfaced++; if (r.domainCited) domainCited++; }
     }
-    if (r.cited) { surfaced++; if (r.domainCited) domainCited++; }
   }
 
   const topCompetitors = Object.entries(competitorCounts)
@@ -530,6 +556,7 @@ export function sweepScorecard(
   const ownedCitationRatePct = surfaced ? pct(domainCited, surfaced) : null;
   const competitiveSharePct =
     brandCatRecs + competitorCatRecs ? pct(brandCatRecs, brandCatRecs + competitorCatRecs) : null;
+  const modelPriorVisibilityPct = modelPriorRuns ? pct(modelPriorCited, modelPriorRuns) : null;
 
   const who = client.brand || normalizeDomain(client.domain) || 'your brand';
   const plainSummary = buildPlainSummary({
@@ -547,6 +574,8 @@ export function sweepScorecard(
     categoryRecommendationWinPct,
     ownedCitationRatePct,
     competitiveSharePct,
+    modelPriorVisibilityPct,
+    modelPriorRuns,
     topCompetitors,
     competitorsAutoDetected,
     brandedRuns,

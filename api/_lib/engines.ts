@@ -26,6 +26,11 @@ export interface EngineAnswer {
    *  stop_reason=max_tokens / MAX_TOKENS): the answer is CUT OFF, so it must be
    *  excluded from scored metrics downstream (WO-AEO-SWEEP-QA-003 A1). */
   truncated?: boolean;
+  /** True when the engine ACTUALLY ran a web search for this answer (a search tool
+   *  was invoked / grounding sources came back). False means a model-prior answer
+   *  from weights alone — measures something different from a grounded citation, so
+   *  it's kept out of the citation-win denominator downstream (WO-QA-003 A2). */
+  searchInvoked?: boolean;
 }
 
 export class MissingKeyError extends Error {
@@ -117,12 +122,13 @@ async function askClaude(query: string): Promise<EngineAnswer> {
     : /sonnet/.test(model) ? [3, 15]
     : [1, 5]; // haiku 4.5
   const searchReqs = u.server_tool_use?.web_search_requests || 0;
+  const searchInvoked = searchReqs > 0 || sources.length > 0;
   const costUsd =
     (u.input_tokens || 0) / 1e6 * priceIn +
     (u.output_tokens || 0) / 1e6 * priceOut +
     searchReqs * 0.01; // web search ~$10 / 1000 requests
 
-  return { transcript, sources: uniq(sources), costUsd, model, truncated };
+  return { transcript, sources: uniq(sources), costUsd, model, truncated, searchInvoked };
 }
 
 // --- OpenAI (Responses API + web search). Verify shapes during QA. ----------
@@ -149,13 +155,16 @@ async function askOpenAI(query: string): Promise<EngineAnswer> {
       for (const a of c.annotations || []) if (a?.url) sources.push(a.url);
     }
   }
+  // The web_search tool leaves a 'web_search_call' item when it fires; a purely
+  // model-prior answer has neither that nor any source annotations.
+  const searchInvoked = sources.length > 0 || (resp.output || []).some((i: any) => i?.type === 'web_search_call');
   const u = resp.usage || {};
   const costUsd =
     (u.input_tokens || 0) / 1e6 * 2.5 +
     (u.output_tokens || 0) / 1e6 * 10 +
     0.01; // web search fee (approx)
 
-  return { transcript, sources: uniq(sources), costUsd, model, truncated };
+  return { transcript, sources: uniq(sources), costUsd, model, truncated, searchInvoked };
 }
 
 // --- Perplexity (stable OpenAI-compatible REST; returns citations) ---------
@@ -177,13 +186,16 @@ async function askPerplexity(query: string): Promise<EngineAnswer> {
   const truncated = j.choices?.[0]?.finish_reason === 'length';
   const transcript = (j.choices?.[0]?.message?.content || '').trim();
   const sources: string[] = j.citations || (j.search_results || []).map((s: any) => s.url) || [];
+  // Sonar is a search model; treat a returned citation/search-result list as proof
+  // it searched. (If it ever answers with none, that's a model-prior answer.)
+  const searchInvoked = sources.length > 0;
   const u = j.usage || {};
   const costUsd =
     (u.prompt_tokens || 0) / 1e6 * 1 +
     (u.completion_tokens || 0) / 1e6 * 1 +
     0.005; // sonar request fee (approx)
 
-  return { transcript, sources: uniq(sources), costUsd, model, truncated };
+  return { transcript, sources: uniq(sources), costUsd, model, truncated, searchInvoked };
 }
 
 // --- Gemini (google search grounding; already a project dependency) --------
@@ -206,11 +218,14 @@ async function askGemini(query: string): Promise<EngineAnswer> {
       });
       const truncated = resp.candidates?.[0]?.finishReason === 'MAX_TOKENS';
       const transcript = (resp.text || '').trim();
-      const chunks = resp.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+      const grounding = resp.candidates?.[0]?.groundingMetadata;
+      const chunks = grounding?.groundingChunks || [];
       const sources: string[] = chunks.map((c: any) => c.web?.uri).filter(Boolean);
+      // groundingMetadata is present only when Google Search grounding actually ran.
+      const searchInvoked = !!grounding || sources.length > 0;
       const um = resp.usageMetadata || {};
       const costUsd = ((um.promptTokenCount || 0) + (um.candidatesTokenCount || 0)) / 1e6 * 0.3; // flash approx
-      return { transcript, sources: uniq(sources), costUsd, model, truncated };
+      return { transcript, sources: uniq(sources), costUsd, model, truncated, searchInvoked };
     } catch (e: any) {
       lastErr = e; // 429 quota / model-not-available → try the next model
     }

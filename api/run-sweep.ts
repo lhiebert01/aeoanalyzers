@@ -265,7 +265,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // finish_reason (answer.truncated), and fall back to a text heuristic for
         // engines/paths that don't report it (WO-QA-003 A1).
         const truncated = !!answer.truncated || isTruncatedText(answer.transcript);
-        return scoreRun({ ...base, ...answer, truncated }, { domain, brand }, competitors);
+        // Classify grounding: did the engine actually search, or answer from weights
+        // (model-prior)? Model-prior runs are kept out of citation-win (WO-QA-003 A2).
+        const grounding: SweepRunResult['grounding'] = answer.searchInvoked ? 'search-grounded' : 'model-prior';
+        return scoreRun({ ...base, ...answer, truncated, grounding }, { domain, brand }, competitors);
       } catch (err: any) {
         // Missing key or transient engine error: record a failed run (not cited)
         // so the aggregate stays honest rather than silently dropping the query.

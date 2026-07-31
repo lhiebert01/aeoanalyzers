@@ -273,6 +273,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
     out.push(`| Your own site cited (owned citation rate) | ${sc.ownedCitationRatePct === null ? '—' : sc.ownedCitationRatePct + '%'} |`);
     out.push(`| Your share of the category | ${sc.competitiveSharePct === null ? '—' : sc.competitiveSharePct + '%'} |`);
     out.push('');
+    if (sc.modelPriorRuns > 0) {
+      out.push(`_Category win is measured on search-grounded answers only. ${sc.modelPriorRuns} answer${sc.modelPriorRuns > 1 ? 's' : ''} came from model memory (no web search)${sc.modelPriorVisibilityPct !== null ? `; the model named you ${sc.modelPriorVisibilityPct}% of those (model-prior visibility)` : ''}._`);
+      out.push('');
+    }
 
     out.push('## Scores by engine');
     for (const e of r.summary.engines) {
@@ -283,7 +287,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
         out.push(`- Column unreliable — ${e.truncatedRuns} answers were cut off by the token cap (not a real measurement; re-run at a higher cap).`);
       } else {
         out.push(`- Retrievability (branded): ${e.brandedCited}/${e.brandedRuns} (${e.retrievabilityPct}%)`);
-        out.push(`- Citation win (category): ${e.citationWinPct}%`);
+        out.push(`- Citation win (category, search-grounded): ${e.citationWinPct}%`);
+        if (e.modelPriorRuns > 0) out.push(`- (${e.modelPriorRuns} model-prior answer${e.modelPriorRuns > 1 ? 's' : ''} — answered without a live search — reported separately)`);
         if (e.truncatedRuns > 0) out.push(`- (${e.truncatedRuns} truncated answer${e.truncatedRuns > 1 ? 's' : ''} excluded from the scores above)`);
         if (isAdmin) out.push(`- Cost: $${e.costUsd.toFixed(3)}`);
       }
@@ -319,7 +324,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
     out.push('');
     for (const run of r.runs) {
       const tag = run.truncated ? 'truncated — not scored' : run.cited ? 'cited' : 'not cited';
-      out.push(`### [${tag}] ${L(run.engine)} · ${run.queryType}: ${run.query}`);
+      const prior = run.grounding === 'model-prior' && !run.truncated ? ' · model-prior' : '';
+      out.push(`### [${tag}${prior}] ${L(run.engine)} · ${run.queryType}: ${run.query}`);
       out.push(run.transcript || '(no answer)');
       if (run.sources?.length) out.push(`Sources: ${run.sources.join(' · ')}`);
       out.push('');
@@ -554,6 +560,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                   </div>
                 ))}
               </div>
+              {scorecard.modelPriorRuns > 0 && (
+                <div className="bg-white border-t border-zinc-100 px-4 sm:px-5 py-3 text-[11px] text-zinc-500">
+                  <b>{scorecard.modelPriorRuns}</b> category answer{scorecard.modelPriorRuns > 1 ? 's' : ''} came from the model&apos;s memory (no live web search) and {scorecard.modelPriorRuns > 1 ? 'are' : 'is'} <b>not</b> counted in the score above.
+                  {scorecard.modelPriorVisibilityPct !== null && <> Of those, the model named you {scorecard.modelPriorVisibilityPct}% of the time (<i>model-prior visibility</i>).</>}
+                </div>
+              )}
             </div>
           )}
 
@@ -586,6 +598,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                     <div className="text-2xl font-black">{e.brandedCited}/{e.brandedRuns} <span className="text-base font-semibold text-zinc-400">({e.retrievabilityPct}%)</span></div>
                     <div className="mt-2 text-sm text-zinc-500">Citation win (category)</div>
                     <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}%</div>
+                    {e.modelPriorRuns > 0 && <div className="mt-2 text-[11px] text-zinc-400">{e.modelPriorRuns} model-prior answer{e.modelPriorRuns > 1 ? 's' : ''} (no search) reported separately</div>}
                     {e.truncatedRuns > 0 && <div className="mt-2 text-[11px] text-amber-600">{e.truncatedRuns} truncated answer{e.truncatedRuns > 1 ? 's' : ''} excluded</div>}
                     {isAdmin && <div className="mt-2 text-xs text-zinc-400 flex items-center gap-1"><DollarSign className="w-3 h-3" />${e.costUsd.toFixed(3)}</div>}
                   </>
@@ -664,6 +677,9 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                       <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">truncated — not scored</span>
                     ) : (
                       <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.cited ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-500'}`}>{r.cited ? 'cited' : 'not cited'}</span>
+                    )}
+                    {r.grounding === 'model-prior' && !r.truncated && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600 border border-sky-200" title="Answered from the model's memory — no live web search">model-prior</span>
                     )}
                     <span className="font-semibold">{ENGINE_LABEL[r.engine] || r.engine}</span>
                     <span className="text-zinc-400">·</span>

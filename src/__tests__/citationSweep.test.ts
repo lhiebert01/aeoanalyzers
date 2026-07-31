@@ -11,6 +11,7 @@ import {
   sweepScorecard,
   detectCompetitors,
   isTruncatedText,
+  isModelPrior,
   type SweepRunResult,
 } from '../lib/citationSweep';
 
@@ -316,5 +317,39 @@ describe('truncation (WO-QA-003 A1) — cut-off answers are unmeasured, not zero
     expect(g.truncatedRuns).toBe(2);
     expect(g.brandedRuns).toBe(3);       // truncated excluded from the score base
     expect(g.truncatedBlocked).toBe(true);
+  });
+});
+
+describe('model-prior vs search-grounded (WO-QA-003 A2)', () => {
+  const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+
+  it('isModelPrior: only model-prior / indeterminate count as prior; absent = grounded', () => {
+    expect(isModelPrior(run({ grounding: 'model-prior' }))).toBe(true);
+    expect(isModelPrior(run({ grounding: 'indeterminate' }))).toBe(true);
+    expect(isModelPrior(run({ grounding: 'search-grounded' }))).toBe(false);
+    expect(isModelPrior(run({}))).toBe(false); // undefined → grounded (back-compat)
+  });
+
+  it('sweepScorecard keeps model-prior runs out of category win and reports them separately', () => {
+    const sc = sweepScorecard([
+      run({ queryType: 'category', transcript: 'AEO Analyzers is a good pick.', grounding: 'search-grounded' }), // grounded, cited
+      run({ queryType: 'category', transcript: 'Use Profound instead.', grounding: 'search-grounded' }),         // grounded, not cited
+      run({ queryType: 'category', transcript: 'AEO Analyzers works well.', grounding: 'model-prior' }),         // prior, cited
+    ], client, []);
+    expect(sc.categoryRuns).toBe(2);                    // grounded only
+    expect(sc.categoryRecommendationWinPct).toBe(50);   // 1/2 grounded, NOT 2/3
+    expect(sc.modelPriorRuns).toBe(1);
+    expect(sc.modelPriorVisibilityPct).toBe(100);       // 1/1 model-prior cited
+  });
+
+  it('aggregateSweep computes citation-win on grounded runs only', () => {
+    const agg = aggregateSweep([
+      run({ engine: 'openai', queryType: 'category', transcript: 'AEO Analyzers is good.', grounding: 'search-grounded' }),
+      run({ engine: 'openai', queryType: 'category', transcript: 'Try Ahrefs.', grounding: 'model-prior' }),
+    ], client, []);
+    const e = agg.engines[0];
+    expect(e.categoryRuns).toBe(1);       // grounded only
+    expect(e.modelPriorRuns).toBe(1);
+    expect(e.citationWinPct).toBe(100);   // 1/1 grounded cited, not 1/2
   });
 });
