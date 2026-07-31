@@ -17,7 +17,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import Anthropic from '@anthropic-ai/sdk';
 import { ENGINE_ADAPTERS, configuredEngines, type Engine, type EngineAnswer } from '../api/_lib/engines.js';
-import { scoreRun, type SweepRunResult, type Competitor } from '../src/lib/citationSweep.js';
+import { scoreRun, detectCompetitors, type SweepRunResult, type Competitor } from '../src/lib/citationSweep.js';
 import { extractTruthRecord } from '../src/lib/truthRecord.js';
 import {
   assembleReportData, defaultNarrative, renderExecReport, buildOutreachEmail,
@@ -133,8 +133,17 @@ async function main() {
     }
   });
 
+  // E2: fetch the top cited competitor's page so the report can name the content
+  // gap the study rewards (best-effort — fail-open if it can't be read).
+  const rivals = (competitors.length ? competitors : detectCompetitors(runs, { domain, brand })).filter((c) => c.domain);
+  const competitorPages: { label: string; html: string }[] = [];
+  if (rivals[0]?.domain) {
+    const rHtml = (await fetchSite(rivals[0].domain).catch(() => null))?.html;
+    if (rHtml) competitorPages.push({ label: rivals[0].name, html: rHtml });
+  }
+
   const sweepDate = new Date().toISOString().slice(0, 10);
-  const data = assembleReportData({ brand: brand || truth?.brandName || domain, domain, sweepDate, runs, competitors, truth });
+  const data = assembleReportData({ brand: brand || truth?.brandName || domain, domain, sweepDate, runs, competitors, truth, pageHtml: site.html, competitorPages });
 
   const promptText = buildNarrativePrompt(data);
   const llmNarrative = process.env.EXEC_LLM === '1' ? await generateNarrativeLLM(promptText) : null;

@@ -5,6 +5,7 @@ import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authority
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, SEGMENT_LABEL } from '../lib/querySegment';
 import { avgPawc } from '../lib/pawc';
+import { auditFactDensity, type FactDensityAudit } from '../lib/factDensity';
 import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard } from '../lib/citationSweep';
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
@@ -149,6 +150,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   const [authority, setAuthority] = useState<AuthorityGapReport | null>(null);
   const [fidelity, setFidelity] = useState<FidelitySummary | null>(null);
   const [entityLinking, setEntityLinking] = useState<EntityLinkingReport | null>(null);
+  const [pageFactDensity, setPageFactDensity] = useState<FactDensityAudit | null>(null);
   const [truth, setTruth] = useState<TruthRecord | null>(null);
   const [bots, setBots] = useState<any | null>(null);
   const [openRun, setOpenRun] = useState<number | null>(null);
@@ -236,7 +238,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   }
 
   async function run() {
-    setError(null); setResult(null); setAuthority(null); setFidelity(null); setEntityLinking(null); setTruth(null); setRunning(true);
+    setError(null); setResult(null); setAuthority(null); setFidelity(null); setEntityLinking(null); setPageFactDensity(null); setTruth(null); setRunning(true);
     try {
       const d = normDomain(domain);
       const expand = (q: string) => q.replace(/\{domain\}/g, d);
@@ -265,6 +267,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
           if (!site?.html) return;
           const tr = extractTruthRecord(site.html, site.llmsTxt);
           setTruth(tr);
+          setPageFactDensity(auditFactDensity(site.html)); // E2: content-depth audit
           const brandedRuns = (json.runs || []).filter((r: SweepRunResult) => r.queryType === 'branded');
           setFidelity(summarizeFidelity(brandedRuns, tr));
           // B2: which wrong entities the engines confused you with (from cited sources).
@@ -333,6 +336,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       out.push('## Fidelity — is AI accurate about you?');
       out.push(`Of the answers that named you, ${fidelity.citedAccurate} got your facts right${fidelity.citedDrifted > 0 ? ` and ${fidelity.citedDrifted} drifted (asserted something false)` : ' — no fabricated facts detected'}.`);
       for (const iss of fidelity.issues) out.push(`- ${iss.wrong ? `"${iss.wrong}": ` : ''}${iss.detail}`);
+      out.push('');
+    }
+    if (pageFactDensity && pageFactDensity.flags.length > 0) {
+      out.push('## Content depth — the levers that make a page citable');
+      out.push('_Effect sizes are findings from the Princeton GEO study (arXiv:2311.09735), not guarantees._');
+      for (const f of pageFactDensity.flags) out.push(`- ${f.consequence}`);
       out.push('');
     }
     if (entityLinking && entityLinking.collisions.length > 0) {
@@ -840,6 +849,19 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                 );
               })}
               {authority.recommendations.map((r, i) => <p key={i} className="text-sm text-zinc-600 mb-1">{r}</p>)}
+            </div>
+          )}
+
+          {/* Content depth (E2): study-backed levers that make a page citable. */}
+          {pageFactDensity && pageFactDensity.flags.length > 0 && (
+            <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
+              <h3 className="font-bold flex items-center gap-2 mb-1"><Search className="w-4 h-4 text-zinc-400" />Content depth — the levers that make a page citable</h3>
+              <p className="text-xs text-zinc-500 mb-3">From your live page. Effect sizes are findings from the Princeton GEO study (arXiv:2311.09735), not guarantees.</p>
+              <ul className="space-y-2">
+                {pageFactDensity.flags.map((f) => (
+                  <li key={f.key} className="text-sm text-zinc-700 flex gap-2"><AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />{f.consequence}</li>
+                ))}
+              </ul>
             </div>
           )}
 

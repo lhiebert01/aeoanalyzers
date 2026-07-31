@@ -27,6 +27,7 @@ import { detectEntityLinkingFailures, type EntityLinkingReport } from './entityL
 import { aggregateAuthorityGap, type AuthorityGapReport } from './authorityGap';
 import { tierForDomain, TIER_LABEL, type AttainabilityTier } from './authorityTiers';
 import { segmentBreakdown, winnableSegment, SEGMENT_LABEL, type SegmentStat } from './querySegment';
+import { auditFactDensity, compareFactDensity, type FactDensityAudit } from './factDensity';
 import type { TruthRecord } from './truthRecord';
 
 export type ReportVariant = 'paid' | 'courtesy';
@@ -56,6 +57,10 @@ export interface ExecReportData {
     clientAnswers: number;
     competitors: { name: string; avgShare: number }[];
   };
+  /** Fact-density audit of the client's own page (E2) — null when no page HTML given. */
+  factDensity: FactDensityAudit | null;
+  /** Study-backed "why the cited pages win" gaps vs competitor pages (E2). */
+  competitiveGaps: string[];
   runCount: number;
   costUsd: number;
   /** The worst defensible gap — drives the subject line + Finding 3 (WO 1.2). */
@@ -79,6 +84,10 @@ export function assembleReportData(input: {
   competitors: Competitor[];
   truth?: TruthRecord | null;
   costUsd?: number;
+  /** The client's own page HTML (for the E2 fact-density audit). */
+  pageHtml?: string;
+  /** Competitor pages the engines cite, for the competitive fact-density gap (E2). */
+  competitorPages?: { label: string; html: string }[];
 }): ExecReportData {
   const { brand, domain, sweepDate, competitors, truth } = input;
   const client = { domain, brand: brand || undefined };
@@ -115,9 +124,16 @@ export function assembleReportData(input: {
     .sort((a, b) => b.avgShare - a.avgShare)
     .slice(0, 5);
 
+  // E2: fact-density audit of the client's page + the competitive gap vs cited pages.
+  const factDensity = input.pageHtml ? auditFactDensity(input.pageHtml) : null;
+  const competitiveGaps = factDensity && input.competitorPages
+    ? input.competitorPages.map((cp) => compareFactDensity(factDensity, auditFactDensity(cp.html), cp.label)).filter((g): g is string => !!g)
+    : [];
+
   return {
     brand, domain, sweepDate, scorecard, summary, fidelity, entityLinking, authority, segments,
     pawc: { clientAvgShare: clientPawc.avgShare, clientAnswers: clientPawc.answers, competitors: compPawc },
+    factDensity, competitiveGaps,
     runCount: runs.length,
     costUsd: input.costUsd ?? summary.totalCostUsd,
     headline: {
@@ -312,6 +328,18 @@ export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, va
       for (const a of inTier) out.push(`- ${a.domain} · ${a.citations} — ${tierForDomain(a.domain).rationale}`);
       out.push('');
     }
+  }
+
+  // E2: content-depth audit — the study-backed levers that make a page citable.
+  if (d.factDensity && d.factDensity.flags.length) {
+    out.push('### Content depth — the levers that make a page citable');
+    for (const f of d.factDensity.flags) out.push(`- ${f.consequence}`);
+    out.push('');
+  }
+  if (d.competitiveGaps.length) {
+    out.push('### Why the cited pages win');
+    for (const g of d.competitiveGaps) out.push(`- ${g}`);
+    out.push('');
   }
 
   out.push('## Five prioritized actions');
