@@ -1,9 +1,108 @@
 import { useState } from 'react';
-import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown } from 'lucide-react';
+import { Type } from '@google/genai';
+import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import { sweepScorecard } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard } from '../lib/citationSweep';
 import { getAccessToken } from '../supabase';
+import { safeJsonParse } from '../services/geminiService';
+
+// --- URL-first auto-extract (UX-PRINCIPLES §1–2 / SWEEP-UX-REDESIGN commit a) ---
+// One required input: the domain. We crawl it, then the AI infers Brand, Core
+// Category, and likely competitors (shown EDITABLE + labeled "verify" — inferred
+// values are never silently trusted, per grounded-output rule) and drafts the
+// ~10 non-branded buyer questions. All calls go through /api/llm-generate, which
+// holds the key server-side and runs the gemini-3.6-flash chain (never a dated
+// snapshot). No new API cost beyond one extract + one query-gen call.
+
+const normDomain = (s: string) =>
+  s.trim().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+
+const htmlToText = (html: string) =>
+  String(html || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+// POST {prompt, schema} -> text (a JSON string). Mirrors geminiService's private
+// generateWithFallback: attaches the Supabase token so signed-in users aren't
+// treated as guests (llm-generate returns 401 to logged-out callers).
+async function llmJson(prompt: string, schema: any): Promise<string> {
+  const token = getAccessToken();
+  const resp = await fetch('/api/llm-generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    body: JSON.stringify({ prompt, schema }),
+  });
+  if (!resp.ok) {
+    let detail = '';
+    try { detail = (await resp.json())?.error || ''; } catch { /* non-JSON error body */ }
+    throw new Error(detail || `The AI service is unavailable (${resp.status}). Try again shortly.`);
+  }
+  const data = await resp.json().catch(() => null);
+  if (!data?.text) throw new Error('The AI service returned an empty response. Try again.');
+  return data.text as string;
+}
+
+const EXTRACT_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    brand: { type: Type.STRING },
+    core_category: { type: Type.STRING },
+    competitors: { type: Type.ARRAY, items: { type: Type.STRING } },
+  },
+  required: ['brand', 'core_category'],
+};
+
+const extractPrompt = (siteText: string) => `Extract the following from this website text:
+1. Brand Name.
+2. A 3-to-5 word Core Category describing what they sell.
+3. Up to three likely competitors (names only; return an empty list if not obvious).
+Return as JSON: {"brand":"...","core_category":"...","competitors":["...","...","..."]}
+
+WEBSITE TEXT:
+"""
+${siteText}
+"""`;
+
+const QUERY_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    sweep_queries: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          intent_type: { type: Type.STRING },
+          query: { type: Type.STRING },
+        },
+        required: ['intent_type', 'query'],
+      },
+    },
+  },
+  required: ['sweep_queries'],
+};
+
+const queryPrompt = (brand: string, domain: string, category: string, competitors: string[]) =>
+  `You are an Answer Engine Optimization (AEO) Query Generator. Generate a fixed set of 10 test queries a prospective buyer would type into an AI search engine when researching a solution in the provided category. Do NOT use the Brand Name in these queries (test organic recommendation).
+
+INPUTS:
+- Brand Name: ${brand || '(unknown)'}
+- Domain: ${domain}
+- Core Category: ${category}
+- Competitors: ${competitors.length ? competitors.join(', ') : '(none provided)'}
+
+Generate exactly 10 queries by intent:
+- Category Discovery (3): broad "best solutions in this category" questions
+- Problem/Solution (3): a problem this category solves, asking for recommendations
+- Comparative (4): "vs" / "alternative to {competitor}" questions
+
+OUTPUT: valid JSON
+{"sweep_queries":[{"intent_type":"Discovery|Problem|Comparative","query":"..."}]}`;
+
+type GeneratedQuery = { intent_type: string; query: string };
 
 // WO-1 (+WO-3/WO-7) client dashboard: run a tested citation sweep, then show
 // branded retrievability, category citation-rate, competitor displacement,
@@ -25,8 +124,9 @@ const ENGINE_LABEL: Record<string, string> = {
 export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () => void; isAdmin?: boolean }) {
   const [domain, setDomain] = useState('');
   const [brand, setBrand] = useState('');
+  const [coreCategory, setCoreCategory] = useState('');
   const [branded, setBranded] = useState('who is {domain}\nwhat is {domain}');
-  const [category, setCategory] = useState('best AEO tools\nbest answer engine optimization tools');
+  const [categoryQueries, setCategoryQueries] = useState('');
   const [competitors, setCompetitors] = useState('');
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +136,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   const [openRun, setOpenRun] = useState<number | null>(null);
   const [expandAll, setExpandAll] = useState(false);
   const [showTranscripts, setShowTranscripts] = useState(false);
+
+  // URL-first flow: 'input' (just the domain) → 'confirm' (verify auto-extracted
+  // brand/category/competitors + review the drafted questions) → run.
+  const [phase, setPhase] = useState<'input' | 'confirm'>('input');
+  const [analyzing, setAnalyzing] = useState(false);
+  const [extractError, setExtractError] = useState<string | null>(null);
+  const [generatedQueries, setGeneratedQueries] = useState<GeneratedQuery[]>([]);
+  const [editQueries, setEditQueries] = useState(false);
 
   // Robust query parse. Strips box-drawing / table-border characters (U+2500–U+259F and the
   // ASCII pipe) and rejoins a line that STARTS with one — a wrapped table-cell continuation
@@ -59,10 +167,60 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       return { name, domain: dom || undefined };
     });
 
+  // Step 1: user enters only the domain → crawl it, infer the basics, draft the
+  // buyer questions, then surface them for confirmation (nothing runs/costs a
+  // sweep yet). Falls back to the manual confirm panel if the site can't be read.
+  async function analyze() {
+    const d = normDomain(domain);
+    if (!d) return;
+    setAnalyzing(true); setExtractError(null);
+    try {
+      const site = await fetch('/api/fetch-site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: d }),
+      }).then((r) => r.json()).catch(() => null);
+      if (!site?.html) throw new Error(site?.error || `Couldn't read ${d}. Enter the details yourself below.`);
+      const text = htmlToText(site.html).slice(0, 6000);
+
+      // Infer brand / category / competitors from the crawled page text.
+      const ext = safeJsonParse(await llmJson(extractPrompt(text), EXTRACT_SCHEMA)) || {};
+      const guessedBrand = String(ext.brand || '').trim();
+      const guessedCategory = String(ext.core_category || '').trim();
+      const guessedComp: string[] = Array.isArray(ext.competitors)
+        ? ext.competitors.map((c: any) => String(c || '').trim()).filter(Boolean).slice(0, 3)
+        : [];
+      setBrand(guessedBrand);
+      setCoreCategory(guessedCategory);
+      setCompetitors(guessedComp.join('\n'));
+
+      // Draft the 10 non-branded buyer questions from those (guessed) values.
+      const q = safeJsonParse(await llmJson(queryPrompt(guessedBrand, d, guessedCategory, guessedComp), QUERY_SCHEMA)) || {};
+      const gq: GeneratedQuery[] = Array.isArray(q.sweep_queries)
+        ? q.sweep_queries.filter((x: any) => x?.query).map((x: any) => ({ intent_type: String(x.intent_type || 'Discovery'), query: String(x.query).trim() }))
+        : [];
+      setGeneratedQueries(gq);
+      setCategoryQueries(gq.map((x) => x.query).join('\n'));
+      setPhase('confirm');
+    } catch (e: any) {
+      // Non-fatal: drop the user into the confirm panel to fill in fields manually.
+      setExtractError(e?.message || 'Could not analyze that site — enter the details manually below.');
+      setPhase('confirm');
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
+  function startOver() {
+    setPhase('input'); setExtractError(null); setGeneratedQueries([]);
+    setBrand(''); setCoreCategory(''); setCategoryQueries(''); setCompetitors('');
+    setResult(null); setAuthority(null); setError(null); setEditQueries(false);
+  }
+
   async function run() {
     setError(null); setResult(null); setAuthority(null); setRunning(true);
     try {
-      const d = domain.trim().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+      const d = normDomain(domain);
       const expand = (q: string) => q.replace(/\{domain\}/g, d);
       const token = getAccessToken();
       const res = await fetch('/api/run-sweep', {
@@ -71,7 +229,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
         body: JSON.stringify({
           domain: d, brand: brand.trim() || undefined,
           brandedQueries: parseLines(branded).map(expand),
-          categoryQueries: parseLines(category).map(expand),
+          categoryQueries: parseLines(categoryQueries).map(expand),
           competitors: parseCompetitors(competitors),
         }),
       });
@@ -188,6 +346,16 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   const tone = (v: number | null): string =>
     v === null ? 'text-zinc-400' : v >= 60 ? 'text-emerald-500' : v > 0 ? 'text-amber-500' : 'text-red-500';
 
+  // Confirm-panel display: expanded question lists + the total we'll actually ask.
+  const dNorm = normDomain(domain);
+  const brandedList = parseLines(branded).map((q) => q.replace(/\{domain\}/g, dNorm));
+  const categoryList = parseLines(categoryQueries);
+  const totalQuestions = brandedList.length + categoryList.length;
+  const intentOrder = ['Discovery', 'Problem', 'Comparative'];
+  const intentLabel: Record<string, string> = {
+    Discovery: 'Category discovery', Problem: 'Problem-first', Comparative: 'Head-to-head',
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
@@ -198,56 +366,129 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
         </p>
       </div>
 
-      {/* Input */}
-      <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm space-y-4">
-        {/* How to fill this in — plain-language explainer with a worked example */}
-        <div className="rounded-xl bg-zinc-50 border border-zinc-200 p-3.5 text-xs leading-relaxed text-zinc-600">
-          <p className="font-bold text-zinc-800 mb-1">How a sweep works</p>
-          <p>
-            We ask each real answer engine your questions, several times each, and measure two things:
-            <b> branded</b> queries (that name you) test whether engines <b>know you</b> when asked directly;
-            <b> category</b> queries (that don&apos;t name you) test whether engines <b>cite you</b> for your
-            space — and who gets cited <i>instead</i>. Example: for SanctumShield, a branded query is
-            <span className="font-mono"> &ldquo;who is sanctumshield.com&rdquo;</span> and a category query is
-            <span className="font-mono"> &ldquo;best AI governance tools&rdquo;</span>.
-          </p>
+      {/* Input — phase 1: just the domain. The AI infers everything else. */}
+      {phase === 'input' && (
+        <div className="bg-white border border-zinc-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
+          <div>
+            <label htmlFor="sweep-domain" className="text-lg font-bold text-zinc-900">Enter your website — we&apos;ll do the rest</label>
+            <p className="text-sm text-zinc-500 mt-1">
+              We read your site, work out your brand, category, and closest competitors, and draft the buyer
+              questions to test. You just confirm — then run.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <input id="sweep-domain" value={domain} onChange={(e) => setDomain(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && domain.trim() && !analyzing) analyze(); }}
+              placeholder="example.com" disabled={analyzing}
+              className="flex-1 border border-zinc-300 rounded-xl px-4 py-3 text-base disabled:opacity-60" />
+            <button onClick={analyze} disabled={analyzing || !domain.trim()}
+              className="inline-flex items-center justify-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold disabled:opacity-40 whitespace-nowrap">
+              {analyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              {analyzing ? 'Reading your site…' : 'Analyze'}
+            </button>
+          </div>
+          <p className="text-xs text-zinc-400">No https:// needed. e.g. <span className="font-mono">sanctumshield.com</span></p>
+          {extractError && <p className="text-sm text-amber-700 flex items-center gap-2"><AlertTriangle className="w-4 h-4" />{extractError}</p>}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label className="text-sm font-semibold">Domain
-            <span className="mt-0.5 block text-xs font-normal text-zinc-500">Your website — no https:// needed. e.g. <span className="font-mono">sanctumshield.com</span></span>
-            <input value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="example.com"
-              className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
+      )}
+
+      {/* Input — phase 2: verify the guesses + review the drafted questions, then run. */}
+      {phase === 'confirm' && (
+        <div className="bg-white border border-zinc-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-bold text-zinc-900">{dNorm ? `We analyzed ${dNorm}` : 'Set up your sweep'}</h2>
+              <p className="text-sm text-zinc-500 mt-1">
+                Check the basics below — <b>we guessed these, so edit anything that&apos;s off</b> — then run the sweep.
+              </p>
+            </div>
+            <button onClick={startOver} className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-800 whitespace-nowrap">
+              <RotateCcw className="w-3.5 h-3.5" />Start over
+            </button>
+          </div>
+          {extractError && <p className="text-sm text-amber-700 flex items-center gap-2"><AlertTriangle className="w-4 h-4" />{extractError}</p>}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label className="text-sm font-semibold">Brand name
+              <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />we guessed this — verify</span>
+              <input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Example Inc"
+                className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
+            </label>
+            <label className="text-sm font-semibold">Core category
+              <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />we guessed this — verify</span>
+              <input value={coreCategory} onChange={(e) => setCoreCategory(e.target.value)} placeholder="AI governance tools"
+                className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
+            </label>
+          </div>
+
+          <label className="text-sm font-semibold block">Closest competitors
+            <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />we guessed these — one per line, edit freely (<span className="font-mono">Name</span> or <span className="font-mono">Name, domain.com</span>)</span>
+            <textarea value={competitors} onChange={(e) => setCompetitors(e.target.value)} rows={3}
+              placeholder="Knostic, knostic.ai" className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
           </label>
-          <label className="text-sm font-semibold">Brand name (optional)
-            <span className="mt-0.5 block text-xs font-normal text-zinc-500">Catches mentions even without a link. e.g. <span className="font-mono">SanctumShield</span></span>
-            <input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Example Inc"
-              className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
-          </label>
+
+          {/* The questions — collapsed by default; evidence of what we'll ask, not a field to fill. */}
+          <div className="rounded-xl border border-zinc-200 overflow-hidden">
+            <button onClick={() => setEditQueries((v) => !v)} className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left hover:bg-zinc-50">
+              <span className="text-sm font-bold text-zinc-800">Review the {totalQuestions} questions we&apos;ll ask</span>
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500">
+                <Pencil className="w-3.5 h-3.5" />{editQueries ? 'Done editing' : 'View / edit'}
+                {editQueries ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+              </span>
+            </button>
+            {editQueries ? (
+              <div className="px-4 pb-4 pt-1 space-y-4 border-t border-zinc-100">
+                <label className="text-xs font-semibold block text-zinc-700">About you (branded) — <span className="font-mono">{'{domain}'}</span> expands to your site
+                  <textarea value={branded} onChange={(e) => setBranded(e.target.value)} rows={2}
+                    className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
+                </label>
+                <label className="text-xs font-semibold block text-zinc-700">From prospective buyers (unbranded, one per line)
+                  <textarea value={categoryQueries} onChange={(e) => setCategoryQueries(e.target.value)} rows={8}
+                    className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
+                </label>
+              </div>
+            ) : (
+              <div className="px-4 pb-4 pt-1 space-y-3 border-t border-zinc-100 text-sm">
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">About you</div>
+                  <ul className="space-y-0.5 text-zinc-700">
+                    {brandedList.map((q, i) => <li key={i} className="flex gap-2"><span className="text-zinc-300">•</span>{q}</li>)}
+                  </ul>
+                </div>
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">From prospective customers</div>
+                  {generatedQueries.length > 0 ? (
+                    <div className="space-y-2">
+                      {intentOrder.filter((it) => generatedQueries.some((g) => g.intent_type === it)).map((it) => (
+                        <div key={it}>
+                          <div className="text-xs font-semibold text-zinc-500">{intentLabel[it] || it}</div>
+                          <ul className="space-y-0.5 text-zinc-700">
+                            {generatedQueries.filter((g) => g.intent_type === it).map((g, i) => (
+                              <li key={i} className="flex gap-2"><span className="text-zinc-300">•</span>{g.query}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <ul className="space-y-0.5 text-zinc-700">
+                      {categoryList.length ? categoryList.map((q, i) => <li key={i} className="flex gap-2"><span className="text-zinc-300">•</span>{q}</li>)
+                        : <li className="text-zinc-400 italic">No buyer questions yet — add some via View / edit.</li>}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <button onClick={run} disabled={running || !domain.trim() || categoryList.length === 0}
+            className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold disabled:opacity-40">
+            {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+            {running ? 'Running sweep…' : 'Run sweep'}
+          </button>
+          {error && <p className="text-sm text-red-600 flex items-center gap-2"><AlertTriangle className="w-4 h-4" />{error}</p>}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label className="text-sm font-semibold">Branded queries (one per line; {'{domain}'} expands)
-            <span className="mt-0.5 block text-xs font-normal text-zinc-500">Questions that <b>name you</b> — do engines know you when asked directly? e.g. <span className="font-mono">who is {'{domain}'}</span></span>
-            <textarea value={branded} onChange={(e) => setBranded(e.target.value)} rows={3}
-              className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
-          </label>
-          <label className="text-sm font-semibold">Category queries (unbranded buyer-intent)
-            <span className="mt-0.5 block text-xs font-normal text-zinc-500">Buyer questions that <b>don&apos;t name you</b> but where you want to be cited. e.g. <span className="font-mono">best AI governance tools</span></span>
-            <textarea value={category} onChange={(e) => setCategory(e.target.value)} rows={3}
-              className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
-          </label>
-        </div>
-        <label className="text-sm font-semibold block">Competitors (one per line: <span className="font-mono">Name, domain.com</span>)
-          <span className="mt-0.5 block text-xs font-normal text-zinc-500">Rivals to track — the sweep counts each time they&apos;re cited instead of you. e.g. <span className="font-mono">Knostic, knostic.ai</span></span>
-          <textarea value={competitors} onChange={(e) => setCompetitors(e.target.value)} rows={2}
-            className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
-        </label>
-        <button onClick={run} disabled={running || !domain.trim()}
-          className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold disabled:opacity-40">
-          {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-          {running ? 'Running sweep…' : 'Run sweep'}
-        </button>
-        {error && <p className="text-sm text-red-600 flex items-center gap-2"><AlertTriangle className="w-4 h-4" />{error}</p>}
-      </div>
+      )}
 
       {result && (
         <>
