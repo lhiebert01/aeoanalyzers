@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Type } from '@google/genai';
-import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil } from 'lucide-react';
+import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard } from '../lib/citationSweep';
+import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
+import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
 import { getAccessToken } from '../supabase';
 import { safeJsonParse } from '../services/geminiService';
 
@@ -132,6 +134,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SweepResponse | null>(null);
   const [authority, setAuthority] = useState<AuthorityGapReport | null>(null);
+  const [fidelity, setFidelity] = useState<FidelitySummary | null>(null);
+  const [truth, setTruth] = useState<TruthRecord | null>(null);
   const [bots, setBots] = useState<any | null>(null);
   const [openRun, setOpenRun] = useState<number | null>(null);
   const [expandAll, setExpandAll] = useState(false);
@@ -218,7 +222,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   }
 
   async function run() {
-    setError(null); setResult(null); setAuthority(null); setRunning(true);
+    setError(null); setResult(null); setAuthority(null); setFidelity(null); setTruth(null); setRunning(true);
     try {
       const d = normDomain(domain);
       const expand = (q: string) => q.replace(/\{domain\}/g, d);
@@ -238,6 +242,18 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       setResult(json);
       setAuthority(aggregateAuthorityGap(json.runs || [], d));
       fetch(`/api/bot-stats?domain=${encodeURIComponent(d)}`).then((r) => r.json()).then(setBots).catch(() => {});
+      // B1: build the client's truth record from their own live site, then check
+      // the branded answers for drift (fabricated founders etc.). No sweep cost —
+      // a single page fetch; grounded against first-party JSON-LD + llms.txt.
+      fetch('/api/fetch-site', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: d }) })
+        .then((r) => r.json())
+        .then((site) => {
+          if (!site?.html) return;
+          const tr = extractTruthRecord(site.html, site.llmsTxt);
+          setTruth(tr);
+          setFidelity(summarizeFidelity((json.runs || []).filter((r: SweepRunResult) => r.queryType === 'branded'), tr));
+        })
+        .catch(() => {});
     } catch (e: any) {
       setError(e?.message || 'sweep failed');
     } finally {
@@ -277,6 +293,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
     out.push('');
     if (sc.modelPriorRuns > 0) {
       out.push(`_Category win is measured on search-grounded answers only. ${sc.modelPriorRuns} answer${sc.modelPriorRuns > 1 ? 's' : ''} came from model memory (no web search)${sc.modelPriorVisibilityPct !== null ? `; the model named you ${sc.modelPriorVisibilityPct}% of those (model-prior visibility)` : ''}._`);
+      out.push('');
+    }
+
+    // Fidelity (B1): of the branded answers that named the brand, which got facts wrong.
+    if (fidelity && (fidelity.citedAccurate > 0 || fidelity.citedDrifted > 0)) {
+      out.push('## Fidelity — is AI accurate about you?');
+      out.push(`Of the answers that named you, ${fidelity.citedAccurate} got your facts right${fidelity.citedDrifted > 0 ? ` and ${fidelity.citedDrifted} drifted (asserted something false)` : ' — no fabricated facts detected'}.`);
+      for (const iss of fidelity.issues) out.push(`- ${iss.wrong ? `"${iss.wrong}": ` : ''}${iss.detail}`);
       out.push('');
     }
 
@@ -585,6 +609,32 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
             </div>
           )}
 
+          {/* Fidelity (B1): of the answers that named you, how many got a FACT wrong. */}
+          {fidelity && (fidelity.citedAccurate > 0 || fidelity.citedDrifted > 0) && (
+            <div className={`rounded-3xl p-6 shadow-sm border ${fidelity.citedDrifted > 0 ? 'border-red-200 bg-red-50/40' : 'border-emerald-200 bg-emerald-50/40'}`}>
+              <h3 className="font-bold flex items-center gap-2 mb-1">
+                {fidelity.citedDrifted > 0 ? <ShieldAlert className="w-4 h-4 text-red-500" /> : <ShieldCheck className="w-4 h-4 text-emerald-500" />}
+                Fidelity — is AI accurate about you?
+              </h3>
+              <p className="text-sm text-zinc-700">
+                Of the answers that named you, <b>{fidelity.citedAccurate}</b> got your facts right
+                {fidelity.citedDrifted > 0
+                  ? <> and <b className="text-red-600">{fidelity.citedDrifted}</b> drifted (asserted something false).</>
+                  : <> — no fabricated facts detected.</>}
+              </p>
+              {fidelity.issues.length > 0 && (
+                <ul className="mt-3 space-y-2">
+                  {fidelity.issues.map((iss, i) => (
+                    <li key={i} className="text-sm bg-white border border-red-200 rounded-xl px-3 py-2">
+                      <span className="font-semibold text-red-700">{iss.wrong ? `“${iss.wrong}”` : iss.type.replace(/_/g, ' ')}</span>
+                      <span className="text-zinc-600"> — {iss.detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
           {/* Per-engine scores */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {result.summary.engines.map((e) => (
@@ -696,6 +746,9 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                     )}
                     {r.grounding === 'model-prior' && !r.truncated && (
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600 border border-sky-200" title="Answered from the model's memory — no live web search">model-prior</span>
+                    )}
+                    {truth && r.queryType === 'branded' && r.cited && !r.truncated && classifyRunFidelity(true, r.transcript, truth).state === 'cited-drifted' && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700 border border-red-200" title="Named you but asserted a false fact">drifted</span>
                     )}
                     <span className="font-semibold">{ENGINE_LABEL[r.engine] || r.engine}</span>
                     <span className="text-zinc-400">·</span>

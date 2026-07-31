@@ -137,3 +137,63 @@ export function scoreFidelity(transcript: string, truth: TruthRecord): FidelityS
     issues,
   };
 }
+
+// ─── Sweep integration (WO-QA-003 B1) ───────────────────────────────────────
+// A branded sweep answer isn't just "cited / not cited" — a CITED answer can still
+// be WRONG about you (the Claude exec-package conflation, the Jesper-Nissen
+// fabrication). Run every branded "cited" transcript through scoreFidelity and
+// split "cited" into cited-accurate vs cited-drifted, so Owned Citation Rate isn't
+// silently counting drifted answers as clean wins.
+
+export type FidelityState = 'cited-accurate' | 'cited-drifted' | 'not-cited';
+
+export interface RunFidelity {
+  state: FidelityState;
+  fidelityPct: number;
+  issues: FidelityIssue[];
+}
+
+/** Classify ONE branded run against the truth record. A cited answer is
+ *  `cited-drifted` when it makes a high-severity error (a fabricated founder, etc.),
+ *  otherwise `cited-accurate`. Not-cited runs pass straight through. */
+export function classifyRunFidelity(cited: boolean, transcript: string, truth: TruthRecord): RunFidelity {
+  if (!cited) return { state: 'not-cited', fidelityPct: 0, issues: [] };
+  const f = scoreFidelity(transcript, truth);
+  const drifted = f.hallucinatedFounders.length > 0 || f.issues.some((i) => i.severity === 'high');
+  return { state: drifted ? 'cited-drifted' : 'cited-accurate', fidelityPct: f.fidelityPct, issues: f.issues };
+}
+
+export interface FidelitySummary {
+  citedAccurate: number;
+  citedDrifted: number;
+  /** Distinct high-severity issues across all branded cited answers (deduped by
+   *  type+wrong value) — the "what AI gets wrong about you" list. */
+  issues: FidelityIssue[];
+  /** Fabricated founder/creator names any engine asserted. */
+  hallucinatedFounders: string[];
+}
+
+/** Roll fidelity up across a sweep's branded runs. */
+export function summarizeFidelity(
+  brandedRuns: { cited?: boolean; transcript: string }[],
+  truth: TruthRecord
+): FidelitySummary {
+  let citedAccurate = 0, citedDrifted = 0;
+  const seen = new Set<string>();
+  const issues: FidelityIssue[] = [];
+  const hallucinated = new Set<string>();
+  for (const r of brandedRuns) {
+    const f = classifyRunFidelity(!!r.cited, r.transcript || '', truth);
+    if (f.state === 'cited-accurate') citedAccurate++;
+    else if (f.state === 'cited-drifted') {
+      citedDrifted++;
+      for (const i of f.issues) {
+        if (i.severity !== 'high') continue;
+        if (i.wrong) hallucinated.add(i.wrong);
+        const key = `${i.type}|${i.wrong || ''}`;
+        if (!seen.has(key)) { seen.add(key); issues.push(i); }
+      }
+    }
+  }
+  return { citedAccurate, citedDrifted, issues, hallucinatedFounders: [...hallucinated] };
+}

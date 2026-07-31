@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { extractTruthRecord, extractJsonLdNodes } from '../lib/truthRecord';
-import { scoreFidelity, extractFounderMentions } from '../lib/fidelity';
+import { scoreFidelity, extractFounderMentions, classifyRunFidelity, summarizeFidelity } from '../lib/fidelity';
 
 // Truth record modeled on aeoanalyzers.com: sole founder Lindsay Hiebert.
 const AEO_HTML = `
@@ -67,5 +67,27 @@ describe('scoreFidelity — the Jesper Nissen misattribution', () => {
   it('matches a canonical founder by surname alone', () => {
     const f = scoreFidelity('The founder Hiebert launched it.', truth);
     expect(f.hallucinatedFounders).toHaveLength(0);
+  });
+});
+
+describe('classifyRunFidelity + summarizeFidelity (B1 — sweep integration)', () => {
+  const truth = extractTruthRecord(AEO_HTML, LLMS);
+
+  it('splits cited into accurate vs drifted; leaves not-cited alone', () => {
+    expect(classifyRunFidelity(false, 'anything', truth).state).toBe('not-cited');
+    expect(classifyRunFidelity(true, 'AEO Analyzers, founded by Lindsay Hiebert.', truth).state).toBe('cited-accurate');
+    expect(classifyRunFidelity(true, 'AEO Analyzers was co-founded by Jesper Nissen.', truth).state).toBe('cited-drifted');
+  });
+
+  it('summarizes a mixed set of branded answers with the fabricated name surfaced', () => {
+    const s = summarizeFidelity([
+      { cited: true, transcript: 'AEO Analyzers is by Lindsay Hiebert.' },              // accurate
+      { cited: true, transcript: 'AEO Analyzers, co-founded by Jesper Nissen, ...' },   // drifted
+      { cited: false, transcript: "I couldn't find aeoanalyzers.com" },                 // not cited
+    ], truth);
+    expect(s.citedAccurate).toBe(1);
+    expect(s.citedDrifted).toBe(1);
+    expect(s.hallucinatedFounders).toContain('Jesper Nissen');
+    expect(s.issues.length).toBeGreaterThanOrEqual(1);
   });
 });
