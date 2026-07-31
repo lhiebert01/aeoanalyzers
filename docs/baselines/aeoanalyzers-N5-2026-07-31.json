@@ -1,0 +1,340 @@
+{
+  "brand": "AEO Analyzers",
+  "domain": "aeoanalyzers.com",
+  "sweepDate": "2026-07-31",
+  "runCount": 240,
+  "costUsd": 2.7102083999999977,
+  "scorecard": {
+    "brandedRetrievabilityPct": 98,
+    "categoryRecommendationWinPct": 0,
+    "ownedCitationRatePct": 54,
+    "competitiveSharePct": 0,
+    "modelPriorVisibilityPct": 0,
+    "modelPriorRuns": 23,
+    "ownedCitationN": 39,
+    "competitiveShareN": 562,
+    "topCompetitors": [
+      {
+        "name": "Profound",
+        "count": 189
+      },
+      {
+        "name": "Semrush",
+        "count": 87
+      },
+      {
+        "name": "Otterly",
+        "count": 80
+      },
+      {
+        "name": "Peec AI",
+        "count": 60
+      },
+      {
+        "name": "HubSpot AEO",
+        "count": 55
+      },
+      {
+        "name": "Ahrefs",
+        "count": 46
+      },
+      {
+        "name": "SE Ranking",
+        "count": 45
+      }
+    ],
+    "competitorsAutoDetected": true,
+    "brandedRuns": 40,
+    "categoryRuns": 162,
+    "plainSummary": "When buyers ask about AEO Analyzers by name, AI reliably finds it (98%). On unbranded buyer questions, AI does not yet recommend AEO Analyzers (0%) — when it doesn't, Profound wins most often (189×). When AEO Analyzers is mentioned, its own site is cited as the source 54% of the time."
+  },
+  "headline": {
+    "brandedPct": 98,
+    "categoryWinPct": 0,
+    "ownedCitationPct": 54,
+    "topCompetitor": {
+      "name": "Profound",
+      "count": 189
+    },
+    "entityCollisions": [
+      "aeoaudittool.com",
+      "Wikipedia: aea",
+      "Wikipedia: aer",
+      "Wikipedia: aem",
+      "Wikipedia: ae",
+      "Wikipedia: aei systems",
+      "Wikipedia: aea investors",
+      "aeoanalytics.com",
+      "stockanalysis.com (stock-ticker page)",
+      "yahoo.com (stock-ticker page)",
+      "benzinga.com (stock-ticker page)",
+      "aeo-analytic.com"
+    ],
+    "driftedCount": 0
+  },
+  "fidelity": {
+    "citedAccurate": 39,
+    "citedDrifted": 0,
+    "issues": [],
+    "hallucinatedFounders": []
+  },
+  "entityLinking": {
+    "flags": [
+      {
+        "kind": "near-name-domain",
+        "source": "https://aeoaudittool.com/",
+        "collidingEntity": "aeoaudittool.com",
+        "detail": "An engine cited \"aeoaudittool.com\", a near-name domain that is not your site."
+      },
+      {
+        "kind": "wikipedia-collision",
+        "source": "https://en.wikipedia.org/wiki/AEA",
+        "collidingEntity": "Wikipedia: aea",
+        "detail": "An engine cited a Wikipedia acronym/disambiguation page (\"aea\") as if it were you."
+      },
+      {
+        "kind": "wikipedia-collision",
+        "source": "https://en.wikipedia.org/wiki/AER",
+        "collidingEntity": "Wikipedia: aer",
+        "detail": "An engine cited a Wikipedia acronym/disambiguation page (\"aer\") as if it were you."
+      },
+      {
+        "kind": "wikipedia-collision",
+        "source": "https://en.wikipedia.org/wiki/AEM",
+        "collidingEntity": "Wikipedia: aem",
+        "detail": "An engine cited a Wikipedia acronym/disambiguation page (\"aem\") as if it were you."
+      },
+      {
+        "kind": "wikipedia-collision",
+        "source": "https://en.wikipedia.org/wiki/AE",
+        "collidingEntity": "Wikipedia: ae",
+        "detail": "An engine cited a Wikipedia acronym/disambiguation page (\"ae\") as if it were you."
+      },
+      {
+        "kind": "wikipedia-collision",
+        "source": "https://en.wikipedia.org/wiki/AEi_Systems",
+        "collidingEntity": "Wikipedia: aei systems",
+        "detail": "An engine cited a Wikipedia acronym/disambiguation page (\"aei systems\") as if it were you."
+      },
+      {
+        "kind": "wikipedia-collision",
+        "source": "https://en.wikipedia.org/wiki/AEA_Investors",
+        "collidingEntity": "Wikipedia: aea investors",
+        "detail": "An engine cited a Wikipedia acronym/disambiguation page (\"aea investors\") as if it were you."
+      },
+      {
+        "kind": "near-name-domain",
+        "source": "https://aeoanalytics.com/",
+        "collidingEntity": "aeoanalytics.com",
+        "detail": "An engine cited \"aeoanalytics.com\", a near-name domain that is not your site."
+      },
+      {
+        "kind": "ticker-collision",
+        "source": "https://stockanalysis.com/stocks/aeo/company/",
+        "collidingEntity": "stockanalysis.com (stock-ticker page)",
+        "detail": "An engine cited a finance/stock-ticker page (stockanalysis.com) — a colliding ticker symbol, not your company."
+      },
+      {
+        "kind": "ticker-collision",
+        "source": "https://finance.yahoo.com/quote/AEO/analysis/",
+        "collidingEntity": "yahoo.com (stock-ticker page)",
+        "detail": "An engine cited a finance/stock-ticker page (yahoo.com) — a colliding ticker symbol, not your company."
+      },
+      {
+        "kind": "ticker-collision",
+        "source": "https://es.benzinga.com/quote/AEO/price-targets",
+        "collidingEntity": "benzinga.com (stock-ticker page)",
+        "detail": "An engine cited a finance/stock-ticker page (benzinga.com) — a colliding ticker symbol, not your company."
+      },
+      {
+        "kind": "near-name-domain",
+        "source": "https://aeo-analytic.com/",
+        "collidingEntity": "aeo-analytic.com",
+        "detail": "An engine cited \"aeo-analytic.com\", a near-name domain that is not your site."
+      }
+    ],
+    "collisions": [
+      "aeoaudittool.com",
+      "Wikipedia: aea",
+      "Wikipedia: aer",
+      "Wikipedia: aem",
+      "Wikipedia: ae",
+      "Wikipedia: aei systems",
+      "Wikipedia: aea investors",
+      "aeoanalytics.com",
+      "stockanalysis.com (stock-ticker page)",
+      "yahoo.com (stock-ticker page)",
+      "benzinga.com (stock-ticker page)",
+      "aeo-analytic.com"
+    ]
+  },
+  "engines": [
+    {
+      "engine": "claude",
+      "brandedRuns": 10,
+      "brandedCited": 10,
+      "retrievabilityPct": 100,
+      "categoryRuns": 50,
+      "categoryCited": 0,
+      "citationWinPct": 0,
+      "competitorCounts": {},
+      "costUsd": 1.5805849999999995,
+      "truncatedRuns": 0,
+      "truncatedBlocked": false,
+      "modelPriorRuns": 0
+    },
+    {
+      "engine": "openai",
+      "brandedRuns": 10,
+      "brandedCited": 10,
+      "retrievabilityPct": 100,
+      "categoryRuns": 29,
+      "categoryCited": 0,
+      "citationWinPct": 0,
+      "competitorCounts": {},
+      "costUsd": 0.8049750000000002,
+      "truncatedRuns": 0,
+      "truncatedBlocked": false,
+      "modelPriorRuns": 21
+    },
+    {
+      "engine": "perplexity",
+      "brandedRuns": 10,
+      "brandedCited": 10,
+      "retrievabilityPct": 100,
+      "categoryRuns": 50,
+      "categoryCited": 0,
+      "citationWinPct": 0,
+      "competitorCounts": {},
+      "costUsd": 0.3147610000000001,
+      "truncatedRuns": 0,
+      "truncatedBlocked": false,
+      "modelPriorRuns": 0
+    },
+    {
+      "engine": "gemini",
+      "brandedRuns": 10,
+      "brandedCited": 9,
+      "retrievabilityPct": 90,
+      "categoryRuns": 33,
+      "categoryCited": 0,
+      "citationWinPct": 0,
+      "competitorCounts": {},
+      "costUsd": 0.009887399999999998,
+      "truncatedRuns": 15,
+      "truncatedBlocked": true,
+      "modelPriorRuns": 2
+    }
+  ],
+  "authorityTop": [
+    {
+      "domain": "reddit.com",
+      "citations": 93,
+      "engines": [
+        "perplexity"
+      ],
+      "isKnownAuthority": true
+    },
+    {
+      "domain": "linkedin.com",
+      "citations": 61,
+      "engines": [
+        "claude",
+        "perplexity"
+      ],
+      "isKnownAuthority": false
+    },
+    {
+      "domain": "en.wikipedia.org",
+      "citations": 51,
+      "engines": [
+        "claude",
+        "openai"
+      ],
+      "isKnownAuthority": true
+    },
+    {
+      "domain": "hubspot.com",
+      "citations": 49,
+      "engines": [
+        "claude",
+        "openai",
+        "perplexity"
+      ],
+      "isKnownAuthority": false
+    },
+    {
+      "domain": "g2.com",
+      "citations": 48,
+      "engines": [
+        "claude",
+        "perplexity"
+      ],
+      "isKnownAuthority": true
+    },
+    {
+      "domain": "youtube.com",
+      "citations": 47,
+      "engines": [
+        "perplexity"
+      ],
+      "isKnownAuthority": false
+    },
+    {
+      "domain": "airops.com",
+      "citations": 39,
+      "engines": [
+        "claude",
+        "perplexity"
+      ],
+      "isKnownAuthority": false
+    },
+    {
+      "domain": "tryprofound.com",
+      "citations": 34,
+      "engines": [
+        "claude",
+        "perplexity"
+      ],
+      "isKnownAuthority": false
+    },
+    {
+      "domain": "blog.hubspot.com",
+      "citations": 33,
+      "engines": [
+        "claude",
+        "perplexity"
+      ],
+      "isKnownAuthority": false
+    },
+    {
+      "domain": "nicklafferty.com",
+      "citations": 32,
+      "engines": [
+        "claude",
+        "perplexity"
+      ],
+      "isKnownAuthority": false
+    },
+    {
+      "domain": "aeoengine.ai",
+      "citations": 32,
+      "engines": [
+        "claude",
+        "openai",
+        "perplexity"
+      ],
+      "isKnownAuthority": false
+    },
+    {
+      "domain": "xseek.io",
+      "citations": 29,
+      "engines": [
+        "claude",
+        "openai",
+        "perplexity"
+      ],
+      "isKnownAuthority": false
+    }
+  ]
+}
