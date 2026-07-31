@@ -24,6 +24,7 @@ import {
 import { summarizeFidelity, type FidelitySummary } from './fidelity';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from './entityLinking';
 import { aggregateAuthorityGap, type AuthorityGapReport } from './authorityGap';
+import { tierForDomain, TIER_LABEL, type AttainabilityTier } from './authorityTiers';
 import type { TruthRecord } from './truthRecord';
 
 export type ReportVariant = 'paid' | 'courtesy';
@@ -182,7 +183,7 @@ export function defaultNarrative(d: ExecReportData): ExecNarrative {
       d.headline.driftedCount ? `${d.headline.driftedCount} answer(s) that named you asserted a false fact — worth correcting at the source.` : `Answers that named you were factually accurate.`,
     ],
     recommendations: [
-      `Get an accurate, first-party listing on the sources these engines already trust (${d.authority.authorityDomains.slice(0, 3).map((a) => a.domain).join(', ') || 'category authorities'}).`,
+      `Start with the self-serve sources these engines already trust (${d.authority.authorityDomains.filter((a) => tierForDomain(a.domain).tier === 'now').slice(0, 3).map((a) => a.domain).join(', ') || 'directories and profiles you control'}) — claim/create those listings today.`,
       `Publish first-party comparison/answer content on your own domain (POSSE) targeting the category questions you currently lose.`,
       d.headline.entityCollisions.length ? `Add an explicit "not affiliated with…" disambiguation line + a connected @id entity graph so engines resolve you cleanly.` : `Keep your entity graph (@id, sameAs, founder) tight so your identity stays unambiguous.`,
       `Wrap the answers already on your page (pricing, contact, capabilities) in FAQPage schema so engines can extract them.`,
@@ -235,9 +236,17 @@ export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, va
     out.push('');
   }
   if (d.authority.authorityDomains.length) {
-    out.push('### Sources the engines trust (authority gap)');
-    for (const a of d.authority.authorityDomains.slice(0, 10)) out.push(`- ${a.domain} · ${a.citations}`);
-    out.push('');
+    // C2: group by how ATTAINABLE each source is, so the advice is actionable for a
+    // small team and never says "get on Wikipedia" first.
+    out.push('### Sources the engines trust — grouped by how attainable they are');
+    const top = d.authority.authorityDomains.slice(0, 12);
+    for (const tier of ['now', 'earned', 'aspirational'] as AttainabilityTier[]) {
+      const inTier = top.filter((a) => tierForDomain(a.domain).tier === tier);
+      if (!inTier.length) continue;
+      out.push(`**${TIER_LABEL[tier]}**`);
+      for (const a of inTier) out.push(`- ${a.domain} · ${a.citations} — ${tierForDomain(a.domain).rationale}`);
+      out.push('');
+    }
   }
 
   out.push('## Five prioritized actions');

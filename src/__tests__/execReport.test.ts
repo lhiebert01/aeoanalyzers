@@ -60,6 +60,18 @@ describe('renderExecReport', () => {
     expect(paid).toMatch(/Profound · 2×/);  // cited-instead table
     expect(paid).toContain('Engines are confusing you with');
   });
+
+  it('groups authority sources by attainability tier (C2)', () => {
+    const withAuth = assembleReportData({
+      brand: 'AEO Analyzers', domain: 'aeoanalyzers.com', sweepDate: '2026-07-31', competitors: [], truth,
+      runs: [
+        run({ queryType: 'category', transcript: 'options here', sources: ['https://g2.com/x', 'https://en.wikipedia.org/wiki/AEO', 'https://g2.com/y', 'https://en.wikipedia.org/wiki/AEO2'] }),
+      ],
+    });
+    const md = renderExecReport(withAuth, defaultNarrative(withAuth), 'paid');
+    expect(md).toContain('Do now (self-serve)');    // g2.com tier
+    expect(md).toContain('Aspirational (high bar)'); // wikipedia tier
+  });
 });
 
 describe('buildNarrativePrompt', () => {

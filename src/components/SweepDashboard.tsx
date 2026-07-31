@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Type } from '@google/genai';
 import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
+import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard } from '../lib/citationSweep';
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
@@ -345,8 +346,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
     }
 
     if (authority && authority.authorityDomains.length) {
-      out.push('## Authority gap — sources the engines trust');
-      for (const d of authority.authorityDomains.slice(0, 12)) out.push(`- ${d.domain} · ${d.citations}`);
+      out.push('## Authority gap — sources the engines trust (by attainability)');
+      const topA = authority.authorityDomains.slice(0, 12);
+      for (const tier of ['now', 'earned', 'aspirational'] as const) {
+        const inTier = topA.filter((d) => tierForDomain(d.domain).tier === tier);
+        if (!inTier.length) continue;
+        out.push(`### ${TIER_LABEL[tier]}`);
+        for (const d of inTier) out.push(`- ${d.domain} · ${d.citations} — ${tierForDomain(d.domain).rationale}`);
+      }
       if (authority.recommendations.length) {
         out.push('');
         out.push('Recommendations:');
@@ -734,12 +741,23 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
           {/* Authority gap (WO-7) */}
           {authority && authority.authorityDomains.length > 0 && (
             <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
-              <h3 className="font-bold flex items-center gap-2 mb-3"><Search className="w-4 h-4 text-zinc-400" />Authority gap — sources the engines trust</h3>
-              <div className="flex flex-wrap gap-2 mb-3">
-                {authority.authorityDomains.slice(0, 12).map((d) => (
-                  <span key={d.domain} className={`px-2.5 py-1 rounded-full text-xs font-semibold ${d.isKnownAuthority ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-zinc-100 text-zinc-600'}`}>{d.domain} · {d.citations}</span>
-                ))}
-              </div>
+              <h3 className="font-bold flex items-center gap-2 mb-1"><Search className="w-4 h-4 text-zinc-400" />Authority gap — sources the engines trust</h3>
+              <p className="text-xs text-zinc-500 mb-3">Grouped by how attainable they are — start with what you can do yourself today.</p>
+              {(['now', 'earned', 'aspirational'] as const).map((tier) => {
+                const inTier = authority.authorityDomains.slice(0, 12).filter((d) => tierForDomain(d.domain).tier === tier);
+                if (!inTier.length) return null;
+                const tone = tier === 'now' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : tier === 'earned' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-zinc-100 text-zinc-500 border-zinc-200';
+                return (
+                  <div key={tier} className="mb-3">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 mb-1.5">{TIER_LABEL[tier]}</div>
+                    <div className="flex flex-wrap gap-2">
+                      {inTier.map((d) => (
+                        <span key={d.domain} title={tierForDomain(d.domain).rationale} className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${tone}`}>{d.domain} · {d.citations}</span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
               {authority.recommendations.map((r, i) => <p key={i} className="text-sm text-zinc-600 mb-1">{r}</p>)}
             </div>
           )}
