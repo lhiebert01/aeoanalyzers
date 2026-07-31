@@ -9,6 +9,7 @@ import {
   scoreRun,
   aggregateSweep,
   sweepScorecard,
+  detectCompetitors,
   type SweepRunResult,
 } from '../lib/citationSweep';
 
@@ -236,5 +237,47 @@ describe('sweepScorecard — five buyer-facing scores + plain summary', () => {
     );
     expect(zero.categoryRecommendationWinPct).toBe(0);
     expect(zero.plainSummary).toContain('does not yet recommend');
+  });
+
+  it('does NOT flag auto-detection when the user supplied competitors', () => {
+    expect(sweepScorecard(runs, client, competitors).competitorsAutoDetected).toBe(false);
+  });
+});
+
+describe('detectCompetitors — mine rivals from the category answers', () => {
+  const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+  const runs: SweepRunResult[] = [
+    run({ queryType: 'category', transcript: 'Profound (tryprofound.com) and Scrunch (scrunch.com) lead.',
+      sources: ['https://www.reddit.com/r/seo', 'https://tryprofound.com/blog'] }),
+    run({ queryType: 'category', transcript: 'Try tryprofound.com or otterly.ai for tracking.',
+      sources: ['https://en.wikipedia.org/wiki/SEO', 'https://www.reddit.com/r/aeo'] }),
+    run({ queryType: 'category', transcript: 'scrunch.com is the enterprise pick.',
+      sources: ['https://en.wikipedia.org/wiki/AEO'] }),
+    // A BRANDED run — must be ignored (its domains are the client, not rivals).
+    run({ queryType: 'branded', transcript: 'aeoanalyzers.com is by pigenai.com', sources: ['https://pigenai.com'] }),
+  ];
+
+  it('surfaces domains that recur across category runs, excluding own + authority hosts', () => {
+    const detected = detectCompetitors(runs, client).map((c) => c.domain);
+    expect(detected).toContain('tryprofound.com'); // 2 runs (source + text)
+    expect(detected).toContain('scrunch.com');     // 2 runs (text + text)
+    expect(detected).not.toContain('aeoanalyzers.com'); // own domain
+    expect(detected).not.toContain('pigenai.com');      // only in a branded run
+    expect(detected).not.toContain('reddit.com');       // stoplisted authority host
+    expect(detected).not.toContain('wikipedia.org');    // stoplisted authority host
+  });
+
+  it('ignores a domain seen in only one run (below the frequency threshold)', () => {
+    const detected = detectCompetitors(runs, client).map((c) => c.domain);
+    expect(detected).not.toContain('otterly.ai'); // appears once
+    // ...but a lower threshold DOES pick it up (grounded — it is really there).
+    expect(detectCompetitors(runs, client, { minRuns: 1 }).map((c) => c.domain)).toContain('otterly.ai');
+  });
+
+  it('sweepScorecard falls back to detected competitors so Share of Model still computes', () => {
+    const sc = sweepScorecard(runs, client, []); // no competitors provided
+    expect(sc.competitorsAutoDetected).toBe(true);
+    expect(sc.competitiveSharePct).not.toBeNull();
+    expect(sc.topCompetitors.map((c) => c.name)).toContain('tryprofound.com');
   });
 });

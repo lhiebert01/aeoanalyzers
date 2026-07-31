@@ -287,9 +287,11 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       out.push('');
     }
 
-    if (r.summary.topCompetitors.length) {
+    const reportCompetitors = sc.topCompetitors.length ? sc.topCompetitors : r.summary.topCompetitors;
+    if (reportCompetitors.length) {
       out.push('## Cited instead of you (category queries)');
-      for (const c of r.summary.topCompetitors) out.push(`- ${c.name} · ${c.count}×`);
+      if (sc.competitorsAutoDetected) out.push('_Auto-detected from the answers (no competitors were entered)._');
+      for (const c of reportCompetitors) out.push(`- ${c.name} · ${c.count}×`);
       out.push('');
     }
 
@@ -578,17 +580,27 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
             ))}
           </div>
 
-          {/* Competitors displacing you */}
-          {result.summary.topCompetitors.length > 0 && (
-            <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
-              <h3 className="font-bold flex items-center gap-2 mb-3"><Trophy className="w-4 h-4 text-amber-500" />Cited instead of you (category queries)</h3>
-              <div className="flex flex-wrap gap-2">
-                {result.summary.topCompetitors.map((c) => (
-                  <span key={c.name} className="px-3 py-1.5 rounded-full text-sm font-semibold bg-red-50 text-red-700 border border-red-200">{c.name} · {c.count}×</span>
-                ))}
+          {/* Competitors displacing you. Prefer the scorecard's list: when the user
+              entered no competitors it auto-detects them from the answers, so this
+              panel + Share of Model fill in without a re-run. */}
+          {(() => {
+            const comps = scorecard?.topCompetitors?.length ? scorecard.topCompetitors : result.summary.topCompetitors;
+            if (!comps.length) return null;
+            const auto = !!scorecard?.competitorsAutoDetected;
+            return (
+              <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
+                <h3 className="font-bold flex items-center gap-2 mb-1"><Trophy className="w-4 h-4 text-amber-500" />Cited instead of you (category queries)</h3>
+                {auto ? (
+                  <p className="text-xs text-zinc-500 mb-3 flex items-center gap-1"><Sparkles className="w-3 h-3 text-indigo-400" />Auto-detected from the answers — add your real competitors in the setup to sharpen <b>your share of the category</b>.</p>
+                ) : <div className="mb-3" />}
+                <div className="flex flex-wrap gap-2">
+                  {comps.map((c) => (
+                    <span key={c.name} className="px-3 py-1.5 rounded-full text-sm font-semibold bg-red-50 text-red-700 border border-red-200">{c.name} · {c.count}×</span>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Authority gap (WO-7) */}
           {authority && authority.authorityDomains.length > 0 && (

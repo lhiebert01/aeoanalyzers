@@ -94,6 +94,15 @@ function hostOf(url: string): string {
   return normalizeDomain(url);
 }
 
+/** True if `host` (registrable) equals or is a parent of any source URL's host.
+ *  "blog.foo.com" in sources matches host "foo.com". */
+function hostInSources(sources: string[], host: string): boolean {
+  return !!host && (sources || []).some((u) => {
+    const h = hostOf(u);
+    return h === host || h.endsWith('.' + host);
+  });
+}
+
 /** Escape a string for use inside a RegExp. */
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -227,11 +236,7 @@ export function scoreRun(
   const clientDomain = normalizeDomain(client.domain);
   // A domain present in the SOURCES the engine pulled is real retrieval — the
   // engine fetched that page — so it counts regardless of how the prose hedges.
-  const inSources = (host: string): boolean =>
-    !!host && (run.sources || []).some((u) => {
-      const h = hostOf(u);
-      return h === host || h.endsWith('.' + host);
-    });
+  const inSources = (host: string): boolean => hostInSources(run.sources, host);
 
   // Brand normalization: match the spaced name ("AEO Analyzers"), the de-spaced
   // form ("AEOAnalyzers"), and the domain root ("aeoanalyzers") as one entity.
@@ -250,18 +255,108 @@ export function scoreRun(
     positivelyMentioned(run.transcript, (clause) =>
       !!clientDomain && clause.toLowerCase().includes(clientDomain));
 
-  const citedCompetitors: string[] = [];
+  const citedCompetitors = competitorsCited(run, competitors);
+
+  return { ...run, cited, domainCited, citedCompetitors };
+}
+
+/** Which of `competitors` are "cited instead" in this one run — the competitor's
+ *  domain in a retrieved SOURCE, or its name/domain positively mentioned (not in a
+ *  "couldn't find" clause). Extracted from scoreRun so the scorecard can re-run it
+ *  against an AUTO-DETECTED competitor set without re-scoring the whole run. */
+export function competitorsCited(run: SweepRunResult, competitors: Competitor[]): string[] {
+  const out: string[] = [];
   for (const c of competitors || []) {
     const cDomain = c.domain ? normalizeDomain(c.domain) : '';
     const hit =
-      inSources(cDomain) ||
+      hostInSources(run.sources, cDomain) ||
       positivelyMentioned(run.transcript, (clause) =>
         containsWord(clause, c.name) ||
         (!!cDomain && clause.toLowerCase().includes(cDomain)));
-    if (hit) citedCompetitors.push(c.name);
+    if (hit) out.push(c.name);
   }
+  return out;
+}
 
-  return { ...run, cited, domainCited, citedCompetitors };
+// ─── Auto-detected competitors ──────────────────────────────────────────────
+// When the user provides no competitor list, we still want Share of Model and a
+// "cited instead" list. We mine them from the CATEGORY answers themselves —
+// grounded (every candidate is a domain that literally appears in a transcript or
+// a retrieved source) and deterministic (no LLM). A candidate is a registrable
+// host that recurs across several category runs and is NOT the client's own domain
+// nor a known platform / reference / source host (those recur in almost every
+// answer and would swamp the list). The result is a STARTING list the user can
+// refine — surfaced as "auto-detected," never presented as authoritative truth.
+
+/** Platforms, reference/directory sites, model providers, and common answer
+ *  sources that are not products competing in the client's category. */
+const NON_COMPETITOR_HOSTS = new Set([
+  // social / UGC / video / code
+  'reddit.com', 'linkedin.com', 'youtube.com', 'youtu.be', 'facebook.com', 'twitter.com',
+  'x.com', 'medium.com', 'quora.com', 'github.com', 'pinterest.com', 'instagram.com',
+  'tiktok.com', 'substack.com',
+  // reference / directories / reviews / news
+  'wikipedia.org', 'g2.com', 'gartner.com', 'capterra.com', 'getapp.com', 'trustpilot.com',
+  'crunchbase.com', 'producthunt.com', 'betalist.com', 'techradar.com', 'forbes.com',
+  'businessinsider.com', 'techcrunch.com', 'zapier.com',
+  // search engines / model providers (named as engines, not as category rivals)
+  'google.com', 'bing.com', 'microsoft.com', 'apple.com', 'openai.com', 'chatgpt.com',
+  'claude.ai', 'anthropic.com', 'perplexity.ai', 'gemini.google.com', 'meta.com',
+  // Gemini grounding-redirect host (collapses to google.com anyway, belt-and-braces)
+  'cloud.google.com',
+]);
+
+/** Collapse a host to its registrable-ish domain (last two labels): "blog.foo.com"
+ *  → "foo.com", "en.wikipedia.org" → "wikipedia.org". Good enough without a Public
+ *  Suffix List (over-merges multi-part ccTLDs like .co.uk — acceptable here). */
+function registrable(host: string): string {
+  const parts = String(host || '').split('.').filter(Boolean);
+  return parts.length <= 2 ? parts.join('.') : parts.slice(-2).join('.');
+}
+
+// A bare-domain token in prose: "tryprofound.com", "otterly.ai", "peec.ai".
+const DOMAIN_RX = /\b(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}\b/gi;
+
+/** The distinct set of registrable hosts referenced by one run — from both the
+ *  retrieved sources and any bare domains written in the answer text. */
+function hostsInRun(run: SweepRunResult): Set<string> {
+  const hosts = new Set<string>();
+  for (const u of run.sources || []) {
+    const h = registrable(hostOf(u));
+    if (h.includes('.')) hosts.add(h);
+  }
+  for (const m of String(run.transcript || '').toLowerCase().matchAll(DOMAIN_RX)) {
+    const h = registrable(normalizeDomain(m[0]));
+    if (h.includes('.')) hosts.add(h);
+  }
+  return hosts;
+}
+
+/** Mine likely competitor entities (by domain) from the CATEGORY answers, for when
+ *  the user gives no competitor list. A candidate host must appear in `>= minRuns`
+ *  category runs and not be the client's own domain or a known non-competitor host.
+ *  Returns Competitor[] {name: domain, domain}, most-frequent first, capped at `max`. */
+export function detectCompetitors(
+  runs: SweepRunResult[],
+  client: { domain: string; brand?: string },
+  opts?: { minRuns?: number; max?: number }
+): Competitor[] {
+  const minRuns = opts?.minRuns ?? 2;
+  const max = opts?.max ?? 8;
+  const own = registrable(normalizeDomain(client.domain));
+  const counts: Record<string, number> = {};
+  for (const r of runs) {
+    if (r.queryType !== 'category') continue;
+    for (const h of hostsInRun(r)) {
+      if (h === own || NON_COMPETITOR_HOSTS.has(h)) continue;
+      counts[h] = (counts[h] || 0) + 1;
+    }
+  }
+  return Object.entries(counts)
+    .filter(([, n]) => n >= minRuns)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, max)
+    .map(([domain]) => ({ name: domain, domain }));
 }
 
 /** Roll scored runs up into per-engine aggregates + a cross-engine summary.
@@ -341,6 +436,9 @@ export interface SweepScorecard {
   competitiveSharePct: number | null;
   /** Who wins the category instead, most-frequent first. */
   topCompetitors: { name: string; count: number }[];
+  /** True when `topCompetitors`/Competitive Share came from auto-detection (the
+   *  user supplied no competitor list). The UI labels these as detected + editable. */
+  competitorsAutoDetected: boolean;
   brandedRuns: number;
   categoryRuns: number;
   /** A short, plain-English read of the result — the headline, not a data dump. */
@@ -360,6 +458,14 @@ export function sweepScorecard(
     typeof r.cited === 'boolean' ? r : scoreRun(r, client, competitors)
   );
 
+  // Fall back to auto-detected competitors when the user supplied none, so
+  // Competitive Share + "cited instead" still work. Recompute per-run competitor
+  // hits against this effective set (the stored citedCompetitors were scored
+  // against the user's — possibly empty — list at sweep time).
+  const provided = (competitors || []).filter((c) => c && c.name);
+  const effectiveCompetitors = provided.length ? provided : detectCompetitors(scored, client);
+  const competitorsAutoDetected = !provided.length && effectiveCompetitors.length > 0;
+
   let brandedRuns = 0, brandedCited = 0, categoryRuns = 0, categoryCited = 0;
   let surfaced = 0, domainCited = 0;          // for Owned Citation Rate
   let brandCatRecs = 0, competitorCatRecs = 0; // for Competitive Share
@@ -370,7 +476,7 @@ export function sweepScorecard(
       brandedRuns++; if (r.cited) brandedCited++;
     } else {
       categoryRuns++; if (r.cited) { categoryCited++; brandCatRecs++; }
-      for (const name of r.citedCompetitors || []) {
+      for (const name of competitorsCited(r, effectiveCompetitors)) {
         competitorCatRecs++;
         competitorCounts[name] = (competitorCounts[name] || 0) + 1;
       }
@@ -405,6 +511,7 @@ export function sweepScorecard(
     ownedCitationRatePct,
     competitiveSharePct,
     topCompetitors,
+    competitorsAutoDetected,
     brandedRuns,
     categoryRuns,
     plainSummary,
