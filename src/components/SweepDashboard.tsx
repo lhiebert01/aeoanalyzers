@@ -6,6 +6,7 @@ import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard } from '../lib/citationSweep';
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
+import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
 import { getAccessToken } from '../supabase';
 import { safeJsonParse } from '../services/geminiService';
 
@@ -135,6 +136,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   const [result, setResult] = useState<SweepResponse | null>(null);
   const [authority, setAuthority] = useState<AuthorityGapReport | null>(null);
   const [fidelity, setFidelity] = useState<FidelitySummary | null>(null);
+  const [entityLinking, setEntityLinking] = useState<EntityLinkingReport | null>(null);
   const [truth, setTruth] = useState<TruthRecord | null>(null);
   const [bots, setBots] = useState<any | null>(null);
   const [openRun, setOpenRun] = useState<number | null>(null);
@@ -222,7 +224,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   }
 
   async function run() {
-    setError(null); setResult(null); setAuthority(null); setFidelity(null); setTruth(null); setRunning(true);
+    setError(null); setResult(null); setAuthority(null); setFidelity(null); setEntityLinking(null); setTruth(null); setRunning(true);
     try {
       const d = normDomain(domain);
       const expand = (q: string) => q.replace(/\{domain\}/g, d);
@@ -251,7 +253,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
           if (!site?.html) return;
           const tr = extractTruthRecord(site.html, site.llmsTxt);
           setTruth(tr);
-          setFidelity(summarizeFidelity((json.runs || []).filter((r: SweepRunResult) => r.queryType === 'branded'), tr));
+          const brandedRuns = (json.runs || []).filter((r: SweepRunResult) => r.queryType === 'branded');
+          setFidelity(summarizeFidelity(brandedRuns, tr));
+          // B2: which wrong entities the engines confused you with (from cited sources).
+          setEntityLinking(detectEntityLinkingFailures(brandedRuns, { domain: d, brand: json.brand || tr.brandName || undefined }, tr));
         })
         .catch(() => {});
     } catch (e: any) {
@@ -301,6 +306,13 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       out.push('## Fidelity — is AI accurate about you?');
       out.push(`Of the answers that named you, ${fidelity.citedAccurate} got your facts right${fidelity.citedDrifted > 0 ? ` and ${fidelity.citedDrifted} drifted (asserted something false)` : ' — no fabricated facts detected'}.`);
       for (const iss of fidelity.issues) out.push(`- ${iss.wrong ? `"${iss.wrong}": ` : ''}${iss.detail}`);
+      out.push('');
+    }
+    if (entityLinking && entityLinking.collisions.length > 0) {
+      out.push('## Entity-linking — who engines confuse you with');
+      out.push(`Engines are confusing you with: ${entityLinking.collisions.join(', ')}.`);
+      for (const f of entityLinking.flags) out.push(`- [${f.kind}] ${f.detail} (${f.source})`);
+      out.push('Fix: an explicit "not affiliated with…" disambiguation line + a connected @id entity graph.');
       out.push('');
     }
 
@@ -609,19 +621,27 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
             </div>
           )}
 
-          {/* Fidelity (B1): of the answers that named you, how many got a FACT wrong. */}
-          {fidelity && (fidelity.citedAccurate > 0 || fidelity.citedDrifted > 0) && (
-            <div className={`rounded-3xl p-6 shadow-sm border ${fidelity.citedDrifted > 0 ? 'border-red-200 bg-red-50/40' : 'border-emerald-200 bg-emerald-50/40'}`}>
+          {/* Fidelity (B1) + entity-linking (B2): of the answers that named you, how
+              many got a FACT wrong, and which wrong entities engines confused you with. */}
+          {fidelity && (() => {
+            const hasCited = fidelity.citedAccurate > 0 || fidelity.citedDrifted > 0;
+            const collisions = entityLinking?.collisions.length ?? 0;
+            const alert = fidelity.citedDrifted > 0 || collisions > 0;
+            if (!hasCited && collisions === 0) return null;
+            return (
+            <div className={`rounded-3xl p-6 shadow-sm border ${alert ? 'border-red-200 bg-red-50/40' : 'border-emerald-200 bg-emerald-50/40'}`}>
               <h3 className="font-bold flex items-center gap-2 mb-1">
-                {fidelity.citedDrifted > 0 ? <ShieldAlert className="w-4 h-4 text-red-500" /> : <ShieldCheck className="w-4 h-4 text-emerald-500" />}
+                {alert ? <ShieldAlert className="w-4 h-4 text-red-500" /> : <ShieldCheck className="w-4 h-4 text-emerald-500" />}
                 Fidelity — is AI accurate about you?
               </h3>
+              {hasCited && (
               <p className="text-sm text-zinc-700">
                 Of the answers that named you, <b>{fidelity.citedAccurate}</b> got your facts right
                 {fidelity.citedDrifted > 0
                   ? <> and <b className="text-red-600">{fidelity.citedDrifted}</b> drifted (asserted something false).</>
                   : <> — no fabricated facts detected.</>}
               </p>
+              )}
               {fidelity.issues.length > 0 && (
                 <ul className="mt-3 space-y-2">
                   {fidelity.issues.map((iss, i) => (
@@ -632,8 +652,21 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                   ))}
                 </ul>
               )}
+              {/* B2: entity-linking — the wrong entities engines confused you with. */}
+              {entityLinking && entityLinking.collisions.length > 0 && (
+                <div className="mt-4 border-t border-red-200 pt-3">
+                  <p className="text-sm font-bold text-zinc-800">Engines are confusing you with:</p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {entityLinking.collisions.map((c) => (
+                      <span key={c} className="px-3 py-1 rounded-full text-xs font-semibold bg-white text-red-700 border border-red-300">{c}</span>
+                    ))}
+                  </div>
+                  <p className="text-xs text-zinc-500 mt-2">A crowded name/acronym (and a colliding stock ticker) means engines can&apos;t cleanly resolve you. Fix: an explicit &ldquo;not affiliated with…&rdquo; line + a connected <span className="font-mono">@id</span> entity graph so your identity is unambiguous.</p>
+                </div>
+              )}
             </div>
-          )}
+            );
+          })()}
 
           {/* Per-engine scores */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
