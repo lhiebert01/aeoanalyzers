@@ -19,6 +19,16 @@ describe('authorityGap (WO-7)', () => {
     expect(rep.authorityDomains.find((d) => d.domain === 'g2.com')!.isKnownAuthority).toBe(true);
     expect(rep.recommendations.join(' ')).toMatch(/g2\.com|wikipedia/i);
   });
+
+  it('excludes the Gemini grounding-redirect wrapper from authority sources', () => {
+    const runs = [
+      { engine: 'gemini', sources: ['https://vertexaisearch.cloud.google.com/grounding-api-redirect/ABC', 'https://g2.com/y'] },
+      { engine: 'gemini', sources: ['https://vertexaisearch.cloud.google.com/grounding-api-redirect/DEF'] },
+    ];
+    const rep = aggregateAuthorityGap(runs, 'aeoanalyzers.com');
+    expect(rep.authorityDomains.map((d) => d.domain)).not.toContain('vertexaisearch.cloud.google.com');
+    expect(rep.authorityDomains[0]?.domain).toBe('g2.com');
+  });
 });
 
 describe('pickRate (WO-4)', () => {

@@ -68,6 +68,16 @@ function matchesCanonical(mention: string, canonical: string[]): boolean {
   });
 }
 
+// A company suffix marks an ORGANIZATION, not a person. An engine naming the
+// client's own parent company as the creator ("a product by PI GenAI LLC") is
+// accurate, NOT a fabricated founder — flagging it is a false accusation against
+// the client's own company. Only PERSON names that aren't canonical are drift.
+const ORG_SUFFIX = /(?:^|\s)(?:llc|l\.l\.c\.?|inc\.?|incorporated|ltd\.?|limited|corp\.?|corporation|co\.|company|gmbh|plc|s\.?a\.?|b\.?v\.?|ag|oy|pbc|lp|llp|group|holdings)\.?$/i;
+/** True if a name looks like an organization (has a company suffix). */
+function isOrganizationName(name: string): boolean {
+  return ORG_SUFFIX.test(String(name || '').trim());
+}
+
 /** Whole-word presence of a name in the answer. */
 function mentioned(text: string, name: string): boolean {
   const esc = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -81,7 +91,9 @@ export function scoreFidelity(transcript: string, truth: TruthRecord): FidelityS
 
   // Founder mentions asserted by the engine.
   const mentions = extractFounderMentions(text);
-  const hallucinatedFounders = mentions.filter((m) => canonical.length > 0 && !matchesCanonical(m, canonical));
+  const hallucinatedFounders = mentions.filter(
+    (m) => canonical.length > 0 && !matchesCanonical(m, canonical) && !isOrganizationName(m)
+  );
   const correctFounders = canonical.filter((c) => mentioned(text, c));
   const omittedFounders = canonical.filter((c) => !mentioned(text, c));
 

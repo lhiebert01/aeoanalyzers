@@ -55,6 +55,14 @@ function isKnownAuthority(domain: string): boolean {
   return KNOWN_AUTHORITY.some((a) => (a.startsWith('.') ? domain.endsWith(a) : domain === a || domain.endsWith('.' + a)));
 }
 
+// Engine plumbing that shows up in `sources` but is NOT a real citable authority —
+// Gemini wraps every grounded source behind a vertexaisearch redirect, which would
+// otherwise dominate the authority gap (dogfood: 63 "citations"). Skip these.
+const INFRA_HOSTS = new Set([
+  'vertexaisearch.cloud.google.com',
+  'grounding-api-redirect.vertexaisearch.cloud.google.com',
+]);
+
 interface RunLike {
   engine: string;
   sources: string[];
@@ -72,6 +80,7 @@ export function aggregateAuthorityGap(runs: RunLike[], clientDomain: string): Au
       const host = normalizeDomain(url);
       if (!host) continue;
       if (host === client || host.endsWith('.' + client)) continue; // client's own = not third-party authority
+      if (INFRA_HOSTS.has(host)) continue; // engine redirect/wrapper, not a real citable source
       const e = byDomain.get(host) || { citations: 0, engines: new Set<string>() };
       e.citations++;
       e.engines.add(run.engine);

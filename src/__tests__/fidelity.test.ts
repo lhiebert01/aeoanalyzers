@@ -68,6 +68,18 @@ describe('scoreFidelity — the Jesper Nissen misattribution', () => {
     const f = scoreFidelity('The founder Hiebert launched it.', truth);
     expect(f.hallucinatedFounders).toHaveLength(0);
   });
+
+  it('does NOT flag the client’s own parent ORGANIZATION as a fabricated founder', () => {
+    // Real dogfood false positive: an engine correctly said the tool is by
+    // "PI GenAI LLC" (the parent company) — an org creator is not a fake person-founder.
+    const f = scoreFidelity('AEO Analyzers was created by PI GenAI LLC, founded by Lindsay Hiebert.', truth);
+    expect(f.hallucinatedFounders).not.toContain('PI GenAI LLC');
+    expect(f.hallucinatedFounders).toHaveLength(0);
+    expect(f.correctFounders).toContain('Lindsay Hiebert');
+    expect(classifyRunFidelity(true, 'AEO Analyzers is a product by PIGENAI LLC.', truth).state).toBe('cited-accurate');
+    // A fabricated PERSON co-founder is still caught.
+    expect(classifyRunFidelity(true, 'AEO Analyzers was co-founded by Jesper Nissen.', truth).state).toBe('cited-drifted');
+  });
 });
 
 describe('classifyRunFidelity + summarizeFidelity (B1 — sweep integration)', () => {
