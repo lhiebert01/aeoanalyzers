@@ -25,6 +25,14 @@
 - C1 competitor detection refined (named-in-text rivals + display names) ✅ (`65a6a58`).
 - Two dogfood false positives fixed (own-org founder flag; vertexaisearch authority) ✅.
 
+## Backlog (post-freeze unless a paying customer requires it)
+
+- **Wire `factClassification.ts` four-way split (stale/conflated/fabricated) into
+  sweep fidelity output** — Lane-B enhancement, post-freeze unless a paying
+  customer's report requires it. When wired, the blog's Layer 2 may be upgraded to
+  the four-way language (currently: "accurate, drifted from the facts, or confused
+  with another entity entirely").
+
 ## Next, in order (per founder direction 2026-07-31)
 
 1. **Courtesy-sweep generation path — build FIRST** (before C2/C3). Target ~Aug 20:

@@ -451,6 +451,24 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
         </p>
       </div>
 
+      {/* Condensed "what you actually get" — the 5-layer action plan (blog: /blog/what-you-actually-get). */}
+      {phase === 'input' && !result && (
+        <div className="bg-zinc-50 border border-zinc-200 rounded-3xl p-5 sm:p-6">
+          <div className="flex items-baseline justify-between gap-3 flex-wrap">
+            <h2 className="font-bold text-zinc-900">What you actually get — not just a score</h2>
+            <a href="/blog/what-you-actually-get" className="text-xs font-semibold text-indigo-600 hover:underline">Read the full breakdown →</a>
+          </div>
+          <p className="text-sm text-zinc-500 mt-1">A sweep ends at an action plan with five layers — each answering “what do I change, and where?”</p>
+          <ol className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-zinc-700 list-decimal list-inside">
+            <li><b>Paste-in code fixes</b> — verified JSON-LD + entity-graph corrections + web-team handoff.</li>
+            <li><b>Corrections for what AI gets wrong</b> — each branded answer classified accurate / drifted / confused-with-another-entity.</li>
+            <li><b>An off-site plan from real citations</b> — the sources engines trust, first-party/POSSE only.</li>
+            <li><b>A battle-map of the questions</b> — per engine, with N + confidence, and who’s cited instead by name.</li>
+            <li className="sm:col-span-2"><b>Proof the fixes worked</b> — every number backed by a stored transcript; re-sweep and compare before/after.</li>
+          </ol>
+        </div>
+      )}
+
       {/* Input — phase 1: just the domain. The AI infers everything else. */}
       {phase === 'input' && (
         <div className="bg-white border border-zinc-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
