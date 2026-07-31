@@ -351,9 +351,26 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   const brandedList = parseLines(branded).map((q) => q.replace(/\{domain\}/g, dNorm));
   const categoryList = parseLines(categoryQueries);
   const totalQuestions = brandedList.length + categoryList.length;
-  const intentOrder = ['Discovery', 'Problem', 'Comparative'];
+  // Bucket the model's free-form intent labels robustly — it returns variants
+  // ("Category Discovery", "Problem/Solution", "Comparative") that an exact-string
+  // match would drop from the review list. Anything unrecognized falls to "Other"
+  // so we NEVER silently hide a question we'll actually ask.
+  const intentBucket = (raw: string): string => {
+    const s = (raw || '').toLowerCase();
+    if (/compar|versus|\bvs\b|alternativ|switch/.test(s)) return 'Comparative';
+    if (/problem|solution|use.?case|\bneed/.test(s)) return 'Problem';
+    if (/discov|categor|\bbest\b|\btop\b/.test(s)) return 'Discovery';
+    return 'Other';
+  };
+  // Group the ACTUAL category queries (source of truth for the run), looking up
+  // each one's intent from the generated set so an edited list still displays.
+  const intentOf = (q: string): string => {
+    const g = generatedQueries.find((x) => x.query === q);
+    return g ? intentBucket(g.intent_type) : 'Other';
+  };
+  const orderedBuckets = ['Discovery', 'Problem', 'Comparative', 'Other'];
   const intentLabel: Record<string, string> = {
-    Discovery: 'Category discovery', Problem: 'Problem-first', Comparative: 'Head-to-head',
+    Discovery: 'Category discovery', Problem: 'Problem-first', Comparative: 'Head-to-head', Other: 'More buyer questions',
   };
 
   return (
@@ -457,24 +474,21 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                 </div>
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">From prospective customers</div>
-                  {generatedQueries.length > 0 ? (
+                  {categoryList.length > 0 ? (
                     <div className="space-y-2">
-                      {intentOrder.filter((it) => generatedQueries.some((g) => g.intent_type === it)).map((it) => (
-                        <div key={it}>
-                          <div className="text-xs font-semibold text-zinc-500">{intentLabel[it] || it}</div>
+                      {orderedBuckets.filter((b) => categoryList.some((q) => intentOf(q) === b)).map((b) => (
+                        <div key={b}>
+                          <div className="text-xs font-semibold text-zinc-500">{intentLabel[b]}</div>
                           <ul className="space-y-0.5 text-zinc-700">
-                            {generatedQueries.filter((g) => g.intent_type === it).map((g, i) => (
-                              <li key={i} className="flex gap-2"><span className="text-zinc-300">•</span>{g.query}</li>
+                            {categoryList.filter((q) => intentOf(q) === b).map((q, i) => (
+                              <li key={i} className="flex gap-2"><span className="text-zinc-300">•</span>{q}</li>
                             ))}
                           </ul>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <ul className="space-y-0.5 text-zinc-700">
-                      {categoryList.length ? categoryList.map((q, i) => <li key={i} className="flex gap-2"><span className="text-zinc-300">•</span>{q}</li>)
-                        : <li className="text-zinc-400 italic">No buyer questions yet — add some via View / edit.</li>}
-                    </ul>
+                    <p className="text-zinc-400 italic">No buyer questions yet — add some via View / edit.</p>
                   )}
                 </div>
               </div>
