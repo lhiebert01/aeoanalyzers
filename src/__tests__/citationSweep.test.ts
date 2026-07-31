@@ -251,24 +251,32 @@ describe('sweepScorecard — five buyer-facing scores + plain summary', () => {
 describe('detectCompetitors — mine rivals from the category answers', () => {
   const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
   const runs: SweepRunResult[] = [
-    run({ queryType: 'category', transcript: 'Profound (tryprofound.com) and Scrunch (scrunch.com) lead.',
-      sources: ['https://www.reddit.com/r/seo', 'https://tryprofound.com/blog'] }),
-    run({ queryType: 'category', transcript: 'Try tryprofound.com or otterly.ai for tracking.',
-      sources: ['https://en.wikipedia.org/wiki/SEO', 'https://www.reddit.com/r/aeo'] }),
-    run({ queryType: 'category', transcript: 'scrunch.com is the enterprise pick.',
-      sources: ['https://en.wikipedia.org/wiki/AEO'] }),
+    // Domains NAMED in the answer text are recommendations (rivals); domains only in
+    // `sources` (a listicle the engine consulted) are deliberately ignored.
+    run({ queryType: 'category', transcript: 'Profound (tryprofound.com) and Scrunch (scrunch.com) lead — see reddit.com.',
+      sources: ['https://nicklafferty.com/blog/best-tools'] }),
+    run({ queryType: 'category', transcript: 'Try tryprofound.com or otterly.ai; discussed on reddit.com and en.wikipedia.org.',
+      sources: ['https://nicklafferty.com/blog/more'] }),
+    run({ queryType: 'category', transcript: 'scrunch.com is the enterprise pick, per en.wikipedia.org.' }),
     // A BRANDED run — must be ignored (its domains are the client, not rivals).
     run({ queryType: 'branded', transcript: 'aeoanalyzers.com is by pigenai.com', sources: ['https://pigenai.com'] }),
   ];
 
-  it('surfaces domains that recur across category runs, excluding own + authority hosts', () => {
+  it('surfaces domains NAMED in the text, excluding own + authority hosts + source-only listicles', () => {
     const detected = detectCompetitors(runs, client).map((c) => c.domain);
-    expect(detected).toContain('tryprofound.com'); // 2 runs (source + text)
-    expect(detected).toContain('scrunch.com');     // 2 runs (text + text)
+    expect(detected).toContain('tryprofound.com'); // named in 2 runs' text
+    expect(detected).toContain('scrunch.com');     // named in 2 runs' text
     expect(detected).not.toContain('aeoanalyzers.com'); // own domain
     expect(detected).not.toContain('pigenai.com');      // only in a branded run
     expect(detected).not.toContain('reddit.com');       // stoplisted authority host
     expect(detected).not.toContain('wikipedia.org');    // stoplisted authority host
+    expect(detected).not.toContain('nicklafferty.com'); // source-only listicle, never named in text
+  });
+
+  it('maps known rival domains to clean display names', () => {
+    const byDomain = new Map(detectCompetitors(runs, client).map((c) => [c.domain, c.name]));
+    expect(byDomain.get('tryprofound.com')).toBe('Profound');
+    expect(byDomain.get('scrunch.com')).toBe('Scrunch');
   });
 
   it('ignores a domain seen in only one run (below the frequency threshold)', () => {
@@ -282,7 +290,7 @@ describe('detectCompetitors — mine rivals from the category answers', () => {
     const sc = sweepScorecard(runs, client, []); // no competitors provided
     expect(sc.competitorsAutoDetected).toBe(true);
     expect(sc.competitiveSharePct).not.toBeNull();
-    expect(sc.topCompetitors.map((c) => c.name)).toContain('tryprofound.com');
+    expect(sc.topCompetitors.map((c) => c.name)).toContain('Profound');
   });
 });
 

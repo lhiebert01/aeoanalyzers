@@ -360,14 +360,13 @@ function registrable(host: string): string {
 // A bare-domain token in prose: "tryprofound.com", "otterly.ai", "peec.ai".
 const DOMAIN_RX = /\b(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}\b/gi;
 
-/** The distinct set of registrable hosts referenced by one run — from both the
- *  retrieved sources and any bare domains written in the answer text. */
-function hostsInRun(run: SweepRunResult): Set<string> {
+/** The distinct registrable hosts the answer TEXT actually names. We deliberately
+ *  IGNORE the retrieved-sources list here: a domain in `sources` is a page the
+ *  engine consulted (often a listicle/blog like nicklafferty.com), whereas a domain
+ *  written into the answer is a product the engine RECOMMENDED. Competitor mining
+ *  wants the latter — the "cited instead" rivals — not the reference material. */
+function namedHostsInRun(run: SweepRunResult): Set<string> {
   const hosts = new Set<string>();
-  for (const u of run.sources || []) {
-    const h = registrable(hostOf(u));
-    if (h.includes('.')) hosts.add(h);
-  }
   for (const m of String(run.transcript || '').toLowerCase().matchAll(DOMAIN_RX)) {
     const h = registrable(normalizeDomain(m[0]));
     if (h.includes('.')) hosts.add(h);
@@ -375,10 +374,29 @@ function hostsInRun(run: SweepRunResult): Set<string> {
   return hosts;
 }
 
-/** Mine likely competitor entities (by domain) from the CATEGORY answers, for when
- *  the user gives no competitor list. A candidate host must appear in `>= minRuns`
- *  category runs and not be the client's own domain or a known non-competitor host.
- *  Returns Competitor[] {name: domain, domain}, most-frequent first, capped at `max`. */
+// Display names for known category rivals, so the "cited instead" list reads
+// "Profound", not "tryprofound.com" (WO-QA-003 C1 acceptance seed set). Unknown
+// domains fall back to the domain itself.
+const COMPETITOR_DISPLAY_NAMES: Record<string, string> = {
+  'tryprofound.com': 'Profound', 'profound.com': 'Profound',
+  'scrunch.com': 'Scrunch', 'scrunch.ai': 'Scrunch', 'scrunchai.com': 'Scrunch',
+  'athenahq.ai': 'Athena HQ', 'otterly.ai': 'Otterly', 'peec.ai': 'Peec AI',
+  'goodie.ai': 'Goodie AI', 'higoodie.com': 'Goodie AI', 'llmpulse.ai': 'LLM Pulse',
+  'semrush.com': 'Semrush', 'ahrefs.com': 'Ahrefs', 'moz.com': 'Moz',
+  'seranking.com': 'SE Ranking', 'airops.com': 'AirOps', 'rankability.com': 'Rankability',
+  'hubspot.com': 'HubSpot AEO', 'conductor.com': 'Conductor', 'writesonic.com': 'Writesonic',
+  'nightwatch.io': 'Nightwatch', 'frase.io': 'Frase', 'ziptie.dev': 'ZipTie',
+  'brightedge.com': 'BrightEdge', 'yext.com': 'Yext',
+};
+function competitorDisplayName(domain: string): string {
+  return COMPETITOR_DISPLAY_NAMES[domain] || domain;
+}
+
+/** Mine likely competitor entities from the CATEGORY answers, for when the user
+ *  gives no competitor list. A candidate is a registrable host NAMED IN THE ANSWER
+ *  TEXT (a recommendation — not merely a consulted source) of `>= minRuns` category
+ *  runs, excluding the client's own domain and known non-competitor hosts. Returns
+ *  Competitor[] {name: display name, domain}, most-frequent first, capped at `max`. */
 export function detectCompetitors(
   runs: SweepRunResult[],
   client: { domain: string; brand?: string },
@@ -390,7 +408,7 @@ export function detectCompetitors(
   const counts: Record<string, number> = {};
   for (const r of runs) {
     if (r.queryType !== 'category' || r.truncated) continue;
-    for (const h of hostsInRun(r)) {
+    for (const h of namedHostsInRun(r)) {
       if (h === own || NON_COMPETITOR_HOSTS.has(h)) continue;
       counts[h] = (counts[h] || 0) + 1;
     }
@@ -399,7 +417,7 @@ export function detectCompetitors(
     .filter(([, n]) => n >= minRuns)
     .sort((a, b) => b[1] - a[1])
     .slice(0, max)
-    .map(([domain]) => ({ name: domain, domain }));
+    .map(([domain]) => ({ name: competitorDisplayName(domain), domain }));
 }
 
 /** Roll scored runs up into per-engine aggregates + a cross-engine summary.

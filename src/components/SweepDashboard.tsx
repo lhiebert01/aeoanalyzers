@@ -62,7 +62,10 @@ const EXTRACT_SCHEMA = {
 const extractPrompt = (siteText: string) => `Extract the following from this website text:
 1. Brand Name.
 2. A 3-to-5 word Core Category describing what they sell.
-3. Up to three likely competitors (names only; return an empty list if not obvious).
+3. Three to five DIRECT competitors — real, named products in the SAME category as
+   this company, not adjacent or loosely-related tools. Only include a name you are
+   confident competes head-to-head; return an EMPTY list rather than guessing a
+   wrong-category name. (Names only.)
 Return as JSON: {"brand":"...","core_category":"...","competitors":["...","...","..."]}
 
 WEBSITE TEXT:
