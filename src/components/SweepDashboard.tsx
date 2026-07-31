@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Type } from '@google/genai';
 import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
-import { sweepScorecard } from '../lib/citationSweep';
+import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard } from '../lib/citationSweep';
 import { getAccessToken } from '../supabase';
 import { safeJsonParse } from '../services/geminiService';
@@ -266,12 +266,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
     out.push('## Summary — in plain English');
     out.push(sc.plainSummary);
     out.push('');
+    const scoreCell = (v: number | null, n: number) =>
+      v === null ? '—' : `${v}% (N=${n}, ${confidenceLevel(n)} confidence)`;
     out.push('| What it measures | Score |');
     out.push('| --- | --- |');
-    out.push(`| Found when asked by name (retrievability) | ${sc.brandedRetrievabilityPct}% |`);
-    out.push(`| Recommended to new buyers (category win) | ${sc.categoryRecommendationWinPct}% |`);
-    out.push(`| Your own site cited (owned citation rate) | ${sc.ownedCitationRatePct === null ? '—' : sc.ownedCitationRatePct + '%'} |`);
-    out.push(`| Your share of the category | ${sc.competitiveSharePct === null ? '—' : sc.competitiveSharePct + '%'} |`);
+    out.push(`| Found when asked by name (retrievability) | ${scoreCell(sc.brandedRetrievabilityPct, sc.brandedRuns)} |`);
+    out.push(`| Recommended to new buyers (category win) | ${scoreCell(sc.categoryRecommendationWinPct, sc.categoryRuns)} |`);
+    out.push(`| Your own site cited (owned citation rate) | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
+    out.push(`| Your share of the category | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
     out.push('');
     if (sc.modelPriorRuns > 0) {
       out.push(`_Category win is measured on search-grounded answers only. ${sc.modelPriorRuns} answer${sc.modelPriorRuns > 1 ? 's' : ''} came from model memory (no web search)${sc.modelPriorVisibilityPct !== null ? `; the model named you ${sc.modelPriorVisibilityPct}% of those (model-prior visibility)` : ''}._`);
@@ -357,6 +359,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
   // Color a 0–100 score green (good) / amber (some) / red (weak) — used on the stat cards.
   const tone = (v: number | null): string =>
     v === null ? 'text-zinc-400' : v >= 60 ? 'text-emerald-500' : v > 0 ? 'text-amber-500' : 'text-red-500';
+
+  // Sample-size confidence chip (A3): honest about small-N cells.
+  const confChip = (n: number) => {
+    const lvl = confidenceLevel(n);
+    const label = lvl === 'low' ? 'low confidence' : lvl === 'med' ? 'moderate' : 'high confidence';
+    const cls = lvl === 'low' ? 'text-amber-600' : lvl === 'med' ? 'text-zinc-500' : 'text-emerald-600';
+    return { label, cls };
+  };
 
   // Confirm-panel display: expanded question lists + the total we'll actually ask.
   const dNorm = normDomain(domain);
@@ -548,15 +558,21 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
               </div>
               <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-zinc-100 bg-white">
                 {[
-                  { label: 'Found when asked by name', hint: 'Branded retrievability', value: scorecard.brandedRetrievabilityPct },
-                  { label: 'Recommended to new buyers', hint: 'Category win — the metric that drives sales', value: scorecard.categoryRecommendationWinPct, hero: true },
-                  { label: 'Your own site cited', hint: 'Owned citation rate', value: scorecard.ownedCitationRatePct },
-                  { label: 'Your share of the category', hint: 'You vs. competitors', value: scorecard.competitiveSharePct },
+                  { label: 'Found when asked by name', hint: 'Branded retrievability', value: scorecard.brandedRetrievabilityPct, n: scorecard.brandedRuns },
+                  { label: 'Recommended to new buyers', hint: 'Category win — the metric that drives sales', value: scorecard.categoryRecommendationWinPct, n: scorecard.categoryRuns, hero: true },
+                  { label: 'Your own site cited', hint: 'Owned citation rate', value: scorecard.ownedCitationRatePct, n: scorecard.ownedCitationN },
+                  { label: 'Your share of the category', hint: 'You vs. competitors', value: scorecard.competitiveSharePct, n: scorecard.competitiveShareN },
                 ].map((s) => (
                   <div key={s.label} className={`p-4 sm:p-5 ${s.hero ? 'bg-emerald-50/60' : ''}`}>
                     <div className={`text-3xl font-black ${tone(s.value)}`}>{s.value === null ? '—' : `${s.value}%`}</div>
                     <div className="text-sm font-bold text-zinc-800 mt-1 leading-tight">{s.label}</div>
                     <div className="text-[11px] text-zinc-400 mt-0.5 leading-tight">{s.hint}</div>
+                    {s.value !== null && s.n > 0 && (
+                      <div className="text-[11px] mt-1 leading-tight">
+                        <span className="text-zinc-400">N={s.n}</span>
+                        <span className={`ml-1.5 font-semibold ${confChip(s.n).cls}`}>· {confChip(s.n).label}</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -597,7 +613,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                     <div className="mt-3 text-sm text-zinc-500">Retrievability (branded)</div>
                     <div className="text-2xl font-black">{e.brandedCited}/{e.brandedRuns} <span className="text-base font-semibold text-zinc-400">({e.retrievabilityPct}%)</span></div>
                     <div className="mt-2 text-sm text-zinc-500">Citation win (category)</div>
-                    <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}%</div>
+                    <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}% <span className="text-xs font-semibold text-zinc-400">· N={e.categoryRuns}</span></div>
                     {e.modelPriorRuns > 0 && <div className="mt-2 text-[11px] text-zinc-400">{e.modelPriorRuns} model-prior answer{e.modelPriorRuns > 1 ? 's' : ''} (no search) reported separately</div>}
                     {e.truncatedRuns > 0 && <div className="mt-2 text-[11px] text-amber-600">{e.truncatedRuns} truncated answer{e.truncatedRuns > 1 ? 's' : ''} excluded</div>}
                     {isAdmin && <div className="mt-2 text-xs text-zinc-400 flex items-center gap-1"><DollarSign className="w-3 h-3" />${e.costUsd.toFixed(3)}</div>}

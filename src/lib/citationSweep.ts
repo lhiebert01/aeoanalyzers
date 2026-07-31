@@ -491,6 +491,10 @@ export interface SweepScorecard {
   modelPriorVisibilityPct: number | null;
   /** How many category runs were model-prior (kept out of citation-win). */
   modelPriorRuns: number;
+  /** Denominator N for Owned Citation Rate (grounded runs that surfaced the brand). */
+  ownedCitationN: number;
+  /** Denominator N for Competitive Share (brand + competitor category recs). */
+  competitiveShareN: number;
   /** Who wins the category instead, most-frequent first. */
   topCompetitors: { name: string; count: number }[];
   /** True when `topCompetitors`/Competitive Share came from auto-detection (the
@@ -503,6 +507,32 @@ export interface SweepScorecard {
 }
 
 const pct = (num: number, den: number): number => (den ? Math.round((num / den) * 100) : 0);
+
+// ─── Sample size & confidence (WO-QA-003 A3) ────────────────────────────────
+// A bare percentage at N=2 overstates certainty and undercuts the reproducibility
+// promise. Every rate is shown with its N and a confidence level; low-N claims are
+// hedged in the plain-English summary ("early signal, N=2", not "reliably").
+
+/** Confidence keyed to sample size: N<3 low, 3–4 med, ≥5 high. */
+export function confidenceLevel(n: number): 'low' | 'med' | 'high' {
+  return n < 3 ? 'low' : n < 5 ? 'med' : 'high';
+}
+
+/** Wilson 95% score interval for a cited/N proportion, as whole percents. Narrower
+ *  and better-behaved at small N than the normal approximation (never runs past
+ *  0/100). Used for the per-cell range tooltip. */
+export function wilsonInterval(cited: number, n: number): { low: number; high: number } {
+  if (!n) return { low: 0, high: 0 };
+  const z = 1.96;
+  const p = cited / n;
+  const denom = 1 + (z * z) / n;
+  const centre = p + (z * z) / (2 * n);
+  const margin = z * Math.sqrt((p * (1 - p)) / n + (z * z) / (4 * n * n));
+  return {
+    low: Math.max(0, Math.round(((centre - margin) / denom) * 100)),
+    high: Math.min(100, Math.round(((centre + margin) / denom) * 100)),
+  };
+}
 
 /** Compute the buyer-facing scorecard + a grounded plain-English summary from the
  *  scored runs. Deterministic — the numbers are reproducible from the transcripts. */
@@ -567,6 +597,8 @@ export function sweepScorecard(
     topCompetitor: topCompetitors[0] || null,
     hasCategory: categoryRuns > 0,
     hasBranded: brandedRuns > 0,
+    brandedRuns,
+    categoryRuns,
   });
 
   return {
@@ -576,6 +608,8 @@ export function sweepScorecard(
     competitiveSharePct,
     modelPriorVisibilityPct,
     modelPriorRuns,
+    ownedCitationN: surfaced,
+    competitiveShareN: brandCatRecs + competitorCatRecs,
     topCompetitors,
     competitorsAutoDetected,
     brandedRuns,
@@ -594,12 +628,19 @@ function buildPlainSummary(s: {
   topCompetitor: { name: string; count: number } | null;
   hasCategory: boolean;
   hasBranded: boolean;
+  brandedRuns: number;
+  categoryRuns: number;
 }): string {
+  // At small N the numbers are directional, not settled — hedge the language and
+  // show the N so the summary never over-claims certainty (WO-QA-003 A3).
+  const lowN = (n: number) => n > 0 && n < 3;
+  const nNote = (n: number) => (lowN(n) ? ` — early signal, N=${n}` : '');
   const parts: string[] = [];
   if (s.hasBranded) {
     const b = s.brandedRetrievabilityPct;
-    const knows = b >= 80 ? 'reliably finds' : b >= 40 ? 'sometimes finds' : 'often cannot find';
-    parts.push(`When buyers ask about ${s.who} by name, AI ${knows} it (${b}%).`);
+    const strong = lowN(s.brandedRuns) ? 'appears to find' : 'reliably finds';
+    const knows = b >= 80 ? strong : b >= 40 ? 'sometimes finds' : 'often cannot find';
+    parts.push(`When buyers ask about ${s.who} by name, AI ${knows} it (${b}%${nNote(s.brandedRuns)}).`);
   }
   if (s.hasCategory) {
     const c = s.categoryRecommendationWinPct;
@@ -608,7 +649,7 @@ function buildPlainSummary(s: {
     if (s.topCompetitor && s.topCompetitor.count > 0) {
       line += ` — when it doesn't, ${s.topCompetitor.name} wins most often (${s.topCompetitor.count}×)`;
     }
-    parts.push(line + '.');
+    parts.push(line + nNote(s.categoryRuns) + '.');
   }
   if (s.ownedCitationRatePct !== null) {
     parts.push(`When ${s.who} is mentioned, its own site is cited as the source ${s.ownedCitationRatePct}% of the time.`);

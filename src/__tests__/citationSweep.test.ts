@@ -12,6 +12,8 @@ import {
   detectCompetitors,
   isTruncatedText,
   isModelPrior,
+  confidenceLevel,
+  wilsonInterval,
   type SweepRunResult,
 } from '../lib/citationSweep';
 
@@ -351,5 +353,48 @@ describe('model-prior vs search-grounded (WO-QA-003 A2)', () => {
     expect(e.categoryRuns).toBe(1);       // grounded only
     expect(e.modelPriorRuns).toBe(1);
     expect(e.citationWinPct).toBe(100);   // 1/1 grounded cited, not 1/2
+  });
+});
+
+describe('sample size & confidence (WO-QA-003 A3)', () => {
+  it('confidenceLevel: N<3 low, 3–4 med, >=5 high', () => {
+    expect(confidenceLevel(1)).toBe('low');
+    expect(confidenceLevel(2)).toBe('low');
+    expect(confidenceLevel(3)).toBe('med');
+    expect(confidenceLevel(4)).toBe('med');
+    expect(confidenceLevel(5)).toBe('high');
+    expect(confidenceLevel(20)).toBe('high');
+  });
+
+  it('wilsonInterval: stays within [0,100] and widens at small N', () => {
+    expect(wilsonInterval(0, 0)).toEqual({ low: 0, high: 0 });
+    const two = wilsonInterval(2, 2);   // 100% at N=2 — interval must reach well below 100
+    expect(two.high).toBe(100);
+    expect(two.low).toBeLessThan(60);   // small N ⇒ big uncertainty
+    const fifty = wilsonInterval(1, 2); // 50% at N=2
+    expect(fifty.low).toBeGreaterThanOrEqual(0);
+    expect(fifty.high).toBeLessThanOrEqual(100);
+    expect(fifty.low).toBeLessThan(fifty.high);
+  });
+
+  it('exposes the N behind Owned Citation + Competitive Share', () => {
+    const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+    const sc = sweepScorecard([
+      run({ queryType: 'branded', transcript: 'AEO Analyzers is great' }),
+      run({ queryType: 'branded', transcript: 'see aeoanalyzers.com' }),
+    ], client, []);
+    expect(sc.ownedCitationN).toBe(2);      // both branded runs surfaced the brand
+    expect(sc.competitiveShareN).toBe(0);   // no category runs
+  });
+
+  it('plain summary hedges low-N claims instead of over-claiming certainty', () => {
+    const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+    const { plainSummary } = sweepScorecard([
+      run({ queryType: 'branded', transcript: 'AEO Analyzers is great' }),
+      run({ queryType: 'branded', transcript: 'see aeoanalyzers.com' }),
+    ], client, []);
+    expect(plainSummary).toContain('early signal, N=2');
+    expect(plainSummary).toContain('appears to find');
+    expect(plainSummary).not.toContain('reliably finds');
   });
 });
