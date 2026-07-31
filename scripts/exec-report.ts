@@ -16,7 +16,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import Anthropic from '@anthropic-ai/sdk';
-import { ENGINE_ADAPTERS, configuredEngines } from '../api/_lib/engines.js';
+import { ENGINE_ADAPTERS, configuredEngines, type Engine, type EngineAnswer } from '../api/_lib/engines.js';
 import { scoreRun, type SweepRunResult, type Competitor } from '../src/lib/citationSweep.js';
 import { extractTruthRecord } from '../src/lib/truthRecord.js';
 import {
@@ -65,6 +65,15 @@ async function fetchSite(d: string): Promise<{ html: string; llms: string | null
   return { html, llms };
 }
 
+/** Reject if `p` doesn't settle within `ms` — one hung provider call must not stall
+ *  a whole baseline (the web sweep has this guard; this admin script now does too). */
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<T>((_, rej) => setTimeout(() => rej(new Error(`timeout after ${ms}ms (${label})`)), ms)),
+  ]);
+}
+
 async function pool<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Promise<R[]> {
   const out: R[] = new Array(items.length); let i = 0;
   await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => {
@@ -101,7 +110,7 @@ async function main() {
   const engines = configuredEngines();
   if (!engines.length) { console.error('no provider keys configured'); process.exit(1); }
 
-  type Task = { engine: any; query: string; queryType: 'branded' | 'category'; runIndex: number };
+  type Task = { engine: Engine; query: string; queryType: 'branded' | 'category'; runIndex: number };
   const tasks: Task[] = [];
   for (const engine of engines) {
     for (const q of brandedQueries) for (let r = 0; r < reps; r++) tasks.push({ engine, query: q, queryType: 'branded', runIndex: r });
@@ -116,7 +125,7 @@ async function main() {
   const runs: SweepRunResult[] = await pool(tasks, Number(process.env.EXEC_CONCURRENCY || 4), async (t) => {
     const base: SweepRunResult = { engine: t.engine, query: t.query, queryType: t.queryType, runIndex: t.runIndex, transcript: '', sources: [], costUsd: 0 };
     try {
-      const answer = await ENGINE_ADAPTERS[t.engine](t.query);
+      const answer = await withTimeout<EngineAnswer>(ENGINE_ADAPTERS[t.engine](t.query), Number(process.env.EXEC_CALL_TIMEOUT_MS || 45000), `${t.engine}:${t.queryType}`);
       const grounding: SweepRunResult['grounding'] = answer.searchInvoked ? 'search-grounded' : 'model-prior';
       return scoreRun({ ...base, ...answer, truncated: !!answer.truncated, grounding }, client, competitors);
     } catch (err: any) {
