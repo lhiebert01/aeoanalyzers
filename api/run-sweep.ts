@@ -16,6 +16,7 @@ import { ENGINE_ADAPTERS, MissingKeyError, configuredEngines, type Engine } from
 import {
   scoreRun,
   aggregateSweep,
+  isTruncatedText,
   type SweepRunResult,
   type Competitor,
   type QueryType,
@@ -260,7 +261,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           SWEEP_CALL_TIMEOUT_MS,
           `${t.engine}:${t.queryType}`
         );
-        return scoreRun({ ...base, ...answer }, { domain, brand }, competitors);
+        // Mark cut-off answers so scoring excludes them: trust the engine's own
+        // finish_reason (answer.truncated), and fall back to a text heuristic for
+        // engines/paths that don't report it (WO-QA-003 A1).
+        const truncated = !!answer.truncated || isTruncatedText(answer.transcript);
+        return scoreRun({ ...base, ...answer, truncated }, { domain, brand }, competitors);
       } catch (err: any) {
         // Missing key or transient engine error: record a failed run (not cited)
         // so the aggregate stays honest rather than silently dropping the query.

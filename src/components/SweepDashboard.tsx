@@ -279,9 +279,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       out.push(`### ${L(e.engine)}`);
       if ((e as { errored?: boolean }).errored) {
         out.push('- Service unavailable (engine failed to run — bad/expired key or config; NOT a real 0%)');
+      } else if (e.truncatedBlocked) {
+        out.push(`- Column unreliable — ${e.truncatedRuns} answers were cut off by the token cap (not a real measurement; re-run at a higher cap).`);
       } else {
         out.push(`- Retrievability (branded): ${e.brandedCited}/${e.brandedRuns} (${e.retrievabilityPct}%)`);
         out.push(`- Citation win (category): ${e.citationWinPct}%`);
+        if (e.truncatedRuns > 0) out.push(`- (${e.truncatedRuns} truncated answer${e.truncatedRuns > 1 ? 's' : ''} excluded from the scores above)`);
         if (isAdmin) out.push(`- Cost: $${e.costUsd.toFixed(3)}`);
       }
       out.push('');
@@ -315,7 +318,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
     out.push(`## Transcripts (${r.runs.length} runs)`);
     out.push('');
     for (const run of r.runs) {
-      out.push(`### [${run.cited ? 'cited' : 'not cited'}] ${L(run.engine)} · ${run.queryType}: ${run.query}`);
+      const tag = run.truncated ? 'truncated — not scored' : run.cited ? 'cited' : 'not cited';
+      out.push(`### [${tag}] ${L(run.engine)} · ${run.queryType}: ${run.query}`);
       out.push(run.transcript || '(no answer)');
       if (run.sources?.length) out.push(`Sources: ${run.sources.join(' · ')}`);
       out.push('');
@@ -567,12 +571,22 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                     </div>
                     <div className="mt-2 text-xs text-zinc-500">This engine couldn&apos;t run (bad/expired key or config). This is <b>not</b> a real 0% — retry once the engine is restored.</div>
                   </div>
+                ) : e.truncatedBlocked ? (
+                  // Too many answers were cut off by the token cap — the column is
+                  // unreliable, so we do NOT present its score as a real measurement.
+                  <div className="mt-3">
+                    <div className="inline-flex items-center gap-1.5 text-sm font-bold text-amber-600">
+                      <AlertTriangle className="w-4 h-4" /> Column unreliable
+                    </div>
+                    <div className="mt-2 text-xs text-zinc-500">{e.truncatedRuns} of this engine&apos;s answers were <b>cut off</b> before finishing — its score isn&apos;t a real measurement. Re-run at a higher token cap.</div>
+                  </div>
                 ) : (
                   <>
                     <div className="mt-3 text-sm text-zinc-500">Retrievability (branded)</div>
                     <div className="text-2xl font-black">{e.brandedCited}/{e.brandedRuns} <span className="text-base font-semibold text-zinc-400">({e.retrievabilityPct}%)</span></div>
                     <div className="mt-2 text-sm text-zinc-500">Citation win (category)</div>
                     <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}%</div>
+                    {e.truncatedRuns > 0 && <div className="mt-2 text-[11px] text-amber-600">{e.truncatedRuns} truncated answer{e.truncatedRuns > 1 ? 's' : ''} excluded</div>}
                     {isAdmin && <div className="mt-2 text-xs text-zinc-400 flex items-center gap-1"><DollarSign className="w-3 h-3" />${e.costUsd.toFixed(3)}</div>}
                   </>
                 )}
@@ -646,7 +660,11 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
                 <div key={i} className="border border-zinc-200 rounded-xl">
                   <button onClick={() => setOpenRun(openRun === i ? null : i)} className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm">
                     {openRun === i || expandAll ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.cited ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-500'}`}>{r.cited ? 'cited' : 'not cited'}</span>
+                    {r.truncated ? (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">truncated — not scored</span>
+                    ) : (
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.cited ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-500'}`}>{r.cited ? 'cited' : 'not cited'}</span>
+                    )}
                     <span className="font-semibold">{ENGINE_LABEL[r.engine] || r.engine}</span>
                     <span className="text-zinc-400">·</span>
                     <span className="text-zinc-500 truncate">{r.queryType}: {r.query}</span>

@@ -10,6 +10,7 @@ import {
   aggregateSweep,
   sweepScorecard,
   detectCompetitors,
+  isTruncatedText,
   type SweepRunResult,
 } from '../lib/citationSweep';
 
@@ -279,5 +280,41 @@ describe('detectCompetitors — mine rivals from the category answers', () => {
     expect(sc.competitorsAutoDetected).toBe(true);
     expect(sc.competitiveSharePct).not.toBeNull();
     expect(sc.topCompetitors.map((c) => c.name)).toContain('tryprofound.com');
+  });
+});
+
+describe('truncation (WO-QA-003 A1) — cut-off answers are unmeasured, not zero', () => {
+  it('isTruncatedText: complete answers pass; cut-off answers flag', () => {
+    expect(isTruncatedText('')).toBe(true);                                  // empty
+    expect(isTruncatedText('Top tools: Profound and Scrunch.')).toBe(false); // ends on period
+    expect(isTruncatedText('Best options are Peec (peec.ai)')).toBe(false);  // ends on closing paren
+    expect(isTruncatedText('For tracking, try peec.ai')).toBe(false);        // ends on a bare domain
+    expect(isTruncatedText('aeoanalyzers.com is an Answer Engine Optimization')).toBe(true); // cut mid-phrase
+  });
+
+  it('sweepScorecard excludes a truncated run from the denominators', () => {
+    const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+    const sc = sweepScorecard([
+      run({ queryType: 'category', transcript: 'AEO Analyzers is a good pick.' }),          // scored
+      run({ queryType: 'category', transcript: 'partial answer cut off', truncated: true }), // excluded
+    ], client, []);
+    expect(sc.categoryRuns).toBe(1);                 // only the non-truncated run counts
+    expect(sc.categoryRecommendationWinPct).toBe(100); // 1/1, not 1/2
+  });
+
+  it('aggregateSweep counts truncated runs and blocks a column past the ratio', () => {
+    const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+    // 5 branded runs, 2 truncated → 40% > 20% → blocked.
+    const blocked = aggregateSweep([
+      run({ engine: 'gemini', queryType: 'branded', transcript: 'AEO Analyzers by PI GenAI LLC.' }),
+      run({ engine: 'gemini', queryType: 'branded', transcript: 'aeoanalyzers.com is a tool.' }),
+      run({ engine: 'gemini', queryType: 'branded', transcript: 'AEO Analyzers helps.' }),
+      run({ engine: 'gemini', queryType: 'branded', transcript: 'aeoanalyzers.com is an Answer', truncated: true }),
+      run({ engine: 'gemini', queryType: 'branded', transcript: 'AEO Analyzers is a', truncated: true }),
+    ], client, []);
+    const g = blocked.engines[0];
+    expect(g.truncatedRuns).toBe(2);
+    expect(g.brandedRuns).toBe(3);       // truncated excluded from the score base
+    expect(g.truncatedBlocked).toBe(true);
   });
 });

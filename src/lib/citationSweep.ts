@@ -52,6 +52,11 @@ export interface SweepRunResult {
    *  engine surfaced aeoanalyzers.com specifically. Powers Owned Citation Rate. */
   domainCited?: boolean;
   citedCompetitors?: string[];
+  /** True when the engine's answer was CUT OFF by its output-token cap (the adapter
+   *  saw finish_reason=length / stop_reason=max_tokens / MAX_TOKENS, or the text ends
+   *  mid-sentence). A truncated answer is unmeasured, not measured-zero — it is
+   *  EXCLUDED from every scored metric and badged in the UI (WO-QA-003 A1). */
+  truncated?: boolean;
 }
 
 export interface EngineAggregate {
@@ -67,6 +72,12 @@ export interface EngineAggregate {
   /** "Cited instead": competitor name → number of runs it appeared in. */
   competitorCounts: Record<string, number>;
   costUsd: number;
+  /** Runs excluded from this engine's scores because the answer was cut off. */
+  truncatedRuns: number;
+  /** True when > `TRUNCATION_BLOCK_RATIO` of this engine's attempted runs were
+   *  truncated — the column is unreliable and the UI should not present its score
+   *  as a real measurement (WO-QA-003 A1). */
+  truncatedBlocked: boolean;
 }
 
 export interface SweepSummary {
@@ -163,6 +174,23 @@ const NOT_FOUND_PHRASES = [
   'clarify what tool', 'clarify which', 'could you clarify', 'which specific tool',
   "don't have specific information", 'not sure what',
 ];
+
+/** Above this fraction of an engine's attempted runs being truncated, its column
+ *  is flagged unreliable (score not presented as a real measurement). */
+export const TRUNCATION_BLOCK_RATIO = 0.2;
+
+/** True if an answer looks CUT OFF by a token cap — used together with the engine's
+ *  own finish_reason (which the adapter records on `run.truncated`). Conservative:
+ *  an answer ending in terminal punctuation, a closing bracket/quote, OR a bare
+ *  domain/URL (concise answers often end on a named domain with no period, e.g.
+ *  "…try peec.ai") is treated as COMPLETE. Anything else ends mid-word/clause. */
+export function isTruncatedText(text: string): boolean {
+  const t = String(text || '').trim();
+  if (!t) return true;
+  if (/[.!?:”"’')\]]$/.test(t)) return false;                 // ends on terminal punctuation
+  if (/(?:[a-z0-9-]+\.)+[a-z]{2,}$/i.test(t)) return false;   // ends on a bare domain/URL
+  return true;
+}
 
 /** Normalize curly/backtick apostrophes to ' so "couldn’t" matches "couldn't". */
 function normApostrophe(s: string): string {
@@ -346,7 +374,7 @@ export function detectCompetitors(
   const own = registrable(normalizeDomain(client.domain));
   const counts: Record<string, number> = {};
   for (const r of runs) {
-    if (r.queryType !== 'category') continue;
+    if (r.queryType !== 'category' || r.truncated) continue;
     for (const h of hostsInRun(r)) {
       if (h === own || NON_COMPETITOR_HOSTS.has(h)) continue;
       counts[h] = (counts[h] || 0) + 1;
@@ -384,10 +412,14 @@ export function aggregateSweep(
         brandedRuns: 0, brandedCited: 0, retrievabilityPct: 0,
         categoryRuns: 0, categoryCited: 0, citationWinPct: 0,
         competitorCounts: {}, costUsd: 0,
+        truncatedRuns: 0, truncatedBlocked: false,
       };
       byEngine.set(r.engine, agg);
     }
     agg.costUsd += r.costUsd || 0;
+    // A truncated answer is unmeasured — count it (for the block ratio) but do NOT
+    // let it move any score (WO-QA-003 A1).
+    if (r.truncated) { agg.truncatedRuns++; continue; }
     if (r.queryType === 'branded') {
       agg.brandedRuns++;
       if (r.cited) agg.brandedCited++;
@@ -405,11 +437,15 @@ export function aggregateSweep(
     }
   }
 
-  const engines = [...byEngine.values()].map((a) => ({
-    ...a,
-    retrievabilityPct: a.brandedRuns ? Math.round((a.brandedCited / a.brandedRuns) * 100) : 0,
-    citationWinPct: a.categoryRuns ? Math.round((a.categoryCited / a.categoryRuns) * 100) : 0,
-  }));
+  const engines = [...byEngine.values()].map((a) => {
+    const attempted = a.brandedRuns + a.categoryRuns + a.truncatedRuns;
+    return {
+      ...a,
+      retrievabilityPct: a.brandedRuns ? Math.round((a.brandedCited / a.brandedRuns) * 100) : 0,
+      citationWinPct: a.categoryRuns ? Math.round((a.categoryCited / a.categoryRuns) * 100) : 0,
+      truncatedBlocked: attempted > 0 && a.truncatedRuns / attempted > TRUNCATION_BLOCK_RATIO,
+    };
+  });
 
   const topCompetitors = Object.entries(globalCompetitors)
     .map(([name, count]) => ({ name, count }))
@@ -472,6 +508,7 @@ export function sweepScorecard(
   const competitorCounts: Record<string, number> = {};
 
   for (const r of scored) {
+    if (r.truncated) continue; // cut-off answer — unmeasured, never scored (A1)
     if (r.queryType === 'branded') {
       brandedRuns++; if (r.cited) brandedCited++;
     } else {

@@ -22,6 +22,10 @@ export interface EngineAnswer {
   sources: string[];
   costUsd: number;
   model: string;
+  /** True when the engine hit its output-token cap (finish_reason=length /
+   *  stop_reason=max_tokens / MAX_TOKENS): the answer is CUT OFF, so it must be
+   *  excluded from scored metrics downstream (WO-AEO-SWEEP-QA-003 A1). */
+  truncated?: boolean;
 }
 
 export class MissingKeyError extends Error {
@@ -43,7 +47,21 @@ const CONCISE_SYS =
   'sentences. Name the specific products, tools, companies, or websites you would ' +
   'recommend or cite for this question, including their domains when you know them. ' +
   'Do not write an essay, background, disclaimers, or caveats — just the direct answer.';
-const SWEEP_MAX_OUTPUT = Number(process.env.SWEEP_MAX_OUTPUT_TOKENS || 400);
+// Per-engine output caps. The old single 400-token cap truncated grounded answers
+// (esp. Gemini) mid-sentence — corrupting citation scoring on every column, not
+// just Gemini's (WO-AEO-SWEEP-QA-003 A1). Each engine now gets a cap tuned to its
+// grounded-answer verbosity, and each adapter reports whether the API actually hit
+// that cap so truncated runs are excluded from scored metrics downstream. Override
+// per engine with SWEEP_MAX_OUTPUT_TOKENS_<ENGINE>, or all with the legacy
+// SWEEP_MAX_OUTPUT_TOKENS. Cost impact is a few tenths of a cent per sweep.
+const cap = (engine: string, dflt: number) =>
+  Number(process.env[`SWEEP_MAX_OUTPUT_TOKENS_${engine}`] || process.env.SWEEP_MAX_OUTPUT_TOKENS || dflt);
+const MAX_OUT = {
+  claude: cap('CLAUDE', 600),
+  openai: cap('OPENAI', 600),
+  perplexity: cap('PERPLEXITY', 700),
+  gemini: cap('GEMINI', 900),
+};
 
 // --- Anthropic / Claude (authoritative web_search_20260209 shape) ----------
 async function askClaude(query: string): Promise<EngineAnswer> {
@@ -70,13 +88,14 @@ async function askClaude(query: string): Promise<EngineAnswer> {
   const tools = [{ type: searchType, name: 'web_search' as const, max_uses: maxUses }];
 
   let messages: any[] = [{ role: 'user', content: query }];
-  let resp: any = await client.messages.create({ model, max_tokens: SWEEP_MAX_OUTPUT, system: CONCISE_SYS, tools: tools as any, messages });
+  let resp: any = await client.messages.create({ model, max_tokens: MAX_OUT.claude, system: CONCISE_SYS, tools: tools as any, messages });
   let guard = 0;
   // Server-tool loops can pause; re-send to resume (skill: handling pause_turn).
   while (resp.stop_reason === 'pause_turn' && guard++ < 4) {
     messages = [{ role: 'user', content: query }, { role: 'assistant', content: resp.content }];
-    resp = await client.messages.create({ model, max_tokens: SWEEP_MAX_OUTPUT, system: CONCISE_SYS, tools: tools as any, messages });
+    resp = await client.messages.create({ model, max_tokens: MAX_OUT.claude, system: CONCISE_SYS, tools: tools as any, messages });
   }
+  const truncated = resp.stop_reason === 'max_tokens';
 
   const transcript = (resp.content || [])
     .filter((b: any) => b.type === 'text')
@@ -103,7 +122,7 @@ async function askClaude(query: string): Promise<EngineAnswer> {
     (u.output_tokens || 0) / 1e6 * priceOut +
     searchReqs * 0.01; // web search ~$10 / 1000 requests
 
-  return { transcript, sources: uniq(sources), costUsd, model };
+  return { transcript, sources: uniq(sources), costUsd, model, truncated };
 }
 
 // --- OpenAI (Responses API + web search). Verify shapes during QA. ----------
@@ -116,10 +135,13 @@ async function askOpenAI(query: string): Promise<EngineAnswer> {
     model,
     tools: [{ type: 'web_search_preview' }] as any,
     instructions: CONCISE_SYS,
-    max_output_tokens: SWEEP_MAX_OUTPUT,
+    max_output_tokens: MAX_OUT.openai,
     input: query,
   });
 
+  // Responses API marks a cap-truncated answer status='incomplete' with
+  // incomplete_details.reason='max_output_tokens'.
+  const truncated = resp.status === 'incomplete' && resp.incomplete_details?.reason === 'max_output_tokens';
   const transcript = (resp.output_text || '').trim();
   const sources: string[] = [];
   for (const item of resp.output || []) {
@@ -133,7 +155,7 @@ async function askOpenAI(query: string): Promise<EngineAnswer> {
     (u.output_tokens || 0) / 1e6 * 10 +
     0.01; // web search fee (approx)
 
-  return { transcript, sources: uniq(sources), costUsd, model };
+  return { transcript, sources: uniq(sources), costUsd, model, truncated };
 }
 
 // --- Perplexity (stable OpenAI-compatible REST; returns citations) ---------
@@ -146,12 +168,13 @@ async function askPerplexity(query: string): Promise<EngineAnswer> {
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model,
-      max_tokens: SWEEP_MAX_OUTPUT,
+      max_tokens: MAX_OUT.perplexity,
       messages: [{ role: 'system', content: CONCISE_SYS }, { role: 'user', content: query }],
     }),
   });
   if (!r.ok) throw new Error(`Perplexity ${r.status}: ${(await r.text()).slice(0, 200)}`);
   const j: any = await r.json();
+  const truncated = j.choices?.[0]?.finish_reason === 'length';
   const transcript = (j.choices?.[0]?.message?.content || '').trim();
   const sources: string[] = j.citations || (j.search_results || []).map((s: any) => s.url) || [];
   const u = j.usage || {};
@@ -160,7 +183,7 @@ async function askPerplexity(query: string): Promise<EngineAnswer> {
     (u.completion_tokens || 0) / 1e6 * 1 +
     0.005; // sonar request fee (approx)
 
-  return { transcript, sources: uniq(sources), costUsd, model };
+  return { transcript, sources: uniq(sources), costUsd, model, truncated };
 }
 
 // --- Gemini (google search grounding; already a project dependency) --------
@@ -179,14 +202,15 @@ async function askGemini(query: string): Promise<EngineAnswer> {
       const resp: any = await ai.models.generateContent({
         model,
         contents: query,
-        config: { tools: [{ googleSearch: {} }], systemInstruction: CONCISE_SYS, maxOutputTokens: SWEEP_MAX_OUTPUT } as any,
+        config: { tools: [{ googleSearch: {} }], systemInstruction: CONCISE_SYS, maxOutputTokens: MAX_OUT.gemini } as any,
       });
+      const truncated = resp.candidates?.[0]?.finishReason === 'MAX_TOKENS';
       const transcript = (resp.text || '').trim();
       const chunks = resp.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
       const sources: string[] = chunks.map((c: any) => c.web?.uri).filter(Boolean);
       const um = resp.usageMetadata || {};
       const costUsd = ((um.promptTokenCount || 0) + (um.candidatesTokenCount || 0)) / 1e6 * 0.3; // flash approx
-      return { transcript, sources: uniq(sources), costUsd, model };
+      return { transcript, sources: uniq(sources), costUsd, model, truncated };
     } catch (e: any) {
       lastErr = e; // 429 quota / model-not-available → try the next model
     }
