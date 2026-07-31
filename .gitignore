@@ -19,3 +19,6 @@ images/_archive/
 
 # Microsoft Office temporary lock files
 ~$*
+
+# Generated courtesy/exec reports (not committed)
+exec-out/

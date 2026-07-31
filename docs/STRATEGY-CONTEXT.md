@@ -7,10 +7,11 @@
 
 ## Identity / distribution decisions that bind this repo
 
-- **PIGENAI LLC legal + postal address:** `5901 NW 63rd Ter` (Kansas City, MO —
-  confirm exact city/state/ZIP against the identity-site SSOT before it goes in an
-  email footer). This is a **valid CAN-SPAM postal address as-is**; no virtual
-  mailbox / registered agent is being set up (**policy: no new subscriptions**).
+- **PIGENAI LLC legal + postal address (CONFIRMED by founder 2026-07-31, use verbatim
+  in email footers):**
+  `PIGENAI LLC · 5901 NW 63rd Ter, Apt 301 · Kansas City, MO 64151`
+  This is a **valid CAN-SPAM postal address as-is**; no virtual mailbox / registered
+  agent is being set up (**policy: no new subscriptions**).
 - **Email-template requirement (courtesy-sweep / report send path):** outbound
   report emails are **commercial mail**. Any send-path template MUST carry, in the
   footer: (1) the PIGENAI LLC postal address above, and (2) a simple opt-out line.
@@ -26,9 +27,17 @@
 
 ## Next, in order (per founder direction 2026-07-31)
 
-1. **Courtesy-sweep generation path — audit + build FIRST** (before C2/C3). Target
-   ~Aug 20: generate a clean, sendable prospect sweep in minutes with the refined
-   competitor list. Spec: `templates/exec-report/` (WO-AEO-EXECREPORT-001).
+1. **Courtesy-sweep generation path — build FIRST** (before C2/C3). Target ~Aug 20:
+   one command turns a domain into a review-ready report + email draft with the
+   refined competitor list. **GREEN-LIT 2026-07-31: minimal generator only** (NOT
+   full WO Phase 1–5): (a) versioned template + COURTESY watermark variant, (b)
+   narrative generator — numbers injected from sweep JSON, model authors only prose,
+   gray-hat blocklist on output, (c) email draft wrapper — DRAFT-ONLY forever, admin
+   copies to mail client, footer = confirmed postal address + opt-out line (prose is
+   placeholder; final wording comes in a later template session), (d) headless
+   completeness so scorecard/fidelity/entity-linking compute server-side. Stripe
+   door / review-queue UI / CRM deferred (outreach is manual copy-paste through GTM-90).
+   Spec: `templates/exec-report/` (WO-AEO-EXECREPORT-001).
 2. **N=5 self-sweep baseline** re-measure (now unblocked) — store it; it gates all
    public claims + the honest-zero series.
 3. C2 (attainability tiers) → C3 (ICP segmentation) → Lane E → feature freeze.
