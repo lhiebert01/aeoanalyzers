@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis | AEOAnalyzers</title>
+<meta name="description" content="A behind-the-scenes look at the AEO Analyzers pipeline: how we read your site, ask four answer engines your buyers' questions several times each, separate search-grounded answers from memory, and score three layers — every number backed by a stored transcript.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://aeoanalyzers.com/blog/how-it-works">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AEOAnalyzers">
+<meta property="og:title" content="How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis">
+<meta property="og:description" content="The pipeline, drawn: read your site, ask four engines your buyers' questions several times each, separate search-grounded from memory, score three layers — every number backed by a stored transcript.">
+<meta property="og:url" content="https://aeoanalyzers.com/blog/how-it-works">
+<meta property="og:image" content="https://aeoanalyzers.com/og-blog-how-it-works.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="AEO Analyzers blog card: How AEO Analyzers Works — the 90-second tour of a hundred-hour analysis">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis">
+<meta name="twitter:description" content="The pipeline, drawn. Read your site, ask four engines several times each, separate search-grounded from memory, score three layers — every number backed by a stored transcript.">
+<meta name="twitter:image" content="https://aeoanalyzers.com/og-blog-how-it-works.png">
+<meta name="theme-color" content="#08343B">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis",
+  "description": "A behind-the-scenes look at the AEO Analyzers pipeline: how we read your site, ask four answer engines your buyers' questions several times each, separate search-grounded answers from memory, and score three layers — every number backed by a stored transcript.",
+  "datePublished": "2026-08-01",
+  "dateModified": "2026-08-01",
+  "author": { "@type": "Person", "name": "Lindsay Hiebert", "url": "https://aeoanalyzers.com" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PI GenAI LLC",
+    "url": "https://pigenai.com",
+    "logo": { "@type": "ImageObject", "url": "https://aeoanalyzers.com/aeo-og.png" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://aeoanalyzers.com/blog/how-it-works" },
+  "image": "https://aeoanalyzers.com/og-blog-how-it-works.png",
+  "url": "https://aeoanalyzers.com/blog/how-it-works"
+}
+</script>
+<style>
+:root{
+  --paper:#E7ECEE; --card:#FFFFFF; --ink:#0E1216; --muted:#3F4952; --hair:#C4CDD3;
+  --teal:#0B6E7A; --teal-deep:#08343B; --teal-tint:#E6F0F1; --panel:#EBF0F2; --edge:#9FADB6;
+  --card-shadow:0 1px 2px rgba(20,26,31,.06), 0 6px 18px rgba(20,26,31,.10);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:26px 20px 40px}
+.sitebar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:11px clamp(16px,4vw,28px);background:var(--card);border-bottom:1px solid var(--edge)}
+.sitebar .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.sitebar .brand .mk{display:inline-flex;width:27px;height:27px;border-radius:7px;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.sitebar .snav{display:flex;align-items:center;gap:6px}
+.sitebar .snav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:9px}
+.sitebar .snav a:hover{color:var(--ink);background:var(--panel)}
+.sitebar .snav a.primary{background:var(--teal-deep);color:#EAF4F5}
+.sitebar .snav a.primary:hover{color:#fff}
+.sitefoot{border-top:1px solid var(--edge);background:var(--card);margin-top:44px}
+.sitefoot .fin{max-width:960px;margin:0 auto;padding:24px clamp(16px,4vw,28px);display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.sitefoot .fnav{display:flex;flex-wrap:wrap;gap:8px 22px}
+.sitefoot a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+.sitefoot a:hover{color:var(--ink)}
+.sitefoot .fcop{color:var(--muted);font-size:12.5px}
+@media(max-width:520px){.sitebar .snav a:not(.primary){display:none}}
+.post{max-width:760px;margin:6px auto 4px;padding:0 8px}
+.posteyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.posttitle{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5.4vw,46px);line-height:1.06;
+  letter-spacing:-.015em;text-wrap:balance;margin:12px 0 12px}
+.postmeta{color:var(--muted);font-size:13px;margin:0 0 24px;letter-spacing:.02em}
+.postbody p{font-size:17px;max-width:70ch;margin:0 0 16px;color:var(--ink)}
+.postbody .postlead{font-size:19.5px;line-height:1.5;max-width:72ch}
+.postbody h2{font-family:var(--serif);font-weight:600;font-size:clamp(22px,3.4vw,29px);margin:40px 0 12px;letter-spacing:-.01em}
+strong{color:var(--ink)}
+.ilink{color:var(--teal);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.ilink:hover{text-decoration-thickness:2px}
+/* figures — dark-field diagrams on the light page */
+.fig{margin:28px 0 10px}
+.fig img{width:100%;height:auto;display:block;border:1px solid var(--edge);border-radius:16px;background:#0E1B16;box-shadow:var(--card-shadow)}
+.figcap{color:var(--muted);font-size:13.5px;margin:11px 4px 0;text-align:center;font-style:italic;max-width:none}
+.samplenote{max-width:760px;margin:22px auto 0;padding:0 8px;color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+.samplenote b{color:var(--ink)}
+.postoutro{max-width:800px;margin:36px auto 0;padding:32px clamp(22px,4.5vw,44px);
+  background:var(--teal-tint);border:1px solid var(--edge);border-radius:20px;box-shadow:var(--card-shadow)}
+.postoutro .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;display:block}
+.postoutro h3{font-family:var(--serif);font-weight:600;font-size:clamp(25px,4vw,34px);line-height:1.08;
+  letter-spacing:-.015em;text-wrap:balance;margin:0 0 16px}
+.postoutro p{font-size:16.5px;max-width:72ch;margin:0 0 14px;color:var(--ink)}
+.postoutro .bigline{font-size:19px;line-height:1.45}
+.postoutro .hl{color:var(--teal);font-weight:700}
+.cta{display:inline-block;background:var(--teal-deep);color:#EAF4F5;font-weight:600;font-size:15px;
+  text-decoration:none;padding:11px 22px;border-radius:11px}
+.cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+</style>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="https://aeoanalyzers.com/"><span class="mk">A</span> AEO Analyzers</a>
+  <nav class="snav">
+    <a href="https://aeoanalyzers.com/">Home</a>
+    <a href="/blog/">Blog</a>
+    <a class="primary" href="https://aeoanalyzers.com/">Start free →</a>
+  </nav>
+</header>
+<div class="wrap">
+  <article class="post">
+    <div class="posteyebrow">AEOAnalyzers · Behind the scenes</div>
+    <h1 class="posttitle">How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis</h1>
+    <p class="postmeta">PI GenAI LLC · August 2026 · 6-minute read</p>
+    <div class="postbody">
+      <p class="postlead">Most AI-visibility tools hand you a number and a vibe. This one shows its work — every question it asked, every engine it asked, every answer it got back, stored so you can re-run it yourself. Here is the whole pipeline, end to end, in about the time it takes to read this page.</p>
+      <p>What a web team would spend a hundred hours reasoning through by hand — which questions your buyers ask AI, which engines answer them, who gets named — the analysis works through in about ninety seconds, and then leaves the receipts.</p>
+
+      <figure class="fig">
+        <img src="/blog/how-it-works/visual-1-pipeline.png" width="1672" height="941" loading="lazy"
+          alt="A five-stage pipeline: AEO Analyzers reads your site to propose brand, category, competitors and questions; forms 12 buyer questions in three kinds; asks four AI engines each question several times with web search on, keeping search-grounded answers separate from from-memory ones; scores three layers with an accuracy and look-alike check and a sample size on every number; and returns a scorecard, stored transcripts, and an action plan. A loop arrow returns to the interrogation stage: re-sweep monthly, same questions, same way.">
+        <figcaption class="figcap">The pipeline, at a glance — five stages, and a loop back to the start.</figcaption>
+      </figure>
+
+      <h2>Stage 1–2 — we read your site, then form the questions</h2>
+      <p>You give a domain. We read the live page and propose your brand, your category, your closest competitors, and a set of buyer questions — and you confirm or edit every field before anything runs. The instrument starts from what is actually on your page, not a guess about it.</p>
+      <p>Then the questions: twelve a real buyer would type, in three kinds. <strong>About you</strong> — are you found when named. <strong>Category</strong> — are you recommended when nobody names you. <strong>Head-to-head</strong> — the alternatives-and-versus questions. These are the questions your buyers ask AI before they ever reach your site.</p>
+
+      <figure class="fig">
+        <img src="/blog/how-it-works/visual-2-three-layers.png" width="1774" height="887" loading="lazy"
+          alt="Three panels naming the three things a Citation Sweep measures: whether AI finds you when buyers ask you by name, whether AI recommends you when buyers ask about the category, and which competitors get cited in your place. The example answers are illustrative.">
+        <figcaption class="figcap">The three layers we measure — found by name, recommended, and who's cited instead. (Example answers are illustrative.)</figcaption>
+      </figure>
+
+      <h2>Stage 3 — the interrogation</h2>
+      <p>Every question goes to four answer engines — ChatGPT, Claude, Perplexity, and Gemini — with web search on, several times each. Why several? Because an AI answer changes from run to run: one answer is an anecdote; the pattern across runs is a measurement. And we separate answers the engine actually <em>searched the web</em> to produce from answers it gave <em>from memory</em> — they mean different things, so they are scored separately, never blended.</p>
+
+      <figure class="fig">
+        <img src="/blog/how-it-works/visual-3-why-several-runs.png" width="2528" height="1686" loading="lazy"
+          alt="A four-by-five grid of one question asked to four AI engines five times each. Cells vary between cited and not-cited across the runs, showing that a single answer is unreliable while the repeated pattern, with its sample size and confidence, is a real measurement. The values shown are illustrative.">
+        <figcaption class="figcap">One answer is a coin flip. The pattern is a measurement. (Grid values illustrative.)</figcaption>
+      </figure>
+
+      <h2>Stage 4 — the measurement</h2>
+      <p>Every answer is scored on the three separable layers above, plus an accuracy check — did the engine get your facts right? — and a look-alike check: is it confusing you with a similarly named company, a colliding stock ticker, a different site? Every number ships with how many times we asked and how confident that makes the result. No bare figures, no certainty theatre.</p>
+
+      <h2>Why "read" and "cited" are different numbers</h2>
+      <p>Here is the finding that reshaped how we think about this. In the thirty days to July 31, AI crawlers visited our own site 265 times. They had read everything. On the buyer questions that matter, they recommended us zero times. Being read is not being cited — and the two live on different pipelines, on different clocks.</p>
+
+      <figure class="fig">
+        <img src="/blog/how-it-works/visual-4-reading-isnt-citing.png" width="1693" height="929" loading="lazy"
+          alt="Two contrasting pipelines. The top shows training crawlers slowly ingesting many web pages into a model over weeks to months. The bottom shows live retrieval at the moment a buyer asks, quickly selecting a few sources to cite in milliseconds to seconds. Reading happens on the top pipeline; citing on the bottom — which is why a heavily crawled site can still go uncited.">
+        <figcaption class="figcap">Reading happens during training. Citing happens live, at answer time. Different pipelines, different clocks.</figcaption>
+      </figure>
+
+      <h2>Stage 5 — the deliverables</h2>
+      <p>You walk away with a plain-English scorecard, the full set of stored transcripts, and an action plan: the structural code fixes, the exact questions to turn into content, and a source list sorted by how attainable each one actually is — because not every citation is equally in reach, and your time should go where movement is possible.</p>
+
+      <figure class="fig">
+        <img src="/blog/how-it-works/visual-5-attainability-ladder.png" width="1536" height="1024" loading="lazy"
+          alt="A three-rung ladder sorting the sources AI engines trust by how attainable they are: 'do now' self-serve profiles and pages, 'earn' pitchable roundups and communities, and 'aspirational' sources labeled honestly rather than assigned as busywork.">
+        <figcaption class="figcap">The attainability ladder — start where you have the most control.</figcaption>
+      </figure>
+
+      <h2>What we deliberately don't do</h2>
+      <p>No guarantees — we report what the engines did, not what they will do next, which is why every number carries a sample size and a confidence level instead of a promise. No invented numbers — every rating, count, or percentage comes from a stored record, and the tool will not paste a statistic onto your site that is not already on your page. And no gray-hat shortcuts — no cloaking, no borrowed-authority seeding. We measure honestly and hand you fixes you can stand behind.</p>
+
+      <h2>Fix, then prove</h2>
+      <p>Two instruments, one loop. The <strong>AEO Score</strong> asks <em>is your site built to be cited?</em> — the inside-out readiness measure, with the fixes to raise it. The <strong>Citation Sweep</strong> asks <em>are you actually cited?</em> — the outside-in proof from the engines themselves. Fix with the Score; prove with the Sweep; re-sweep monthly to watch the gap between them close.</p>
+
+      <figure class="fig">
+        <img src="/blog/how-it-works/visual-6-fix-prove.png" width="1672" height="941" loading="lazy"
+          alt="Two gauges. The AEO Score, an inside-out readiness measure, asks whether your site is built to be cited and provides the fixes. The Citation Sweep, an outside-in measure, asks whether the engines actually cite you and provides the proof. An arrow links them: fix with the Score, prove with the Sweep. Gauge values are illustrative.">
+        <figcaption class="figcap">Fix with the Score → prove with the Sweep. (Gauge values illustrative.)</figcaption>
+      </figure>
+    </div>
+    <p class="samplenote"><em>Diagram example answers, grid values, and gauge readings are illustrative — labeled as such — not measured results. AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</em></p>
+  </article>
+
+  <div class="postoutro">
+    <span class="eyebrow">See yours</span>
+    <h3>See what the engines actually say about your business.</h3>
+    <p class="bigline"><span class="hl">It starts with your domain.</span> We read your site, work out your brand, category, and closest competitors, and draft the buyer questions to test.</p>
+    <p>The first look is free and takes about ninety seconds — every number reproducible, every transcript stored. Whatever your number is, better you find it than your next prospect.</p>
+    <a class="cta" href="https://aeoanalyzers.com">Run the free analysis →</a>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="fin">
+    <nav class="fnav">
+      <a href="https://aeoanalyzers.com/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://aeoanalyzers.com/privacy">Privacy</a>
+      <a href="https://aeoanalyzers.com/terms">Terms</a>
+    </nav>
+    <div class="fcop">© 2026 AEOAnalyzers · PI GenAI LLC</div>
+  </div>
+</footer>
+</body>
+</html>
