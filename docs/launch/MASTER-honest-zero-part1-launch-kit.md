@@ -23,18 +23,13 @@
 | r/SEO | — | REMOVED (Rule 8 "No Apps" — categorical; do not repost) |
 | LinkedIn / X / Bluesky | (Lindsay's manual posts) | live |
 
-## Reddit campaign — RESUME HERE (paused Aug 1, mid-flight)
-**Posted ✅:** r/SaaS · r/bigseo (Case Study flair) · r/Entrepreneurs (Journey Post flair).
-**Removed ❌:** r/SEO — Rule 8 "No Apps" (categorical; do NOT retry there).
-**Next up ▶ r/indiehackers** — use **Path A (pure story, NO link in body)** so it fits their
-"Sharing Stories" flair; their rules ban product-promo under that flair (warning→ban), and new
-accounts must go via modmail. If you'd rather keep the link, use their **Self Promotion** flair
-instead. (Draft opener was handed over in chat; ask me to reprint it.)
-**Then (each with a FRESH opener, one/day, check each sidebar for "No Apps"):** r/GrowthHacking ·
-r/EntrepreneurRideAlong · r/marketing.
-**Rules that held all run:** story-first · disclose "it's my product" · rewrite the opening line
-per sub (identical text = shadow-filter) · link only in a comment if the sub allows or someone asks
-· one sub per day · on removal, modmail once, never repost.
+## Reddit campaign — status (revised Aug 1 ~1:30pm CT; Lane 5 is owned by the strategy/identity session — that ledger in `thesmartaiworker-site` docs is the source of truth; this is a pointer only)
+**Morning batch = FOUR simultaneous posts, one variant each. Only r/Entrepreneurs survived.**
+- **Surviving ✅:** r/Entrepreneurs ("known ≠ recommended", Journey Post flair) — climbing #6→#3 of day, 41k+ views, shares outrunning votes ~8:1. Canonical link deployed once, by invitation only.
+- **Removed ❌ (low-karma automod):** r/SaaS ("worst number") · r/SEO ("scored 0%") · r/bigseo ("invented a co-founder"). No reposts, never the "post to a different community" button. Removed variants = preserved UNPUBLISHED assets (the r/bigseo co-founder story → Part 3+, fresh-written).
+**In force now:** karma-first ~2-week window — comments only (no links/no product, real numbers). Active in 6 subs.
+**Next post ▶ r/indiehackers (next week):** pure journey story, **Self Promotion flair** if it names the product (misusing "Sharing Stories" = warning→ban), no ask/link unless invited; metrics need receipts (we have N=200 + transcripts). "Publishing my worst number monthly" angle. Comment in the sub first so the username has visible helpful history.
+**Rules that held:** story-first · disclose "it's my product" · fresh opener per sub (identical text = shadow-filter) · one sub/day · link only if invited/allowed · on removal, modmail once, never repost.
 
 ---
 
