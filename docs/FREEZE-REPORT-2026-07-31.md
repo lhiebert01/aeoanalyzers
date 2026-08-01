@@ -77,6 +77,11 @@ and every measurement fix and fidelity detector was **proven by breaking its gua
 - Swap fictional "Meridian" for the ratified anonymized automaker sweep on the
   "we measure, not estimate" blog post (real numbers on that page).
 - Deploy a refreshed `llms.txt` from the E3 generator (drift-diff showed +1 to add).
+- **Optimize /blog/how-it-works diagram PNGs (next change set, founder-requested Aug 1):**
+  the six visuals total ~11.9 MB (V3 ~4 MB @ 2528×1686). Compress/resize (e.g. width-cap
+  ~1600px + PNG optimization, or WebP with PNG fallback) to cut page weight; images already
+  `loading="lazy"` with width/height set. No tooling in-repo yet (no sharp/imagemagick) —
+  add one for the pass. Also pairs naturally with a future `/methodology` link.
 - **Public `/methodology` page (review-gated content, ADDENDA Aug-1 #5):** principles-
   level "publish the science" (multi-run rationale, search-grounded vs model-memory
   separation, the three layers, confidence/N, transcript storage, Princeton anchor)
