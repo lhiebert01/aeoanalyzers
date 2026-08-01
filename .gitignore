@@ -22,3 +22,6 @@ images/_archive/
 
 # Generated courtesy/exec reports (not committed)
 exec-out/
+
+# Private, never-committed working files (GTM contacts/targets, etc.) — repo is PUBLIC
+/private/
