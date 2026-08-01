@@ -12,10 +12,17 @@ real comparison and not question drift.
 - If a question ever must change, change it permanently AND note it here with the date, and
   treat that month as a new baseline (not comparable to prior months).
 
-**Panel version:** v1 · pinned 2026-08-01
+**Panel version:** v1 · pinned 2026-08-01 (ratified as the canonical series set)
 **Brand:** AEO Analyzers
 **Core category:** Answer Engine Optimization Software
-**Competitor seed:** Profound (tryprofound.com) · Otterly AI (otterly.ai)
+**Competitor seed (ratified):** Profound (tryprofound.com) · Otterly AI (otterly.ai) · Peec AI (peec.ai)
+
+> NOTE: the Aug-1 SERIES ANCHOR run used a 2-competitor seed (Profound, Otterly) — the
+> seed present in the UI when it ran, BEFORE the 3-competitor ratification. The seed
+> affects only "cited instead" / competitive-share attribution, NOT the headline
+> (branded/category win are client-centric), so the anchor's headline stands. Use the
+> full 3-competitor seed from the Sept 1 run onward.
+> PENDING v1.1: apply the A2c defunct-name lint to Q8 ("SearchGPT" → "ChatGPT search").
 
 ## The 12 questions
 

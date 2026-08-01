@@ -77,6 +77,18 @@ and every measurement fix and fidelity detector was **proven by breaking its gua
 - Swap fictional "Meridian" for the ratified anonymized automaker sweep on the
   "we measure, not estimate" blog post (real numbers on that page).
 - Deploy a refreshed `llms.txt` from the E3 generator (drift-diff showed +1 to add).
+- **Public `/methodology` page (review-gated content, ADDENDA Aug-1 #5):** principles-
+  level "publish the science" (multi-run rationale, search-grounded vs model-memory
+  separation, the three layers, confidence/N, transcript storage, Princeton anchor)
+  while "protecting the engineering" (no prompts, thresholds, classifier internals,
+  heuristics, fixtures). Definitional AEO/category content. Draft routes to founder for
+  review; chat-Claude supplies the draft on request. Do NOT publish unreviewed.
+- **"No bare N" customer-facing pass (ADDENDA Aug-1 #3, needs care):** the header no
+  longer shows bare "N" (rephrased to "several times each"). Converting the remaining
+  scorecard cells (`N=40 · high confidence`) is nuanced — that N is TOTAL runs, not
+  reps ("asked 5 times per engine" describes reps), so a blind relabel would misstate
+  the quantity. Do as a deliberate copy pass that distinguishes reps from N, keeping
+  precise N in the evidence/technical area.
 
 ## Maintenance mode
 Founder GTM-90 motion owns the calendar (see `OUTREACH-IDENTITY-STATUS.md` in the

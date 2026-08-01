@@ -76,3 +76,11 @@ crawls now) lives in the dashboard, not the story.
   set, so it stays the LAUNCH-narrative number but is not the series comparator.
 - **Narrative-numbers convention unchanged:** public copy cites the stored, dated
   anchor with its date; live dashboard values never appear in narrative.
+- **A3 interim rule (in force until saved-set versioning ships):** series runs go
+  through the **agent** (`scripts/headless-sweep.ts` with the pinned panel), **never
+  the UI** — the URL-first config regenerates fresh questions each time and will not
+  reproduce the pinned set. Live evidence Aug 1: a fresh config regenerated the
+  questions instead of loading the panel. See [[work-order-platform-001]] backlog.
+- **Canonical series set (ratified Aug 1):** the Aug-1 regenerated 12-question panel
+  + three auto-proposed competitors — Profound, Otterly AI, Peec AI. Pinned in
+  `docs/baselines/aeoanalyzers-question-panel.md`.

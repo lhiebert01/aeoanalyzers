@@ -522,8 +522,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer }: {
       <div>
         <h1 className="text-3xl font-black tracking-tight">Citation Sweeps & Monitoring</h1>
         <p className="text-zinc-500 mt-2">
-          Ask the real answer engines (with web search on), N&nbsp;times per query, and measure three separable layers:
-          <b> retrievability</b> (branded), <b>citation win</b> (category), and who gets <b>cited instead</b> — backed by stored transcripts.
+          We ask the real answer engines your buyers&apos; questions — with web search on, several times each, because AI answers change from run to run — and measure three separate things: are you found when asked by name, are you recommended when buyers ask the category, and who gets cited instead. Every answer is stored as a transcript you can check.
         </p>
         <p className="text-sm text-teal-700 mt-2 font-medium">{SCORE_VS_SWEEP.tagline.sweeps}</p>
       </div>
