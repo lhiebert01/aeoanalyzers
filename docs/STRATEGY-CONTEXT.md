@@ -84,3 +84,10 @@ crawls now) lives in the dashboard, not the story.
 - **Canonical series set (ratified Aug 1):** the Aug-1 regenerated 12-question panel
   + three auto-proposed competitors — Profound, Otterly AI, Peec AI. Pinned in
   `docs/baselines/aeoanalyzers-question-panel.md`.
+- **Seed methodology (record):** Anchor ran on the 2-competitor seed; panel moved to
+  the ratified 3-seed (+Peec) for Sept 1 forward. Headline series metrics unaffected;
+  cited-instead attribution is series-comparable from Sept onward; the Aug 1 reps=1 run
+  documents 3-way attribution.
+- **Panel v1.1 (Aug 1):** Q8 defunct-name lint applied ("SearchGPT" → "ChatGPT search")
+  — disclosed, versioned. Honest versioning IS the same-questions discipline; silently
+  keeping a broken question is not. Sept 1 runs v1.1.
