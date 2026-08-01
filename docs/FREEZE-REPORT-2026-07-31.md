@@ -62,8 +62,16 @@ and every measurement fix and fidelity detector was **proven by breaking its gua
 - Wire `factClassification.ts` four-way split (stale/conflated/fabricated) into
   sweep fidelity output — then blog Layer 2 may be upgraded to four-way language.
 - A2 optional search-forcing retry for engines that return model-prior.
-- Raise `SWEEP_MAX_OUTPUT_TOKENS_GEMINI` (~1200) to recover Gemini's category
-  signal (it still truncated ~30% at cap 900).
+- ✅ DONE (POLISH-002 B6, Aug 1): Gemini output cap raised 900 → **2048** in
+  `api/_lib/engines.ts` (Gemini 3.x spends output budget on reasoning first). Live
+  validation = the reps=5 SERIES ANCHOR run (expect ~0 Gemini truncation flags).
+- **A3 series-set versioning (POLISH-002 A3 — BACKLOGGED, sized beyond small):**
+  saving a domain's question set as a versioned, reusable "monitoring set" and
+  reading it back each month is a new Supabase entity (`monitoring_set` table) +
+  read path in `analyze()`/`run()` + UI — none exists today (questions regenerate
+  fresh every run). Until built, "same questions each month" is enforced *manually*
+  via the pinned file `docs/baselines/aeoanalyzers-question-panel.md`. Build when
+  the freeze lifts or a paying customer needs recurring monitoring.
 - Owned-citation ~54% is the entity-collision remediation's to move (ship the
   @id/unaffiliation fixes on the site, then re-measure).
 - Swap fictional "Meridian" for the ratified anonymized automaker sweep on the

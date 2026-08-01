@@ -65,7 +65,12 @@ const MAX_OUT = {
   claude: cap('CLAUDE', 600),
   openai: cap('OPENAI', 600),
   perplexity: cap('PERPLEXITY', 700),
-  gemini: cap('GEMINI', 900),
+  // Gemini 3.x flash spends part of its output budget on internal reasoning before
+  // the grounded answer, so 900 still truncated ~2 grounded answers/run (POLISH-002
+  // B6). Raised to 2048 for comfortable headroom — Gemini is the cheapest engine
+  // (~$0.001–0.002/run), so the extra tokens are negligible. The A1 truncation
+  // exclusion/badging stays as the safety net regardless of this cap.
+  gemini: cap('GEMINI', 2048),
 };
 
 // --- Anthropic / Claude (authoritative web_search_20260209 shape) ----------

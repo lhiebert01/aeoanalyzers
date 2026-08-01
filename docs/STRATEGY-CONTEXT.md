@@ -64,3 +64,15 @@ crawls now) lives in the dashboard, not the story.
 2. **N=5 self-sweep baseline** re-measure (now unblocked) — store it; it gates all
    public claims + the honest-zero series.
 3. C2 (attainability tiers) → C3 (ICP segmentation) → Lane E → feature freeze.
+
+## The honest-zero measurement series (POLISH-002 C7–C8)
+- **Series set:** the frozen 12-question panel in `docs/baselines/aeoanalyzers-question-panel.md`
+  (v1, Profound+Otterly seed). Reused VERBATIM every re-measure — question drift
+  between runs would make "did the number move?" meaningless. A3 auto-versioning is
+  backlogged, so this is enforced manually for now.
+- **Cadence:** re-measure monthly on the **1st**, at **N=5** (reps=5), same set, same way.
+- **Comparator of record:** the **reps=5 SERIES ANCHOR — Aug 1 2026** run (NOT the
+  reps=1 Aug 1 validation run). The Jul 31 N=5 baseline used a *different* auto-generated
+  set, so it stays the LAUNCH-narrative number but is not the series comparator.
+- **Narrative-numbers convention unchanged:** public copy cites the stored, dated
+  anchor with its date; live dashboard values never appear in narrative.

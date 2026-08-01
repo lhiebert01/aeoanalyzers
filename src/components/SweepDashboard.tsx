@@ -3,7 +3,8 @@ import { Type } from '@google/genai';
 import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
-import { segmentBreakdown, winnableSegment, SEGMENT_LABEL } from '../lib/querySegment';
+import { segmentBreakdown, winnableSegment, largestLosingSegment, segmentSummaryNote, SEGMENT_LABEL } from '../lib/querySegment';
+import { sanitizeCompetitors, lintDefunctNames } from '../lib/sweepConfig';
 import { avgPawc } from '../lib/pawc';
 import { auditFactDensity, type FactDensityAudit } from '../lib/factDensity';
 import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
@@ -66,10 +67,13 @@ const EXTRACT_SCHEMA = {
 const extractPrompt = (siteText: string) => `Extract the following from this website text:
 1. Brand Name.
 2. A 3-to-5 word Core Category describing what they sell.
-3. Three to five DIRECT competitors — real, named products in the SAME category as
-   this company, not adjacent or loosely-related tools. Only include a name you are
-   confident competes head-to-head; return an EMPTY list rather than guessing a
-   wrong-category name. (Names only.)
+3. Three to five DIRECT competitors — real, named products a buyer would cross-shop
+   AGAINST this company in the SAME sub-category. Apply this test: "would the same
+   buyer evaluating this product also put the competitor on their shortlist?" If not,
+   exclude it. An adjacent-but-different tool (e.g. a security, data-governance, or
+   infrastructure vendor for a marketing/analytics product) is NOT a competitor.
+   Only include a name you are confident competes head-to-head; return an EMPTY list
+   rather than guessing a wrong-category name. (Names only.)
 Return as JSON: {"brand":"...","core_category":"...","competitors":["...","...","..."]}
 
 WEBSITE TEXT:
@@ -109,11 +113,23 @@ Generate exactly 10 queries by intent:
 - Problem/Solution (3): a problem this category solves, asking for recommendations
 - Comparative (4): "vs" / "alternative to {competitor}" questions
 
-Make the set span buyer SEGMENTS so results aren't one blended number: include at
-least ONE small-business/affordable-framed question (e.g. "affordable ... for
-startups", "free ... checker") and at least ONE "alternative to {a competitor}"
-question. Favor questions this specific brand can realistically win given its
-apparent positioning and price point — not only enterprise-framed questions.
+PHRASING: write each query the way a real buyer TYPES it — plain, natural language,
+not internal category jargon. At most 2 of the 10 may use the category's technical
+term; the rest should read like a non-expert ("how do I show up in AI answers", "why
+isn't my site recommended by ChatGPT"). Never reference DISCONTINUED product names
+(SearchGPT, Bard, Bing Chat, Google SGE) — use current names (ChatGPT search, Gemini,
+Copilot, Google AI Overviews).
+
+SEGMENT SPREAD so results aren't one blended number — include:
+- at least ONE small-business/affordable-framed question ("affordable ... for
+  startups", "free ... checker");
+- at least ONE "affordable alternative to {a specific competitor}" question;
+- if this category is commonly bought through agencies/resellers, ONE agency-framed
+  question ("best ... for agencies managing multiple clients").
+Favor questions this brand can realistically win given its positioning and price
+point — not only enterprise-framed ones. Drop pure "{competitorA} vs {competitorB}"
+questions that structurally exclude this brand; every comparative should be one this
+brand could plausibly be named in.
 
 OUTPUT: valid JSON
 {"sweep_queries":[{"intent_type":"Discovery|Problem|Comparative","query":"..."}]}`;
@@ -208,7 +224,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       const guessedBrand = String(ext.brand || '').trim();
       const guessedCategory = String(ext.core_category || '').trim();
       const guessedComp: string[] = Array.isArray(ext.competitors)
-        ? ext.competitors.map((c: any) => String(c || '').trim()).filter(Boolean).slice(0, 3)
+        ? sanitizeCompetitors(
+            ext.competitors.map((c: any) => String(c || '').trim()),
+            { brand: guessedBrand, ownDomain: d }
+          ).slice(0, 3)
         : [];
       setBrand(guessedBrand);
       setCoreCategory(guessedCategory);
@@ -217,7 +236,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       // Draft the 10 non-branded buyer questions from those (guessed) values.
       const q = safeJsonParse(await llmJson(queryPrompt(guessedBrand, d, guessedCategory, guessedComp), QUERY_SCHEMA)) || {};
       const gq: GeneratedQuery[] = Array.isArray(q.sweep_queries)
-        ? q.sweep_queries.filter((x: any) => x?.query).map((x: any) => ({ intent_type: String(x.intent_type || 'Discovery'), query: String(x.query).trim() }))
+        ? q.sweep_queries.filter((x: any) => x?.query).map((x: any) => ({ intent_type: String(x.intent_type || 'Discovery'), query: lintDefunctNames(String(x.query).trim()) }))
         : [];
       setGeneratedQueries(gq);
       setCategoryQueries(gq.map((x) => x.query).join('\n'));
@@ -323,11 +342,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       out.push('| Segment | Win | N |');
       out.push('| --- | --- | --- |');
       for (const s of segs) out.push(`| ${SEGMENT_LABEL[s.segment]} | ${s.winPct}% | ${s.categoryRuns} |`);
-      const ws = winnableSegment(segs);
       out.push('');
-      out.push(ws
-        ? `Most winnable segment: **${SEGMENT_LABEL[ws.segment]}** (${ws.winPct}%).`
-        : `No segment is winning yet — enterprise-framed questions are the hardest to win for a self-serve tool.`);
+      out.push(segmentSummaryNote(segs, (s) => `**${s}**`));
       out.push('');
     }
 
@@ -790,7 +806,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
               <p className="text-xs text-zinc-500 mb-3">
                 {winSeg
                   ? <>Your most winnable segment is <b className="text-emerald-600">{SEGMENT_LABEL[winSeg.segment]}</b> ({winSeg.winPct}%) — concentrate there first.</>
-                  : <>No segment is winning yet — but enterprise-framed questions are the hardest to win for a self-serve tool; start where your positioning fits.</>}
+                  : (() => {
+                      const worst = largestLosingSegment(segments);
+                      return worst
+                        ? <>No segment is winning yet — your largest set, <b className="text-zinc-700">{SEGMENT_LABEL[worst.segment]}</b> (N={worst.categoryRuns}), isn't converting; start where your positioning fits.</>
+                        : <>No segment is winning yet; start where your positioning fits.</>;
+                    })()}
               </p>
               <div className="flex flex-col gap-1.5">
                 {segments.map((s) => (

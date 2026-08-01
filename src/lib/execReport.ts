@@ -26,7 +26,7 @@ import { summarizeFidelity, type FidelitySummary } from './fidelity';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from './entityLinking';
 import { aggregateAuthorityGap, type AuthorityGapReport } from './authorityGap';
 import { tierForDomain, TIER_LABEL, type AttainabilityTier } from './authorityTiers';
-import { segmentBreakdown, winnableSegment, SEGMENT_LABEL, type SegmentStat } from './querySegment';
+import { segmentBreakdown, winnableSegment, segmentSummaryNote, SEGMENT_LABEL, type SegmentStat } from './querySegment';
 import { auditFactDensity, compareFactDensity, type FactDensityAudit } from './factDensity';
 import type { TruthRecord } from './truthRecord';
 
@@ -295,11 +295,8 @@ export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, va
     out.push('| Segment | Win | N |');
     out.push('| --- | --- | --- |');
     for (const s of d.segments) out.push(`| ${SEGMENT_LABEL[s.segment]} | ${s.winPct}% | ${s.categoryRuns} |`);
-    const win = winnableSegment(d.segments);
     out.push('');
-    out.push(win
-      ? `Your most winnable segment is **${SEGMENT_LABEL[win.segment]}** (${win.winPct}%). Concentrate content and listings there first.`
-      : `No segment is winning yet — but the gaps are not equal. Enterprise-framed questions are the hardest to win for a self-serve tool; start where your positioning actually fits.`);
+    out.push(segmentSummaryNote(d.segments, (s) => `**${s}**`));
     out.push('');
   }
 

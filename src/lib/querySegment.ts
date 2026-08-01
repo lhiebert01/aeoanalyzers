@@ -74,3 +74,29 @@ export function winnableSegment(stats: SegmentStat[], minRuns = 2): SegmentStat 
   const eligible = stats.filter((s) => s.categoryRuns >= minRuns && s.winPct > 0);
   return eligible[0] || null;
 }
+
+/** In an all-zero result, the non-branded losing segment carrying the most runs —
+ *  the honest, data-derived thing to name in the summary line instead of a canned
+ *  "enterprise-framed" claim that may reference a segment that isn't even present
+ *  (WO-SWEEP-POLISH-002 B4). Returns null only when there is no losing category
+ *  segment to name. */
+export function largestLosingSegment(stats: SegmentStat[]): SegmentStat | null {
+  const losing = stats.filter((s) => s.segment !== 'branded' && s.winPct === 0 && s.categoryRuns > 0);
+  if (!losing.length) return null;
+  return [...losing].sort((a, b) => b.categoryRuns - a.categoryRuns)[0];
+}
+
+/** The one-line summary rendered under the per-segment table. Derived entirely
+ *  from the segments actually present: names the most winnable segment if any,
+ *  else the largest losing segment — never a canned segment name. `label` lets a
+ *  caller wrap the segment name for its medium (markdown `**x**`, plain, etc.). */
+export function segmentSummaryNote(
+  stats: SegmentStat[],
+  label: (name: string) => string = (s) => s
+): string {
+  const win = winnableSegment(stats);
+  if (win) return `Your most winnable segment is ${label(SEGMENT_LABEL[win.segment])} (${win.winPct}%). Concentrate content and listings there first.`;
+  const worst = largestLosingSegment(stats);
+  if (worst) return `No segment is winning yet — your largest set, ${label(SEGMENT_LABEL[worst.segment])} (N=${worst.categoryRuns}), isn't converting. Start where your positioning fits.`;
+  return 'No segment is winning yet. Start where your positioning fits.';
+}

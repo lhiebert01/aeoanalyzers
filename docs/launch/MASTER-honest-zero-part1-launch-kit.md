@@ -6,7 +6,22 @@
 
 **Numbers of record (from the N=5 baseline, 2026-07-31):** branded retrievability **98%** across the stored runs · category recommendation win **0%**, high confidence · crawlers **265** visits in the thirty days to July 31 (**211** training-tier, **179** GPTBot, ~1-in-16 live). Snapshot numbers belong to the story's moment; the live figure lives in the dashboard.
 
-**Status:** ✅ Blog live · ✅ LinkedIn · ✅ Bluesky · ✅ X · ⬜ Facebook · ⬜ Reddit · ⬜ Substack/Medium
+**Status:** ✅ Blog · ✅ LinkedIn · ✅ Bluesky · ✅ X · ✅ Medium · ✅ Substack · ✅ Reddit (3 subs) · ⬜ Facebook
+
+---
+
+## Live syndication URLs (record for the Sept 1 re-measure)
+
+| Channel | URL | Notes |
+|---|---|---|
+| Blog (canonical) | https://aeoanalyzers.com/blog/i-scored-zero | POSSE home |
+| Medium | https://medium.com/@lindsay.hiebert/i-ran-my-own-ai-visibility-tool-on-my-own-site-it-scored-0-42d79cad4bca | ⚠️ verify canonical → blog |
+| Substack | https://lindsayhiebert.substack.com/p/i-ran-my-own-ai-visibility-tool-on | ⚠️ canonical currently self — set to blog |
+| r/SaaS | https://www.reddit.com/r/SaaS/s/PZA6HxxkuG | "worst number" angle |
+| r/bigseo | https://www.reddit.com/r/bigseo/s/zPpL4eu6vC | "co-founder / entity confusion" angle · Case Study flair |
+| r/Entrepreneurs | https://www.reddit.com/r/Entrepreneurs/s/kVHI3gEKIV | "known ≠ recommended" angle · Journey Post flair |
+| r/SEO | — | REMOVED (Rule 8 "No Apps" — categorical; do not repost) |
+| LinkedIn / X / Bluesky | (Lindsay's manual posts) | live |
 
 ---
 

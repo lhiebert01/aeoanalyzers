@@ -52,4 +52,21 @@ describe('detectEntityLinkingFailures', () => {
     expect(rep.flags).toHaveLength(0);
     expect(rep.collisions).toHaveLength(0);
   });
+
+  // WO-SWEEP-POLISH-002 B5 — lock the three collisions newly observed on the Aug 1
+  // sweep so a future refactor can't silently drop them. Two near-name domains
+  // (incl. the hyphenated aeo-analytic.com) + the Benzinga AEO ticker page.
+  it('flags the three new Aug-1 collisions with correct types', () => {
+    const rep = detectEntityLinkingFailures([
+      { sources: [
+        'https://aeoanalytics.com/',                       // near-name domain
+        'https://aeo-analytic.com/',                       // near-name domain (hyphenated — the genuinely new one)
+        'https://es.benzinga.com/quote/AEO/price-targets', // ticker-collision
+      ] },
+    ], client, truth);
+    const nearNames = rep.flags.filter((f) => f.kind === 'near-name-domain').map((f) => f.collidingEntity);
+    expect(nearNames).toContain('aeoanalytics.com');
+    expect(nearNames).toContain('aeo-analytic.com');
+    expect(rep.flags.some((f) => f.kind === 'ticker-collision' && /benzinga/.test(f.collidingEntity))).toBe(true);
+  });
 });
