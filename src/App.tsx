@@ -22,6 +22,9 @@ import AdvancedAnalysisCards from './components/AdvancedAnalysisCards';
 import CrawlerAccessCard from './components/CrawlerAccessCard';
 import IndexCoverageCard from './components/IndexCoverageCard';
 import SweepDashboard from './components/SweepDashboard';
+import { ScoreVsSweepCard, CrossLink } from './components/ScoreVsSweepCard';
+import { isAllZeroAnalysis, ALL_ZERO_BANNER } from './lib/inputSafety';
+import { SCORE_VS_SWEEP } from './content/scoreVsSweep';
 import { getOrganizationJsonLd, getWebSiteJsonLd, getBreadcrumbJsonLd } from './lib/json-ld';
 
 type View = 'analyzer' | 'sweeps' | 'history' | 'payments' | 'settings' | 'auth' | 'admin' | 'guide' | 'landing' | 'privacy' | 'terms' | 'press';
@@ -956,7 +959,7 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="px-6"
             >
-              <SweepDashboard onUpgrade={() => navigateTo('payments')} isAdmin={isAdmin} />
+              <SweepDashboard onUpgrade={() => navigateTo('payments')} isAdmin={isAdmin} onOpenAnalyzer={() => navigateTo('analyzer')} />
             </motion.div>
           )}
 
@@ -1313,6 +1316,22 @@ export default function App() {
                       animate={{ opacity: 1, scale: 1 }}
                       className="space-y-8"
                     >
+                      {/* UX-CLARITY-001: all-zeros sanity banner — a confident verdict on a
+                          domain that returned no analyzable content is a fidelity miss. */}
+                      {isAllZeroAnalysis(result) && (
+                        <div className="bg-amber-50 border border-amber-300 rounded-2xl p-4 text-sm text-amber-900 flex items-start gap-2">
+                          <span aria-hidden>⚠️</span>
+                          <span>{ALL_ZERO_BANNER}</span>
+                        </div>
+                      )}
+
+                      {/* UX-CLARITY-001: Score-vs-Sweep orientation + cross-link to the Sweep. */}
+                      <div className="space-y-3">
+                        <p className="text-sm text-teal-700 font-medium">{SCORE_VS_SWEEP.tagline.analyzer}</p>
+                        <ScoreVsSweepCard />
+                        <div><CrossLink to="sweep" onClick={() => navigateTo('sweeps')} /></div>
+                      </div>
+
                       {/* Crawler access — foundational, rendered first */}
                       <CrawlerAccessCard
                         crawlerAccess={result.crawlerAccess}

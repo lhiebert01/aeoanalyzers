@@ -5,6 +5,9 @@ import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authority
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, largestLosingSegment, segmentSummaryNote, SEGMENT_LABEL } from '../lib/querySegment';
 import { sanitizeCompetitors, lintDefunctNames } from '../lib/sweepConfig';
+import { buildSweepActionAgenda } from '../lib/sweepActions';
+import { SCORE_VS_SWEEP } from '../content/scoreVsSweep';
+import { ScoreVsSweepCard, CrossLink, AgendaBlock } from './ScoreVsSweepCard';
 import { avgPawc } from '../lib/pawc';
 import { auditFactDensity, type FactDensityAudit } from '../lib/factDensity';
 import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
@@ -153,7 +156,7 @@ const ENGINE_LABEL: Record<string, string> = {
   claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini',
 };
 
-export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () => void; isAdmin?: boolean }) {
+export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer }: { onUpgrade?: () => void; isAdmin?: boolean; onOpenAnalyzer?: () => void }) {
   const [domain, setDomain] = useState('');
   const [brand, setBrand] = useState('');
   const [coreCategory, setCoreCategory] = useState('');
@@ -416,6 +419,19 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
       out.push('');
     }
 
+    // WO-UX-CLARITY-001: map each measured layer to its next action (closing agenda).
+    for (const line of buildSweepActionAgenda({
+      brandedRetrievabilityPct: sc.brandedRetrievabilityPct,
+      categoryWinPct: sc.categoryRecommendationWinPct,
+      hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
+      collisions: entityLinking?.collisions ?? [],
+      losingCategoryQuestions: [...new Set(r.runs.filter((x) => x.queryType === 'category' && !x.cited && !x.truncated && x.grounding !== 'model-prior').map((x) => x.query))],
+      doNowAuthorities: authority ? [...new Set(authority.authorityDomains.filter((d) => tierForDomain(d.domain).tier === 'now').map((d) => d.domain))] : [],
+      brand: r.brand || undefined,
+      domain: r.domain,
+    })) out.push(line);
+    out.push('');
+
     out.push(`## Transcripts (${r.runs.length} runs)`);
     out.push('');
     for (const run of r.runs) {
@@ -509,6 +525,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
           Ask the real answer engines (with web search on), N&nbsp;times per query, and measure three separable layers:
           <b> retrievability</b> (branded), <b>citation win</b> (category), and who gets <b>cited instead</b> — backed by stored transcripts.
         </p>
+        <p className="text-sm text-teal-700 mt-2 font-medium">{SCORE_VS_SWEEP.tagline.sweeps}</p>
       </div>
 
       {/* Condensed "what you actually get" — the 5-layer action plan (blog: /blog/what-you-actually-get). */}
@@ -885,6 +902,29 @@ export default function SweepDashboard({ onUpgrade, isAdmin }: { onUpgrade?: () 
               </ul>
             </div>
           )}
+
+          {/* What to do about these results (UX-CLARITY-001) — measured layer → action. */}
+          {scorecard && (
+            <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
+              <h3 className="font-bold mb-3">What to do about these results</h3>
+              <AgendaBlock lines={buildSweepActionAgenda({
+                brandedRetrievabilityPct: scorecard.brandedRetrievabilityPct,
+                categoryWinPct: scorecard.categoryRecommendationWinPct,
+                hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
+                collisions: entityLinking?.collisions ?? [],
+                losingCategoryQuestions: [...new Set(result.runs.filter((x) => x.queryType === 'category' && !x.cited && !x.truncated && x.grounding !== 'model-prior').map((x) => x.query))],
+                doNowAuthorities: authority ? [...new Set(authority.authorityDomains.filter((d) => tierForDomain(d.domain).tier === 'now').map((d) => d.domain))] : [],
+                brand: result.brand || undefined,
+                domain: result.domain,
+              })} />
+              <div className="mt-4 pt-4 border-t border-zinc-100">
+                <CrossLink to="score" onClick={onOpenAnalyzer} />
+              </div>
+            </div>
+          )}
+
+          {/* Which tool, when? — the Score-vs-Sweep explainer (UX-CLARITY-001). */}
+          <ScoreVsSweepCard />
 
           {/* Cost + transcripts */}
           <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">

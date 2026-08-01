@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { User, Briefcase, Target, AlertCircle, Zap, ChevronDown, ChevronUp, Users, HelpCircle, ShieldCheck, ShoppingCart, Code, Building2 } from 'lucide-react';
+import { SCORE_VS_SWEEP } from '../content/scoreVsSweep';
 
 interface Persona {
   id: number;
@@ -83,6 +84,10 @@ const userFaqs: FAQItem[] = [
   {
     question: "How does the 'Citation Readiness' score work?",
     answer: "Our analysis uses a frontier LLM to reason through your website's semantic structure — your JSON-LD Schema, content density, and technical meta-tags — and returns a technical-readiness estimate of how citable your page is. It is a readiness score, not a measured or guaranteed real-world citation rate: it tells you how well-prepared the page is to be cited, not the odds an engine will cite it. To measure what engines actually do, run a live Citation Sweep, which queries real answer engines and reports whether your site is cited."
+  },
+  {
+    question: SCORE_VS_SWEEP.faq.q,
+    answer: SCORE_VS_SWEEP.faq.a
   },
   {
     question: "I'm a developer. What are the technical requirements for AEO?",

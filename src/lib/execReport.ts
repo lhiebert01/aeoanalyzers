@@ -27,6 +27,7 @@ import { detectEntityLinkingFailures, type EntityLinkingReport } from './entityL
 import { aggregateAuthorityGap, type AuthorityGapReport } from './authorityGap';
 import { tierForDomain, TIER_LABEL, type AttainabilityTier } from './authorityTiers';
 import { segmentBreakdown, winnableSegment, segmentSummaryNote, SEGMENT_LABEL, type SegmentStat } from './querySegment';
+import { buildSweepActionAgenda } from './sweepActions';
 import { auditFactDensity, compareFactDensity, type FactDensityAudit } from './factDensity';
 import type { TruthRecord } from './truthRecord';
 
@@ -49,6 +50,9 @@ export interface ExecReportData {
   /** Category win broken down by buyer segment (C3) — so an out-of-segment 0% reads
    *  as out-of-segment, not failure. */
   segments: SegmentStat[];
+  /** The exact unbranded questions where the brand was NOT cited — the content
+   *  agenda in the closing "What to do" section (UX-CLARITY-001). */
+  losingCategoryQuestions: string[];
   /** Position-Adjusted Word Count (E1) — when cited, how much of the answer you
    *  own, vs competitors. Shares are 0–1 (fraction of the position-weighted answer).
    *  Framed as the Princeton GEO metric, never as a guarantee. */
@@ -132,6 +136,7 @@ export function assembleReportData(input: {
 
   return {
     brand, domain, sweepDate, scorecard, summary, fidelity, entityLinking, authority, segments,
+    losingCategoryQuestions: [...new Set(runs.filter((r) => r.queryType === 'category' && !r.cited && !r.truncated && r.grounding !== 'model-prior').map((r) => r.query))],
     pawc: { clientAvgShare: clientPawc.avgShare, clientAnswers: clientPawc.answers, competitors: compPawc },
     factDensity, competitiveGaps,
     runCount: runs.length,
@@ -341,6 +346,19 @@ export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, va
 
   out.push('## Five prioritized actions');
   narrative.recommendations.slice(0, 5).forEach((r, i) => out.push(`${i + 1}. ${r}`));
+  out.push('');
+
+  // UX-CLARITY-001: closing section mapping each measured layer to its action.
+  for (const line of buildSweepActionAgenda({
+    brandedRetrievabilityPct: d.headline.brandedPct,
+    categoryWinPct: d.headline.categoryWinPct,
+    hasFidelityOrCollision: (d.headline.driftedCount > 0) || (d.headline.entityCollisions.length > 0),
+    collisions: d.headline.entityCollisions,
+    losingCategoryQuestions: d.losingCategoryQuestions,
+    doNowAuthorities: [...new Set(d.authority.authorityDomains.filter((a) => tierForDomain(a.domain).tier === 'now').map((a) => a.domain))],
+    brand: d.brand,
+    domain: d.domain,
+  })) out.push(line);
   out.push('');
 
   out.push('## Next step');
