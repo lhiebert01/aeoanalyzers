@@ -23,6 +23,19 @@
 | r/SEO | — | REMOVED (Rule 8 "No Apps" — categorical; do not repost) |
 | LinkedIn / X / Bluesky | (Lindsay's manual posts) | live |
 
+## Reddit campaign — RESUME HERE (paused Aug 1, mid-flight)
+**Posted ✅:** r/SaaS · r/bigseo (Case Study flair) · r/Entrepreneurs (Journey Post flair).
+**Removed ❌:** r/SEO — Rule 8 "No Apps" (categorical; do NOT retry there).
+**Next up ▶ r/indiehackers** — use **Path A (pure story, NO link in body)** so it fits their
+"Sharing Stories" flair; their rules ban product-promo under that flair (warning→ban), and new
+accounts must go via modmail. If you'd rather keep the link, use their **Self Promotion** flair
+instead. (Draft opener was handed over in chat; ask me to reprint it.)
+**Then (each with a FRESH opener, one/day, check each sidebar for "No Apps"):** r/GrowthHacking ·
+r/EntrepreneurRideAlong · r/marketing.
+**Rules that held all run:** story-first · disclose "it's my product" · rewrite the opening line
+per sub (identical text = shadow-filter) · link only in a comment if the sub allows or someone asks
+· one sub per day · on removal, modmail once, never repost.
+
 ---
 
 ## 1. LinkedIn (posted)
