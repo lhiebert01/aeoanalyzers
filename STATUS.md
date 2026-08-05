@@ -2,8 +2,14 @@
 
 **App:** AEO Analyzers · **Live:** https://www.aeoanalyzers.com · **Repo:** lhiebert01/aeoanalyzers
 **Publisher:** PI GenAI LLC · **Founder:** Lindsay Hiebert
-**Version:** v1.8.0 · **Last updated:** 2026-07-31 · **Hosting:** Vercel (project `aeo-app1`)
+**Version:** v1.8.0 (+ Aug 1–5 maintenance & Honest-Zero launch) · **Last updated:** 2026-08-05 · **Hosting:** Vercel (project `aeo-app1`)
 
+> **Aug 1–5 2026 — maintenance + Honest-Zero GTM launch (still feature-frozen; no net-new differentiators):**
+> - **WO-SWEEP-POLISH-002 + WO-UX-CLARITY-001 (Aug 1):** config guardrails (competitor sanitizer + defunct-name lint `src/lib/sweepConfig.ts`), Gemini output cap 900→2048, Score-vs-Sweep explainer, per-sweep action agenda, all-zeros input-safety banner. **Test suite 178 → 204.**
+> - **WO-HOW-IT-WORKS-VISUAL-001:** `/blog/how-it-works` visual explainer (6 diagrams) published.
+> - **SERIES ANCHOR (Aug 1):** branded 100% (N=40) / category 0% (N=200), 0 Gemini truncations — the **Sept 1 comparator** (`docs/baselines/`). Runs go through the agent (`scripts/headless-sweep.ts`), never the UI.
+> - **Honest-Zero GTM launch:** Part 1 arc live + syndicated (Blog canonical / LinkedIn / Bluesky / X / Medium / Substack; Reddit r/Entrepreneurs 46K views). **Part 2 `/blog/reading-isnt-citing` built, HELD for founder approval + push.** Reddit buyer-community motion started. Authoritative GTM-90 plan: `docs/GTM90-STATUS-AND-PLAN-2026-08-05.md`; distribution assets in `docs/launch/`.
+>
 > **v1.8.0 (2026-07-31) — Sweep measurement integrity + fidelity + productization (WO-AEO-SWEEP-QA-003, FROZEN):**
 > Hardened the Citation Sweep into a defensible measurement + turned it into a sendable report. All deterministic cores tested (178 tests). See `docs/FREEZE-REPORT-2026-07-31.md`.
 > - **Measurement integrity:** truncated answers excluded + badged, columns >20% truncated flagged (A1); search-grounded vs model-prior split, model-prior kept out of citation-win (A2); N + confidence on every cell, low-N hedged (A3).

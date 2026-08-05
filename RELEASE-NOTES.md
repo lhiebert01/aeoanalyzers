@@ -1,5 +1,25 @@
 # Release Notes
 
+## v1.8.x — August 1–5, 2026
+
+### Maintenance + Honest-Zero GTM launch (feature-frozen — bug fixes + paying-customer blockers only)
+- **WO-SWEEP-POLISH-002** — config guardrails: competitor sanitizer + defunct-name lint (`src/lib/sweepConfig.ts`); segment-note derived from rendered segments; **Gemini output cap 900 → 2048** (`api/_lib/engines.ts`).
+- **WO-UX-CLARITY-001** — Score-vs-Sweep explainer (`src/components/ScoreVsSweepCard.tsx`, `src/content/scoreVsSweep.ts`); per-sweep action agenda (`src/lib/sweepActions.ts`); all-zeros input-safety banner (`src/lib/inputSafety.ts`).
+- **WO-HOW-IT-WORKS-VISUAL-001** — `/blog/how-it-works` visual explainer (6 diagrams) published.
+- **Test suite 178 → 204**; all tsc/build clean.
+- **SERIES ANCHOR (Aug 1)** — branded 100% (N=40) / category 0% (N=200), 0 Gemini truncations — the Sept 1 re-measure comparator (`docs/baselines/`). Runs via the agent (`scripts/headless-sweep.ts`), never the UI.
+- **Honest-Zero launch** — Part 1 arc live + syndicated (Blog canonical, LinkedIn, Bluesky, X, Medium, Substack; Reddit r/Entrepreneurs). **Part 2 `/blog/reading-isnt-citing` written + built, held for push.** Launch kit, community targets, and comment queue in `docs/launch/`; exec summary `docs/EXEC-SUMMARY-FOR-FABLE-2026-08-05.md`.
+
+## v1.8.0 — July 31, 2026
+
+### Sweep measurement integrity + fidelity + productization (WO-AEO-SWEEP-QA-003 — FEATURE FREEZE)
+Hardened the Citation Sweep into a defensible measurement and turned it into a sendable report. 178 deterministic-core tests. See `docs/FREEZE-REPORT-2026-07-31.md`.
+- **Measurement integrity (Lane A)** — truncated answers excluded + badged, >20%-truncated columns flagged (A1); search-grounded vs model-prior split, model-prior kept out of citation-win (A2); N + confidence on every metric cell (A3).
+- **Fidelity (Lane B)** — branded answers classified cited-accurate vs cited-drifted (B1); entity-linking collision detection — acronym pages, ticker collisions, near-name domains (B2).
+- **Recommendation quality (Lane C)** — auto-competitor detection from answers (C1); authority sources tiered Now/Earn/Aspirational (C2); ICP segmentation (C3).
+- **Research anchors (Lane E)** — PAWC prominence scoring (E1); fact-density / info-gain auditor (E2); llms.txt generator + validator + drift-diff (E3).
+- **Productization** — `scripts/exec-report.ts` courtesy-sweep generator (domain → review-ready exec report + DRAFT email; nothing auto-sends); N=5 baseline of record (`docs/baselines/`); blog `/blog/what-you-actually-get` published.
+
 ## v1.7.0 — July 22, 2026
 
 ### Measurement-loop platform (WO-AEO-PLATFORM-001 + DOGFOOD-001 + ADDENDUM-002)

@@ -40,6 +40,14 @@ AEO Analyzers is a professional-grade AI Simulation Engine that helps brands, bu
 - **Calibrated, Isolated Scoring:** The numeric score reflects objective AEO merit and stays comparable run-over-run; editorial prose is no longer penalized for low statistic counts
 - **Regression-Tested:** A `vitest` suite (`npm test`) pins the accuracy rules; resilient `safeJsonParse` + raised token ceiling harden model-response handling
 
+### Citation Sweeps & Measurement Loop (v1.7–v1.8) — the flagship capability
+Beyond the 90-second diagnostic, AEO Analyzers runs **tested Citation Sweeps**: it asks ChatGPT, Claude, Perplexity, and Gemini your buyers' real questions **several times per query, with web search on**, and reports **three separable layers** — each with its own fix path, **every score backed by a stored transcript**:
+- **Retrievability** — can the engines reach you (branded)?
+- **Fidelity** — do they get you *right*? Cited-accurate vs. cited-drifted, plus **entity-collision detection** that names exactly which similarly-named things the engines confuse you with.
+- **Citation Win** — do they recommend you over competitors on the unbranded buyer question?
+
+Measurement integrity is built in: truncated answers are **excluded** (never shown as a fake 0%), search-grounded vs. model-prior answers are scored **separately**, and every metric carries its **sample size + confidence**. Recommendations are **tiered by attainability** (do-this-week / earn / aspirational) — no "get on Wikipedia" goose chases. Research-anchored (PAWC per the Princeton GEO study; fact-density auditor; llms.txt generator + validator). A **courtesy-sweep generator** (`scripts/exec-report.ts`) turns any domain into a review-ready executive report + draft outreach email (**draft-only; nothing auto-sends**). No exploit-class tactics — we win on measurement honesty.
+
 ### Reports & Handoff
 - **DOCX Report Download:** Professional Word document with full analysis, score breakdown, advanced insights, implementation instructions, appendix sections, and rollout plan — signed by the user (Pro feature)
 - **Implementation Roadmap:** Actionable optimization steps with platform-specific guides for WordPress, Shopify, HubSpot, Wix, and custom code (Pro feature)
@@ -63,7 +71,8 @@ AEO Analyzers is a professional-grade AI Simulation Engine that helps brands, bu
 | **Icons** | Lucide React | Icon library |
 | **Build** | Vite 6 | Dev server & bundler |
 | **Auth & Database** | Supabase (PostgreSQL + Auth + RLS) | User accounts, profiles, analysis history |
-| **AI Analysis** | Google Gemini API (gemini-3.5-flash → 3.1-flash-lite → 2.5-flash → 2.5-flash-lite fallback chain) | Website AEO scoring, advanced analysis & recommendations |
+| **AI Analysis** | Google Gemini API (gemini-3.6-flash → 3.5-flash → 3.5-flash-lite → 2.5-flash fallback chain) | Website AEO scoring, advanced analysis & recommendations |
+| **Sweep Engines** | Claude / OpenAI / Perplexity / Gemini (server, key-gated `api/_lib/engines.ts`) | Multi-engine Citation Sweeps with web search |
 | **Reports** | docx (in-browser generation) | Professional DOCX report download with code-splitting |
 | **Payments** | Stripe | Subscription billing |
 | **Analytics** | Google Analytics 4 (GA4) | User tracking & conversion metrics |
@@ -175,6 +184,10 @@ The app is deployed on **Vercel** with automatic builds on push:
 - [Master Announcement](./docs/master-announcement.md) -- every post ready to paste, with image references
 - [STATUS.md](./STATUS.md) -- **Production source-of-truth**: version, live env vars, features, integrations, pending items
 - [Release Notes](./RELEASE-NOTES.md) -- Full changelog for all versions
+- [GTM-90 Status & Plan (2026-08-05)](./docs/GTM90-STATUS-AND-PLAN-2026-08-05.md) -- **Authoritative launch/content/outreach plan — start here**
+- [Freeze Report (2026-07-31)](./docs/FREEZE-REPORT-2026-07-31.md) -- v1.8.0 feature-freeze line + post-freeze backlog
+- [Honest-Zero Launch Kit](./docs/launch/MASTER-honest-zero-part1-launch-kit.md) -- POSSE blog series + per-channel copy
+- [AEO/GEO Community Targets](./docs/launch/aeo-geo-community-targets.md) + [Reddit Comment Queue](./docs/launch/reddit-comment-queue.md) -- buyer-community distribution motion
 - [Re-Launch Announcement (2026)](./docs/blog-relaunch-2026.md) -- Flagship re-intro: differentiation, outcomes, strong CTA
 - [Go-To-Market Plan](./docs/go-to-market-plan.md) -- Announce / market / sell roadmap + blog cadence
 - [Prerender Plan](./docs/prerender-plan.md) -- How the SPA is made crawlable to AI engines
