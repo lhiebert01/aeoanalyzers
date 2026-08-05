@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>An AI Invented a Co-Founder for My Company. So I Built a Detector. | AEO Analyzers</title>
+<meta name="description" content="An answer engine confidently gave my company a co-founder who doesn't exist. Here's why models invent people, how being crawled doesn't protect you, and the fidelity detector I built because of it.">
+<!-- DRAFT-NOINDEX: remove the next line on founder approval + merge to main to make Part 3 indexable. TODO before publish: generate og-blog-invented-co-founder.png via scripts/gen-og-cards.mjs + add hub card to /blog/. -->
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://aeoanalyzers.com/blog/invented-co-founder">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AEO Analyzers">
+<meta property="og:title" content="An AI Invented a Co-Founder for My Company. So I Built a Detector.">
+<meta property="og:description" content="Why answer engines invent people, why being crawled doesn't protect you, and the fidelity detector I built because of it.">
+<meta property="og:url" content="https://aeoanalyzers.com/blog/invented-co-founder">
+<meta property="og:image" content="https://aeoanalyzers.com/og-blog-invented-co-founder.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="An AI Invented a Co-Founder for My Company. So I Built a Detector.">
+<meta name="twitter:description" content="Why answer engines invent people, why being crawled doesn't protect you, and the fidelity detector I built because of it.">
+<meta name="twitter:image" content="https://aeoanalyzers.com/og-blog-invented-co-founder.png">
+<meta name="theme-color" content="#08343B">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "An AI Invented a Co-Founder for My Company. So I Built a Detector.",
+  "description": "Why answer engines invent people, why being crawled doesn't protect you, and the fidelity detector I built because of it.",
+  "datePublished": "2026-08-05",
+  "dateModified": "2026-08-05",
+  "author": { "@type": "Person", "name": "Lindsay Hiebert", "url": "https://www.linkedin.com/in/lindsayhiebert/" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PIGENAI LLC",
+    "url": "https://pigenai.com",
+    "logo": { "@type": "ImageObject", "url": "https://aeoanalyzers.com/aeo-og.png" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://aeoanalyzers.com/blog/invented-co-founder" },
+  "url": "https://aeoanalyzers.com/blog/invented-co-founder"
+}
+</script>
+<style>
+:root{
+  --paper:#E7ECEE; --card:#FFFFFF; --ink:#0E1216; --muted:#3F4952; --hair:#C4CDD3;
+  --teal:#0B6E7A; --teal-deep:#08343B; --teal-tint:#E6F0F1;
+  --good:#137A4D; --gap:#B23A2E; --panel:#EBF0F2; --edge:#9FADB6;
+  --shadow:0 1px 2px rgba(20,26,31,.06), 0 18px 50px rgba(20,26,31,.12);
+  --card-shadow:0 1px 2px rgba(20,26,31,.06), 0 6px 18px rgba(20,26,31,.10);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:26px 20px 40px}
+.sitebar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:11px clamp(16px,4vw,28px);background:var(--card);border-bottom:1px solid var(--edge)}
+.sitebar .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.sitebar .brand .mk{display:inline-flex;width:27px;height:27px;border-radius:7px;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.sitebar .snav{display:flex;align-items:center;gap:6px}
+.sitebar .snav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:9px}
+.sitebar .snav a.primary{background:var(--teal-deep);color:#EAF4F5}
+@media(max-width:520px){.sitebar .snav a:not(.primary){display:none}}
+.post{max-width:720px;margin:6px auto 4px;padding:0 8px}
+.posteyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.posttitle{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5.6vw,48px);line-height:1.06;letter-spacing:-.015em;text-wrap:balance;margin:12px 0 12px}
+.postmeta{color:var(--muted);font-size:13px;margin:0 0 24px;letter-spacing:.02em}
+.postbody p{font-size:17px;max-width:68ch;margin:0 0 16px;color:var(--ink)}
+.postbody .postlead{font-size:19.5px;line-height:1.5}
+.posth2{font-family:var(--serif);font-weight:600;font-size:23px;margin:38px 0 12px;letter-spacing:-.01em}
+strong{color:var(--ink)}
+.samplenote{max-width:720px;margin:22px auto 0;padding:0 8px;color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+.samplenote b{color:var(--ink)}
+.postoutro{max-width:780px;margin:36px auto 0;padding:32px clamp(22px,4.5vw,44px);
+  background:var(--teal-tint);border:1px solid var(--edge);border-radius:20px;box-shadow:var(--card-shadow)}
+.postoutro .eyebrow{margin-bottom:8px;display:block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.postoutro h3{font-family:var(--serif);font-weight:600;font-size:clamp(25px,4vw,34px);line-height:1.08;letter-spacing:-.015em;text-wrap:balance;margin:0 0 16px}
+.postoutro p{font-size:16.5px;max-width:72ch;margin:0 0 14px;color:var(--ink)}
+.cta{display:inline-block;background:var(--teal-deep);color:#EAF4F5;font-weight:600;font-size:15px;text-decoration:none;padding:11px 22px;border-radius:11px}
+.ilink{color:var(--teal);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.followseries{max-width:780px;margin:18px auto 0;padding:20px clamp(22px,4.5vw,34px);
+  display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;justify-content:space-between;
+  background:var(--card);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--card-shadow)}
+.followseries .fs-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:6px}
+.followseries .fs-line{font-size:15px;line-height:1.5;color:var(--ink);margin:0;max-width:60ch}
+.followseries .fs-cta{display:inline-block;white-space:nowrap;background:var(--card);color:var(--teal-deep);
+  border:1.5px solid var(--teal-deep);font-weight:600;font-size:14.5px;text-decoration:none;padding:10px 18px;border-radius:11px}
+.followseries .fs-cta:hover{background:var(--teal-deep);color:#EAF4F5}
+.sitefoot{border-top:1px solid var(--edge);background:var(--card);margin-top:44px}
+.sitefoot .fin{max-width:960px;margin:0 auto;padding:24px clamp(16px,4vw,28px);display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.sitefoot .fnav{display:flex;flex-wrap:wrap;gap:8px 22px}
+.sitefoot a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+.sitefoot .fcop{color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="https://aeoanalyzers.com/"><span class="mk">A</span> AEO Analyzers</a>
+  <nav class="snav">
+    <a href="https://aeoanalyzers.com/">Home</a>
+    <a href="/blog/">Blog</a>
+    <a class="primary" href="https://aeoanalyzers.com/">Start free →</a>
+  </nav>
+</header>
+<div class="wrap">
+  <article class="post">
+    <div class="posteyebrow">AEO Analyzers · Honest-Zero, Part 3</div>
+    <h1 class="posttitle">An AI Invented a Co-Founder for My Company. So I Built a Detector.</h1>
+    <p class="postmeta">Lindsay Hiebert · August 2026 · 5-minute read</p>
+    <div class="postbody">
+      <p class="postlead">Someone asked an AI assistant who runs AEO Analyzers. It answered confidently — and gave me a <strong>co-founder</strong>. I read it twice. I don't have one. The person it named is real and has <strong>no affiliation</strong> with my company, my product, or me. The engine hadn't set out to deceive anyone; it had assembled an identity out of fragments and filled a gap with a plausible name.</p>
+      <p>That is a stranger thing to see than a wrong number. A number is a measurement error. A person is a fabricated <em>relationship</em> — a fact about my company that never happened, delivered to a buyer in the same calm voice as everything true.</p>
+
+      <h2 class="posth2">Why an engine invents a person</h2>
+      <p>Answer engines build a picture of "who" from scattered third-party sources. When the first-party record is thin or ambiguous, the model interpolates — and interpolation applied to people invents relationships. It's the same mechanism that fuses my product with a stock ticker (AEO is a listed apparel company) and with browser extensions that share its letters: entities that look alike get merged, and the seams get filled with confident guesses.</p>
+      <p>Being crawled doesn't protect you from this. As I wrote in <a class="ilink" href="/blog/reading-isnt-citing">Part 2</a>, the engines had already visited my site hundreds of times. Reading isn't understanding. A page can be fully indexed and still leave "who made this, and with whom" open enough for a model to answer it wrong — and then repeat the wrong answer, because it's now the most fluent version it has.</p>
+
+      <h2 class="posth2">The embarrassment became a measurement</h2>
+      <p>I could have written to the engine and asked for a correction. Instead I built the check into the product. Every branded answer AEO Analyzers collects is now compared against the site's own record and classified: <strong>accurate</strong>, <strong>drifted</strong>, or <strong>confused with a named colliding entity</strong> — and when it's confused, the report <strong>names the entity</strong> the model has fused onto you, so you can see exactly which stranger you've been merged with. The invented co-founder is what taught me that fidelity is a separate measurement from visibility. You can be found perfectly and described wrongly, and a tool that only reports a visibility score will tell you everything is fine while a fabricated fact circulates.</p>
+
+      <h2 class="posth2">The fix is a first-party record, stated plainly</h2>
+      <p>Models resolve ambiguity toward the most consistent record they can find. So I gave them one. Structured data that names the sole creator and states, in plain language, that there are <strong>no co-founders</strong>. A one-sentence disambiguation repeated in both the schema and the visible page. An entity graph that separates the product from the tickers and tools that share its letters. And a neutral public anchor in a knowledge base the engines already trust. None of this <em>forces</em> a correction — nobody honest can promise that. What it does is starve the fabrication of the ambiguity it fed on.</p>
+
+      <h2 class="posth2">What mine says now</h2>
+      <p>Is it fixed? Branded fidelity is better, and I still catch the occasional collision — and when I do, it's in the report: named, dated, with the transcript attached. I can't make an engine stop. I can measure what it says, correct the record it reads, and re-check every month, in public, whatever the result. That's the whole method — not a promise the machine is right about you, but an honest, reproducible read of when it isn't, and a fix path that's actually yours to control.</p>
+      <p>If an engine has invented something about your business — a co-founder, a product you don't sell, a rating you never earned — you'd rather find it than have a prospect find it for you. The check is free and takes about ninety seconds: <a class="ilink" href="https://aeoanalyzers.com">aeoanalyzers.com</a>.</p>
+    </div>
+
+    <p class="samplenote"><em>AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PIGENAI LLC. There are no co-founders. It is unaffiliated with any similarly named browser extension, plugin, or tool.</em></p>
+  </article>
+
+  <aside class="followseries" aria-label="Follow the Honest-Zero series">
+    <div>
+      <span class="fs-eyebrow">The Honest-Zero series</span>
+      <p class="fs-line">A live experiment in AI-search visibility: I re-measure my own numbers monthly &mdash; same questions, same way &mdash; and publish them whatever they are. Follow the next entry by email.</p>
+    </div>
+    <a class="fs-cta" href="https://lindsayhiebert.substack.com/subscribe">Follow by email &rarr;</a>
+  </aside>
+
+  <div class="postoutro">
+    <span class="eyebrow">See your own number</span>
+    <h3>What do the engines say about your business?</h3>
+    <p>It starts with your domain — the first look is free and takes about ninety seconds. Whatever it says about you, better you find it than your next prospect.</p>
+    <a class="cta" href="https://aeoanalyzers.com">Check your brand — free →</a>
+  </div>
+</div>
+<footer class="sitefoot">
+  <div class="fin">
+    <nav class="fnav">
+      <a href="https://aeoanalyzers.com/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://aeoanalyzers.com/privacy">Privacy</a>
+      <a href="https://aeoanalyzers.com/terms">Terms</a>
+    </nav>
+    <div class="fcop">© 2026 AEO Analyzers · PIGENAI LLC</div>
+  </div>
+</footer>
+</body>
+</html>
