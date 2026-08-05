@@ -10,6 +10,7 @@ describe('bannedAbsolutes', () => {
   it('flags unqualified superlatives / absolute brags', () => {
     expect(bannedAbsolutes('It stands head and shoulders above the rest.')).toContain('head and shoulders');
     expect(bannedAbsolutes('No other tool gives you this.')).toContain('no other tool/platform');
+    expect(bannedAbsolutes('We analyze the universal signals every engine uses.')).toContain('universal signals (unknowable-algorithm claim)');
     expect(bannedAbsolutes('We guarantee results.').length).toBeGreaterThan(0);
   });
   it('allows scoped comparatives and negated guarantees', () => {

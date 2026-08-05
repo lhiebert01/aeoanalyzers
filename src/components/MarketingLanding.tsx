@@ -230,7 +230,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white mb-6"><ShieldCheck className="w-6 h-6" /></div>
             <h3 className="text-xl font-black mb-4">Fidelity</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">Does AI's answer match the real facts about you? We catch fabricated founders, stale prices, and invented features — with the correct value and the fix. <em>No other tool measures this.</em></p>
+            <p className="text-zinc-500 text-sm leading-relaxed">Fidelity asks a different question than visibility: when an engine talks about you, is it right? Every branded answer is checked against your site's own record and classified accurate, drifted, or confused with a named colliding entity — with the correct value and the fix.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white mb-6"><Swords className="w-6 h-6" /></div>
@@ -246,7 +246,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         <div className="text-center mb-16">
           <h2 id="trust-title" className="text-4xl md:text-6xl font-black tracking-tight mb-6">Why <span className="text-zinc-400">Analyzers</span>, Plural?</h2>
           <p className="text-zinc-500 text-xl max-w-3xl mx-auto leading-relaxed">
-            Legacy tools check keywords. We analyze the universal signals every major answer engine — Gemini, ChatGPT, Claude, Perplexity — uses to decide what to cite. That's why it's Analyzer<strong>s</strong>.
+            Legacy tools check keywords. We analyze the structural, content, entity, and authority signals tied to retrievability and citation — then test the outcome directly across Gemini, ChatGPT, Claude, and Perplexity. We don't claim to know their algorithms; we measure what they actually do. That's why it's Analyzer<strong>s</strong>.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
@@ -262,7 +262,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
               <Target className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-black mb-4">Built for Every Answer Engine</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini, we analyze the universal signals every major answer engine — Gemini, ChatGPT, Claude, Perplexity — uses to decide what to cite. ~90 seconds, not hundreds of manual hours.</p>
+            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini, we analyze the structural, content, entity, and authority signals tied to retrievability and citation, then test the outcome directly across Gemini, ChatGPT, Claude, and Perplexity — measuring what they actually do, not guessing their algorithms. ~90 seconds, not hundreds of manual hours.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">

@@ -60,7 +60,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:image:type" content={imageType} />
-      <meta property="og:image:alt" content="AEO Analyzers — Be the Answer AI Gives. A phone shows a real AEO score of 93/100 with Citation Sweep results across ChatGPT, Claude, Gemini, and Perplexity: retrievability, fidelity, and who gets cited instead." />
+      <meta property="og:image:alt" content="AEO Analyzers — Be the Answer AI Gives. Citation Sweep results across ChatGPT, Claude, Gemini, and Perplexity: retrievability, fidelity, and who gets cited instead." />
       <meta property="og:locale" content="en_US" />
       
       {/* Article Metadata (if applicable) */}
@@ -74,23 +74,17 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
-      <meta name="twitter:image:alt" content="AEO Analyzers — Be the Answer AI Gives. A phone shows a real AEO score of 93/100 with Citation Sweep results across ChatGPT, Claude, Gemini, and Perplexity: retrievability, fidelity, and who gets cited instead." />
+      <meta name="twitter:image:alt" content="AEO Analyzers — Be the Answer AI Gives. Citation Sweep results across ChatGPT, Claude, Gemini, and Perplexity: retrievability, fidelity, and who gets cited instead." />
 
       {/* Robots */}
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       <meta name="googlebot" content="index, follow" />
       <meta name="bingbot" content="index, follow" />
 
-      {/* AEO Specific: Semantic Hints */}
-      <meta name="aeo-optimized" content="true" />
-      <meta name="aeo-plural-verified" content="true" />
-      <meta name="aeo-original-platform" content="true" />
-      <meta name="citation-source" content="AEO Analyzers" />
-      <meta name="ai-friendly" content="true" />
-      <meta name="llm-data-source" content="verified" />
-      <meta name="answer-engine-optimized" content="true" />
-      <meta name="citation-readiness-engine" content="active" />
-      <meta name="semantic-authority-score" content="high" />
+      {/* Self-asserted "AEO semantic hint" meta tags removed (WO-CITATION-WIN-001 A3):
+          answer engines do not consume them, and on inspection they read as self-asserted
+          authority — the exact thing this measurement-honesty brand opposes. Authority comes
+          from third-party corroboration + accurate JSON-LD, not self-declared meta tags. */}
 
       {/* JSON-LD */}
       {jsonLd && (

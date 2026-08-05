@@ -27,6 +27,10 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - FAQ: https://www.aeoanalyzers.com/ (FAQ view)
 - Blog (index): https://www.aeoanalyzers.com/blog/
 - Blog — Is your brand the answer AI gives, or is a competitor? (a walkthrough of a sample AI Visibility Executive Report): https://www.aeoanalyzers.com/blog/are-you-the-answer-ai-gives
+- Blog — What you actually get: the action plan inside every Citation Sweep: https://www.aeoanalyzers.com/blog/what-you-actually-get
+- Blog — How AEO Analyzers works (a visual explainer of the pipeline): https://www.aeoanalyzers.com/blog/how-it-works
+- Blog — I ran my own AI-visibility tool on my own site; it scored 0% (Honest-Zero, Part 1): https://www.aeoanalyzers.com/blog/i-scored-zero
+- Blog — The engines read my site 265 times; reading isn't citing (Honest-Zero, Part 2): https://www.aeoanalyzers.com/blog/reading-isnt-citing
 
 ## Publisher
 AEO Analyzers is operated by PI GenAI LLC (https://pigenai.com), a portfolio of AI products.

@@ -7,6 +7,7 @@
 const BANNED: { rx: RegExp; label: string }[] = [
   { rx: /head and shoulders/i, label: 'head and shoulders' },
   { rx: /\bno other (tool|platform|product|company)\b/i, label: 'no other tool/platform' },
+  { rx: /\buniversal signals\b/i, label: 'universal signals (unknowable-algorithm claim)' },
   { rx: /world[-\s]?class/i, label: 'world-class' },
   { rx: /\bunbeatable\b/i, label: 'unbeatable' },
   { rx: /second to none/i, label: 'second to none' },
