@@ -23,25 +23,41 @@ const DISAMBIGUATION =
   'AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.';
 
 // Node builders (no @context — that lives on the wrapping object / @graph).
+// The Organization IS the legal entity PIGENAI LLC (the operator), not a
+// separate "AEO Analyzers" company: AEO Analyzers is the SoftwareApplication it
+// publishes. Legal facts below are founder-ratified (Aug 5 2026) against the
+// Missouri Secretary of State record — do not substitute values from older copy.
 function organizationNode() {
   return {
     '@type': 'Organization',
     '@id': ORG_ID,
-    name: 'AEO Analyzers by PI GenAI LLC',
-    alternateName: 'AEO Analyzers',
-    legalName: 'PI GenAI LLC',
-    url: SITE_URL,
+    name: 'PIGENAI LLC',
+    legalName: 'PIGENAI LLC',
+    alternateName: 'PI GenAI LLC',
+    url: 'https://pigenai.com',
     logo: `${SITE_URL}/aeo-og-bta-2026b.png`,
-    description: APP_DESCRIPTION,
-    disambiguatingDescription: DISAMBIGUATION,
-    parentOrganization: { '@type': 'Organization', '@id': PIGENAI_ORG_ID, name: 'PI GenAI LLC', url: 'https://pigenai.com' },
+    description:
+      'PIGENAI LLC builds and operates AEO Analyzers (aeoanalyzers.com) and a portfolio of practical AI products.',
+    foundingDate: '2025-12-18',
     founder: { '@id': FOUNDER_ID },
-    sameAs: [
-      'https://pigenai.com',
-      'https://www.linkedin.com/company/aeo-analyzers',
-      'https://twitter.com/aeoanalyzers',
-      'https://github.com/aeoanalyzers',
-    ],
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '5901 NW 63rd Ter, Suite 301',
+      addressLocality: 'Kansas City',
+      addressRegion: 'MO',
+      postalCode: '64151',
+      addressCountry: 'US',
+    },
+    identifier: {
+      '@type': 'PropertyValue',
+      propertyID: 'Missouri Secretary of State Charter Number',
+      value: 'LC014688957',
+    },
+    // The pigenai.com portfolio-hub @id fuses the portfolio into ONE entity
+    // across domains. The Wikidata Q-ID for PIGENAI LLC is PENDING (C4): when
+    // the founder mints it, add 'https://www.wikidata.org/wiki/Q…' to this
+    // array. Do NOT invent a Q-ID.
+    sameAs: ['https://pigenai.com', PIGENAI_ORG_ID],
     contactPoint: {
       '@type': 'ContactPoint',
       email: 'Lindsay.Hiebert@gmail.com',
@@ -59,6 +75,8 @@ function founderNode() {
     '@id': FOUNDER_ID,
     name: 'Lindsay Hiebert',
     jobTitle: 'Founder & Sole Creator',
+    description:
+      '30+ years across major US carriers (AT&T, Verizon, T-Mobile), ~15 years at Cisco Systems, and ~7 years at Intel — including leading the Intel Network Builders ecosystem (550+ partners). CISSP. Solo builder of 15+ production AI apps.',
     worksFor: { '@id': ORG_ID },
     sameAs: [
       'https://www.linkedin.com/in/lindsayhiebert/',
@@ -78,8 +96,8 @@ function webSiteNode() {
   return {
     '@type': 'WebSite',
     '@id': WEBSITE_ID,
-    name: 'AEO Analyzers by PI GenAI LLC',
-    alternateName: 'AEO Analyzers',
+    name: 'AEO Analyzers',
+    alternateName: 'AEOAnalyzers',
     url: SITE_URL,
     publisher: { '@id': ORG_ID },
     description: 'AI-powered Answer Engine Optimization powered by a Google Gemini frontier model. Real frontier-model analysis. Real-world results. 90 seconds.',
@@ -90,13 +108,19 @@ function softwareApplicationNode() {
   return {
     '@type': 'SoftwareApplication',
     '@id': APP_ID,
-    name: 'AEO Analyzers by PI GenAI LLC',
-    alternateName: 'AEO Analyzers',
+    name: 'AEO Analyzers',
+    alternateName: 'AEOAnalyzers',
     url: SITE_URL,
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
+    datePublished: '2026-03',
     provider: { '@id': ORG_ID },
     publisher: { '@id': ORG_ID },
+    developer: { '@id': ORG_ID },
+    // Wikidata Q-ID for AEO Analyzers (the software) is PENDING (C4): add
+    // 'https://www.wikidata.org/wiki/Q…' here when the founder mints it. Do NOT
+    // invent a Q-ID.
+    sameAs: ['https://pigenai.com'],
     // Explicit sole authorship of the software. Without this, answer engines
     // infer the creator from third-party sources and can misattribute a
     // co-founder that does not exist. Lindsay Hiebert is the sole creator.

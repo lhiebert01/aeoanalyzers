@@ -13,7 +13,7 @@ export default function PressKit() {
   };
 
   const blogContent = `
-# The next generation of AEOAnalyzers: prove it, don't just score it
+# The next generation of AEO Analyzers: prove it, don't just score it
 
 **By Lindsay Hiebert · PI GenAI LLC**
 *July 2026*
@@ -22,7 +22,7 @@ Search is becoming answers. When someone asks ChatGPT, Gemini, Perplexity, or Cl
 
 A score predicts. A Citation Sweep proves.
 
-The new AEOAnalyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity, and Gemini — and stores every transcript. Then it measures three separable layers:
+The new AEO Analyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity, and Gemini — and stores every transcript. Then it measures three separable layers:
 
 - **Retrievability** — ask AI about your brand by name; does it return a real answer? A health check that should sit near 100%.
 - **Fidelity** — is what AI says about you actually true? We flag fabricated founders, stale prices, and invented features, with the correct value and the fix.
@@ -40,11 +40,11 @@ Start free at https://aeoanalyzers.com
   const pressReleaseContent = `
 FOR IMMEDIATE RELEASE
 
-# AEOAnalyzers adds real-time Citation Sweeps — measuring whether AI answer engines actually cite your brand
+# AEO Analyzers adds real-time Citation Sweeps — measuring whether AI answer engines actually cite your brand
 
-**PI GenAI LLC — July 2026** — AEOAnalyzers today released the next generation of its Answer Engine Optimization platform, adding live Citation Sweeps that ask real AI answer engines — ChatGPT, Claude, Perplexity, and Google Gemini — a brand's buyer questions and record what each one answers.
+**PI GenAI LLC — July 2026** — AEO Analyzers today released the next generation of its Answer Engine Optimization platform, adding live Citation Sweeps that ask real AI answer engines — ChatGPT, Claude, Perplexity, and Google Gemini — a brand's buyer questions and record what each one answers.
 
-As buyers increasingly ask AI assistants for recommendations instead of scrolling search results, being the source an engine cites has become a growth priority. AEOAnalyzers measures that outcome directly, with stored transcripts a customer can reproduce.
+As buyers increasingly ask AI assistants for recommendations instead of scrolling search results, being the source an engine cites has become a growth priority. AEO Analyzers measures that outcome directly, with stored transcripts a customer can reproduce.
 
 "A score predicts; a sweep proves," said Lindsay Hiebert, founder of PI GenAI LLC. "We ask the real engines your buyers' questions, show whether they cite you or a competitor, and hand you the specific fixes. Our promise is simple — run the query yourself and you'll get what the report says."
 
@@ -55,7 +55,7 @@ As buyers increasingly ask AI assistants for recommendations instead of scrollin
 *   **Progressive monitoring:** re-run monthly to track share of the AI answer over time.
 
 ### About PI GenAI LLC
-AEOAnalyzers (aeoanalyzers.com) is built and maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.
+AEO Analyzers (aeoanalyzers.com) is built and maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.
 
 **Media Contact:**
 Lindsay Hiebert
@@ -68,7 +68,7 @@ Search is becoming answers.
 
 When a buyer asks ChatGPT, Gemini, Perplexity, or Claude for the best option in your category, they get one answer. If it isn't you, a competitor just won the customer.
 
-Today we're releasing the next generation of AEOAnalyzers — real-time Citation Sweeps.
+Today we're releasing the next generation of AEO Analyzers — real-time Citation Sweeps.
 
 A score predicts. A sweep proves. We ask the real engines your buyers' questions, store every transcript, and measure three things:
 • Retrievability — does AI find you by name?
@@ -89,7 +89,7 @@ Start free: https://aeoanalyzers.com
 
 Ask ChatGPT, Gemini, Perplexity, or Claude for the best option in a category and you get one answer. If it isn't your brand, a competitor just won the customer.
 
-The next generation of AEOAnalyzers is here: real-time Citation Sweeps. 🧵
+The next generation of AEO Analyzers is here: real-time Citation Sweeps. 🧵
 
 2/ A score predicts. A sweep proves.
 
@@ -114,7 +114,7 @@ Is your business the answer AI gives?
 
 More people are asking ChatGPT, Gemini, Perplexity, and Claude for recommendations instead of scrolling search results. If those assistants don't name you, your customers may never find you.
 
-The new AEOAnalyzers measures it directly. We ask the real engines your buyers' questions and show whether they cite you or a competitor — with the transcripts to prove it. Then we hand you the exact fixes.
+The new AEO Analyzers measures it directly. We ask the real engines your buyers' questions and show whether they cite you or a competitor — with the transcripts to prove it. Then we hand you the exact fixes.
 
 ✅ See whether AI names you or a competitor
 ✅ Catch when AI gets your facts wrong
@@ -124,14 +124,14 @@ Start free: https://aeoanalyzers.com
 `;
 
   const slackBlurbContent = `
-🚀 New: the next generation of AEOAnalyzers adds real-time Citation Sweeps — it asks ChatGPT, Claude, Perplexity, and Gemini your buyers' questions and shows whether they cite you or a competitor, with stored transcripts and the exact fixes. Start free at https://aeoanalyzers.com.
+🚀 New: the next generation of AEO Analyzers adds real-time Citation Sweeps — it asks ChatGPT, Claude, Perplexity, and Gemini your buyers' questions and shows whether they cite you or a competitor, with stored transcripts and the exact fixes. Start free at https://aeoanalyzers.com.
 `;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <SEO
-        title="Press Kit & Announcements - AEOAnalyzers"
-        description="Announcement and press resources for AEOAnalyzers — real-time Citation Sweeps across ChatGPT, Claude, Perplexity, and Gemini, backed by stored transcripts, plus the exact fixes."
+        title="Press Kit & Announcements - AEO Analyzers"
+        description="Announcement and press resources for AEO Analyzers — real-time Citation Sweeps across ChatGPT, Claude, Perplexity, and Gemini, backed by stored transcripts, plus the exact fixes."
         author="Lindsay Hiebert"
         publishedDate="2026-07-28T00:00:00Z"
       />
@@ -192,7 +192,7 @@ Start free: https://aeoanalyzers.com
 
             <div className="prose prose-zinc prose-sm md:prose-base max-w-none bg-white border border-zinc-300 rounded-[3rem] p-10 md:p-16 shadow-sm">
               <h1 className="text-4xl md:text-6xl font-black mb-8 tracking-tight leading-none">
-                The next generation of AEOAnalyzers: <span className="text-zinc-400">prove it, don't just score it</span>
+                The next generation of AEO Analyzers: <span className="text-zinc-400">prove it, don't just score it</span>
               </h1>
 
               <div className="flex items-center gap-4 mb-12 pb-12 border-b border-zinc-100">
@@ -206,7 +206,7 @@ Start free: https://aeoanalyzers.com
               <div className="space-y-6 text-zinc-600 leading-relaxed">
                 <p className="text-xl font-medium text-zinc-900">Search is becoming answers. When someone asks ChatGPT, Gemini, Perplexity, or Claude about your category, they get one answer — one or two names. If it isn't you, your customers never see you.</p>
                 <p className="font-bold text-zinc-900">A score predicts. A Citation Sweep proves.</p>
-                <p>The new AEOAnalyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity, and Gemini — and stores every transcript. Then it measures three separable layers.</p>
+                <p>The new AEO Analyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity, and Gemini — and stores every transcript. Then it measures three separable layers.</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
                   <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-300">
@@ -253,12 +253,12 @@ Start free: https://aeoanalyzers.com
               </div>
 
               <h2 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight leading-tight uppercase">
-                AEOAnalyzers adds real-time Citation Sweeps — measuring whether AI answer engines actually cite your brand
+                AEO Analyzers adds real-time Citation Sweeps — measuring whether AI answer engines actually cite your brand
               </h2>
 
-              <p><strong>PI GenAI LLC — July 2026</strong> — AEOAnalyzers today released the next generation of its Answer Engine Optimization platform, adding live Citation Sweeps that ask real AI answer engines — ChatGPT, Claude, Perplexity, and Google Gemini — a brand's buyer questions and record what each one answers.</p>
+              <p><strong>PI GenAI LLC — July 2026</strong> — AEO Analyzers today released the next generation of its Answer Engine Optimization platform, adding live Citation Sweeps that ask real AI answer engines — ChatGPT, Claude, Perplexity, and Google Gemini — a brand's buyer questions and record what each one answers.</p>
 
-              <p>As buyers increasingly ask AI assistants for recommendations instead of scrolling search results, being the source an engine cites has become a growth priority. AEOAnalyzers measures that outcome directly, with stored transcripts a customer can reproduce.</p>
+              <p>As buyers increasingly ask AI assistants for recommendations instead of scrolling search results, being the source an engine cites has become a growth priority. AEO Analyzers measures that outcome directly, with stored transcripts a customer can reproduce.</p>
 
               <p>"A score predicts; a sweep proves," said Lindsay Hiebert, founder of PI GenAI LLC. "We ask the real engines your buyers' questions, show whether they cite you or a competitor, and hand you the specific fixes. Our promise is simple — run the query yourself and you'll get what the report says."</p>
 
@@ -274,7 +274,7 @@ Start free: https://aeoanalyzers.com
 
               <div className="pt-12 border-t border-zinc-200 space-y-4">
                 <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">About PI GenAI LLC</p>
-                <p>AEOAnalyzers (aeoanalyzers.com) is built and maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</p>
+                <p>AEO Analyzers (aeoanalyzers.com) is built and maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</p>
               </div>
 
               <div className="pt-8 space-y-1">

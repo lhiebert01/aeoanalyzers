@@ -114,13 +114,13 @@ describe('buildNarrativePrompt', () => {
 describe('buildOutreachEmail (DRAFT only)', () => {
   const nar = defaultNarrative(data);
   const email = buildOutreachEmail(data, nar, {
-    postalAddress: 'PIGENAI LLC · 5901 NW 63rd Ter, Apt 301 · Kansas City, MO 64151',
+    postalAddress: 'PIGENAI LLC · 5901 NW 63rd Ter, Suite 301 · Kansas City, MO 64151',
     optOut: 'Prefer not to hear from me? Reply "no thanks" and I won\'t write again.',
     senderName: 'Lindsay Hiebert',
   });
   it('uses the narrative subject and carries the CAN-SPAM footer', () => {
     expect(email.subject).toBe(nar.subject);
-    expect(email.body).toContain('5901 NW 63rd Ter, Apt 301');   // required postal address
+    expect(email.body).toContain('5901 NW 63rd Ter, Suite 301');   // required postal address
     expect(email.body).toContain('Kansas City, MO 64151');
     expect(email.body).toMatch(/no thanks/i);                    // opt-out line present
   });

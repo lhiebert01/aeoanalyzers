@@ -84,7 +84,7 @@ export default function ContactModal({ open, onClose, subject }: { open: boolean
                 <button type="button" onClick={onClose} className="px-5 py-3 text-zinc-500 hover:text-zinc-900 font-bold transition-colors">Cancel</button>
               </div>
 
-              <p className="text-[11px] text-zinc-400 pt-1">Sent via Resend from a verified AEOAnalyzers sender. Not stored beyond delivery — it lives in the founder's inbox.</p>
+              <p className="text-[11px] text-zinc-400 pt-1">Sent via Resend from a verified AEO Analyzers sender. Not stored beyond delivery — it lives in the founder's inbox.</p>
             </form>
           </>
         )}

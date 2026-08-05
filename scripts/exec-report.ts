@@ -26,7 +26,7 @@ import {
 } from '../src/lib/execReport.js';
 
 // CONFIRMED PIGENAI LLC legal + postal address (founder-approved for email footers).
-const POSTAL_ADDRESS = 'PIGENAI LLC · 5901 NW 63rd Ter, Apt 301 · Kansas City, MO 64151';
+const POSTAL_ADDRESS = 'PIGENAI LLC · 5901 NW 63rd Ter, Suite 301 · Kansas City, MO 64151';
 // PLACEHOLDER opt-out — final wording set in the template session.
 const OPT_OUT = 'Not useful? Reply "no thanks" and I won\'t reach out again.';
 const SENDER = 'Lindsay Hiebert';
