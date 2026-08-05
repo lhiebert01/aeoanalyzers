@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Month Later: Still Zero — and Why | AEO Analyzers</title>
+<meta name="description" content="The first monthly re-measure of the Honest-Zero series. I shipped the fixes; the number hasn't moved yet. Here's the lag every business faces — and why it's honest, not a failure.">
+<!-- DRAFT-NOINDEX + PRE-WRITE. Publish ONLY the version matching the Sept-1 stored run. Fill every [[FILL: ...]] token from the actual stored run — NEVER invent a number. Then: remove noindex, gen OG card, add hub card. This is the "STILL ZERO / not yet moved" version; delete the "moved" version if this one ships. -->
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://aeoanalyzers.com/blog/one-month-later">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AEO Analyzers">
+<meta property="og:title" content="One Month Later: Still Zero — and Why">
+<meta property="og:url" content="https://aeoanalyzers.com/blog/one-month-later">
+<meta name="theme-color" content="#08343B">
+<style>
+:root{--paper:#E7ECEE;--card:#FFFFFF;--ink:#0E1216;--muted:#3F4952;--hair:#C4CDD3;--teal:#0B6E7A;--teal-deep:#08343B;--teal-tint:#E6F0F1;--good:#137A4D;--gap:#B23A2E;--panel:#EBF0F2;--edge:#9FADB6;--card-shadow:0 1px 2px rgba(20,26,31,.06),0 6px 18px rgba(20,26,31,.10);--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:26px 20px 40px}
+.sitebar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px clamp(16px,4vw,28px);background:var(--card);border-bottom:1px solid var(--edge)}
+.sitebar .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;color:var(--ink);text-decoration:none}
+.sitebar .brand .mk{display:inline-flex;width:27px;height:27px;border-radius:7px;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.sitebar .snav{display:flex;align-items:center;gap:6px}
+.sitebar .snav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:9px}
+.sitebar .snav a.primary{background:var(--teal-deep);color:#EAF4F5}
+@media(max-width:520px){.sitebar .snav a:not(.primary){display:none}}
+.draftbar{max-width:720px;margin:10px auto 0;padding:12px 18px;background:#FCEFC7;border:1px solid #B5820A;border-radius:12px;font-size:13.5px;color:#5b4708}
+.post{max-width:720px;margin:6px auto 4px;padding:0 8px}
+.posteyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.posttitle{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5.6vw,48px);line-height:1.06;letter-spacing:-.015em;margin:12px 0 12px}
+.postmeta{color:var(--muted);font-size:13px;margin:0 0 24px}
+.fill{background:#FCEFC7;color:#5b4708;font-weight:700;padding:0 5px;border-radius:4px;border:1px solid #B5820A}
+.postbody p{font-size:17px;max-width:68ch;margin:0 0 16px}
+.postbody .postlead{font-size:19.5px;line-height:1.5}
+.posth2{font-family:var(--serif);font-weight:600;font-size:23px;margin:38px 0 12px}
+strong{color:var(--ink)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px auto;max-width:720px}
+.tile{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:16px 18px;box-shadow:var(--card-shadow)}
+.tile .lab{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile .num{font-family:var(--serif);font-size:32px;font-weight:600;line-height:1;margin:8px 0 4px}
+.tile.good .num{color:var(--good)}.tile.gap .num{color:var(--gap)}
+.tile .note{font-size:12.5px;color:var(--muted)}
+.samplenote{max-width:720px;margin:22px auto 0;padding:0 8px;color:var(--muted);font-size:12.5px}
+.ilink{color:var(--teal);text-decoration:underline;text-underline-offset:2px}
+.sitefoot{border-top:1px solid var(--edge);background:var(--card);margin-top:44px}
+.sitefoot .fin{max-width:960px;margin:0 auto;padding:24px clamp(16px,4vw,28px);display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.sitefoot .fnav{display:flex;flex-wrap:wrap;gap:8px 22px}
+.sitefoot a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+.sitefoot .fcop{color:var(--muted);font-size:12.5px}
+@media(max-width:560px){.tiles{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="https://aeoanalyzers.com/"><span class="mk">A</span> AEO Analyzers</a>
+  <nav class="snav"><a href="https://aeoanalyzers.com/">Home</a><a href="/blog/">Blog</a><a class="primary" href="https://aeoanalyzers.com/">Start free →</a></nav>
+</header>
+<div class="wrap">
+  <div class="draftbar"><strong>PRE-WRITE — "still zero / not yet moved" version.</strong> Publish only if the Sept-1 stored run shows no meaningful movement. Replace every highlighted <span class="fill">[[FILL: …]]</span> token with the real stored value — never invent one. Then remove noindex, generate the OG card, add the hub card, and delete the "moved" version.</div>
+  <article class="post">
+    <div class="posteyebrow">AEO Analyzers · Honest-Zero, Part 4</div>
+    <h1 class="posttitle">One Month Later: Still Zero — and Why</h1>
+    <p class="postmeta">Lindsay Hiebert · September 2026 · 4-minute read</p>
+    <div class="postbody">
+      <p class="postlead">A month ago I published a zero: my own tool measured whether the AI engines recommend AEO Analyzers when buyers ask by need, and the answer was <strong>0%</strong>. I said I'd re-measure monthly and publish the number whatever it was. Here's the first re-measure, and I'm keeping the promise — including the part where the number I wanted to move didn't.</p>
+      <div class="tiles">
+        <div class="tile gap"><div class="lab">Category citation win</div><div class="num"><span class="fill">[[FILL: Sept-1 category %]]</span></div><div class="note">Aug 1 was 0% · N=<span class="fill">[[FILL: N]]</span> · <span class="fill">[[FILL: confidence]]</span></div></div>
+        <div class="tile good"><div class="lab">Branded retrievability</div><div class="num"><span class="fill">[[FILL: Sept-1 branded %]]</span></div><div class="note">Aug 1 was 100% · N=<span class="fill">[[FILL: N]]</span></div></div>
+      </div>
+      <p>That's the honest result, and it's worth sitting with rather than spinning. I shipped real fixes in August — corrected structure, an entity graph that separates the product from the tickers and tools that share its letters, a machine-readable record of the facts, a public methodology and evidence page. And the category number hasn't caught up. That's not a contradiction. It's the lag.</p>
+
+      <h2 class="posth2">Why the fixes ship faster than the number moves</h2>
+      <p>The fixes I control are the <strong>on-site, first-party</strong> layer: what my own pages say and how machine-readable they are. Those go live the day I deploy them. But category citation win is decided mostly <strong>off-site</strong> — by whether the sources the engines already trust (the roundups, the review sites, the communities) have caught up to include me. That corroboration accrues on the internet's clock, not mine. The engines also carry forward what they learned before my fixes; a month is often not enough for a re-crawl and re-weighting to show up in the answer.</p>
+      <p><strong>This is the lag every business faces.</strong> You can do everything right on your own property and still wait, because the layer that decides the recommendation isn't your property — it's the corroborating record around you. Anyone selling you a same-week guarantee is selling the part they don't control.</p>
+
+      <h2 class="posth2">What I'm doing about it — and what comes next</h2>
+      <p><span class="fill">[[FILL: the honest next moves, grounded in the plan — e.g. the off-site corroboration work that's legitimately attainable this month (own comparison content, review-platform presence where it qualifies, genuine community participation, the Wikidata anchor). State only what's actually done or under way; label anything aspirational as aspirational.]]</span></p>
+      <p>Same commitment, same cadence: I re-measure next month, the same panel the same way, and publish it — moved or not. Every number here is backed by a stored transcript you can reproduce. A zero that's honestly reported and worked, in public, is worth more than a green number I can't defend.</p>
+      <p>Want to know your own number before a prospect finds it? The check is free and takes about ninety seconds: <a class="ilink" href="https://aeoanalyzers.com">aeoanalyzers.com</a>. The full method is on the <a class="ilink" href="/methodology">methodology page</a>.</p>
+    </div>
+    <p class="samplenote"><em>AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PIGENAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</em></p>
+  </article>
+</div>
+<footer class="sitefoot">
+  <div class="fin">
+    <nav class="fnav"><a href="https://aeoanalyzers.com/">Home</a><a href="/blog/">Blog</a><a href="https://aeoanalyzers.com/privacy">Privacy</a><a href="https://aeoanalyzers.com/terms">Terms</a></nav>
+    <div class="fcop">© 2026 AEO Analyzers · PIGENAI LLC</div>
+  </div>
+</footer>
+</body>
+</html>
