@@ -19,6 +19,7 @@ const CARDS = [
   { file: 'og-blog-what-you-actually-get.png', title: 'What You Actually Get: The Action Plan Inside Every Citation Sweep' },
   { file: 'og-blog-are-you-the-answer.png', title: 'Is Your Brand the Answer AI Gives — or Is a Competitor?' },
   { file: 'og-blog-how-it-works.png', title: 'How AEO Analyzers Works: The 90-Second Tour of a <span class="hot">Hundred-Hour Analysis</span>' },
+  { file: 'og-blog-reading-isnt-citing.png', title: 'The Engines Read My Site 265 Times. <span class="hot">Reading Isn\'t Citing.</span>' },
 ];
 
 const html = (titleHtml) => `<!doctype html><html><head><meta charset="utf-8">
