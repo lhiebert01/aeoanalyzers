@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methodology — how AEO Analyzers measures | AEO Analyzers</title>
+<meta name="description" content="How AEO Analyzers measures answer-engine visibility: three separable layers (retrievability, fidelity, citation win), a versioned question panel, repetition with sample size and confidence, truncation and model-prior handling, and a stored transcript behind every number.">
+<!-- DRAFT-NOINDEX: remove the next line on founder approval + merge to main to make /methodology indexable -->
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://aeoanalyzers.com/methodology">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AEO Analyzers">
+<meta property="og:title" content="Methodology — how AEO Analyzers measures">
+<meta property="og:description" content="Three separable layers, a versioned question panel, repetition with sample size and confidence, and a stored transcript behind every number.">
+<meta property="og:url" content="https://aeoanalyzers.com/methodology">
+<meta name="theme-color" content="#08343B">
+<style>
+:root{
+  --paper:#E7ECEE; --card:#FFFFFF; --ink:#0E1216; --muted:#3F4952; --hair:#C4CDD3;
+  --teal:#0B6E7A; --teal-deep:#08343B; --teal-tint:#E6F0F1;
+  --good:#137A4D; --good-tint:#E3F1E9; --warn:#B5820A; --gap:#B23A2E; --gap-tint:#F7E7E4;
+  --panel:#EBF0F2; --edge:#9FADB6;
+  --shadow:0 1px 2px rgba(20,26,31,.06), 0 18px 50px rgba(20,26,31,.12);
+  --card-shadow:0 1px 2px rgba(20,26,31,.06), 0 6px 18px rgba(20,26,31,.10);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:820px;margin:0 auto;padding:26px 20px 40px}
+.sitebar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:11px clamp(16px,4vw,28px);background:var(--card);border-bottom:1px solid var(--edge)}
+.sitebar .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.sitebar .brand .mk{display:inline-flex;width:27px;height:27px;border-radius:7px;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.sitebar .snav{display:flex;align-items:center;gap:6px}
+.sitebar .snav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:9px}
+.sitebar .snav a:hover{color:var(--ink);background:var(--panel)}
+.sitebar .snav a.primary{background:var(--teal-deep);color:#EAF4F5}
+@media(max-width:520px){.sitebar .snav a:not(.primary){display:none}}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,44px);line-height:1.08;letter-spacing:-.015em;text-wrap:balance;margin:12px 0 12px}
+.lead{font-size:18.5px;line-height:1.5;max-width:70ch;color:var(--ink)}
+.meta{color:var(--muted);font-size:13px;margin:6px 0 0;letter-spacing:.02em}
+h2{font-family:var(--serif);font-weight:600;font-size:24px;margin:40px 0 12px;letter-spacing:-.01em}
+h3{font-size:16px;margin:22px 0 4px}
+p{margin:0 0 14px;max-width:70ch;font-size:16.5px}
+strong{color:var(--ink)}
+.layers{display:grid;grid-template-columns:1fr;gap:14px;margin:18px 0 6px}
+.layer{background:var(--card);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--card-shadow);padding:20px 22px;border-top:3px solid var(--teal)}
+.layer .k{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--teal);margin:0 0 6px}
+.layer p{margin:0;font-size:15.5px;max-width:none}
+.layer .fix{margin-top:10px;font-size:14px;color:var(--muted);border-top:1px dashed var(--edge);padding-top:9px}
+.layer .fix b{color:var(--ink)}
+.box{background:var(--teal-tint);border:1px solid var(--edge);border-radius:14px;padding:16px 20px;margin:18px 0;font-size:15.5px}
+.box b{color:var(--ink)}
+ul{max-width:70ch;padding-left:20px}
+li{margin:0 0 8px;font-size:16px}
+.baseline{background:var(--panel);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--card-shadow);padding:6px 24px 20px;margin-top:22px}
+.baseline .tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}
+.tile{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:16px 18px}
+.tile .lab{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile .num{font-family:var(--serif);font-size:34px;font-weight:600;line-height:1;margin:8px 0 4px;font-variant-numeric:tabular-nums}
+.tile.good .num{color:var(--good)} .tile.gap .num{color:var(--gap)}
+.tile .note{font-size:12.5px;color:var(--muted)}
+.samplenote{margin:26px 0 0;color:var(--muted);font-size:13px}
+.sitefoot{border-top:1px solid var(--edge);background:var(--card);margin-top:44px}
+.sitefoot .fin{max-width:820px;margin:0 auto;padding:24px clamp(16px,4vw,28px);display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.sitefoot .fnav{display:flex;flex-wrap:wrap;gap:8px 22px}
+.sitefoot a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+.sitefoot a:hover{color:var(--ink)}
+.sitefoot .fcop{color:var(--muted);font-size:12.5px}
+.ilink{color:var(--teal);text-decoration:underline;text-underline-offset:2px}
+@media(max-width:560px){.baseline .tiles{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="https://aeoanalyzers.com/"><span class="mk">A</span> AEO Analyzers</a>
+  <nav class="snav">
+    <a href="https://aeoanalyzers.com/">Home</a>
+    <a href="/blog/">Blog</a>
+    <a class="primary" href="https://aeoanalyzers.com/">Start free →</a>
+  </nav>
+</header>
+<div class="wrap">
+  <span class="eyebrow">Methodology</span>
+  <h1>How AEO Analyzers measures</h1>
+  <p class="lead">We report three separable layers of answer-engine visibility — each with its own fix path — and every score is backed by a stored transcript you can reproduce. This page is the full method: what we ask, how many times, how we count, and what we deliberately refuse to claim.</p>
+  <p class="meta">Last reviewed August 2026 · question panel v1.1</p>
+
+  <h2>The three layers</h2>
+  <p>A single blended "visibility score" hides more than it shows. Being known by name is not the same as being described correctly, and neither is the same as being recommended to a buyer. We separate them, because the fix for each is different.</p>
+  <div class="layers">
+    <div class="layer">
+      <div class="k">1 · Retrievability</div>
+      <p>When someone asks the engines about you <strong>by name</strong>, do they find and describe you at all? This is a branded question set.</p>
+      <div class="fix"><b>If it's low:</b> crawler access, indexable structure, a machine-readable record of who you are.</div>
+    </div>
+    <div class="layer">
+      <div class="k">2 · Fidelity</div>
+      <p>When the engines describe you, are they <strong>right</strong>? Every branded answer is checked against your site's own record and classified <strong>accurate</strong>, <strong>drifted</strong>, or <strong>confused with a named colliding entity</strong> — with that entity named.</p>
+      <div class="fix"><b>If it drifts:</b> correct the source of record, disambiguate against the lookalikes that share your letters.</div>
+    </div>
+    <div class="layer">
+      <div class="k">3 · Citation Win</div>
+      <p>On <strong>unbranded buyer questions</strong> — "what tools measure AI search visibility?" — do the engines recommend you, or a competitor by name? This is the category question set.</p>
+      <div class="fix"><b>If it's zero:</b> third-party corroboration and content shaped like the questions buyers actually ask — not more copy on your own domain.</div>
+    </div>
+  </div>
+
+  <h2>The question panel</h2>
+  <p>Each run uses a fixed panel of branded and category questions written in <strong>natural buyer phrasing</strong> — the way a real person asks an assistant, not keyword strings. The panel is <strong>versioned</strong> (currently v1.1) and disclosed: when we change a question, we record the change and the version, so month-over-month numbers compare like with like. Same questions, same way, every time — that discipline is what makes the trend line honest.</p>
+
+  <h2>Repetition, sample size, and confidence</h2>
+  <p>Engines are non-deterministic — ask twice, get two answers — so a single query proves nothing. Every question is asked <strong>several times per engine</strong> (the series baseline uses five), across ChatGPT, Claude, Perplexity, and Gemini. Every number we report ships with its <strong>sample size (N)</strong> and a <strong>confidence</strong> read printed next to it. A result at N=8 is not presented as if it were N=200.</p>
+
+  <h2>Measurement integrity</h2>
+  <p>We built these guards after finding our own instrument getting them wrong:</p>
+  <ul>
+    <li><strong>Truncation is excluded, not counted as a loss.</strong> If an engine's answer is cut off before it finishes, that run is flagged and removed — never silently scored as "didn't cite you."</li>
+    <li><strong>Search-grounded and model-prior answers are scored separately.</strong> An engine answering from memory without searching the web is a different measurement from one that actually retrieved sources; we don't blend them.</li>
+    <li><strong>Segment-aware.</strong> A zero on "best AEO tool for <em>enterprise</em>" is out-of-segment for a self-serve SMB tool, not a failure — we don't score you against questions that were never yours to win.</li>
+  </ul>
+
+  <h2>Fixes are tiered by attainability</h2>
+  <p>Plenty of visibility advice ends the same way: "become more authoritative — get on Wikipedia, get into the big publications." For most businesses that's a goose chase. Every source we suggest is <strong>tiered</strong>: what you can do yourself this week, what's genuinely pitchable, and what's aspirational — labeled as aspirational, not disguised as a to-do. Your time is the scarcest input in your business; an action plan should spend it where movement is actually possible.</p>
+
+  <h2>Reproducibility and cadence</h2>
+  <p>Every claim is backed by a <strong>stored transcript</strong> — the exact question, the exact answer, the engine, the timestamp — that you can reproduce yourself. We re-measure on a monthly cadence, the same questions the same way, and publish the number each time, whatever it is.</p>
+
+  <h2>What we do not claim</h2>
+  <p>We do not know the engines' ranking algorithms, and we don't pretend to. We measure what they <strong>actually do</strong> when asked your buyers' questions — the observed output, not the black box. We make no guarantee of rankings or citations; anyone who promises that is guessing. What we offer is an honest, dated, reproducible measurement and a fix path scoped to what you can reach.</p>
+
+  <div class="baseline">
+    <h2>A worked example — our own dated baseline</h2>
+    <p>We run this method on our own site and publish the result. In the series anchor of record (<strong>August 1, 2026</strong>, five repetitions per question):</p>
+    <div class="tiles">
+      <div class="tile good">
+        <div class="lab">Retrievability (branded)</div>
+        <div class="num">100%</div>
+        <div class="note">N=40 branded prompts</div>
+      </div>
+      <div class="tile gap">
+        <div class="lab">Citation win (category)</div>
+        <div class="num">0%</div>
+        <div class="note">N=200 category prompts · high confidence</div>
+      </div>
+    </div>
+    <p class="samplenote">The engines know us by name and miss us entirely when buyers ask by need. That gap — and its fix path — is the whole point of separating the layers. The number is a dated snapshot, re-measured monthly; follow the <a class="ilink" href="/blog/i-scored-zero">Honest-Zero series</a> for each update.</p>
+  </div>
+
+  <p class="samplenote"><em>AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PIGENAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</em></p>
+</div>
+<footer class="sitefoot">
+  <div class="fin">
+    <nav class="fnav">
+      <a href="https://aeoanalyzers.com/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://aeoanalyzers.com/privacy">Privacy</a>
+      <a href="https://aeoanalyzers.com/terms">Terms</a>
+    </nav>
+    <div class="fcop">© 2026 AEO Analyzers · PIGENAI LLC</div>
+  </div>
+</footer>
+</body>
+</html>
