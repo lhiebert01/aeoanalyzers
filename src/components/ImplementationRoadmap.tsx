@@ -397,8 +397,8 @@ ${cleanDisplayName}`;
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Implementation Roadmap</h2>
             <p className="text-zinc-500 mt-2">Step-by-step instructions to achieve a perfect 100 AEO score.</p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex bg-white p-1 rounded-2xl border border-zinc-200 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center gap-3 w-full md:w-auto">
+            <div className="flex flex-wrap justify-center md:justify-start gap-1 bg-white p-1 rounded-2xl border border-zinc-200 shadow-sm w-full md:w-auto">
               <TabButton active={activeTab === 'summary'} onClick={() => setActiveTab('summary')} icon={<FileText className="w-4 h-4" />} label="Summary" />
               <TabButton active={activeTab === 'handoff'} onClick={() => setActiveTab('handoff')} icon={<Mail className="w-4 h-4" />} label="Handoff" />
               <TabButton active={activeTab === 'platforms'} onClick={() => setActiveTab('platforms')} icon={<Layout className="w-4 h-4" />} label="Platforms" />
@@ -406,7 +406,7 @@ ${cleanDisplayName}`;
             <button
               onClick={handleDownloadReport}
               disabled={downloading}
-              className="flex items-center gap-2 px-5 py-3 bg-zinc-900 text-white rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-lg disabled:opacity-60"
+              className="flex items-center justify-center gap-2 w-full md:w-auto px-5 py-3 bg-zinc-900 text-white rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-lg disabled:opacity-60"
             >
               {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               {downloading ? 'Generating...' : 'Download Report'}
