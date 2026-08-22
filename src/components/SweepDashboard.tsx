@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Type } from '@google/genai';
-import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, ArrowLeft, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, largestLosingSegment, segmentSummaryNote, SEGMENT_LABEL } from '../lib/querySegment';
@@ -11,11 +11,11 @@ import { ScoreVsSweepCard, CrossLink, AgendaBlock } from './ScoreVsSweepCard';
 import { avgPawc } from '../lib/pawc';
 import { auditFactDensity, type FactDensityAudit } from '../lib/factDensity';
 import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
-import type { SweepSummary, SweepRunResult, SweepScorecard } from '../lib/citationSweep';
+import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType } from '../lib/citationSweep';
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
-import { getAccessToken } from '../supabase';
+import { getAccessToken, supabaseQuery } from '../supabase';
 import { safeJsonParse } from '../services/geminiService';
 
 // --- URL-first auto-extract (UX-PRINCIPLES §1–2 / SWEEP-UX-REDESIGN commit a) ---
@@ -156,7 +156,7 @@ const ENGINE_LABEL: Record<string, string> = {
   claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini',
 };
 
-export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer }: { onUpgrade?: () => void; isAdmin?: boolean; onOpenAnalyzer?: () => void }) {
+export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, savedSweepId, onBackToHistory }: { onUpgrade?: () => void; isAdmin?: boolean; onOpenAnalyzer?: () => void; savedSweepId?: string | null; onBackToHistory?: () => void }) {
   const [domain, setDomain] = useState('');
   const [brand, setBrand] = useState('');
   const [coreCategory, setCoreCategory] = useState('');
@@ -175,6 +175,70 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer }: {
   const [openRun, setOpenRun] = useState<number | null>(null);
   const [expandAll, setExpandAll] = useState(false);
   const [showTranscripts, setShowTranscripts] = useState(false);
+
+  // WO-AEO-MOBILE-HISTORY-001 Part B — saved-sweep view. When a savedSweepId is
+  // passed, rebuild the results page from STORED data (citation_sweeps + sweep_results)
+  // with no engine calls and $0 cost. Point-in-time fidelity/entity-linking/content-
+  // depth are NOT persisted (derived live at run time) and are intentionally not
+  // re-queried here, so those sections simply don't render in a saved view.
+  const savedView = !!savedSweepId;
+  const [savedLoading, setSavedLoading] = useState(false);
+  const [savedError, setSavedError] = useState<string | null>(null);
+  const [savedDate, setSavedDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!savedSweepId) return;
+    let cancelled = false;
+    (async () => {
+      setSavedLoading(true); setSavedError(null);
+      setResult(null); setAuthority(null); setFidelity(null); setEntityLinking(null); setPageFactDensity(null); setTruth(null); setBots(null);
+      setShowTranscripts(false); setExpandAll(false); setOpenRun(null);
+      try {
+        const { data: sweeps, error: e1 } = await supabaseQuery('citation_sweeps', `id=eq.${savedSweepId}&select=*`);
+        if (e1) throw new Error('Could not load this sweep.');
+        const sweep = sweeps?.[0];
+        if (!sweep) throw new Error('Sweep not found (it may belong to another account).');
+        const { data: rows, error: e2 } = await supabaseQuery('sweep_results', `sweep_id=eq.${savedSweepId}&select=*&order=run_index.asc`);
+        if (e2) throw new Error('Could not load this sweep’s stored answers.');
+        const runs: SweepRunResult[] = (rows || []).map((r: any) => ({
+          engine: r.engine as Engine,
+          query: r.query,
+          queryType: r.query_type as QueryType,
+          runIndex: r.run_index,
+          transcript: r.transcript || '',
+          sources: r.sources || [],
+          costUsd: Number(r.cost_usd) || 0,
+          cited: r.cited,
+          citedCompetitors: r.cited_competitors || [],
+        }));
+        const engines = [...new Set(runs.map((r) => r.engine))];
+        const runsPerQuery = runs.length ? Math.max(...runs.map((r) => r.runIndex)) + 1 : 0;
+        const reconstructed: SweepResponse = {
+          domain: sweep.domain,
+          brand: sweep.brand ?? null,
+          runsPerQuery,
+          engines,
+          skippedEngines: [],
+          configured: engines,
+          summary: sweep.summary as SweepSummary,
+          runs,
+          persisted: true,
+        };
+        if (cancelled) return;
+        setResult(reconstructed);
+        setAuthority(aggregateAuthorityGap(runs, sweep.domain));
+        setSavedDate(sweep.created_at);
+        // Keep the brand args used by the derived scorecard consistent with the run.
+        setDomain(sweep.domain);
+        setBrand(sweep.brand || '');
+      } catch (err: any) {
+        if (!cancelled) setSavedError(err?.message || 'Could not load this saved sweep.');
+      } finally {
+        if (!cancelled) setSavedLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [savedSweepId]);
 
   // URL-first flow: 'input' (just the domain) → 'confirm' (verify auto-extracted
   // brand/category/competitors + review the drafted questions) → run.
@@ -527,8 +591,28 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer }: {
         <p className="text-sm text-teal-700 mt-2 font-medium">{SCORE_VS_SWEEP.tagline.sweeps}</p>
       </div>
 
+      {/* WO-AEO-MOBILE-HISTORY-001 Part B — saved-sweep banner (B1). */}
+      {savedView && (
+        <div className="flex items-center justify-between gap-3 flex-wrap bg-indigo-50 border border-indigo-200 rounded-2xl px-5 py-4">
+          <div className="text-sm text-indigo-900">
+            <span className="font-bold">Viewing Saved Sweep</span>
+            {savedDate && <span className="text-indigo-700"> · {new Date(savedDate).toLocaleDateString()}</span>}
+            <span className="block text-xs text-indigo-600 mt-0.5">Rebuilt from stored transcripts — no new engine calls, $0.</span>
+          </div>
+          <button onClick={onBackToHistory} className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-700 hover:text-indigo-900 whitespace-nowrap">
+            <ArrowLeft className="w-4 h-4" /> Back to History
+          </button>
+        </div>
+      )}
+      {savedView && savedLoading && (
+        <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-zinc-300" /></div>
+      )}
+      {savedView && savedError && !savedLoading && (
+        <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-center gap-2"><AlertTriangle className="w-4 h-4" />{savedError}</div>
+      )}
+
       {/* Condensed "what you actually get" — the 5-layer action plan (blog: /blog/what-you-actually-get). */}
-      {phase === 'input' && !result && (
+      {phase === 'input' && !result && !savedView && (
         <div className="bg-zinc-50 border border-zinc-200 rounded-3xl p-5 sm:p-6">
           <div className="flex items-baseline justify-between gap-3 flex-wrap">
             <h2 className="font-bold text-zinc-900">What you actually get — not just a score</h2>
@@ -546,7 +630,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer }: {
       )}
 
       {/* Input — phase 1: just the domain. The AI infers everything else. */}
-      {phase === 'input' && (
+      {phase === 'input' && !savedView && (
         <div className="bg-white border border-zinc-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
           <div>
             <label htmlFor="sweep-domain" className="text-lg font-bold text-zinc-900">Enter your website — we&apos;ll do the rest</label>
@@ -572,7 +656,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer }: {
       )}
 
       {/* Input — phase 2: verify the guesses + review the drafted questions, then run. */}
-      {phase === 'confirm' && (
+      {phase === 'confirm' && !savedView && (
         <div className="bg-white border border-zinc-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
           <div className="flex items-start justify-between gap-3">
             <div>

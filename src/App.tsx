@@ -189,6 +189,9 @@ export default function App() {
   // Sweep history (Citation Sweeps) — a second tab in the History view.
   const [historyTab, setHistoryTab] = useState<'analyses' | 'sweeps'>('analyses');
   const [sweepHistory, setSweepHistory] = useState<any[]>([]);
+  // WO-AEO-MOBILE-HISTORY-001 Part B: when set, the Sweeps view renders a stored
+  // sweep by id (from /sweeps?saved=<id>) instead of the run form — no re-run, $0.
+  const [savedSweepId, setSavedSweepId] = useState<string | null>(null);
   const [loadingSweeps, setLoadingSweeps] = useState(false);
 
   const navigateTo = (newView: View) => {
@@ -197,8 +200,20 @@ export default function App() {
     if (newView !== 'analyzer') {
       setIsViewingHistory(false);
     }
+    // Leaving (or re-entering) Sweeps via nav drops any saved-sweep view so the
+    // run form shows fresh — the saved view is only reached via a History "View".
+    setSavedSweepId(null);
     const path = newView === 'privacy' ? '/privacy' : newView === 'terms' ? '/terms' : '/';
     window.history.pushState({}, '', path);
+    window.scrollTo(0, 0);
+  };
+
+  // WO-AEO-MOBILE-HISTORY-001 Part B: open a stored sweep from History (no re-run, $0).
+  const handleViewSweepDetail = (s: any) => {
+    setSavedSweepId(s.id);
+    setView('sweeps');
+    setIsMenuOpen(false);
+    window.history.pushState({}, '', `/sweeps?saved=${s.id}`);
     window.scrollTo(0, 0);
   };
 
@@ -207,8 +222,14 @@ export default function App() {
       const path = window.location.pathname;
       if (path === '/privacy') setView('privacy');
       else if (path === '/terms') setView('terms');
-      else if (path === '/' && view !== 'landing') {
+      else if (path === '/sweeps') {
+        // Deep-link / back-forward to a saved sweep view.
+        const saved = new URLSearchParams(window.location.search).get('saved');
+        setSavedSweepId(saved);
+        setView('sweeps');
+      } else if (path === '/' && view !== 'landing') {
         // Only auto-redirect if we're not explicitly on landing
+        setSavedSweepId(null);
         if (user && view === 'auth') setView('analyzer');
       }
     };
@@ -959,7 +980,13 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="px-6"
             >
-              <SweepDashboard onUpgrade={() => navigateTo('payments')} isAdmin={isAdmin} onOpenAnalyzer={() => navigateTo('analyzer')} />
+              <SweepDashboard
+                onUpgrade={() => navigateTo('payments')}
+                isAdmin={isAdmin}
+                onOpenAnalyzer={() => navigateTo('analyzer')}
+                savedSweepId={savedSweepId}
+                onBackToHistory={() => { setSavedSweepId(null); setView('history'); window.history.pushState({}, '', '/'); window.scrollTo(0, 0); }}
+              />
             </motion.div>
           )}
 
@@ -1069,6 +1096,7 @@ export default function App() {
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Category</th>
                         {isAdmin && <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Cost</th>}
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Date</th>
+                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-100">
@@ -1079,12 +1107,24 @@ export default function App() {
                         const branded = avg('retrievabilityPct');
                         const category = avg('citationWinPct');
                         return (
-                          <tr key={s.id} className="hover:bg-zinc-50 transition-all">
-                            <td className="px-6 py-4 font-medium text-sm text-zinc-900 truncate max-w-[220px]">{s.domain}</td>
+                          <tr
+                            key={s.id}
+                            onClick={() => handleViewSweepDetail(s)}
+                            className="hover:bg-zinc-50 transition-all cursor-pointer group"
+                          >
+                            <td className="px-6 py-4 font-medium text-sm text-zinc-900 truncate max-w-[220px] flex items-center gap-2">
+                              {s.domain}
+                              <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all text-zinc-400" />
+                            </td>
                             <td className="px-6 py-4"><span className="text-sm font-bold">{branded === null ? '—' : `${branded}%`}</span></td>
                             <td className="px-6 py-4"><span className={`text-sm font-bold ${category && category >= 50 ? 'text-emerald-600' : category ? 'text-amber-600' : 'text-zinc-500'}`}>{category === null ? '—' : `${category}%`}</span></td>
                             {isAdmin && <td className="px-6 py-4 text-xs text-zinc-500">${Number(s.total_cost_usd || 0).toFixed(2)}</td>}
                             <td className="px-6 py-4 text-xs text-zinc-500">{new Date(s.created_at).toLocaleDateString()}</td>
+                            <td className="px-6 py-4">
+                              <span className="text-xs font-bold text-zinc-400 group-hover:text-zinc-900 transition-all flex items-center gap-1">
+                                View <ChevronRight className="w-3 h-3" />
+                              </span>
+                            </td>
                           </tr>
                         );
                       })}
