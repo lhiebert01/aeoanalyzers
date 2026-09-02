@@ -13,8 +13,24 @@ not fully accepted until its boxes are checked.
 
 ## WO-AEO-MOBILE-HISTORY-001 — iPhone roadmap clip + Citation Sweep history parity
 
-**Shipped to production:** `main` @ `91cfa7e` · deploy id recorded in the WO
-close-out. Both parts live under the v1.1 GO / freeze exception.
+**Shipped to production:** Part A + Part B `main` @ `91cfa7e`
+(`dpl_5gpagAKzCpyHrEnqfJGkiuQJWva2`); saved-sweep **fidelity parity** `main` @
+`5f4b192` (`dpl_7795stas5W1zefaUDSkemYYmWN5S`). All live under the v1.1 GO /
+freeze exception.
+
+### ⛔ ONE MANUAL GATE before the fidelity part of QA — apply the migration
+Fidelity in a saved sweep needs a new column. Run this once in the **Supabase SQL
+editor** (safe: additive, nullable, no backfill, reversible). The code is fail-safe
+without it — sweeps still save; they just won't carry a fidelity snapshot until it's run.
+
+```sql
+alter table public.citation_sweeps
+  add column if not exists full_result jsonb;
+```
+
+Then **probe-verify** (migration guard): run one full sweep and confirm the new
+`citation_sweeps` row has `full_result->'truth'` populated. (Sweeps run *before*
+the migration won't have it — that's expected; run a fresh one.)
 
 Code-side proof already recorded by the agent (tsc clean · 206 tests · build
 clean · production deploy id + external fetch). What remains is **device
@@ -37,8 +53,15 @@ observation** — only the founder can take these:
 - [ ] The History row's cost still reads **$0.45** — proves no re-run / $0 (B1).
 - [ ] iPhone + desktop 1280px screenshots of the saved-sweep view.
 
-> Note (B4, not a defect): a saved view rebuilds from stored `citation_sweeps` +
-> `sweep_results`. Point-in-time sections derived from a **live** site fetch at
-> run time — fidelity (drift), entity-linking (collisions), content-depth
-> (fact-density) — are **not persisted** and intentionally do **not** render in a
-> saved view (not fabricated, not re-queried). Migration status: **NONE**.
+### Fidelity parity (new — needs the migration above + a fresh sweep)
+- [ ] After applying the migration, run a **new** full sweep, then open it from
+      History → **View**. Confirm the **Fidelity / drift** section renders (and the
+      per-run "drifted" badges), matching what the original run showed.
+- [ ] **Download report** from that saved view includes the fidelity section too.
+
+> Note: the saved view rebuilds from stored `citation_sweeps` + `sweep_results`.
+> **Fidelity is now retained** via a compact point-in-time TruthRecord snapshot
+> (`full_result.truth`) — no raw HTML stored. Intentionally still omitted from the
+> saved record (low compare value / belong elsewhere): entity-linking, content-depth,
+> truth-as-standalone, bot-stats. Nothing is fabricated or re-queried.
+> Migration status: **`20260902_wo_mobile_history_full_result.sql` — apply + probe.**
