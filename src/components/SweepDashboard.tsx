@@ -228,6 +228,18 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
         setResult(reconstructed);
         setAuthority(aggregateAuthorityGap(runs, sweep.domain));
         setSavedDate(sweep.created_at);
+        // WO-AEO-MOBILE-HISTORY-001: if a point-in-time TruthRecord snapshot was
+        // persisted (full_result.truth, from the 20260902 migration), recompute the
+        // FIDELITY section + per-run drift badges from it + the stored runs — so a
+        // saved sweep shows the same fidelity read as the original run + the same
+        // downloaded report. Older sweeps without a snapshot degrade gracefully
+        // (no fidelity section; never fabricated, never re-fetched).
+        const savedTruth = sweep.full_result?.truth as TruthRecord | undefined;
+        if (savedTruth) {
+          setTruth(savedTruth);
+          const brandedRuns = runs.filter((r) => r.queryType === 'branded');
+          setFidelity(summarizeFidelity(brandedRuns, savedTruth));
+        }
         // Keep the brand args used by the derived scorecard consistent with the run.
         setDomain(sweep.domain);
         setBrand(sweep.brand || '');

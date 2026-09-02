@@ -21,6 +21,7 @@ import {
   type Competitor,
   type QueryType,
 } from '../src/lib/citationSweep.js';
+import { extractTruthRecord, type TruthRecord } from '../src/lib/truthRecord.js';
 
 // Vercel Fluid Compute allows long runs; a full sweep is many sequential calls.
 export const config = { maxDuration: 300 };
@@ -301,7 +302,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let persisted = false;
     if (persist) {
       try {
-        persisted = await persistSweep({ domain, brand, userId, summary, runs });
+        // WO-AEO-MOBILE-HISTORY-001: capture a point-in-time TruthRecord snapshot of
+        // the client's own site so a SAVED sweep can recompute its fidelity/drift
+        // sections later (parity with a live run). Compact (no raw HTML), best-effort:
+        // a failed/slow fetch must never affect the sweep — it just omits the snapshot.
+        const truth = await fetchTruthSnapshot(domain);
+        persisted = await persistSweep({ domain, brand, userId, summary, runs, fullResult: truth ? { truth } : null });
       } catch {
         persisted = false; // never fail the sweep on a persistence error
       }
@@ -357,6 +363,7 @@ async function persistSweep(input: {
   userId?: string;
   summary: any;
   runs: SweepRunResult[];
+  fullResult?: Record<string, unknown> | null;
 }): Promise<boolean> {
   const url = process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -369,18 +376,27 @@ async function persistSweep(input: {
     Prefer: 'return=representation',
   };
 
-  const sweepRes = await fetch(`${url}/rest/v1/citation_sweeps`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      user_id: input.userId || null,
-      domain: input.domain,
-      brand: input.brand || null,
-      summary: input.summary,
-      total_cost_usd: input.summary.totalCostUsd,
-      total_runs: input.summary.totalRuns,
-    }),
-  });
+  // Base columns that exist regardless of migration state.
+  const baseRow = {
+    user_id: input.userId || null,
+    domain: input.domain,
+    brand: input.brand || null,
+    summary: input.summary,
+    total_cost_usd: input.summary.totalCostUsd,
+    total_runs: input.summary.totalRuns,
+  };
+  const insertSweep = (body: Record<string, unknown>) =>
+    fetch(`${url}/rest/v1/citation_sweeps`, { method: 'POST', headers, body: JSON.stringify(body) });
+
+  // WO-AEO-MOBILE-HISTORY-001: try WITH the point-in-time snapshot (full_result, for
+  // saved-view fidelity parity). If the column isn't present yet (migration 20260902
+  // not applied), PostgREST 400s on the unknown key — so fall back to the base row so
+  // core retention (scores/transcripts/citations) is NEVER lost to migration timing.
+  // Fidelity simply won't be available for that sweep until the migration runs.
+  let sweepRes = await insertSweep({ ...baseRow, full_result: input.fullResult ?? null });
+  if (!sweepRes.ok && input.fullResult) {
+    sweepRes = await insertSweep(baseRow);
+  }
   if (!sweepRes.ok) return false;
   const [sweep] = await sweepRes.json();
   const sweepId = sweep?.id;
@@ -404,4 +420,43 @@ async function persistSweep(input: {
     body: JSON.stringify(rows),
   });
   return rowsRes.ok;
+}
+
+/** WO-AEO-MOBILE-HISTORY-001: fetch the client's own site and extract a compact,
+ *  point-in-time TruthRecord so a SAVED sweep can recompute fidelity/drift later.
+ *  Best-effort and strictly bounded — mirrors the plain HTTP fetch in api/fetch-site
+ *  (no headless browser). Any failure/timeout returns null; the sweep is unaffected. */
+async function fetchTruthSnapshot(domain: string): Promise<TruthRecord | null> {
+  try {
+    const raw = (domain || '').trim();
+    if (!raw) return null;
+    const base = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    let origin: string;
+    try { origin = new URL(base).origin; } catch { return null; }
+
+    const UA =
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36';
+    const get = async (u: string, ms: number): Promise<string | null> => {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), ms);
+      try {
+        const r = await fetch(u, {
+          signal: ctrl.signal,
+          headers: { 'User-Agent': UA, Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
+        });
+        return r.ok ? await r.text() : null;
+      } catch {
+        return null;
+      } finally {
+        clearTimeout(t);
+      }
+    };
+
+    const html = await get(base, 8000);
+    if (!html) return null;
+    const llmsTxt = await get(`${origin}/llms.txt`, 4000);
+    return extractTruthRecord(html, llmsTxt);
+  } catch {
+    return null;
+  }
 }
