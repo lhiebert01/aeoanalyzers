@@ -15,7 +15,10 @@ first two times), which breaks month-over-month comparability. This is the froze
 - **Run:** 2026-09-03 04:16 UTC (Sep 2 evening, America/Chicago) · **pre-launch** (Lantern Post wire Sep 8)
 - **Reps per query:** 1 · **Total runs:** 48 · **Cost:** $0.4395
 - **Engines:** Claude, ChatGPT (OpenAI), Perplexity, Gemini
-- **Headline:** branded retrievability 100% (N=8) · category citation win 0% (N=24) · owned-citation 100% (N=8) · category share 0% (N=11)
+- **Headline (CORRECTED, WO-AEO-SWEEP-INTEGRITY-002):** branded retrievability **6/8 = 75%** (N=8) · category citation win **0%** (N=24) · owned-citation **100%** (N=6) · category share **0%** (N=11).
+  - Branded is **6/8, not 8/8**: Claude's two branded runs said *"the search results don't show a specific website … at lanternpost.app"* and cited only near-name collisions — scored "search ran, site not found" (a miss), not a false citation.
+- **Competitor sets:** *entered* = Paperless Post / Jacquie Lawson / Hallmark eCards (cited-instead: Paperless Post 6× · Hallmark 4× · Jacquie 1×). *auto-detected* (what the engines actually surface for the category) = americangreetings, 123greetings, bluemountain, punchbowl, paperlesspost, canva, kisseo, greetingsisland.
+- **Record of truth for Sep 22:** the **live-run download** (`citation-sweep-lanternpost.app-2026-09-03.md`, branded 100% pre-correction) is the interim record **until the reopened saved view reproduces this row field-for-field** (needs migration `20260903` applied + this row's config backfilled). The saved view now re-scores to the corrected 6/8; once the diff passes, the saved view is the record. The original live download is kept as labeled **pre-correction evidence**, not a competing number.
 
 ## Config (verify these three before any re-run)
 - **Brand:** Lantern Post
