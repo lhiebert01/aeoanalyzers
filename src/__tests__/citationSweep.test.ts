@@ -12,6 +12,7 @@ import {
   detectCompetitors,
   isTruncatedText,
   isModelPrior,
+  isErroredRun,
   confidenceLevel,
   wilsonInterval,
   type SweepRunResult,
@@ -327,6 +328,50 @@ describe('truncation (WO-QA-003 A1) — cut-off answers are unmeasured, not zero
     expect(g.truncatedRuns).toBe(2);
     expect(g.brandedRuns).toBe(3);       // truncated excluded from the score base
     expect(g.truncatedBlocked).toBe(true);
+  });
+});
+
+describe('errored runs (WO-AEO-SWEEP-MEMORY-001) — failed calls are unmeasured, not zero', () => {
+  const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+
+  it('isErroredRun: detects the explicit flag AND the stored "[error:" sentinel (retroactive)', () => {
+    expect(isErroredRun(run({ errored: true }))).toBe(true);
+    expect(isErroredRun(run({ transcript: '[error: Perplexity 429: rate limit]' }))).toBe(true); // no flag → detected from transcript
+    expect(isErroredRun(run({ transcript: 'AEO Analyzers is a tool.' }))).toBe(false);
+  });
+
+  it('sweepScorecard excludes an errored run from the denominators (not a real not-cited)', () => {
+    const sc = sweepScorecard([
+      run({ queryType: 'branded', transcript: 'aeoanalyzers.com is an AEO tool.' }),  // scored, cited
+      run({ queryType: 'branded', errored: true, transcript: '[error: Perplexity 429]' }), // excluded
+    ], client, []);
+    expect(sc.brandedRuns).toBe(1);              // only the valid run counts (NOT 2)
+    expect(sc.brandedRetrievabilityPct).toBe(100); // 1/1, not 1/2=50
+    expect(sc.erroredRuns).toBe(1);
+  });
+
+  it('aggregateSweep counts errored runs, excludes them from the score base, and computes % on valid N', () => {
+    const s = aggregateSweep([
+      run({ engine: 'perplexity', queryType: 'branded', transcript: 'AEO Analyzers is a tool.' }), // cited
+      run({ engine: 'perplexity', queryType: 'branded', errored: true, transcript: '[error: 429]' }), // excluded
+      run({ engine: 'perplexity', queryType: 'branded', errored: true, transcript: '[error: 429]' }), // excluded
+    ], client, []);
+    const p = s.engines[0];
+    expect(p.erroredRuns).toBe(2);
+    expect(p.brandedRuns).toBe(1);          // errored excluded from the score base
+    expect(p.retrievabilityPct).toBe(100);  // 1/1 — NOT 1/3=33
+    expect(p.insufficientValid).toBe(false);
+  });
+
+  it('an engine whose runs ALL errored is insufficientValid, not 0%', () => {
+    const s = aggregateSweep([
+      run({ engine: 'perplexity', queryType: 'category', transcript: '[error: 429]' }), // sentinel, no flag
+      run({ engine: 'perplexity', queryType: 'branded', transcript: '[error: 429]' }),
+    ], client, []);
+    const p = s.engines[0];
+    expect(p.erroredRuns).toBe(2);
+    expect(p.brandedRuns + p.categoryRuns).toBe(0);
+    expect(p.insufficientValid).toBe(true); // UI shows "insufficient valid runs", never 0%
   });
 });
 

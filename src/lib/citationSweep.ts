@@ -62,6 +62,13 @@ export interface SweepRunResult {
    *  owned-citation; `model-prior` runs are reported as a separate "model-prior
    *  visibility" metric (WO-QA-003 A2). Absent = treat as grounded (back-compat). */
   grounding?: 'search-grounded' | 'model-prior' | 'indeterminate';
+  /** True when the engine CALL itself failed (HTTP 429/5xx, timeout, missing key)
+   *  and no answer was produced. Like a truncation, an errored run is UNMEASURED,
+   *  not measured-zero — EXCLUDED from every scored metric and badged in the UI
+   *  (WO-AEO-SWEEP-MEMORY-001). Set by run-sweep on the catch path; also detected
+   *  retroactively from the stored "[error: …]" sentinel transcript so saved views
+   *  of pre-fix sweeps are corrected too. */
+  errored?: boolean;
 }
 
 export interface EngineAggregate {
@@ -86,6 +93,12 @@ export interface EngineAggregate {
   /** Category runs where the engine answered from weights (no web search) — kept
    *  out of citationWinPct and reported separately (WO-QA-003 A2). */
   modelPriorRuns: number;
+  /** Runs where the engine CALL failed (429/5xx/timeout) — excluded from every score,
+   *  like truncations. Badged "N of M runs errored — excluded" (WO-AEO-SWEEP-MEMORY-001). */
+  erroredRuns: number;
+  /** True when NO valid (non-errored, non-truncated) run remains to score this engine —
+   *  the UI renders "insufficient valid runs", never a percentage. */
+  insufficientValid: boolean;
 }
 
 export interface SweepSummary {
@@ -186,6 +199,15 @@ const NOT_FOUND_PHRASES = [
 /** Above this fraction of an engine's attempted runs being truncated, its column
  *  is flagged unreliable (score not presented as a real measurement). */
 export const TRUNCATION_BLOCK_RATIO = 0.2;
+
+/** True when the engine call failed (no answer produced). Detects both the explicit
+ *  `errored` flag (set by run-sweep) AND the stored "[error: …]" sentinel transcript,
+ *  so a saved view of a pre-fix sweep is corrected retroactively. An errored run is
+ *  UNMEASURED — excluded from all scored metrics (never counted as a real "not cited").
+ *  WO-AEO-SWEEP-MEMORY-001. */
+export function isErroredRun(run: SweepRunResult): boolean {
+  return run.errored === true || /^\s*\[error:/i.test(run.transcript || '');
+}
 
 /** True when a run answered from the model's weights instead of a live web search.
  *  Such runs are kept out of citation-win (grounded-only) and reported separately.
@@ -446,10 +468,16 @@ export function aggregateSweep(
         categoryRuns: 0, categoryCited: 0, citationWinPct: 0,
         competitorCounts: {}, costUsd: 0,
         truncatedRuns: 0, truncatedBlocked: false, modelPriorRuns: 0,
+        erroredRuns: 0, insufficientValid: false,
       };
       byEngine.set(r.engine, agg);
     }
     agg.costUsd += r.costUsd || 0;
+    // An errored call (429/5xx/timeout) produced NO answer — unmeasured, never a real
+    // "not cited". Count it for the badge but keep it out of every score. Checked first
+    // so a stored "[error:…]" run can't be mistaken for a truncation or a miss
+    // (WO-AEO-SWEEP-MEMORY-001).
+    if (isErroredRun(r)) { agg.erroredRuns++; continue; }
     // A truncated answer is unmeasured — count it (for the block ratio) but do NOT
     // let it move any score (WO-QA-003 A1).
     if (r.truncated) { agg.truncatedRuns++; continue; }
@@ -477,6 +505,9 @@ export function aggregateSweep(
       retrievabilityPct: a.brandedRuns ? Math.round((a.brandedCited / a.brandedRuns) * 100) : 0,
       citationWinPct: a.categoryRuns ? Math.round((a.categoryCited / a.categoryRuns) * 100) : 0,
       truncatedBlocked: attempted > 0 && a.truncatedRuns / attempted > TRUNCATION_BLOCK_RATIO,
+      // No valid scored run remains (all branded+category runs were errored/excluded) yet
+      // the engine WAS attempted — the UI shows "insufficient valid runs", not "0%".
+      insufficientValid: a.brandedRuns + a.categoryRuns === 0 && a.erroredRuns > 0,
     };
   });
 
@@ -520,6 +551,9 @@ export interface SweepScorecard {
   competitorsAutoDetected: boolean;
   brandedRuns: number;
   categoryRuns: number;
+  /** Runs excluded because the engine call failed (429/5xx/timeout). Not a real zero;
+   *  reported for transparency (WO-AEO-SWEEP-MEMORY-001). */
+  erroredRuns: number;
   /** A short, plain-English read of the result — the headline, not a data dump. */
   plainSummary: string;
 }
@@ -575,9 +609,11 @@ export function sweepScorecard(
   let surfaced = 0, domainCited = 0;          // for Owned Citation Rate (grounded only)
   let brandCatRecs = 0, competitorCatRecs = 0; // for Competitive Share
   let modelPriorRuns = 0, modelPriorCited = 0; // model-prior visibility (separate)
+  let erroredRuns = 0;                          // failed calls — excluded from every metric
   const competitorCounts: Record<string, number> = {};
 
   for (const r of scored) {
+    if (isErroredRun(r)) { erroredRuns++; continue; } // failed call — unmeasured, never scored
     if (r.truncated) continue; // cut-off answer — unmeasured, never scored (A1)
     if (r.queryType === 'branded') {
       brandedRuns++; if (r.cited) brandedCited++;
@@ -632,6 +668,7 @@ export function sweepScorecard(
     competitorsAutoDetected,
     brandedRuns,
     categoryRuns,
+    erroredRuns,
     plainSummary,
   };
 }

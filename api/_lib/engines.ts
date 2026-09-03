@@ -186,7 +186,15 @@ async function askPerplexity(query: string): Promise<EngineAnswer> {
       messages: [{ role: 'system', content: CONCISE_SYS }, { role: 'user', content: query }],
     }),
   });
-  if (!r.ok) throw new Error(`Perplexity ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  if (!r.ok) {
+    // Attach status + Retry-After (ms) so run-sweep can back off precisely on 429/5xx.
+    // Metadata only — engine behavior/scoring/model are unchanged (WO-AEO-SWEEP-MEMORY-001).
+    const ra = r.headers.get('retry-after');
+    const err: any = new Error(`Perplexity ${r.status}: ${(await r.text()).slice(0, 200)}`);
+    err.status = r.status;
+    if (ra) err.retryAfterMs = /^\d+$/.test(ra.trim()) ? Number(ra.trim()) * 1000 : Math.max(0, Date.parse(ra) - Date.now());
+    throw err;
+  }
   const j: any = await r.json();
   const truncated = j.choices?.[0]?.finish_reason === 'length';
   const transcript = (j.choices?.[0]?.message?.content || '').trim();

@@ -10,7 +10,7 @@ import { SCORE_VS_SWEEP } from '../content/scoreVsSweep';
 import { ScoreVsSweepCard, CrossLink, AgendaBlock } from './ScoreVsSweepCard';
 import { avgPawc } from '../lib/pawc';
 import { auditFactDensity, type FactDensityAudit } from '../lib/factDensity';
-import { sweepScorecard, confidenceLevel } from '../lib/citationSweep';
+import { sweepScorecard, confidenceLevel, aggregateSweep } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType } from '../lib/citationSweep';
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
@@ -214,6 +214,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           costUsd: Number(r.cost_usd) || 0,
           cited: r.cited,
           citedCompetitors: r.cited_competitors || [],
+          // WO-AEO-SWEEP-MEMORY-001: measurement flags for a faithful recompute. Absent on
+          // pre-fix rows (NULL) → treated as not-truncated / grounded (back-compat).
+          truncated: r.truncated ?? undefined,
+          grounding: (r.grounding as SweepRunResult['grounding']) ?? undefined,
         }));
         const engines = [...new Set(runs.map((r) => r.engine))];
         const runsPerQuery = runs.length ? Math.max(...runs.map((r) => r.runIndex)) + 1 : 0;
@@ -224,7 +228,11 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           engines,
           skippedEngines: [],
           configured: engines,
-          summary: sweep.summary as SweepSummary,
+          // WO-AEO-SWEEP-MEMORY-001: RE-DERIVE the per-engine summary from the stored runs
+          // (same source as the scorecard) so errored runs are EXCLUDED, not counted as a
+          // real "not cited". This retroactively corrects sweeps run before the fix. New
+          // sweeps re-derive identically (truncated/grounding are now persisted).
+          summary: aggregateSweep(runs, { domain: sweep.domain, brand: sweep.brand || undefined }, []),
           runs,
           persisted: true,
           // Original run time, so a saved-view download matches the live-run report.
@@ -626,7 +634,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           <div className="text-sm text-indigo-900">
             <span className="font-bold">Viewing Saved Sweep</span>
             {savedDate && <span className="text-indigo-700"> · {new Date(savedDate).toLocaleDateString()}</span>}
-            <span className="block text-xs text-indigo-600 mt-0.5">Rebuilt from stored transcripts — no new engine calls, $0.</span>
+            <span className="block text-xs text-indigo-600 mt-0.5">Rebuilt from stored transcripts — no new engine calls, $0. Scores recomputed from the stored answers; errored runs (rate-limit / timeout) are excluded, so a sweep run before Sep 2, 2026 is corrected here.</span>
           </div>
           <button onClick={onBackToHistory} className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-700 hover:text-indigo-900 whitespace-nowrap">
             <ArrowLeft className="w-4 h-4" /> Back to History
@@ -914,6 +922,16 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
                     </div>
                     <div className="mt-2 text-xs text-zinc-500">This engine couldn&apos;t run (bad/expired key or config). This is <b>not</b> a real 0% — retry once the engine is restored.</div>
                   </div>
+                ) : (e as { insufficientValid?: boolean }).insufficientValid ? (
+                  // Every run for this engine failed to complete (429/5xx/timeout) — there
+                  // is no valid answer left to score, so we show "insufficient valid runs",
+                  // NOT a fake 0% (WO-AEO-SWEEP-MEMORY-001).
+                  <div className="mt-3">
+                    <div className="inline-flex items-center gap-1.5 text-sm font-bold text-amber-600">
+                      <AlertTriangle className="w-4 h-4" /> Insufficient valid runs
+                    </div>
+                    <div className="mt-2 text-xs text-zinc-500">All {(e as { erroredRuns?: number }).erroredRuns ?? 0} of this engine&apos;s runs <b>errored</b> (rate-limit / timeout) and were excluded. This is <b>not</b> a real 0% — re-run to measure it.</div>
+                  </div>
                 ) : e.truncatedBlocked ? (
                   // Too many answers were cut off by the token cap — the column is
                   // unreliable, so we do NOT present its score as a real measurement.
@@ -931,6 +949,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
                     <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}% <span className="text-xs font-semibold text-zinc-400">· N={e.categoryRuns}</span></div>
                     {e.modelPriorRuns > 0 && <div className="mt-2 text-[11px] text-zinc-400">{e.modelPriorRuns} model-prior answer{e.modelPriorRuns > 1 ? 's' : ''} (no search) reported separately</div>}
                     {e.truncatedRuns > 0 && <div className="mt-2 text-[11px] text-amber-600">{e.truncatedRuns} truncated answer{e.truncatedRuns > 1 ? 's' : ''} excluded</div>}
+                    {((e as { erroredRuns?: number }).erroredRuns ?? 0) > 0 && <div className="mt-2 text-[11px] text-amber-600">{(e as { erroredRuns?: number }).erroredRuns} of {e.brandedRuns + e.categoryRuns + e.truncatedRuns + e.modelPriorRuns + ((e as { erroredRuns?: number }).erroredRuns ?? 0)} runs errored — excluded</div>}
                     {isAdmin && <div className="mt-2 text-xs text-zinc-400 flex items-center gap-1"><DollarSign className="w-3 h-3" />${e.costUsd.toFixed(3)}</div>}
                   </>
                 )}

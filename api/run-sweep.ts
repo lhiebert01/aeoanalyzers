@@ -150,6 +150,69 @@ function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
   });
 }
 
+// ── Per-engine 429/5xx retry with jittered backoff (WO-AEO-SWEEP-MEMORY-001) ──
+// A transient rate-limit or 5xx must NOT be scored as a real "not cited". Retry the
+// failed engine call a bounded number of times, honoring Retry-After when the adapter
+// surfaces it, otherwise exponential backoff with jitter. Every wait is gated by a
+// global sweep DEADLINE so retries can never push the function past maxDuration — when
+// the budget is gone, the run is returned as errored and the UI badges it (never a hang).
+const SWEEP_MAX_RETRIES = Number(process.env.SWEEP_MAX_RETRIES || 2);
+const RETRY_BACKOFF_CAP_MS = Number(process.env.SWEEP_RETRY_CAP_MS || 6000);
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+function statusFromError(err: any): number {
+  if (typeof err?.status === 'number') return err.status;
+  const m = /\b(429|500|502|503|504)\b/.exec(String(err?.message || ''));
+  return m ? Number(m[1]) : 0;
+}
+function isRetryable(err: any): boolean {
+  const s = statusFromError(err);
+  if (s === 429 || (s >= 500 && s < 600)) return true;
+  return /timed out|ETIMEDOUT|ECONNRESET|EAI_AGAIN|fetch failed|socket hang up|network/i.test(String(err?.message || ''));
+}
+async function callWithRetry<T>(fn: () => Promise<T>, deadline: number): Promise<T> {
+  let attempt = 0;
+  for (;;) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      if (attempt >= SWEEP_MAX_RETRIES || !isRetryable(err)) throw err;
+      const backoff = Math.min(500 * 2 ** attempt, RETRY_BACKOFF_CAP_MS);
+      const jittered = backoff / 2 + Math.random() * (backoff / 2);
+      const wait =
+        typeof err?.retryAfterMs === 'number' && err.retryAfterMs >= 0
+          ? Math.min(err.retryAfterMs, RETRY_BACKOFF_CAP_MS)
+          : jittered;
+      // Deadline guard: if a wait + one more attempt can't finish in budget, give up now
+      // and let the errored run be badged. This is what guarantees no hang (constraint).
+      if (Date.now() + wait + SWEEP_CALL_TIMEOUT_MS > deadline) throw err;
+      await sleep(wait);
+      attempt++;
+    }
+  }
+}
+
+/** Per-engine in-flight cap layered on top of the global pool. Perplexity's low rate
+ *  limit was the 429 source (56/60 runs at concurrency 4), so it gets a small cap while
+ *  the other engines keep the global concurrency. */
+function makeEngineLimiter(caps: Partial<Record<Engine, number>>) {
+  const active: Record<string, number> = {};
+  const waiters: Record<string, Array<() => void>> = {};
+  return async function run<T>(engine: Engine, fn: () => Promise<T>): Promise<T> {
+    const cap = caps[engine];
+    if (!cap) return fn();
+    active[engine] = active[engine] || 0;
+    waiters[engine] = waiters[engine] || [];
+    if (active[engine] >= cap) await new Promise<void>((res) => waiters[engine].push(res));
+    active[engine]++;
+    try {
+      return await fn();
+    } finally {
+      active[engine]--;
+      waiters[engine].shift()?.();
+    }
+  };
+}
+
 /** Pre-flight: confirm the domain actually resolves before a paid sweep spends
  *  money/quota on a typo. Any HTTP response (even 403) means the host exists;
  *  only a DNS/connection failure (throw on both attempts) means "unreachable". */
@@ -252,16 +315,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const CONCURRENCY = Number(process.env.SWEEP_CONCURRENCY || 12);
+    // Global sweep deadline: leave headroom under maxDuration (300s) so retries can
+    // never push us into a 504. When the budget is gone, remaining failures are badged,
+    // not retried (constraint: the badge is the fallback, never a hang).
+    const deadline = Date.now() + Number(process.env.SWEEP_BUDGET_MS || 270_000);
+    // Perplexity's low rate limit was the 429 source — cap its in-flight calls while the
+    // other engines keep the global concurrency.
+    const engineLimiter = makeEngineLimiter({
+      perplexity: Number(process.env.SWEEP_PERPLEXITY_CONCURRENCY || 3),
+    });
     const runs: SweepRunResult[] = await pool(tasks, CONCURRENCY, async (t) => {
       const base: SweepRunResult = {
         engine: t.engine, query: t.query, queryType: t.queryType, runIndex: t.runIndex,
         transcript: '', sources: [], costUsd: 0,
       };
       try {
-        const answer = await withTimeout(
-          ENGINE_ADAPTERS[t.engine](t.query),
-          SWEEP_CALL_TIMEOUT_MS,
-          `${t.engine}:${t.queryType}`
+        const answer = await engineLimiter(t.engine, () =>
+          callWithRetry(
+            () => withTimeout(ENGINE_ADAPTERS[t.engine](t.query), SWEEP_CALL_TIMEOUT_MS, `${t.engine}:${t.queryType}`),
+            deadline,
+          ),
         );
         // Mark cut-off answers so scoring excludes them: trust the engine's own
         // finish_reason (answer.truncated), and fall back to a text heuristic for
@@ -272,10 +345,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const grounding: SweepRunResult['grounding'] = answer.searchInvoked ? 'search-grounded' : 'model-prior';
         return scoreRun({ ...base, ...answer, truncated, grounding }, { domain, brand }, competitors);
       } catch (err: any) {
-        // Missing key or transient engine error: record a failed run (not cited)
-        // so the aggregate stays honest rather than silently dropping the query.
+        // The call FAILED after bounded retries (429/5xx/timeout/missing key). Record an
+        // ERRORED run — excluded from every score and badged, never counted as a real
+        // "not cited" (WO-AEO-SWEEP-MEMORY-001).
         return scoreRun(
-          { ...base, transcript: `[error: ${err?.message || err}]` },
+          { ...base, errored: true, transcript: `[error: ${err?.message || err}]` },
           { domain, brand },
           competitors
         );
@@ -415,12 +489,23 @@ async function persistSweep(input: {
     sources: r.sources,
     transcript: r.transcript,
     cost_usd: r.costUsd,
+    // WO-AEO-SWEEP-MEMORY-001: persist the measurement flags so a saved sweep re-derives
+    // the SAME scores as the live run (errored via transcript sentinel; truncated +
+    // grounding here). Errored runs are also flagged for clarity.
+    truncated: r.truncated ?? false,
+    grounding: r.grounding ?? null,
   }));
-  const rowsRes = await fetch(`${url}/rest/v1/sweep_results`, {
-    method: 'POST',
-    headers: { ...headers, Prefer: 'return=minimal' },
-    body: JSON.stringify(rows),
-  });
+  const insertRows = (body: unknown) =>
+    fetch(`${url}/rest/v1/sweep_results`, { method: 'POST', headers: { ...headers, Prefer: 'return=minimal' }, body: JSON.stringify(body) });
+  // Fail-safe: try WITH the new flag columns; if the 20260902 run-flags migration isn't
+  // applied yet, PostgREST 400s on the unknown keys — fall back to the base columns so
+  // the runs (transcripts/citations) are never lost to migration timing. The saved-view
+  // recompute then treats absent flags as not-truncated/grounded (back-compat).
+  let rowsRes = await insertRows(rows);
+  if (!rowsRes.ok) {
+    const bare = rows.map(({ truncated, grounding, ...base }) => base);
+    rowsRes = await insertRows(bare);
+  }
   return rowsRes.ok;
 }
 
