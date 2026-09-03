@@ -10,8 +10,8 @@ import { SCORE_VS_SWEEP } from '../content/scoreVsSweep';
 import { ScoreVsSweepCard, CrossLink, AgendaBlock } from './ScoreVsSweepCard';
 import { avgPawc } from '../lib/pawc';
 import { auditFactDensity, type FactDensityAudit } from '../lib/factDensity';
-import { sweepScorecard, confidenceLevel, aggregateSweep } from '../lib/citationSweep';
-import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType } from '../lib/citationSweep';
+import { sweepScorecard, confidenceLevel, aggregateSweep, scoreRun } from '../lib/citationSweep';
+import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType, Competitor } from '../lib/citationSweep';
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
@@ -204,7 +204,11 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
         if (!sweep) throw new Error('Sweep not found (it may belong to another account).');
         const { data: rows, error: e2 } = await supabaseQuery('sweep_results', `sweep_id=eq.${savedSweepId}&select=*&order=run_index.asc`);
         if (e2) throw new Error('Could not load this sweep’s stored answers.');
-        const runs: SweepRunResult[] = (rows || []).map((r: any) => ({
+        // Raw runs from stored rows. NOTE: the stored `cited` is intentionally NOT used —
+        // we RE-SCORE below so the branded false-positive fix, domainCited (owned-citation),
+        // citedCompetitors (cited-instead/share) and the "site not found" label are all
+        // recovered on reopen against the persisted config (WO-INTEGRITY-002 A1/A2).
+        const raw: SweepRunResult[] = (rows || []).map((r: any) => ({
           engine: r.engine as Engine,
           query: r.query,
           queryType: r.query_type as QueryType,
@@ -212,15 +216,36 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           transcript: r.transcript || '',
           sources: r.sources || [],
           costUsd: Number(r.cost_usd) || 0,
-          cited: r.cited,
           citedCompetitors: r.cited_competitors || [],
-          // WO-AEO-SWEEP-MEMORY-001: measurement flags for a faithful recompute. Absent on
-          // pre-fix rows (NULL) → treated as not-truncated / grounded (back-compat).
           truncated: r.truncated ?? undefined,
           grounding: (r.grounding as SweepRunResult['grounding']) ?? undefined,
         }));
-        const engines = [...new Set(runs.map((r) => r.engine))];
-        const runsPerQuery = runs.length ? Math.max(...runs.map((r) => r.runIndex)) + 1 : 0;
+        // The ENTERED config, persisted on the row (WO-INTEGRITY-002 A1). NULL on pre-fix
+        // sweeps → empty competitor list (auto-detect, as before), but domainCited is still
+        // recovered from the transcript by the re-score.
+        const brandArg = sweep.brand || undefined;
+        const savedCompetitors: Competitor[] = Array.isArray(sweep.competitors) ? sweep.competitors : [];
+        const scored = raw.map((r) => scoreRun(r, { domain: sweep.domain, brand: brandArg }, savedCompetitors));
+
+        // Deterministic order: engine (canonical), then question index (panel order if
+        // persisted, else first-seen), then rep — so the rebuild matches the live run.
+        const ENGINE_ORDER: Engine[] = ['claude', 'openai', 'perplexity', 'gemini'];
+        const panelOrder: string[] = [...(sweep.branded_queries || []), ...(sweep.category_queries || [])];
+        const firstSeen: string[] = [];
+        const qIndex = (q: string) => {
+          const p = panelOrder.indexOf(q);
+          if (p >= 0) return p;
+          let s = firstSeen.indexOf(q);
+          if (s < 0) s = firstSeen.push(q) - 1;
+          return panelOrder.length + s;
+        };
+        scored.sort((a, b) =>
+          (ENGINE_ORDER.indexOf(a.engine) - ENGINE_ORDER.indexOf(b.engine)) ||
+          (qIndex(a.query) - qIndex(b.query)) ||
+          (a.runIndex - b.runIndex));
+
+        const engines = ENGINE_ORDER.filter((e) => scored.some((r) => r.engine === e));
+        const runsPerQuery = scored.length ? Math.max(...scored.map((r) => r.runIndex)) + 1 : 0;
         const reconstructed: SweepResponse = {
           domain: sweep.domain,
           brand: sweep.brand ?? null,
@@ -228,23 +253,21 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           engines,
           skippedEngines: [],
           configured: engines,
-          // WO-AEO-SWEEP-MEMORY-001: RE-DERIVE the per-engine summary from the stored runs
-          // (same source as the scorecard) so errored runs are EXCLUDED, not counted as a
-          // real "not cited". This retroactively corrects sweeps run before the fix. New
-          // sweeps re-derive identically (truncated/grounding are now persisted).
-          summary: aggregateSweep(runs, { domain: sweep.domain, brand: sweep.brand || undefined }, []),
-          runs,
+          summary: aggregateSweep(scored, { domain: sweep.domain, brand: brandArg }, savedCompetitors),
+          runs: scored,
           persisted: true,
-          // Original run time, so a saved-view download matches the live-run report.
           generatedAt: sweep.created_at,
         };
         if (cancelled) return;
         setResult(reconstructed);
-        setAuthority(aggregateAuthorityGap(runs, sweep.domain));
+        setAuthority(aggregateAuthorityGap(scored, sweep.domain));
         setSavedDate(sweep.created_at);
-        // Keep the brand args used by the derived scorecard consistent with the run.
         setDomain(sweep.domain);
         setBrand(sweep.brand || '');
+        // Feed the scorecard the SAME entered competitors (not auto-detect) so cited-instead
+        // and category-share match the live run. Empty on pre-fix sweeps → auto-detect.
+        setCompetitors(savedCompetitors.map((c) => (c.domain ? `${c.name}, ${c.domain}` : c.name)).join('\n'));
+        const runs = scored; // downstream (fidelity/entity-linking) uses the re-scored runs
 
         // WO-AEO-MOBILE-HISTORY-001: rebuild every point-in-time layer the as-run
         // screen shows from the compact snapshot persisted at run time (full_result:
@@ -371,6 +394,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({
           domain: d, brand: brand.trim() || undefined,
+          category: coreCategory.trim() || undefined, // WO-INTEGRITY-002 A1: persisted for pin/rebuild
           brandedQueries: parseLines(branded).map(expand),
           categoryQueries: parseLines(categoryQueries).map(expand),
           competitors: parseCompetitors(competitors),
@@ -413,6 +437,9 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
     out.push(`# Citation Sweep — ${r.domain}`);
     if (r.brand) out.push(`Brand: ${r.brand}`);
     out.push(`Generated: ${new Date(r.generatedAt || Date.now()).toISOString().slice(0, 16).replace('T', ' ')} UTC`);
+    // WO-INTEGRITY-002 A1: a saved-view report is a faithful rebuild — stamp it beside the
+    // original Generated time so the two downloads are self-describing (and diff-clean).
+    if (savedView) out.push(`Rebuilt: ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC from stored transcripts`);
     out.push(`Runs per query: ${r.runsPerQuery}`);
     out.push(`Engines: ${r.configured.join(', ') || 'none'}`);
     if (r.skippedEngines?.length) out.push(`Skipped (no API key): ${r.skippedEngines.join(', ')}`);
@@ -536,7 +563,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
     out.push(`## Transcripts (${r.runs.length} runs)`);
     out.push('');
     for (const run of r.runs) {
-      const tag = run.truncated ? 'truncated — not scored' : run.cited ? 'cited' : 'not cited';
+      // WO-INTEGRITY-002 A1/A2: never label a failed call or a "site not found" run "[not cited]".
+      const tag = /^\s*\[error:/i.test(run.transcript || '')
+        ? 'errored — excluded'
+        : run.truncated ? 'truncated — not scored'
+        : (run as { siteNotFound?: boolean }).siteNotFound ? 'search ran — site not found'
+        : run.cited ? 'cited' : 'not cited';
       const prior = run.grounding === 'model-prior' && !run.truncated ? ' · model-prior' : '';
       out.push(`### [${tag}${prior}] ${L(run.engine)} · ${run.queryType}: ${run.query}`);
       out.push(run.transcript || '(no answer)');
@@ -1098,8 +1130,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
                 <div key={i} className="border border-zinc-200 rounded-xl">
                   <button onClick={() => setOpenRun(openRun === i ? null : i)} className="w-full flex items-center gap-2 px-3 py-2 text-left text-sm">
                     {openRun === i || expandAll ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    {r.truncated ? (
+                    {/^\s*\[error:/i.test(r.transcript || '') ? (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700" title="The engine call failed (rate-limit / timeout) — excluded from scores">errored — excluded</span>
+                    ) : r.truncated ? (
                       <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">truncated — not scored</span>
+                    ) : (r as { siteNotFound?: boolean }).siteNotFound ? (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-zinc-100 text-zinc-600" title="Search ran but did not find the client's own site — a branded miss, not a fake citation">search ran — site not found</span>
                     ) : (
                       <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.cited ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-500'}`}>{r.cited ? 'cited' : 'not cited'}</span>
                     )}

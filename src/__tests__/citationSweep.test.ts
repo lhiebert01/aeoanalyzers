@@ -331,6 +331,35 @@ describe('truncation (WO-QA-003 A1) — cut-off answers are unmeasured, not zero
   });
 });
 
+describe('branded false-positive (WO-AEO-SWEEP-MEMORY-001) — "search ran, site not found" is a MISS', () => {
+  const client = { domain: 'lanternpost.app', brand: 'Lantern Post' };
+  const collisionSources = [
+    'https://mylanternapp.com/', 'https://lantern.io/en/download', 'https://lantern.en.aptoide.com/app',
+  ];
+
+  it('the exact Claude c9d75643 transcript scores NOT cited (site not found), not a false positive', () => {
+    const t = "The search results don't show a specific website or service at lanternpost.app. " +
+      "The closest matches are My Lantern App (mylanternapp.com), which helps you lock, schedule, and organize income, " +
+      "or Lantern (lantern.io), an application that allows you to bypass firewalls. " +
+      "Could you provide more context about what lanternpost.app does or what you're looking for?";
+    const r = scoreRun(run({ queryType: 'branded', transcript: t, sources: collisionSources }), client, []);
+    expect(r.cited).toBe(false);          // was TRUE before the fix (the clarifying-question clause)
+    expect((r as any).siteNotFound).toBe(true);
+  });
+
+  it('a real positive description still scores cited', () => {
+    const r = scoreRun(run({ queryType: 'branded', transcript: 'Lantern Post (lanternpost.app) is a free e-card service that sends a card with a song.', sources: [] }), client, []);
+    expect(r.cited).toBe(true);
+    expect((r as any).siteNotFound).toBe(false);
+  });
+
+  it('real retrieval wins: the domain in SOURCES counts as cited even if the prose hedges', () => {
+    const r = scoreRun(run({ queryType: 'branded', transcript: "I couldn't find much about lanternpost.app.", sources: ['https://lanternpost.app/'] }), client, []);
+    expect(r.cited).toBe(true);
+    expect((r as any).siteNotFound).toBe(false); // domain in sources → never "site not found"
+  });
+});
+
 describe('errored runs (WO-AEO-SWEEP-MEMORY-001) — failed calls are unmeasured, not zero', () => {
   const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
 

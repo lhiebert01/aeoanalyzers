@@ -246,6 +246,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let brandedQueries: string[] = (body.brandedQueries || []).filter(Boolean);
     let categoryQueries: string[] = (body.categoryQueries || []).filter(Boolean);
     const competitors: Competitor[] = (body.competitors || []).filter((c: any) => c?.name);
+    const category: string = (body.category || '').trim(); // WO-INTEGRITY-002 A1: persisted for the pin/rebuild
     let runsPerQuery: number = Math.max(1, Math.min(5, body.runsPerQuery || 3));
     let persist: boolean = body.persist !== false;
     // Attribute persistence to the authenticated user (not a client-supplied id).
@@ -383,7 +384,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // entity-linking collisions, content depth — with NO raw HTML stored. Best-effort:
         // a failed/slow fetch must never affect the sweep — it just omits the snapshot.
         const snapshot = await fetchSiteSnapshot(domain);
-        persisted = await persistSweep({ domain, brand, userId, summary, runs, fullResult: snapshot });
+        persisted = await persistSweep({
+          domain, brand, userId, summary, runs, fullResult: snapshot,
+          // WO-INTEGRITY-002 A1: persist the entered config so the rebuild re-scores against it.
+          category, competitors, brandedQueries, categoryQueries,
+        });
       } catch {
         persisted = false; // never fail the sweep on a persistence error
       }
@@ -440,6 +445,10 @@ async function persistSweep(input: {
   summary: any;
   runs: SweepRunResult[];
   fullResult?: Record<string, unknown> | null;
+  category?: string;
+  competitors?: Competitor[];
+  brandedQueries?: string[];
+  categoryQueries?: string[];
 }): Promise<boolean> {
   const url = process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -464,14 +473,19 @@ async function persistSweep(input: {
   const insertSweep = (body: Record<string, unknown>) =>
     fetch(`${url}/rest/v1/citation_sweeps`, { method: 'POST', headers, body: JSON.stringify(body) });
 
-  // WO-AEO-MOBILE-HISTORY-001: try WITH the point-in-time snapshot (full_result, for
-  // saved-view fidelity parity). If the column isn't present yet (migration 20260902
-  // not applied), PostgREST 400s on the unknown key — so fall back to the base row so
-  // core retention (scores/transcripts/citations) is NEVER lost to migration timing.
-  // Fidelity simply won't be available for that sweep until the migration runs.
-  let sweepRes = await insertSweep({ ...baseRow, full_result: input.fullResult ?? null });
-  if (!sweepRes.ok && input.fullResult) {
-    sweepRes = await insertSweep(baseRow);
+  // Additive columns from later migrations; each layer falls back so a missing migration
+  // never loses core retention (WO-AEO-MOBILE-HISTORY-001 full_result; WO-INTEGRITY-002 config).
+  const configCols = {
+    category: input.category || null,
+    competitors: input.competitors ?? null,
+    branded_queries: input.brandedQueries ?? null,
+    category_queries: input.categoryQueries ?? null,
+  };
+  let sweepRes = await insertSweep({ ...baseRow, full_result: input.fullResult ?? null, ...configCols });
+  if (!sweepRes.ok) {
+    // config columns (migration 20260903) absent → retry with just full_result …
+    sweepRes = await insertSweep({ ...baseRow, full_result: input.fullResult ?? null });
+    if (!sweepRes.ok && input.fullResult) sweepRes = await insertSweep(baseRow); // … then bare
   }
   if (!sweepRes.ok) return false;
   const [sweep] = await sweepRes.json();

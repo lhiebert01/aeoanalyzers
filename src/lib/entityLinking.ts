@@ -136,8 +136,23 @@ function isNearNameDomain(host: string, keys: BrandKeys): boolean {
  * Scan the SOURCES of branded runs for entity-linking failures. `truth.sameAs` are
  * the client's declared controlled profiles — never flagged as near-name.
  */
+/** WO-INTEGRITY-002 A3: pull domain-like tokens out of the answer TEXT (not just the
+ *  sources list) — e.g. Perplexity naming "The Lantern Post (lanternpost.org)". Only
+ *  near-name/ticker/wiki hosts survive the collision checks, so ordinary prose is filtered. */
+function extractUrlsFromText(text: string): string[] {
+  const out: string[] = [];
+  const re = /\b(?:https?:\/\/)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,})(\/[^\s)"'<>]*)?/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const host = m[1];
+    if (/^\d/.test(host) && /^\d+(\.\d+)+$/.test(host)) continue; // version/number, not a domain
+    out.push(`https://${host}${m[2] || ''}`);
+  }
+  return out;
+}
+
 export function detectEntityLinkingFailures(
-  brandedRuns: { sources?: string[] }[],
+  brandedRuns: { sources?: string[]; transcript?: string }[],
   client: { domain: string; brand?: string },
   truth?: { sameAs?: string[] } | null
 ): EntityLinkingReport {
@@ -146,30 +161,33 @@ export function detectEntityLinkingFailures(
   const flags: EntityLinkingFlag[] = [];
   const seen = new Set<string>();
 
-  for (const run of brandedRuns) {
-    for (const url of run.sources || []) {
-      const { host, slug } = parseUrl(url);
-      if (!host) continue;
-      const reg = registrable(host);
-      if (reg === keys.ownHost || declared.has(reg)) continue; // it's really you
+  const consider = (url: string) => {
+    const { host, slug } = parseUrl(url);
+    if (!host) return;
+    const reg = registrable(host);
+    if (reg === keys.ownHost || declared.has(reg)) return; // it's really you
 
-      let flag: EntityLinkingFlag | null = null;
-      if (reg.endsWith('wikipedia.org') && isWikiCollision(slug, keys)) {
-        flag = { kind: 'wikipedia-collision', source: url, collidingEntity: `Wikipedia: ${slug.replace(/_/g, ' ')}`,
-          detail: `An engine cited a Wikipedia acronym/disambiguation page ("${slug.replace(/_/g, ' ')}") as if it were you.` };
-      } else if (FINANCE_HOSTS.includes(reg) && TICKER_PATH.test(url)) {
-        flag = { kind: 'ticker-collision', source: url, collidingEntity: `${reg} (stock-ticker page)`,
-          detail: `An engine cited a finance/stock-ticker page (${reg}) — a colliding ticker symbol, not your company.` };
-      } else if (isNearNameDomain(host, keys)) {
-        flag = { kind: 'near-name-domain', source: url, collidingEntity: host,
-          detail: `An engine cited "${host}", a near-name domain that is not your site.` };
-      }
-
-      if (flag) {
-        const key = `${flag.kind}|${flag.collidingEntity}`;
-        if (!seen.has(key)) { seen.add(key); flags.push(flag); }
-      }
+    let flag: EntityLinkingFlag | null = null;
+    if (reg.endsWith('wikipedia.org') && isWikiCollision(slug, keys)) {
+      flag = { kind: 'wikipedia-collision', source: url, collidingEntity: `Wikipedia: ${slug.replace(/_/g, ' ')}`,
+        detail: `An engine cited a Wikipedia acronym/disambiguation page ("${slug.replace(/_/g, ' ')}") as if it were you.` };
+    } else if (FINANCE_HOSTS.includes(reg) && TICKER_PATH.test(url)) {
+      flag = { kind: 'ticker-collision', source: url, collidingEntity: `${reg} (stock-ticker page)`,
+        detail: `An engine cited a finance/stock-ticker page (${reg}) — a colliding ticker symbol, not your company.` };
+    } else if (isNearNameDomain(host, keys)) {
+      flag = { kind: 'near-name-domain', source: url, collidingEntity: host,
+        detail: `An engine cited "${host}", a near-name domain that is not your site.` };
     }
+
+    if (flag) {
+      const key = `${flag.kind}|${flag.collidingEntity}`;
+      if (!seen.has(key)) { seen.add(key); flags.push(flag); }
+    }
+  };
+
+  for (const run of brandedRuns) {
+    for (const url of run.sources || []) consider(url);
+    for (const url of extractUrlsFromText(run.transcript || '')) consider(url); // A3: answer-text entities
   }
 
   return { flags, collisions: [...new Set(flags.map((f) => f.collidingEntity))] };

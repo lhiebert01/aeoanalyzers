@@ -62,6 +62,12 @@ export interface SweepRunResult {
    *  owned-citation; `model-prior` runs are reported as a separate "model-prior
    *  visibility" metric (WO-QA-003 A2). Absent = treat as grounded (back-compat). */
   grounding?: 'search-grounded' | 'model-prior' | 'indeterminate';
+  /** True when the engine's search RAN but did not find the client's own site — the
+   *  answer explicitly says "don't show / couldn't find / no results for <domain>" and
+   *  the client's domain is NOT among the sources (only near-name collisions are). Such
+   *  a run is a branded MISS ("search ran, site not found"), never a retrieval — even if
+   *  a later clause echoes the brand name for a different entity (WO-AEO-SWEEP-MEMORY-001). */
+  siteNotFound?: boolean;
   /** True when the engine CALL itself failed (HTTP 429/5xx, timeout, missing key)
    *  and no answer was produced. Like a truncation, an errored run is UNMEASURED,
    *  not measured-zero — EXCLUDED from every scored metric and badged in the UI
@@ -194,6 +200,10 @@ const NOT_FOUND_PHRASES = [
   "don't see a specific", 'no specific tool', "isn't a specific tool",
   'clarify what tool', 'clarify which', 'could you clarify', 'which specific tool',
   "don't have specific information", 'not sure what',
+  // Clarifying-question echoes: the engine restates the domain only to ASK what it is
+  // (search ran, site not found), which is not a positive mention (WO-AEO-SWEEP-MEMORY-001).
+  'provide more context', 'could you provide more', "what you're looking for",
+  'could you tell me more', 'could you specify', 'what specifically',
 ];
 
 /** Above this fraction of an engine's attempted runs being truncated, its column
@@ -306,12 +316,20 @@ export function scoreRun(
   // Brand normalization: match the spaced name ("AEO Analyzers"), the de-spaced
   // form ("AEOAnalyzers"), and the domain root ("aeoanalyzers") as one entity.
   const clientToken = despace(client.brand || '') || despace(clientDomain.split('.')[0] || '');
+  const domainInSources = inSources(clientDomain);
+  // Retrievability requires the client's OWN domain among the sources OR a positive
+  // description. "search ran but site not found" — an explicit not-found statement about
+  // the site with the real domain absent from sources (only near-name collisions) — is a
+  // MISS, even if a later clause echoes the brand for a different entity (a colliding
+  // name is a known false-positive source). WO-AEO-SWEEP-MEMORY-001.
+  const siteNotFound = !domainInSources && searchRanSiteNotFound(run.transcript, clientDomain, client.brand, clientToken);
   const cited =
-    inSources(clientDomain) ||
-    positivelyMentioned(run.transcript, (clause) =>
-      (!!clientDomain && clause.toLowerCase().includes(clientDomain)) ||
-      (!!client.brand && containsWord(clause, client.brand)) ||
-      (clientToken.length >= 5 && despace(clause).includes(clientToken)));
+    domainInSources ||
+    (!siteNotFound &&
+      positivelyMentioned(run.transcript, (clause) =>
+        (!!clientDomain && clause.toLowerCase().includes(clientDomain)) ||
+        (!!client.brand && containsWord(clause, client.brand)) ||
+        (clientToken.length >= 5 && despace(clause).includes(clientToken))));
 
   // Owned Citation Rate signal: was the DOMAIN itself surfaced (in sources or
   // named in a positive clause), as opposed to only the brand name being echoed?
@@ -322,7 +340,25 @@ export function scoreRun(
 
   const citedCompetitors = competitorsCited(run, competitors);
 
-  return { ...run, cited, domainCited, citedCompetitors };
+  return { ...run, cited, domainCited, citedCompetitors, siteNotFound };
+}
+
+/** WO-AEO-SWEEP-MEMORY-001: true when the answer explicitly says the SITE was not found —
+ *  a not-found clause that references the client's domain or brand — used to reject the
+ *  colliding-name false positive where the engine says "the search results don't show a
+ *  specific website at <domain>" yet echoes the name for a different entity. Caller must
+ *  have already confirmed the domain is NOT among the sources (real retrieval wins). */
+export function searchRanSiteNotFound(transcript: string, clientDomain: string, brand?: string, token?: string): boolean {
+  const tok = token || despace(brand || '') || despace((clientDomain || '').split('.')[0] || '');
+  for (const clause of toClauses(transcript)) {
+    if (!isNotFoundClause(clause)) continue;
+    const refsSite =
+      (!!clientDomain && clause.toLowerCase().includes(clientDomain)) ||
+      (!!brand && containsWord(clause, brand)) ||
+      (tok.length >= 5 && despace(clause).includes(tok));
+    if (refsSite) return true;
+  }
+  return false;
 }
 
 /** Which of `competitors` are "cited instead" in this one run — the competitor's
@@ -498,7 +534,10 @@ export function aggregateSweep(
     }
   }
 
-  const engines = [...byEngine.values()].map((a) => {
+  // Deterministic engine order so a saved-view rebuild matches the live run
+  // (WO-INTEGRITY-002 A1).
+  const ENGINE_ORDER: Engine[] = ['claude', 'openai', 'perplexity', 'gemini'];
+  const engines = [...byEngine.values()].sort((a, b) => ENGINE_ORDER.indexOf(a.engine) - ENGINE_ORDER.indexOf(b.engine)).map((a) => {
     const attempted = a.brandedRuns + a.categoryRuns + a.truncatedRuns;
     return {
       ...a,
