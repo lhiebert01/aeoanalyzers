@@ -568,9 +568,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
       hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
       collisions: entityLinking?.collisions ?? [],
       losingCategoryQuestions: [...new Set(r.runs.filter((x) => x.queryType === 'category' && !x.cited && !x.truncated && x.grounding !== 'model-prior').map((x) => x.query))],
-      doNowAuthorities: authority ? [...new Set(authority.authorityDomains.filter((d) => tierForDomain(d.domain).tier === 'now').map((d) => d.domain))] : [],
+      doNowAuthorities: authority ? [...new Set(authority.authorityDomains.filter((d) => d.citations >= 2 && tierForDomain(d.domain).tier === 'now').map((d) => d.domain))] : [],
       brand: r.brand || undefined,
       domain: r.domain,
+      served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs } : undefined,
     })) out.push(line);
     out.push('');
 
@@ -669,7 +670,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
       <div>
         <h1 className="text-3xl font-black tracking-tight">Citation Sweeps & Monitoring</h1>
         <p className="text-zinc-500 mt-2">
-          We ask the real answer engines your buyers&apos; questions — with web search on, several times each, because AI answers change from run to run — and measure three separate things: are you found when asked by name, are you recommended when buyers ask the category, and who gets cited instead. Every answer is stored as a transcript you can check.
+          We ask the real answer engines your buyers&apos; questions — with web search on, one or more times each depending on how many questions you ask (the per-cell N is shown on every result) — and measure three separate things: are you found when asked by name, are you recommended when buyers ask the category, and who gets cited instead. Every answer is stored as a transcript you can check.
         </p>
         <p className="text-sm text-teal-700 mt-2 font-medium">{SCORE_VS_SWEEP.tagline.sweeps}</p>
       </div>
@@ -824,6 +825,16 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
             )}
           </div>
 
+          {/* WO-INTEGRITY-002 B1(b): show reps + a cost estimate before the run. A large
+              panel runs once each (the sweep fits query breadth into the time budget);
+              smaller panels run 3×. */}
+          {!running && (() => {
+            const nQ = brandedList.length + categoryList.length;
+            const nEng = 4;
+            const reps = nQ > 6 ? 1 : 3;
+            const answers = nQ * nEng * reps;
+            return <p className="text-xs text-zinc-500 mb-2">{nQ} questions × {nEng} engines × {reps} run{reps > 1 ? 's' : ''} each ≈ {answers} answers · est. ~${(answers * 0.009).toFixed(2)}</p>;
+          })()}
           <button onClick={run} disabled={running || !domain.trim() || categoryList.length === 0}
             className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold disabled:opacity-40">
             {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
@@ -1114,9 +1125,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
                 hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
                 collisions: entityLinking?.collisions ?? [],
                 losingCategoryQuestions: [...new Set(result.runs.filter((x) => x.queryType === 'category' && !x.cited && !x.truncated && x.grounding !== 'model-prior').map((x) => x.query))],
-                doNowAuthorities: authority ? [...new Set(authority.authorityDomains.filter((d) => tierForDomain(d.domain).tier === 'now').map((d) => d.domain))] : [],
+                doNowAuthorities: authority ? [...new Set(authority.authorityDomains.filter((d) => d.citations >= 2 && tierForDomain(d.domain).tier === 'now').map((d) => d.domain))] : [],
                 brand: result.brand || undefined,
                 domain: result.domain,
+                served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs } : undefined,
               })} />
               <div className="mt-4 pt-4 border-t border-zinc-100">
                 <CrossLink to="score" onClick={onOpenAnalyzer} />

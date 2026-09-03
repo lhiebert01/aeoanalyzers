@@ -22,6 +22,10 @@ export interface SweepActionInputs {
   /** For the paste-ready remediation snippet. */
   brand?: string;
   domain: string;
+  /** WO-INTEGRITY-002 B5: what schema the page ALREADY serves, so the fix prescribes
+   *  only the delta (missing @id / sameAs / disambiguatingDescription) rather than a
+   *  fresh Organization the page already has. */
+  served?: { hasOrg?: boolean; hasOrgId?: boolean; hasDisambiguation?: boolean; sameAs?: string[] };
 }
 
 /** Threshold below which branded retrievability is "weak" enough to send the user
@@ -32,9 +36,35 @@ export const WEAK_RETRIEVABILITY = 80;
  *  unaffiliation line. Only re-expresses DETECTED values (brand, domain, colliding
  *  names): no fabricated facts (claimsSafety discipline). Packaged like the Score's
  *  schema block so it's copy-paste ready. */
-export function remediationSnippet(domain: string, brand: string | undefined, collisions: string[]): string[] {
+export function remediationSnippet(
+  domain: string,
+  brand: string | undefined,
+  collisions: string[],
+  served?: { hasOrg?: boolean; hasOrgId?: boolean; hasDisambiguation?: boolean; sameAs?: string[] },
+): string[] {
   const name = (brand || domain).trim();
   const url = `https://${domain}`;
+
+  // WO-INTEGRITY-002 B5: if the page ALREADY ships an Organization, prescribe only the
+  // delta — never tell it to paste a second Organization node.
+  if (served?.hasOrg) {
+    const missing: string[] = [];
+    if (!served.hasOrgId) missing.push(`a stable \`"@id": "${url}/#org"\` on the Organization node (so engines resolve *your* node, not a same-named one)`);
+    if (!served.hasDisambiguation) missing.push(`a \`disambiguatingDescription\` on that node stating what ${name} is and is not`);
+    const declared = new Set((served.sameAs || []).map((s) => s.toLowerCase()));
+    const missingSameAs = collisions.slice(0, 3).filter((c) => !declared.has(String(c).toLowerCase()));
+    if (missingSameAs.length) missing.push(`\`sameAs\` entries for your real controlled profiles (you currently declare ${served.sameAs?.length || 0})`);
+    const out = [`You already ship an Organization node — don't paste a second one. Add only what's missing:`];
+    if (missing.length) for (const m of missing) out.push(`- ${m}`);
+    else out.push(`- your Organization schema looks complete; focus on the visible unaffiliation line below`);
+    const named = collisions.slice(0, 3).join(', ');
+    out.push('');
+    out.push(named
+      ? `And one visible line on your homepage/footer: "${name} (${domain}) is not affiliated with similarly named entities such as ${named}."`
+      : `And one visible line on your homepage/footer stating ${name} (${domain}) is not affiliated with any similarly named entity.`);
+    return out;
+  }
+
   const graph = [
     '```html',
     '<script type="application/ld+json">',
@@ -73,7 +103,7 @@ export function buildSweepActionAgenda(inp: SweepActionInputs): string[] {
       ? `**Engines are confusing you with other entities (${inp.collisions.slice(0, 5).join(', ')}).** Make your identity unambiguous — paste this into your site \`<head>\`:`
       : '**An engine asserted something inaccurate about you.** Make your identity unambiguous — paste this into your site `<head>`:');
     out.push('');
-    for (const line of remediationSnippet(inp.domain, inp.brand, inp.collisions)) out.push(line);
+    for (const line of remediationSnippet(inp.domain, inp.brand, inp.collisions, inp.served)) out.push(line);
     out.push('');
   }
 

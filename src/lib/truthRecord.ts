@@ -14,6 +14,13 @@ export interface TruthRecord {
   sameAs: string[];
   /** Free-form canonical facts { key, value } for the drill-down + drift diff. */
   facts: { key: string; value: string }[];
+  /** WO-INTEGRITY-002 B5: what schema the page ALREADY serves, so the fix prescribes
+   *  only the delta instead of a fresh graph. */
+  hasOrganization?: boolean;
+  /** The served Organization/WebSite node already carries a stable @id. */
+  hasOrgId?: boolean;
+  /** The served entity node already carries a disambiguatingDescription. */
+  hasDisambiguation?: boolean;
 }
 
 /** Extract and parse every <script type="application/ld+json"> block, flattening
@@ -99,10 +106,20 @@ export function extractTruthRecord(html: string, llmsTxt?: string | null): Truth
   const desc = metaContent(h, 'description') || (orgNode?.description && String(orgNode.description));
   if (desc) facts.push({ key: 'description', value: String(desc) });
 
+  // WO-INTEGRITY-002 B5: what the page already serves — the org node, its @id, and a
+  // disambiguatingDescription — so the remediation prescribes only what's missing.
+  const orgLike = nodes.find((n) => /Organization|SoftwareApplication|LocalBusiness/i.test(String(n?.['@type'])));
+  const hasOrganization = !!orgLike;
+  const hasOrgId = !!(orgLike && orgLike['@id']);
+  const hasDisambiguation = nodes.some((n) => !!n?.disambiguatingDescription);
+
   return {
     brandName: brandName || null,
     founders: [...founders].filter(Boolean),
     sameAs: [...sameAs],
     facts,
+    hasOrganization,
+    hasOrgId,
+    hasDisambiguation,
   };
 }

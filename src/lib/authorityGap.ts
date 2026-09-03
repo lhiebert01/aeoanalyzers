@@ -55,6 +55,13 @@ function isKnownAuthority(domain: string): boolean {
   return KNOWN_AUTHORITY.some((a) => (a.startsWith('.') ? domain.endsWith(a) : domain === a || domain.endsWith('.' + a)));
 }
 
+/** WO-INTEGRITY-002 B3: archive snapshots and government artifacts are not pitchable
+ *  "category authorities" (e.g. obamawhitehouse.archives.gov, web.archive.org) — filter
+ *  them out of the derived lists so we never tell a client to "get listed" on them. */
+function isArchiveOrGovNoise(domain: string): boolean {
+  return /(^|\.)(gov|mil)$/.test(domain) || /archive|wayback|\.archives\./.test(domain);
+}
+
 // Engine plumbing that shows up in `sources` but is NOT a real citable authority —
 // Gemini wraps every grounded source behind a vertexaisearch redirect, which would
 // otherwise dominate the authority gap (dogfood: 63 "citations"). Skip these.
@@ -98,12 +105,17 @@ export function aggregateAuthorityGap(runs: RunLike[], clientDomain: string): Au
     .sort((a, b) => b.citations - a.citations || Number(b.isKnownAuthority) - Number(a.isKnownAuthority));
 
   const recommendations: string[] = [];
-  const topAuthorities = authorityDomains.filter((d) => d.isKnownAuthority).slice(0, 5);
-  const topOthers = authorityDomains.filter((d) => !d.isKnownAuthority).slice(0, 5);
+  // WO-INTEGRITY-002 B3: the lists must come from THIS sweep's cited sources, ranked by
+  // count — not a generic hardcoded roster. Filter archive/government artifacts and
+  // single-hit noise; KNOWN_AUTHORITY is only a same-count tie-breaker (already in the sort).
+  const nAnswers = runs.length;
+  const ranked = authorityDomains.filter((d) => d.citations >= 2 && !isArchiveOrGovNoise(d.domain));
+  const topAuthorities = ranked.slice(0, 5);
+  const topOthers = ranked.slice(5, 10);
 
   if (topAuthorities.length) {
     recommendations.push(
-      `Answer engines repeatedly source these category authorities: ${topAuthorities.map((d) => d.domain).join(', ')}. Get an accurate, up-to-date listing/profile on each (in that priority order) — inbound presence on the sources engines already trust is what drives your discovery.`
+      `Answer engines repeatedly source these category authorities (from ${nAnswers} stored answers): ${topAuthorities.map((d) => `${d.domain} (${d.citations}×)`).join(', ')}. Get an accurate, up-to-date listing/profile on each (in that priority order) — inbound presence on the sources engines already trust is what drives your discovery.`
     );
   }
   if (topOthers.length) {
