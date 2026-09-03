@@ -1,7 +1,40 @@
 // WO-SWEEP-POLISH-002 A1/A2c — deterministic config-surface guardrails.
 
 import { describe, it, expect } from 'vitest';
-import { lintDefunctNames, hasDefunctName, sanitizeCompetitors } from '../lib/sweepConfig';
+import { lintDefunctNames, hasDefunctName, sanitizeCompetitors, isSectionLabel, stripNonQuestionLines } from '../lib/sweepConfig';
+
+describe('question-box guard (WO-INTEGRITY-002 C1) — labels are not questions', () => {
+  it('isSectionLabel flags section headings, not real questions', () => {
+    for (const l of ['Problem-first', 'Head-to-head', 'Category discovery', 'About you', 'From prospective customers', 'More buyer questions', '']) {
+      expect(isSectionLabel(l)).toBe(true);
+    }
+    for (const q of ['best free ecard sites without a subscription', 'how to send a card by text', 'Jacquie Lawson alternatives that are free']) {
+      expect(isSectionLabel(q)).toBe(false);
+    }
+  });
+
+  it('the Sep-2 paste that showed "14 questions" strips to 12', () => {
+    // Exactly the founder's pasted list, with the two label lines that leaked in.
+    const pasted = [
+      'best free ecard sites without a subscription',
+      'free digital greeting cards you can send by text message',
+      'best app to send a birthday card with a song in it',
+      'Problem-first',
+      'how to send an online greeting card without a subscription or account',
+      'how to send someone a song as a musical greeting',
+      "how to send a digital card without giving the recipient's email address",
+      'Head-to-head',
+      'free alternatives to Paperless Post for sending a single card',
+      'Jacquie Lawson alternatives that are free',
+      'Hallmark eCards alternative with no membership fee',
+      "digital greeting card that doesn't track the recipient",
+    ];
+    const kept = stripNonQuestionLines(pasted);
+    expect(kept.length).toBe(10);                       // 12 pasted − 2 labels
+    expect(kept).not.toContain('Problem-first');
+    expect(kept).not.toContain('Head-to-head');
+  });
+});
 
 describe('lintDefunctNames (A2c — defunct product names)', () => {
   it('rewrites discontinued names to their current ones', () => {

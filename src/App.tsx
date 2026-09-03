@@ -1088,6 +1088,10 @@ export default function App() {
                 </div>
               ) : sweepHistory.length > 0 ? (
                 <div className="bg-white border border-zinc-200 rounded-3xl overflow-hidden shadow-sm">
+                  {/* WO-INTEGRITY-002 B7: these figures are the AS-STORED summary; opening a
+                      sweep re-scores from stored transcripts (errored runs excluded, branded
+                      false-positives corrected), so a row and its opened view can differ. */}
+                  <p className="px-6 pt-4 text-xs text-zinc-500">Figures below are as first stored. <b>Open a sweep to see the re-scored numbers</b> — errored runs are excluded and branded false-positives corrected on open, so an older row may read higher than its opened view.</p>
                   <table className="w-full text-left">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
                       <tr>

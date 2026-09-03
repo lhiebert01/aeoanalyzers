@@ -4,7 +4,7 @@ import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, A
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, largestLosingSegment, segmentSummaryNote, SEGMENT_LABEL } from '../lib/querySegment';
-import { sanitizeCompetitors, lintDefunctNames } from '../lib/sweepConfig';
+import { sanitizeCompetitors, lintDefunctNames, stripNonQuestionLines } from '../lib/sweepConfig';
 import { buildSweepActionAgenda } from '../lib/sweepActions';
 import { SCORE_VS_SWEEP } from '../content/scoreVsSweep';
 import { ScoreVsSweepCard, CrossLink, AgendaBlock } from './ScoreVsSweepCard';
@@ -324,6 +324,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
     }
     return [...new Set(out)];
   };
+  // WO-INTEGRITY-002 C1: questions only — drop pasted section labels / non-question lines.
+  const parseQuestions = (s: string) => stripNonQuestionLines(parseLines(s));
   const parseCompetitors = (s: string) =>
     parseLines(s).map((l) => {
       const [name, dom] = l.split(',').map((x) => x.trim());
@@ -395,8 +397,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
         body: JSON.stringify({
           domain: d, brand: brand.trim() || undefined,
           category: coreCategory.trim() || undefined, // WO-INTEGRITY-002 A1: persisted for pin/rebuild
-          brandedQueries: parseLines(branded).map(expand),
-          categoryQueries: parseLines(categoryQueries).map(expand),
+          brandedQueries: parseQuestions(branded).map(expand),
+          categoryQueries: parseQuestions(categoryQueries).map(expand),
           competitors: parseCompetitors(competitors),
         }),
       });
@@ -504,11 +506,17 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
       out.push(`### ${L(e.engine)}`);
       if ((e as { errored?: boolean }).errored) {
         out.push('- Service unavailable (engine failed to run — bad/expired key or config; NOT a real 0%)');
+      } else if ((e as { insufficientValid?: boolean }).insufficientValid) {
+        out.push(`- Insufficient valid runs — all ${(e as { erroredRuns?: number }).erroredRuns ?? 0} runs errored (rate-limit / timeout) and were excluded (NOT a real 0%).`);
       } else if (e.truncatedBlocked) {
         out.push(`- Column unreliable — ${e.truncatedRuns} answers were cut off by the token cap (not a real measurement; re-run at a higher cap).`);
       } else {
         out.push(`- Retrievability (branded): ${e.brandedCited}/${e.brandedRuns} (${e.retrievabilityPct}%)`);
-        out.push(`- Citation win (category, search-grounded): ${e.citationWinPct}%`);
+        // B6: a category cell with zero search-grounded runs is UNMEASURED, not a real 0%.
+        out.push(e.categoryRuns === 0
+          ? `- Citation win (category): Unmeasured — no search invoked${e.modelPriorRuns > 0 ? ` (${e.modelPriorRuns} model-prior answer${e.modelPriorRuns > 1 ? 's' : ''})` : ''}`
+          : `- Citation win (category, search-grounded): ${e.citationWinPct}% · N=${e.categoryRuns}`);
+        if ((e as { erroredRuns?: number }).erroredRuns) out.push(`- (${(e as { erroredRuns?: number }).erroredRuns} run(s) errored — excluded from the scores above)`);
         if (e.modelPriorRuns > 0) out.push(`- (${e.modelPriorRuns} model-prior answer${e.modelPriorRuns > 1 ? 's' : ''} — answered without a live search — reported separately)`);
         if (e.truncatedRuns > 0) out.push(`- (${e.truncatedRuns} truncated answer${e.truncatedRuns > 1 ? 's' : ''} excluded from the scores above)`);
         if (isAdmin) out.push(`- Cost: $${e.costUsd.toFixed(3)}`);
@@ -542,8 +550,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
     }
 
     if (bots && bots.configured) {
-      out.push(`## AI crawler hits (${bots.days}d) — ${bots.totalHits} total`);
-      for (const t of ['live', 'search', 'training']) out.push(`- ${t}: ${bots.tierTotals?.[t] || 0}`);
+      if ((bots.totalHits || 0) === 0) {
+        // B4: no measured zero — telemetry simply isn't connected for this domain.
+        out.push('## AI crawler hits');
+        out.push('No telemetry connected for this domain — crawler-hit tracking needs a first-party pixel/log on the site.');
+      } else {
+        out.push(`## AI crawler hits (${bots.days}d) — ${bots.totalHits} total`);
+        for (const t of ['live', 'search', 'training']) out.push(`- ${t}: ${bots.tierTotals?.[t] || 0}`);
+      }
       out.push('');
     }
 
@@ -625,8 +639,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
 
   // Confirm-panel display: expanded question lists + the total we'll actually ask.
   const dNorm = normDomain(domain);
-  const brandedList = parseLines(branded).map((q) => q.replace(/\{domain\}/g, dNorm));
-  const categoryList = parseLines(categoryQueries);
+  const brandedList = parseQuestions(branded).map((q) => q.replace(/\{domain\}/g, dNorm));
+  const categoryList = parseQuestions(categoryQueries);
   const totalQuestions = brandedList.length + categoryList.length;
   // Bucket the model's free-form intent labels robustly — it returns variants
   // ("Category Discovery", "Problem/Solution", "Comparative") that an exact-string
@@ -933,7 +947,15 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
                       <span key={c} className="px-3 py-1 rounded-full text-xs font-semibold bg-white text-red-700 border border-red-300">{c}</span>
                     ))}
                   </div>
-                  <p className="text-xs text-zinc-500 mt-2">A crowded name/acronym (and a colliding stock ticker) means engines can&apos;t cleanly resolve you. Fix: an explicit &ldquo;not affiliated with…&rdquo; line + a connected <span className="font-mono">@id</span> entity graph so your identity is unambiguous.</p>
+                  {/* WO-INTEGRITY-002 B2: name the collision TYPES actually detected — never
+                      assert a stock-ticker or acronym collision that isn't in this sweep. */}
+                  {(() => {
+                    const flags = entityLinking.flags || [];
+                    const hasTicker = flags.some((f) => f.kind === 'ticker-collision');
+                    const hasWiki = flags.some((f) => f.kind === 'wikipedia-collision');
+                    const cause = `A crowded name${hasWiki ? '/acronym' : ''}${hasTicker ? ' and a colliding stock ticker' : ''}`;
+                    return <p className="text-xs text-zinc-500 mt-2">{cause} means engines can&apos;t cleanly resolve you. Fix: an explicit &ldquo;not affiliated with…&rdquo; line + a connected <span className="font-mono">@id</span> entity graph so your identity is unambiguous.</p>;
+                  })()}
                 </div>
               )}
             </div>
@@ -978,7 +1000,13 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
                     <div className="mt-3 text-sm text-zinc-500">Retrievability (branded)</div>
                     <div className="text-2xl font-black">{e.brandedCited}/{e.brandedRuns} <span className="text-base font-semibold text-zinc-400">({e.retrievabilityPct}%)</span></div>
                     <div className="mt-2 text-sm text-zinc-500">Citation win (category)</div>
-                    <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}% <span className="text-xs font-semibold text-zinc-400">· N={e.categoryRuns}</span></div>
+                    {/* WO-INTEGRITY-002 B6: a category cell with zero search-grounded runs is
+                        UNMEASURED (the engine answered from memory), not a real 0%. */}
+                    {e.categoryRuns === 0 ? (
+                      <div className="text-base font-bold text-sky-700">Unmeasured — no search invoked{e.modelPriorRuns > 0 ? ` (${e.modelPriorRuns} model-prior answer${e.modelPriorRuns > 1 ? 's' : ''})` : ''}</div>
+                    ) : (
+                      <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}% <span className="text-xs font-semibold text-zinc-400">· N={e.categoryRuns}</span></div>
+                    )}
                     {e.modelPriorRuns > 0 && <div className="mt-2 text-[11px] text-zinc-400">{e.modelPriorRuns} model-prior answer{e.modelPriorRuns > 1 ? 's' : ''} (no search) reported separately</div>}
                     {e.truncatedRuns > 0 && <div className="mt-2 text-[11px] text-amber-600">{e.truncatedRuns} truncated answer{e.truncatedRuns > 1 ? 's' : ''} excluded</div>}
                     {((e as { erroredRuns?: number }).erroredRuns ?? 0) > 0 && <div className="mt-2 text-[11px] text-amber-600">{(e as { erroredRuns?: number }).erroredRuns} of {e.brandedRuns + e.categoryRuns + e.truncatedRuns + e.modelPriorRuns + ((e as { erroredRuns?: number }).erroredRuns ?? 0)} runs errored — excluded</div>}
@@ -1168,6 +1196,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
       {/* Bot hits (WO-3) */}
       {bots && bots.configured && (
         <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
+          {/* WO-INTEGRITY-002 B4: zero hits on a domain we don't instrument is NOT a
+              measured zero — it means no telemetry is connected. Don't render fake zeros. */}
+          {(bots.totalHits || 0) === 0 ? (
+            <>
+              <h3 className="font-bold flex items-center gap-2 mb-1"><Bot className="w-4 h-4 text-zinc-400" />AI crawler hits</h3>
+              <p className="text-sm text-zinc-500">No telemetry connected for this domain. Crawler-hit tracking needs a first-party pixel/log on the site itself — until it&apos;s connected, this isn&apos;t a measured zero, so we don&apos;t show one.</p>
+            </>
+          ) : (<>
           <h3 className="font-bold flex items-center gap-2 mb-3"><Bot className="w-4 h-4 text-zinc-400" />AI crawler hits ({bots.days}d) — {bots.totalHits} total</h3>
           <div className="flex gap-4 mb-4">
             {(['live', 'search', 'training'] as const).map((t) => (
@@ -1188,6 +1224,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
               </tbody>
             </table>
           )}
+          </>)}
         </div>
       )}
     </div>

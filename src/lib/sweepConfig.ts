@@ -68,3 +68,22 @@ export function sanitizeCompetitors(
   }
   return out;
 }
+
+// ── WO-INTEGRITY-002 C1 — question-box input hygiene ─────────────────────────
+// Lines pasted into the "one per line" question box that are section LABELS
+// ("Problem-first", "Head-to-head", "Category discovery", "About you", …) or bare
+// headings are not questions — sent to the engines they become junk queries. Drop
+// them before the run and show the true count, so "14 questions" collapses to 12.
+const SECTION_LABEL_RX =
+  /^(problem[\s-]?first|head[\s-]?to[\s-]?head|category discovery|about you( \(branded\))?|from prospective (customers|buyers)|more buyer questions|branded|unbranded|category|questions?)$/i;
+
+/** True when a line is a section label / bare heading rather than a real question. */
+export function isSectionLabel(line: string): boolean {
+  const l = String(line || '').replace(/^[•\-\s]+/, '').replace(/[:•\-\s]+$/, '').trim();
+  return !l || SECTION_LABEL_RX.test(l);
+}
+
+/** Drop section-label / non-question lines from a pasted question list. */
+export function stripNonQuestionLines(lines: string[]): string[] {
+  return (lines || []).filter((l) => !isSectionLabel(l));
+}
