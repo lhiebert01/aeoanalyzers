@@ -147,6 +147,7 @@ interface SweepResponse {
   domain: string; brand: string | null; runsPerQuery: number;
   engines: string[]; skippedEngines: string[]; configured: string[];
   summary: SweepSummary; runs: SweepRunResult[]; persisted: boolean;
+  generatedAt?: string; // ISO; used so a saved-view download matches the original run's report byte-for-byte
   quickCheck?: boolean; tier?: string;
   provisional?: { score: number; label: string; message: string } | null;
   upgrade?: string | null;
@@ -185,6 +186,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
   const [savedLoading, setSavedLoading] = useState(false);
   const [savedError, setSavedError] = useState<string | null>(null);
   const [savedDate, setSavedDate] = useState<string | null>(null);
+  // A saved sweep that predates the Sep-2 snapshot column has no point-in-time layers.
+  const [savedSnapshotMissing, setSavedSnapshotMissing] = useState(false);
 
   useEffect(() => {
     if (!savedSweepId) return;
@@ -192,6 +195,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
     (async () => {
       setSavedLoading(true); setSavedError(null);
       setResult(null); setAuthority(null); setFidelity(null); setEntityLinking(null); setPageFactDensity(null); setTruth(null); setBots(null);
+      setSavedSnapshotMissing(false);
       setShowTranscripts(false); setExpandAll(false); setOpenRun(null);
       try {
         const { data: sweeps, error: e1 } = await supabaseQuery('citation_sweeps', `id=eq.${savedSweepId}&select=*`);
@@ -223,26 +227,39 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           summary: sweep.summary as SweepSummary,
           runs,
           persisted: true,
+          // Original run time, so a saved-view download matches the live-run report.
+          generatedAt: sweep.created_at,
         };
         if (cancelled) return;
         setResult(reconstructed);
         setAuthority(aggregateAuthorityGap(runs, sweep.domain));
         setSavedDate(sweep.created_at);
-        // WO-AEO-MOBILE-HISTORY-001: if a point-in-time TruthRecord snapshot was
-        // persisted (full_result.truth, from the 20260902 migration), recompute the
-        // FIDELITY section + per-run drift badges from it + the stored runs — so a
-        // saved sweep shows the same fidelity read as the original run + the same
-        // downloaded report. Older sweeps without a snapshot degrade gracefully
-        // (no fidelity section; never fabricated, never re-fetched).
-        const savedTruth = sweep.full_result?.truth as TruthRecord | undefined;
-        if (savedTruth) {
-          setTruth(savedTruth);
-          const brandedRuns = runs.filter((r) => r.queryType === 'branded');
-          setFidelity(summarizeFidelity(brandedRuns, savedTruth));
-        }
         // Keep the brand args used by the derived scorecard consistent with the run.
         setDomain(sweep.domain);
         setBrand(sweep.brand || '');
+
+        // WO-AEO-MOBILE-HISTORY-001: rebuild every point-in-time layer the as-run
+        // screen shows from the compact snapshot persisted at run time (full_result:
+        // { truth, factDensity }, added in the 20260902 migration). truth drives BOTH
+        // fidelity/drift and entity-linking collisions; factDensity is the content-depth
+        // audit. So a saved sweep === the original run (same screen + same downloaded
+        // report). Nothing is re-fetched from the client's site (that would be a
+        // different point in time) and nothing is fabricated.
+        const savedTruth = sweep.full_result?.truth as TruthRecord | undefined;
+        const savedFactDensity = sweep.full_result?.factDensity as FactDensityAudit | undefined;
+        if (savedTruth) {
+          const brandedRuns = runs.filter((r) => r.queryType === 'branded');
+          setTruth(savedTruth);
+          setFidelity(summarizeFidelity(brandedRuns, savedTruth));
+          setEntityLinking(detectEntityLinkingFailures(brandedRuns, { domain: sweep.domain, brand: sweep.brand || savedTruth.brandName || undefined }, savedTruth));
+        }
+        if (savedFactDensity) setPageFactDensity(savedFactDensity);
+        // A sweep run before the snapshot column existed carries no point-in-time layers.
+        if (!savedTruth) setSavedSnapshotMissing(true);
+        // Crawler-hit telemetry is a rolling 30-day window (not a page snapshot), so it
+        // is re-read live by domain — $0, no engine call. Same behavior as a live run.
+        fetch(`/api/bot-stats?domain=${encodeURIComponent(sweep.domain)}`)
+          .then((r) => r.json()).then((b) => { if (!cancelled) setBots(b); }).catch(() => {});
       } catch (err: any) {
         if (!cancelled) setSavedError(err?.message || 'Could not load this saved sweep.');
       } finally {
@@ -387,7 +404,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
     const out: string[] = [];
     out.push(`# Citation Sweep — ${r.domain}`);
     if (r.brand) out.push(`Brand: ${r.brand}`);
-    out.push(`Generated: ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC`);
+    out.push(`Generated: ${new Date(r.generatedAt || Date.now()).toISOString().slice(0, 16).replace('T', ' ')} UTC`);
     out.push(`Runs per query: ${r.runsPerQuery}`);
     out.push(`Engines: ${r.configured.join(', ') || 'none'}`);
     if (r.skippedEngines?.length) out.push(`Skipped (no API key): ${r.skippedEngines.join(', ')}`);
@@ -525,7 +542,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
 
   function downloadReport() {
     if (!result) return;
-    const stamp = new Date().toISOString().slice(0, 10);
+    const stamp = new Date(result.generatedAt || Date.now()).toISOString().slice(0, 10);
     const blob = new Blob([buildReport(result)], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -823,6 +840,16 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
                   <b>Answer share:</b> when you&apos;re named in a category answer, you own ~{Math.round(pawcClient.avgShare * 100)}% of it (position-weighted). <span className="text-zinc-400">Position-Adjusted Word Count — a prominence measure from the Princeton GEO study, not a guarantee.</span>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* WO-AEO-MOBILE-HISTORY-001: a saved sweep that predates the Sep-2 snapshot
+              has no point-in-time layers — say so explicitly rather than render a blank. */}
+          {savedView && savedSnapshotMissing && (
+            <div className="bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-sm text-zinc-600">
+              <b className="text-zinc-800">Fidelity, entity-linking and content-depth not captured</b> — this
+              sweep predates the Sep 2, 2026 snapshot, so its point-in-time page layers weren&apos;t stored.
+              Scores, per-engine results, cited-instead, source citations and every transcript above are complete.
             </div>
           )}
 

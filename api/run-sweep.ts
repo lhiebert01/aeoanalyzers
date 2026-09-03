@@ -22,6 +22,7 @@ import {
   type QueryType,
 } from '../src/lib/citationSweep.js';
 import { extractTruthRecord, type TruthRecord } from '../src/lib/truthRecord.js';
+import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
 
 // Vercel Fluid Compute allows long runs; a full sweep is many sequential calls.
 export const config = { maxDuration: 300 };
@@ -302,12 +303,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let persisted = false;
     if (persist) {
       try {
-        // WO-AEO-MOBILE-HISTORY-001: capture a point-in-time TruthRecord snapshot of
-        // the client's own site so a SAVED sweep can recompute its fidelity/drift
-        // sections later (parity with a live run). Compact (no raw HTML), best-effort:
+        // WO-AEO-MOBILE-HISTORY-001: capture a compact point-in-time snapshot of the
+        // client's own site (TruthRecord + content-depth audit) so a SAVED sweep can
+        // recompute every point-in-time layer the as-run screen shows — fidelity/drift,
+        // entity-linking collisions, content depth — with NO raw HTML stored. Best-effort:
         // a failed/slow fetch must never affect the sweep — it just omits the snapshot.
-        const truth = await fetchTruthSnapshot(domain);
-        persisted = await persistSweep({ domain, brand, userId, summary, runs, fullResult: truth ? { truth } : null });
+        const snapshot = await fetchSiteSnapshot(domain);
+        persisted = await persistSweep({ domain, brand, userId, summary, runs, fullResult: snapshot });
       } catch {
         persisted = false; // never fail the sweep on a persistence error
       }
@@ -422,11 +424,15 @@ async function persistSweep(input: {
   return rowsRes.ok;
 }
 
-/** WO-AEO-MOBILE-HISTORY-001: fetch the client's own site and extract a compact,
- *  point-in-time TruthRecord so a SAVED sweep can recompute fidelity/drift later.
- *  Best-effort and strictly bounded — mirrors the plain HTTP fetch in api/fetch-site
- *  (no headless browser). Any failure/timeout returns null; the sweep is unaffected. */
-async function fetchTruthSnapshot(domain: string): Promise<TruthRecord | null> {
+/** WO-AEO-MOBILE-HISTORY-001: fetch the client's own site once and extract the compact,
+ *  point-in-time layers a SAVED sweep needs to reproduce the as-run screen + report —
+ *  the TruthRecord (drives fidelity/drift + entity-linking collisions) and the
+ *  content-depth audit. Best-effort and strictly bounded — mirrors the plain HTTP fetch
+ *  in api/fetch-site (no headless browser). Any failure/timeout returns null; the sweep
+ *  is unaffected and the saved view degrades to a labeled "not captured" note. */
+async function fetchSiteSnapshot(
+  domain: string,
+): Promise<{ truth: TruthRecord; factDensity: FactDensityAudit } | null> {
   try {
     const raw = (domain || '').trim();
     if (!raw) return null;
@@ -455,7 +461,7 @@ async function fetchTruthSnapshot(domain: string): Promise<TruthRecord | null> {
     const html = await get(base, 8000);
     if (!html) return null;
     const llmsTxt = await get(`${origin}/llms.txt`, 4000);
-    return extractTruthRecord(html, llmsTxt);
+    return { truth: extractTruthRecord(html, llmsTxt), factDensity: auditFactDensity(html) };
   } catch {
     return null;
   }
