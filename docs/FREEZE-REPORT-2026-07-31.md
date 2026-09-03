@@ -72,6 +72,16 @@ and every measurement fix and fidelity detector was **proven by breaking its gua
   fresh every run). Until built, "same questions each month" is enforced *manually*
   via the pinned file `docs/baselines/aeoanalyzers-question-panel.md`. Build when
   the freeze lifts or a paying customer needs recurring monitoring.
+  - **A3 category-native competitor inference — real-world instance (WO-AEO-SWEEP-MEMORY-001, Sep 2 2026):**
+    `lanternpost.app` (a free single-sender e-card product) was auto-guessed into the
+    **group-card / party-invitation** category with the matching competitor set and panel.
+    Guessed → corrected, side by side:
+    - Category: *"Interactive digital greeting cards"* → **"Free digital greeting cards (e-cards)"**
+    - Competitors: *Paperless Post / Punchbowl / Kudoboard* → **Paperless Post / Jacquie Lawson / Hallmark eCards**
+    - Questions: group/team/farewell/RSVP + party-invitation panel → **individual-sender intents** (no-subscription, send-by-text, song-in-card, no recipient email/tracking)
+    Lesson: category inference latched on multi-recipient/"group" tokens; a free 1:1 sender was
+    misfiled with the wrong buyer, competitors, and questions. Feeds both A3 inference and the
+    P1-B config-memory case (a user who corrects this once must not redo it every month).
 - Owned-citation ~54% is the entity-collision remediation's to move (ship the
   @id/unaffiliation fixes on the site, then re-measure).
 - Swap fictional "Meridian" for the ratified anonymized automaker sweep on the

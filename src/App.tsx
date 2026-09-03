@@ -1110,7 +1110,11 @@ export default function App() {
                           <tr
                             key={s.id}
                             onClick={() => handleViewSweepDetail(s)}
-                            className="hover:bg-zinc-50 transition-all cursor-pointer group"
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`View saved sweep for ${s.domain}`}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleViewSweepDetail(s); } }}
+                            className="hover:bg-zinc-50 focus:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500 transition-all cursor-pointer group"
                           >
                             <td className="px-6 py-4 font-medium text-sm text-zinc-900 truncate max-w-[220px] flex items-center gap-2">
                               {s.domain}
