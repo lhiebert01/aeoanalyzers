@@ -59,6 +59,14 @@ and every measurement fix and fidelity detector was **proven by breaking its gua
 
 ## Backlog — post-freeze unless a paying customer's report requires it
 
+- **v1.9 #1 (WO-INTEGRITY-002 B1a) — sweep DEPTH mode:** reps 3–5 on ≤6 questions, or a
+  split sweep with a longer budget, so a small panel gets real N≥3. Today the maxDuration
+  trimmer (`api/run-sweep.ts:294`) drops a 12-question panel to reps=1 (breadth over depth).
+  The monthly self-sweep series stays headless at reps=5 regardless (`scripts/headless-sweep.ts`).
+- **WO-INTEGRITY-002 B7 — History list re-derives on load:** re-score the History rows the
+  same way the saved view does (errored excluded, branded false-positives corrected) so the
+  list matches the opened view and the "re-scored on open" note becomes unnecessary.
+
 - Wire `factClassification.ts` four-way split (stale/conflated/fabricated) into
   sweep fidelity output — then blog Layer 2 may be upgraded to four-way language.
 - A2 optional search-forcing retry for engines that return model-prior.
