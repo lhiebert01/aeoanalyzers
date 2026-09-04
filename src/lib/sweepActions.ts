@@ -51,9 +51,11 @@ export function remediationSnippet(
     const missing: string[] = [];
     if (!served.hasOrgId) missing.push(`a stable \`"@id": "${url}/#org"\` on the Organization node (so engines resolve *your* node, not a same-named one)`);
     if (!served.hasDisambiguation) missing.push(`a \`disambiguatingDescription\` on that node stating what ${name} is and is not`);
-    const declared = new Set((served.sameAs || []).map((s) => s.toLowerCase()));
-    const missingSameAs = collisions.slice(0, 3).filter((c) => !declared.has(String(c).toLowerCase()));
-    if (missingSameAs.length) missing.push(`\`sameAs\` entries for your real controlled profiles (you currently declare ${served.sameAs?.length || 0})`);
+    // WO-INTEGRITY-002 B5 follow-up: trigger on the DECLARED sameAs count — a collision is
+    // never a sameAs (declaring an impostor would merge identities, the opposite of the fix).
+    if (!(served.sameAs && served.sameAs.length)) {
+      missing.push(`\`sameAs\` entries pointing at YOUR real controlled profiles (LinkedIn, Crunchbase, GitHub, X, …) — the page currently declares none`);
+    }
     const out = [`You already ship an Organization node — don't paste a second one. Add only what's missing:`];
     if (missing.length) for (const m of missing) out.push(`- ${m}`);
     else out.push(`- your Organization schema looks complete; focus on the visible unaffiliation line below`);

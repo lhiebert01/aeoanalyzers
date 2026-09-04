@@ -23,6 +23,7 @@ import {
 } from '../src/lib/citationSweep.js';
 import { extractTruthRecord, type TruthRecord } from '../src/lib/truthRecord.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
+import { planSweep } from '../src/lib/sweepPlan.js';
 
 // Vercel Fluid Compute allows long runs; a full sweep is many sequential calls.
 export const config = { maxDuration: 300 };
@@ -285,17 +286,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // set completes as a broad sample instead of 504-ing. Paid keeps its cost cap;
     // admin is bounded by time only (no monthly quota, but still finite).
     if (!access.quickCheck) {
-      const engN = Math.max(1, engines.length);
-      const timeQueryRuns = Math.max(engN, Math.floor(SWEEP_TASK_BUDGET / engN));
-      const costQueryRuns = access.tier === 'admin' ? Number.POSITIVE_INFINITY : MAX_QUERY_RUNS_PER_SWEEP;
-      const maxQueryRuns = Math.min(timeQueryRuns, costQueryRuns);
+      // WO-INTEGRITY-002 B1(b): single source of the reps/breadth rule (shared with the UI).
       const totalQueries = brandedQueries.length + categoryQueries.length;
-      // Prefer breadth: if N>1 would overflow the budget, drop to N=1 first.
-      if (runsPerQuery > 1 && Math.ceil(maxQueryRuns / runsPerQuery) < totalQueries) runsPerQuery = 1;
-      runsPerQuery = Math.min(runsPerQuery, access.tier === 'admin' ? 5 : MAX_RUNS_PER_SWEEP);
-      const maxQueries = Math.max(1, Math.floor(maxQueryRuns / runsPerQuery));
-      brandedQueries = brandedQueries.slice(0, maxQueries);
-      const remaining = Math.max(0, maxQueries - brandedQueries.length);
+      const plan = planSweep(totalQueries, engines.length, {
+        admin: access.tier === 'admin',
+        requestedReps: runsPerQuery,
+        taskBudget: SWEEP_TASK_BUDGET,
+      });
+      runsPerQuery = plan.reps;
+      brandedQueries = brandedQueries.slice(0, plan.queriesRun);
+      const remaining = Math.max(0, plan.queriesRun - brandedQueries.length);
       categoryQueries = categoryQueries.slice(0, remaining);
     }
 

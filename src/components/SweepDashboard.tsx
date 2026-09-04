@@ -6,6 +6,7 @@ import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, largestLosingSegment, segmentSummaryNote, SEGMENT_LABEL } from '../lib/querySegment';
 import { sanitizeCompetitors, lintDefunctNames, stripNonQuestionLines } from '../lib/sweepConfig';
 import { buildSweepActionAgenda } from '../lib/sweepActions';
+import { planSweep } from '../lib/sweepPlan';
 import { SCORE_VS_SWEEP } from '../content/scoreVsSweep';
 import { ScoreVsSweepCard, CrossLink, AgendaBlock } from './ScoreVsSweepCard';
 import { avgPawc } from '../lib/pawc';
@@ -304,6 +305,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
   // brand/category/competitors + review the drafted questions) → run.
   const [phase, setPhase] = useState<'input' | 'confirm'>('input');
   const [analyzing, setAnalyzing] = useState(false);
+  // WO-INTEGRITY-002 P1-B: where the confirm-panel values came from — a fresh AI guess or
+  // this user's last sweep of the same domain (config memory).
+  const [configSource, setConfigSource] = useState<'guess' | 'prior'>('guess');
+  const [priorSweepDate, setPriorSweepDate] = useState<string | null>(null);
   const [extractError, setExtractError] = useState<string | null>(null);
   const [generatedQueries, setGeneratedQueries] = useState<GeneratedQuery[]>([]);
   const [editQueries, setEditQueries] = useState(false);
@@ -335,10 +340,33 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
   // Step 1: user enters only the domain → crawl it, infer the basics, draft the
   // buyer questions, then surface them for confirmation (nothing runs/costs a
   // sweep yet). Falls back to the manual confirm panel if the site can't be read.
-  async function analyze() {
+  async function analyze(forceGuess = false) {
     const d = normDomain(domain);
     if (!d) return;
     setAnalyzing(true); setExtractError(null);
+    // WO-INTEGRITY-002 P1-B: config memory. If this user has swept this domain before,
+    // reuse the config they last ran (persisted on citation_sweeps by A1) instead of
+    // re-guessing. RLS ("owner reads sweeps", auth.uid()=user_id) means this only ever
+    // returns the user's own rows — a cross-user read yields nothing.
+    if (!forceGuess) {
+      try {
+        const { data } = await supabaseQuery('citation_sweeps',
+          `domain=eq.${encodeURIComponent(d)}&competitors=not.is.null&select=brand,category,competitors,branded_queries,category_queries,created_at&order=created_at.desc&limit=1`);
+        const prior = data?.[0];
+        if (prior && (prior.category || (prior.competitors || []).length || (prior.category_queries || []).length)) {
+          setBrand(prior.brand || '');
+          setCoreCategory(prior.category || '');
+          setCompetitors((prior.competitors || []).map((c: any) => (c.domain ? `${c.name}, ${c.domain}` : c.name)).join('\n'));
+          const cq: string[] = prior.category_queries || [];
+          setCategoryQueries(cq.join('\n'));
+          setGeneratedQueries(cq.map((query) => ({ intent_type: '', query })));
+          setConfigSource('prior'); setPriorSweepDate(prior.created_at);
+          setPhase('confirm'); setAnalyzing(false);
+          return;
+        }
+      } catch { /* fall through to a fresh guess */ }
+    }
+    setConfigSource('guess'); setPriorSweepDate(null);
     try {
       const site = await fetch('/api/fetch-site', {
         method: 'POST',
@@ -728,7 +756,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
               onKeyDown={(e) => { if (e.key === 'Enter' && domain.trim() && !analyzing) analyze(); }}
               placeholder="example.com" disabled={analyzing}
               className="flex-1 border border-zinc-300 rounded-xl px-4 py-3 text-base disabled:opacity-60" />
-            <button onClick={analyze} disabled={analyzing || !domain.trim()}
+            <button onClick={() => analyze()} disabled={analyzing || !domain.trim()}
               className="inline-flex items-center justify-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold disabled:opacity-40 whitespace-nowrap">
               {analyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               {analyzing ? 'Reading your site…' : 'Analyze'}
@@ -745,9 +773,16 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className="text-lg font-bold text-zinc-900">{dNorm ? `We analyzed ${dNorm}` : 'Set up your sweep'}</h2>
-              <p className="text-sm text-zinc-500 mt-1">
-                Check the basics below — <b>we guessed these, so edit anything that&apos;s off</b> — then run the sweep.
-              </p>
+              {/* WO-INTEGRITY-002 P1-B: provenance — reused config vs a fresh guess. */}
+              {configSource === 'prior' ? (
+                <p className="text-sm text-emerald-700 mt-1">
+                  <b>From your last sweep{priorSweepDate ? ` on ${new Date(priorSweepDate).toLocaleDateString()}` : ''}</b> — edit anything that&apos;s off, then run. <button onClick={() => analyze(true)} className="underline text-zinc-500 hover:text-zinc-800">start from a fresh guess</button> instead.
+                </p>
+              ) : (
+                <p className="text-sm text-zinc-500 mt-1">
+                  Check the basics below — <b>we guessed these, so edit anything that&apos;s off</b> — then run the sweep.
+                </p>
+              )}
             </div>
             <button onClick={startOver} className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-800 whitespace-nowrap">
               <RotateCcw className="w-3.5 h-3.5" />Start over
@@ -757,12 +792,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label className="text-sm font-semibold">Brand name
-              <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />we guessed this — verify</span>
+              {configSource === 'prior' ? <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-emerald-600"><Sparkles className="w-3 h-3" />from your last sweep</span> : <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />we guessed this — verify</span>}
               <input value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Example Inc"
                 className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
             </label>
             <label className="text-sm font-semibold">Core category
-              <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />we guessed this — verify</span>
+              {configSource === 'prior' ? <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-emerald-600"><Sparkles className="w-3 h-3" />from your last sweep</span> : <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />we guessed this — verify</span>}
               <input value={coreCategory} onChange={(e) => setCoreCategory(e.target.value)} placeholder="AI governance tools"
                 className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
             </label>
@@ -831,9 +866,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           {!running && (() => {
             const nQ = brandedList.length + categoryList.length;
             const nEng = 4;
-            const reps = nQ > 6 ? 1 : 3;
-            const answers = nQ * nEng * reps;
-            return <p className="text-xs text-zinc-500 mb-2">{nQ} questions × {nEng} engines × {reps} run{reps > 1 ? 's' : ''} each ≈ {answers} answers · est. ~${(answers * 0.009).toFixed(2)}</p>;
+            // WO-INTEGRITY-002 B1(b): reps from the SAME planner run-sweep uses (no duplicate rule).
+            const { reps, queriesRun } = planSweep(nQ, nEng, { admin: isAdmin, requestedReps: 3 });
+            const answers = queriesRun * nEng * reps;
+            return <p className="text-xs text-zinc-500 mb-2">{queriesRun} question{queriesRun !== 1 ? 's' : ''} × {nEng} engines × {reps} run{reps > 1 ? 's' : ''} each ≈ {answers} answers · est. ~${(answers * 0.009).toFixed(2)}</p>;
           })()}
           <button onClick={run} disabled={running || !domain.trim() || categoryList.length === 0}
             className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold disabled:opacity-40">

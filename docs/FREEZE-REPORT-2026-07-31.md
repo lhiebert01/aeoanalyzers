@@ -63,6 +63,10 @@ and every measurement fix and fidelity detector was **proven by breaking its gua
   split sweep with a longer budget, so a small panel gets real N≥3. Today the maxDuration
   trimmer (`api/run-sweep.ts:294`) drops a 12-question panel to reps=1 (breadth over depth).
   The monthly self-sweep series stays headless at reps=5 regardless (`scripts/headless-sweep.ts`).
+- **WO-INTEGRITY-002 B5 follow-up — sameAs sanity check:** flag declared `sameAs` entries
+  that point at a parent org, a person profile, a sibling product, or a video URL — a wrong
+  sameAs merges identities (the opposite of disambiguation). Surface as a warning in the
+  entity-graph audit / remediation.
 - **WO-INTEGRITY-002 B7 — History list re-derives on load:** re-score the History rows the
   same way the saved view does (errored excluded, branded false-positives corrected) so the
   list matches the opened view and the "re-scored on open" note becomes unnecessary.
