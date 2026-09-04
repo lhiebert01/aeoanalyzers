@@ -83,6 +83,10 @@ export function aggregateAuthorityGap(runs: RunLike[], clientDomain: string): Au
   const byDomain = new Map<string, { citations: number; engines: Set<string> }>();
 
   for (const run of runs) {
+    // WO-INTEGRITY-002 B3: authorities are the sources engines trust for CATEGORY questions.
+    // Branded-query sources surface the collision IMPOSTORS (sourceforge/linkedin/near-name
+    // domains) — the opposite of an authority — so they must not enter the authority list.
+    if (run.queryType === 'branded') continue;
     for (const url of run.sources || []) {
       const host = normalizeDomain(url);
       if (!host) continue;
