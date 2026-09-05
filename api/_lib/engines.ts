@@ -87,7 +87,8 @@ async function askClaude(query: string): Promise<EngineAnswer> {
   // Model-aware web-search tool: the _20260209 dynamic-filtering variant is
   // Opus/Sonnet-tier only (400s on Haiku); the basic _20250305 works everywhere.
   // Pick per model so any SWEEP_CLAUDE_MODEL value works.
-  const advancedSearch = /opus-4-8|opus-4-7|opus-4-6|sonnet-5|sonnet-4-6/.test(model);
+  // (opus-5 added — the 20260209 dynamic-filtering variant is documented on Opus 5 too.)
+  const advancedSearch = /opus-5|opus-4-8|opus-4-7|opus-4-6|sonnet-5|sonnet-4-6/.test(model);
   const searchType = advancedSearch ? 'web_search_20260209' : 'web_search_20250305';
   // Cap web-search uses to bound per-call cost (Claude is the cost driver; each
   // search injects large input token volume as billed input tokens). Branded
@@ -123,7 +124,9 @@ async function askClaude(query: string): Promise<EngineAnswer> {
   const u = resp.usage || {};
   // Model-aware $/MTok (input, output) so the displayed cost matches the model
   // actually used — otherwise a Haiku run shows Opus prices (or vice-versa).
+  // Sonnet 5 is $2/$10; only Sonnet 4.6 is $3/$15 (WO-INTEGRITY: cost-display accuracy).
   const [priceIn, priceOut] = /opus/.test(model) ? [5, 25]
+    : /sonnet-5/.test(model) ? [2, 10]
     : /sonnet/.test(model) ? [3, 15]
     : [1, 5]; // haiku 4.5
   const searchReqs = u.server_tool_use?.web_search_requests || 0;
