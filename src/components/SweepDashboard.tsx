@@ -804,7 +804,9 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           </div>
 
           <label className="text-sm font-semibold block">Closest competitors
-            <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />we guessed these — one per line, edit freely (<span className="font-mono">Name</span> or <span className="font-mono">Name, domain.com</span>)</span>
+            {configSource === 'prior'
+              ? <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-emerald-600"><Sparkles className="w-3 h-3" />from your last sweep — one per line, edit freely (<span className="font-mono">Name</span> or <span className="font-mono">Name, domain.com</span>)</span>
+              : <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />we guessed these — one per line, edit freely (<span className="font-mono">Name</span> or <span className="font-mono">Name, domain.com</span>)</span>}
             <textarea value={competitors} onChange={(e) => setCompetitors(e.target.value)} rows={3}
               placeholder="Knostic, knostic.ai" className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
           </label>
