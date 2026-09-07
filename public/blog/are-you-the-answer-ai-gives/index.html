@@ -227,7 +227,10 @@ footer p{max-width:none}
           <li>Every engine knows Meridian by name — <strong>branded retrievability is 100%.</strong> Your brand is discoverable.</li>
           <li class="bad">On <strong>“best payroll software for small business,”</strong> Meridian was cited <strong>1 of 12 times.</strong> Perplexity named you <strong>zero of three.</strong></li>
           <li class="bad">The engines lean on <strong>PayNorth, LedgerLine, a 2023 review round-up, and YouTube.</strong> <strong>meridianpayroll.com never appeared</strong> among the trusted sources. Your story is being told secondhand — often a year out of date.</li>
-          <li>One thing you can’t see yet: <strong>which AI crawlers actually read your site.</strong> That telemetry is a one-line install — and the fastest way to confirm the fixes below are pulling the engines back to you.</li>
+          <!-- Sep 7 2026: removed "that telemetry is a one-line install". No customer-facing
+               way to connect a domain exists (see src/components/Payments.tsx). Restore only
+               when the v1.9 customer-connectable beacon ships. -->
+          <li>One thing this doesn’t show: <strong>which AI crawlers actually read your site.</strong> Being read and being cited are different measurements, and closing the gap starts with the citation numbers above.</li>
         </ul>
       </section>
 
@@ -270,7 +273,9 @@ footer p{max-width:none}
       <ol class="fixes">
         <li><b>Publish a current-year “best payroll software” answer page on meridianpayroll.com.</b><span>Build a schema-marked, FAQ-structured page. Write it the way an AI quotes — short, direct answers to the exact questions buyers ask. Now the engines have a fresh, first-party source to cite. Not a 2023 round-up.</span></li>
         <li><b>Close the Perplexity gap (cited 0 of 3).</b><span>Make sure your key pages are cleanly indexable by Bing. Bing feeds Perplexity and several other answer layers. Then get current on the third-party sources the engines already trust — so you show up where they’re already looking.</span></li>
-        <li><b>Instrument AI-crawler telemetry, then re-measure monthly.</b><span>Add the one-line beacon that logs which AI crawlers read your site. Re-run this sweep every month. Make “share of AI answer” a tracked KPI. The brands that win in 2026 treat it like share of search a decade ago.</span></li>
+        <!-- Sep 7 2026: was "Add the one-line beacon…" — undeliverable, no customer beacon
+             exists. The re-measure half is true and shipped, so it stays. -->
+        <li><b>Re-measure monthly, the same way every time.</b><span>Re-run this sweep every month with the same questions, so a change in the number means a change in the world and not a change in the method. Make “share of AI answer” a tracked KPI. The brands that win in 2026 treat it like share of search a decade ago.</span></li>
       </ol>
 
       <footer>

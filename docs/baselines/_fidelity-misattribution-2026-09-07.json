@@ -1,0 +1,18 @@
+{
+  "capturedAtUtc": "2026-09-07T08:45:45.848Z",
+  "engine": "claude",
+  "configuredModel": "claude-haiku-4-5 (adapter default)",
+  "searchInvoked": true,
+  "query": "Which website published this sentence: \"AI companies' crawlers had visited my site 265 times\" in the thirty days to July 31? Name the site and the page.",
+  "sources": [
+    "https://ppc.land/ai-crawlers-hit-sites-50-000-times-per-human-visit-cloudflare-data-shows/",
+    "https://www.conductor.com/academy/ai-crawlability/",
+    "https://cybernews.com/security/ai-chatbots-draining-websites-of-visitors/",
+    "https://technologychecker.io/blog/ai-crawler-statistics",
+    "https://www.prometora.com/learn/ai-crawler-data",
+    "https://www.womenintechseo.com/knowledge/ai-crawlability-for-ai-search/",
+    "https://blog.cloudflare.com/tag/ai-bots",
+    "https://blog.cloudflare.com/tag/bots"
+  ],
+  "transcriptVerbatim": "I'll search for this specific sentence to find which website published it.\nPrometora (prometora.com) published \"AI companies' crawlers had visited my site 265 times\" in their article \"What AI Crawlers Actually Read: 7 Days of Data From 13...\"\n The sentence refers to \nClaude crawlers combined (ClaudeBot, Claude-SearchBot, Claude-User) making 265 visits in the measured period\n, published on July 30, 2026."
+}

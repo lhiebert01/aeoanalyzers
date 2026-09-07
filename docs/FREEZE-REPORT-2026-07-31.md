@@ -59,6 +59,16 @@ and every measurement fix and fidelity detector was **proven by breaking its gua
 
 ## Backlog — post-freeze unless a paying customer's report requires it
 
+- **v1.9 — SECTION-CONTEXT DRIFT, a third fidelity check (founder-logged Sep 7 2026).**
+  Accurate prose, no entity collision, wrong answer — caused by heading hierarchy on a page
+  that *contains* the subject. Observed live: Claude described AEO Analyzers as scanning
+  "as part of customized governance assessments", generalised from a section heading on
+  `pigenai.com/products/`. Detectable from data already stored (engine answer text, cited
+  sources, the subject's TruthRecord): flag vocabulary in the engine's description that is
+  absent from the subject's own description but present in a cited source's HEADINGS. Its
+  fix path differs from the other two — change placement or add a boundary sentence, not
+  correct a fact or disambiguate an entity. Full spec + acceptance:
+  `docs/SAMPLE-ARTIFACT-AND-SECTION-DRIFT-2026-09-07.md` §3.
 - **v1.9 — CUSTOMER-CONNECTABLE CRAWLER BEACON (founder-logged Sep 7 2026). This is the
   feature that earns back a removed paid-tier line.** On Sep 7 2026 "AI-crawler telemetry"
   was removed from Business Authority and from the landing page because it was
