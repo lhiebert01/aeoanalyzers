@@ -15,13 +15,23 @@ export const config = {
   matcher: ['/((?!api/|assets/|.*\\.[a-zA-Z0-9]+$).*)'],
 };
 
-export default function middleware(request: Request): void {
+/** Vercel passes a context with `waitUntil`. Typed loosely so the middleware keeps
+ *  working if the platform ever calls it with one argument. */
+type EdgeContext = { waitUntil?: (p: Promise<unknown>) => void };
+
+export default function middleware(request: Request, context?: EdgeContext): void {
   try {
     const ua = request.headers.get('user-agent');
     if (!classifyUserAgent(ua)) return; // not an AI bot — do nothing
     const url = new URL(request.url);
-    // Fire-and-forget; do not await, do not throw.
-    void fetch(`${url.origin}/api/bot-hit`, {
+    // The beacon MUST be registered with waitUntil. A bare `void fetch(...)` is not
+    // guaranteed to complete: the runtime may terminate the invocation as soon as the
+    // response is returned, so the POST is dropped in flight. That is what happened here —
+    // recording ran at 100+ hits/day through Aug 18, then fell to near zero while the
+    // site kept serving crawlers normally. The instrument broke, not the crawling.
+    // Diagnosed Sep 7 2026 by firing a GPTBot user-agent at production and confirming
+    // no row was written. Never revert this to a bare `void fetch`.
+    const beacon = fetch(`${url.origin}/api/bot-hit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -31,6 +41,8 @@ export default function middleware(request: Request): void {
         source: 'middleware',
       }),
     }).catch(() => {});
+    if (typeof context?.waitUntil === 'function') context.waitUntil(beacon);
+    else void beacon; // no context available — best effort, as before
   } catch {
     // swallow — telemetry must never break a page request
   }
