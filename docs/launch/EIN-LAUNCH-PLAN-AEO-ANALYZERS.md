@@ -1,5 +1,10 @@
 # EIN Presswire Launch Plan — AEO Analyzers
 
+> **SUPERSEDED for the release text.** The canonical, paste-ready release is
+> `docs/launch/pr/EIN-release-FINAL-2026-10-14.md`, built to the playbook and dated Oct 14.
+> This file is kept for its timing analysis, AEO levers and distribution plan. **Do not paste
+> the draft body below into EIN** — it predates the playbook rewrite and the Oct 14 move.
+
 **Prepared by:** aeo-app1 session · **Date:** Sep 7, 2026 (America/Chicago)
 **Model:** the Lantern Post release (PIGENAI LLC, Sep 8 2026 dateline) — same wire, same
 provider, same boilerplate discipline.
@@ -45,8 +50,8 @@ that matters, published the number, and has re-published it every month since �
 month the number got worse. That is a verifiable, unusual, checkable claim. The product is the
 second paragraph, not the first.
 
-**The angle in one sentence:** *AI search engines read this company's website 265 times in a
-month and recommended it to buyers zero times — so the company published the zero and built
+**The angle in one sentence:** *AI search engines read this company's website 265 times in ten
+days and recommended it to buyers zero times — so the company published the zero and built
 the instrument that measures it.*
 
 ---
@@ -60,7 +65,7 @@ the instrument that measures it.*
 | Runs in the Aug 1 anchor | **240** (12 questions × 5 repetitions × 4 engines) | same |
 | Branded retrievability, Sep 2026 re-measure | **82%** (N=40) | `aeoanalyzers-2026-09-01.json` |
 | Category recommendation win, Sep 2026 re-measure | **0%** (N=200) | same |
-| AI-crawler visits, 30 days to Jul 31 2026 | **265** (211 training-tier, 179 GPTBot) | launch kit, dated |
+| AI-crawler visits, **ten days** (Jul 22-31 2026) | **265** (211 training-tier, 179 GPTBot) | `bot_hits`, re-verified Sep 7. Telemetry began Jul 22 — there is NO 30-day July window. |
 | Engines measured | Claude, ChatGPT, Perplexity, Gemini | — |
 | Pricing | Day Pass $24 one-time · Pro $49/mo · Business $199/mo | `STATUS.md` |
 
@@ -82,7 +87,7 @@ About the Founder, About the Product, About the Company, Media Contact.
 > **The Company That Published Its Own Failing Score: AEO Analyzers Measures Whether AI Recommends Your Business**
 
 ### Subhead
-> AI engines read the company's site 265 times in a month and recommended it to buyers zero
+> AI engines read the company's site 265 times in ten days and recommended it to buyers zero
 > times. It published the number, and it re-publishes it monthly.
 
 ### Pull-quote
@@ -104,8 +109,8 @@ Perplexity and Gemini twelve questions about its own category, five times each, 
 four engines — 240 recorded answers. When asked for the company by name, the engines found it
 in 100% of 40 runs. When asked the questions a buyer actually asks, such as which tools
 measure AI search visibility, the engines recommended the company in 0% of 200 runs.
-Competitors were named instead. Over the thirty days to July 31, the company's own server logs
-recorded 265 visits from AI crawlers, 211 of them training-tier and 179 from GPTBot. The
+Competitors were named instead. Over the ten days to July 31 that its crawler telemetry covers, the company's own server
+logs recorded 265 visits from AI crawlers, 211 of them training-tier and 179 from GPTBot. The
 engines had read the site. They had never cited it.
 
 "Being read is not being cited," said Lindsay Hiebert, Founder of PIGENAI LLC. "Most tools in

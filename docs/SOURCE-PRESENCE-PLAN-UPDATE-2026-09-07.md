@@ -58,6 +58,22 @@ category sources only, Gemini's grounding redirect excluded:
 **The competitors are winning by being cited as sources, not only by being listed.** That is a
 different game from directory presence and it changes where the effort goes.
 
+### The denominator is shrinking, and that changes the deadline
+
+The distinct-source-domain count fell from **296 (Aug 1) to 215 (Sep)** — a 27% contraction in
+one month — while tryprofound.com rose 38 → 57. **The engines are consolidating onto fewer, more
+authoritative sources.** Every month the set of pages that can carry us into an answer gets
+smaller and the incumbents' hold on the survivors gets stronger.
+
+**Entry gets harder with time, not easier.** That inverts the usual sequencing instinct. The
+cheap, self-serve work (directories) stays cheap whenever it is done; the expensive, relationship
+work (reviewers and press) gets *more* expensive the longer the corpus consolidates, because a
+shrinking set of sources means fewer slots and more competition for each.
+
+**So reweight: move the reviewer and press pitches (3.5) from an October task to a September
+one, running in parallel with the directories rather than after them.** If the contraction
+continues at this rate the September target list is a better list than the November one will be.
+
 ### The reclassification this forces (founder refinement, Sep 7)
 
 `tryprofound.com` at 57 and `otterly.ai` at 18 are **vendor domains cited as sources.** A vendor's

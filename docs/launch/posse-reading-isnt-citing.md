@@ -1,5 +1,13 @@
 # AEO Analyzers — Honest-Zero Part 2: POSSE Pack (copy-paste ready)
 
+> **⚠ CORRECTION, Sep 7 2026 — window, not count.** The crawler telemetry began **Jul 22 2026**
+> (`bot_hits`, migration `20260722_wo3_bot_hits.sql`), so there is no thirty-day July window.
+> The true observation period is **ten days, Jul 22–31**. The count (265) and the tier split
+> (211 training-tier, 179 GPTBot) are unchanged and verified. The corrected figure is a HIGHER
+> crawl rate than first published, not a lower one. Copy already syndicated from this pack
+> carries the old wording — see `docs/CRAWLER-FIGURE-AUDIT-2026-09-07.md`.
+
+
 **Canonical (POSSE home):** https://aeoanalyzers.com/blog/reading-isnt-citing
 **Voice rules:** measurement-honesty — no superlatives, no future promises, no prices in social; every number reproducible from the stored baseline. Attribute + link back to the canonical.
 **OG card:** every platform auto-pulls the same 1200×630 card from the link — no separate image needed.
@@ -11,9 +19,9 @@
 
 ## 1. LinkedIn
 
-The AI crawlers visited my site 265 times last month. They read everything. They recommended it to buyers zero times.
+The AI crawlers visited my site 265 times in ten days. They read everything. They recommended it to buyers zero times.
 
-I build AEO Analyzers — a tool that measures whether AI engines actually recommend a business when buyers ask. In Part 1 I published my own zero: known by name 98%, recommended to buyers 0%. The line that stopped more readers than anything else was this — the engines had crawled my site 265 times in the thirty days to July 31, and cited it none.
+I build AEO Analyzers — a tool that measures whether AI engines actually recommend a business when buyers ask. In Part 1 I published my own zero: known by name 98%, recommended to buyers 0%. The line that stopped more readers than anything else was this — the engines had crawled my site 265 times in the ten days to July 31, and cited it none.
 
 So Part 2 is about that line: why being **read** is not being **cited**.
 
@@ -31,9 +39,9 @@ If you want to know whether the engines *recommend* you — not just know your n
 
 ## 2. Facebook
 
-The AI crawlers read my site 265 times last month. They cited it zero times.
+The AI crawlers read my site 265 times in ten days. They cited it zero times.
 
-I build a tool that measures whether AI engines actually recommend a business when buyers ask. I ran it on my own site: known by name 98%, recommended to buyers 0%. The strangest part — the engines had crawled my site 265 times in a month and never reached for it when it counted.
+I build a tool that measures whether AI engines actually recommend a business when buyers ask. I ran it on my own site: known by name 98%, recommended to buyers 0%. The strangest part — the engines had crawled my site 265 times in ten days and never reached for it when it counted.
 
 Being read isn't being cited. Most of those crawls were training-tier (ingesting the web months before any buyer asks); only about 1 in 16 was a live, answer-time fetch. The fix wasn't more content — it was a first-party record shaped like the questions buyers actually ask.
 
@@ -43,7 +51,7 @@ Full story (all numbers reproducible): https://aeoanalyzers.com/blog/reading-isn
 
 ## 3. X / Twitter thread
 
-1/ The AI crawlers read my site 265 times last month. They cited it 0 times. Being read isn't being cited. 🧵
+1/ The AI crawlers read my site 265 times in ten days. They cited it 0 times. Being read isn't being cited. 🧵
 
 2/ Part 1: I published my own zero — known by name 98%, recommended to buyers 0%. The line everyone stopped on: 265 crawls, cited none.
 
@@ -59,7 +67,7 @@ Full story (all numbers reproducible): https://aeoanalyzers.com/blog/reading-isn
 
 ## 4. Bluesky / Threads (≤300 chars)
 
-AI crawlers read my site 265× last month. Cited it 0×. Being read isn't being cited — most crawls were training-tier (months before any buyer asks); only ~1 in 16 was a live answer-time fetch. The fix wasn't more content: https://aeoanalyzers.com/blog/reading-isnt-citing
+AI crawlers read my site 265× in ten days. Cited it 0×. Being read isn't being cited — most crawls were training-tier (months before any buyer asks); only ~1 in 16 was a live answer-time fetch. The fix wasn't more content: https://aeoanalyzers.com/blog/reading-isnt-citing
 
 ---
 
@@ -77,7 +85,7 @@ Keep the FULL story on the blog (canonical). On Medium/Substack, paste this shor
 
 In Part 1 I published my own zero: ask ChatGPT, Claude, Perplexity, or Gemini about my product by name and they find it — 98% branded retrievability. Ask the questions buyers actually ask, and it was recommended exactly zero times.
 
-The line that stuck with people was this one: the AI crawlers had visited my site 265 times in a month, and cited it none.
+The line that stuck with people was this one: the AI crawlers had visited my site 265 times in ten days, and cited it none.
 
 This is the post about that line. Those 265 visits weren't 265 chances to be recommended — most were training-tier crawls ingesting the web months before any buyer asks; only about one in sixteen was a live, answer-time fetch. The engines had read everything I wrote. They just never reached for it when it counted.
 
@@ -95,7 +103,7 @@ And if you'd rather learn your own number than let a prospect find it first, the
 
 **Title:** The AI crawlers read my site 265 times and cited it zero. Being read isn't being cited — here's the mechanism.
 
-**Body:** I make a tool that measures whether ChatGPT/Claude/Perplexity/Gemini actually recommend a business when buyers ask (disclosure: it's my product). I ran it on my own site — known by name 98%, recommended on buyer questions 0%. The part that reframed it for me: my logs showed 265 AI-crawler visits in a month, and zero citations. Most of those were training-tier crawls months before any buyer asks; only ~1 in 16 was a live answer-time fetch. Being read isn't being cited — the engines had my prose, but nothing shaped like the question a buyer actually types. Full write-up + the passage-ranking mechanism in the comments if useful.
+**Body:** I make a tool that measures whether ChatGPT/Claude/Perplexity/Gemini actually recommend a business when buyers ask (disclosure: it's my product). I ran it on my own site — known by name 98%, recommended on buyer questions 0%. The part that reframed it for me: my logs showed 265 AI-crawler visits in ten days, and zero citations. Most of those were training-tier crawls months before any buyer asks; only ~1 in 16 was a live answer-time fetch. Being read isn't being cited — the engines had my prose, but nothing shaped like the question a buyer actually types. Full write-up + the passage-ranking mechanism in the comments if useful.
 
 ---
 

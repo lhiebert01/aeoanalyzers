@@ -10,7 +10,7 @@ Visual 4 ships with Part 2 first). Target: **week of Aug 10.** Diagrams may be b
   · own OG card from the blog template.
 - **Numbers of record used below** cite the dated **SERIES ANCHOR — Aug 1 2026**
   (branded 100% N=40 · category 0% N=200, high confidence) and the launch baseline
-  (265 crawler visits in the thirty days to Jul 31). Live values stay in the dashboard.
+  (265 crawler visits in the ten days to Jul 31 — telemetry began Jul 22). Live values stay in the dashboard.
 
 ---
 
@@ -59,7 +59,7 @@ list sorted by how attainable each one actually is.
 [VISUAL 5 — THE ATTAINABILITY LADDER]
 
 ### Why "read" and "cited" are different numbers
-In the thirty days to July 31, AI crawlers visited our own site 265 times. They'd read
+In the ten days to July 31, AI crawlers visited our own site 265 times. They'd read
 everything. On the buyer questions that matter, they recommended us zero times. Being read
 is not being cited — and the two live on different pipelines, on different clocks.
 

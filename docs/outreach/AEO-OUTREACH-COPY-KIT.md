@@ -121,7 +121,7 @@ Short. Adds a second real finding or the relevant blog piece. Never repeats the 
 > [SECOND SWEEP FINDING].
 >
 > The distinction most tools miss is that being read by an engine and being cited by one are
-> different things. Mine crawled my site 265 times in a month and cited it zero times. I wrote
+> different things. Mine crawled my site 265 times in ten days and cited it zero times. I wrote
 > up why that gap exists here: https://aeoanalyzers.com/blog/reading-isnt-citing
 >
 > Still happy to run the full check on [DOMAIN] whenever it is useful.

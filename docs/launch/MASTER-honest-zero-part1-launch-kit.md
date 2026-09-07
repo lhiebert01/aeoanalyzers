@@ -1,10 +1,18 @@
 # AEO Analyzers — Honest-Zero, Part 1: Launch Kit
 
+> **⚠ CORRECTION, Sep 7 2026 — window, not count.** The crawler telemetry began **Jul 22 2026**
+> (`bot_hits`, migration `20260722_wo3_bot_hits.sql`), so there is no thirty-day July window.
+> The true observation period is **ten days, Jul 22–31**. The count (265) and the tier split
+> (211 training-tier, 179 GPTBot) are unchanged and verified. The corrected figure is a HIGHER
+> crawl rate than first published, not a lower one. Copy already syndicated from this pack
+> carries the old wording — see `docs/CRAWLER-FIGURE-AUDIT-2026-09-07.md`.
+
+
 **Canonical (POSSE home):** https://aeoanalyzers.com/blog/i-scored-zero
 **Voice rules:** measurement-honesty — no superlatives, no future promises, no prices in social, every number reproducible. Attribute + link back to the canonical.
 **OG card:** every platform below auto-pulls the same 1200×630 card from the link — no separate images needed.
 
-**Numbers of record (from the N=5 baseline, 2026-07-31):** branded retrievability **98%** across the stored runs · category recommendation win **0%**, high confidence · crawlers **265** visits in the thirty days to July 31 (**211** training-tier, **179** GPTBot, ~1-in-16 live). Snapshot numbers belong to the story's moment; the live figure lives in the dashboard.
+**Numbers of record (from the N=5 baseline, 2026-07-31):** branded retrievability **98%** across the stored runs · category recommendation win **0%**, high confidence · crawlers **265** visits in the ten days to July 31 (**211** training-tier, **179** GPTBot, ~1-in-16 live). Snapshot numbers belong to the story's moment; the live figure lives in the dashboard.
 
 **Status:** ✅ Blog · ✅ LinkedIn · ✅ Bluesky · ✅ X · ✅ Medium · ✅ Substack · ✅ Reddit (3 subs) · ⬜ Facebook
 
@@ -37,7 +45,7 @@
 
 I ran my own AI-visibility tool on my own website. It scored 0%.
 
-Ask ChatGPT, Claude, Perplexity, or Gemini about AEO Analyzers by name and they find it almost every time — 98% branded retrievability across the stored runs. Ask the questions buyers actually ask — "what tools measure AI search visibility?" — and my product was recommended exactly zero times. Competitors, by name, every time. My crawler logs showed the engines had read my site 265 times in the thirty days to July 31. They'd read everything. They just never cited it.
+Ask ChatGPT, Claude, Perplexity, or Gemini about AEO Analyzers by name and they find it almost every time — 98% branded retrievability across the stored runs. Ask the questions buyers actually ask — "what tools measure AI search visibility?" — and my product was recommended exactly zero times. Competitors, by name, every time. My crawler logs showed the engines had read my site 265 times in the ten days to July 31. They'd read everything. They just never cited it.
 
 One engine had even invented a co-founder for my company. He doesn't exist. That bug became a feature: the tool now checks every AI answer against your site's own record and names exactly who the engines are confusing you with.
 
@@ -53,7 +61,7 @@ And if you want to see what the engines say about YOUR business, the first look 
 
 I ran my own AI-visibility tool on my own website. It scored 0%.
 
-Ask ChatGPT, Claude, Perplexity, or Gemini about AEO Analyzers by name and all four find it. Ask the questions buyers actually ask — "what tools measure AI search visibility?" — and my product was recommended exactly zero times. Competitors, by name, every time. The engines had crawled my site 265 times in a month. They'd read everything. They just never cited it.
+Ask ChatGPT, Claude, Perplexity, or Gemini about AEO Analyzers by name and all four find it. Ask the questions buyers actually ask — "what tools measure AI search visibility?" — and my product was recommended exactly zero times. Competitors, by name, every time. The engines had crawled my site 265 times in ten days. They'd read everything. They just never cited it.
 
 One engine had even invented a co-founder for my company. He doesn't exist. That bug became a feature: the tool now checks every AI answer against your site's own record and names exactly who the engines are confusing you with.
 
@@ -69,7 +77,7 @@ Full story, transcripts and all: https://aeoanalyzers.com/blog/i-scored-zero —
 
 2/ Ask ChatGPT, Claude, Perplexity, or Gemini about AEO Analyzers by name — all four find it. Ask what buyers actually ask ("what tools measure AI search visibility?") — recommended 0 times. Competitors, by name, every time.
 
-3/ The engines had crawled my site 265 times in a month. They'd read everything. They just never cited it. Being read is not being cited.
+3/ The engines had crawled my site 265 times in ten days. They'd read everything. They just never cited it. Being read is not being cited.
 
 4/ One engine had invented a co-founder for my company. He doesn't exist. That bug became a feature — the tool now names exactly which entities the engines are confusing you with.
 
@@ -93,7 +101,7 @@ I built a tool that measures whether AI recommends your business — then ran it
 
 I make a tool that measures what ChatGPT, Claude, Perplexity, and Gemini actually say when buyers ask about a business (disclosure: it's my product). I pointed it at my own site expecting to feel good. Branded questions were fine — all four engines know me by name. But on the unbranded questions buyers actually ask — "what tools measure AI search visibility?" — I was recommended zero times, five runs per question, high confidence. Competitors, by name, every time.
 
-The part that stuck with me: my crawler logs showed the AI companies had visited my site 265 times in a month. They'd read everything I wrote. They just never reached for it when it counted. Being read isn't being cited — the engines had my prose, but not a first-party record shaped like the questions people actually ask.
+The part that stuck with me: my crawler logs showed the AI companies had visited my site 265 times in ten days. They'd read everything I wrote. They just never reached for it when it counted. Being read isn't being cited — the engines had my prose, but not a first-party record shaped like the questions people actually ask.
 
 A few things I learned fixing my own instrument (and turned into features): engines quietly confuse you with similarly named things — one had even invented a co-founder for my company who doesn't exist; a lot of "get on Wikipedia" advice is a goose chase for a small business; and you can't optimize what you won't measure honestly, so I now publish my own number monthly even when it's embarrassing. It's still 0%. For now.
 
@@ -124,7 +132,7 @@ I build a tool that measures what ChatGPT, Claude, Perplexity, and Gemini actual
 
 Ask any of the four engines about AEO Analyzers by name and they find it — 98% branded retrievability. Ask the questions buyers actually ask — "what tools measure AI search visibility?" — and my product was recommended exactly zero times. Competitors, by name, every time.
 
-The strangest part: the engines had crawled my site 265 times in a month. They'd read everything. They just never cited it — because being read isn't being cited.
+The strangest part: the engines had crawled my site 265 times in ten days. They'd read everything. They just never cited it — because being read isn't being cited.
 
 I'm publishing the zero instead of a success story, because that's the deal with this product: every number is measured, sampled, and reproducible — including the embarrassing ones. I re-measure monthly and publish whatever it says.
 
