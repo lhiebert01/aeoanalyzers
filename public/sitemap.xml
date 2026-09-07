@@ -1,51 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  A sitemap must list only URLs that serve their OWN content.
+
+  Audit Sep 7 2026: five of the eight URLs here (/analyzer, /guide, /press,
+  /privacy, /terms) served byte-identical copies of the prerendered homepage
+  (58,567 bytes, same <title>, canonical pointing at "/"), because the app is a
+  single-page app whose prerender step renders only "/". Meanwhile four real
+  prerendered blog pages were NOT listed. The sitemap was close to inverted:
+  it declared five non-pages and hid four pages.
+
+  They are removed here rather than left as duplicate-content signals. Each goes
+  back the moment the prerender step emits a distinct dist/<route>/index.html
+  for it — verify by byte length and <title>, never by HTTP status, since this
+  SPA returns 200 for every path.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://aeoanalyzers.com/</loc>
-    <lastmod>2026-07-22</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://aeoanalyzers.com/analyzer</loc>
-    <lastmod>2026-07-22</lastmod>
+    <loc>https://aeoanalyzers.com/blog/</loc>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://aeoanalyzers.com/guide</loc>
-    <lastmod>2026-07-22</lastmod>
+    <loc>https://aeoanalyzers.com/blog/i-scored-zero</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://aeoanalyzers.com/blog/reading-isnt-citing</loc>
+    <lastmod>2026-09-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://aeoanalyzers.com/blog/how-it-works</loc>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://aeoanalyzers.com/press</loc>
-    <lastmod>2026-07-22</lastmod>
+    <loc>https://aeoanalyzers.com/blog/what-you-actually-get</loc>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://aeoanalyzers.com/blog/</loc>
-    <lastmod>2026-07-28</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://aeoanalyzers.com/blog/are-you-the-answer-ai-gives</loc>
-    <lastmod>2026-07-28</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://aeoanalyzers.com/privacy</loc>
-    <lastmod>2026-07-22</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://aeoanalyzers.com/terms</loc>
-    <lastmod>2026-07-22</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
   </url>
 </urlset>
