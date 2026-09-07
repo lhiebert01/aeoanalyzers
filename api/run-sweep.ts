@@ -415,6 +415,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         'To run a complete sweep — Claude, ChatGPT, Perplexity and Gemini, multiple runs per query, competitor "cited instead" displacement, and full stored transcripts — start a Day Pass or subscribe.';
     }
 
+    // Raw provider token cost is internal (founder ruling Sep 7 2026: customers
+    // never see real token cost). The UI already hides it, but hiding in the DOM
+    // still ships the number in the JSON — so it is stripped from the response
+    // for every non-admin caller. Persistence above already wrote the real cost.
+    const adminView = access.tier === 'admin';
+    const outSummary = adminView
+      ? summary
+      : { ...summary, totalCostUsd: 0, engines: summary.engines.map((e) => ({ ...e, costUsd: 0 })) };
+    const outRuns = adminView ? runs : runs.map((r) => ({ ...r, costUsd: 0 }));
+
     return res.status(200).json({
       domain,
       brand: brand || null,
@@ -426,8 +436,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       quickCheck: access.quickCheck,
       provisional,
       upgrade,
-      summary,
-      runs, // full transcripts for drill-down
+      summary: outSummary,
+      runs: outRuns, // full transcripts for drill-down
       persisted,
       generatedAt: new Date().toISOString(),
     });
