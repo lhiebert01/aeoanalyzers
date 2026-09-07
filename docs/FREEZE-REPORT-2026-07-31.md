@@ -59,6 +59,23 @@ and every measurement fix and fidelity detector was **proven by breaking its gua
 
 ## Backlog — post-freeze unless a paying customer's report requires it
 
+- **v1.9 — CUSTOMER-CONNECTABLE CRAWLER BEACON (founder-logged Sep 7 2026). This is the
+  feature that earns back a removed paid-tier line.** On Sep 7 2026 "AI-crawler telemetry"
+  was removed from Business Authority and from the landing page because it was
+  undeliverable: the ingest (`api/bot-hit.ts`, CORS-enabled) and the readback
+  (`api/bot-stats.ts`) both work, and `middleware.ts` feeds them for aeoanalyzers.com —
+  that is dogfood, and the source of our own 265-crawls figure — but **no customer-facing
+  way to connect a domain exists.** No plugin, no copyable beacon, no setup page.
+  **Why it is worth building:** the telemetry is dogfood-proven, it is the layer that shows
+  a customer they are being *read* as distinct from *cited*, and no competitor in the
+  authority table offers it. **The insertion path already exists** — the Implementation
+  Roadmap (`src/components/ImplementationRoadmap.tsx`) already walks a customer through
+  installing a header/footer plugin and pasting a JSON-LD snippet; a beacon is the same
+  motion with a different payload. **Scope:** a per-domain key, a copyable one-line
+  snippet plus a Cloudflare-worker and WordPress variant, a "connected / not connected"
+  state in the dashboard (the "No telemetry connected for this domain" copy already
+  exists), and verification that a hit landed. **Acceptance:** a customer connects their
+  own domain unaided and sees their own bot hits. Restore the pricing line only then.
 - **v1.9 #1 (WO-INTEGRITY-002 B1a) — sweep DEPTH mode:** reps 3–5 on ≤6 questions, or a
   split sweep with a longer budget, so a small panel gets real N≥3. Today the maxDuration
   trimmer (`api/run-sweep.ts:294`) drops a 12-question panel to reps=1 (breadth over depth).
