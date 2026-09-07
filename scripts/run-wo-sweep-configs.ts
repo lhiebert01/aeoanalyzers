@@ -43,9 +43,37 @@ const categoryQuestions = (cat: string): string[] => [
 const brandedQuestions = (domain: string): string[] => [`who is ${domain}`, `what is ${domain}`];
 
 let spent = 0;
+let LIVE_ENGINES: Engine[] = [];
+
+/** PRE-FLIGHT. The Sep 7 run spent $2.92 before anyone noticed that the Claude adapter
+ *  had failed on every single call — the Anthropic balance was too low, and each failure
+ *  was caught, badged and correctly excluded, which is right for scoring and useless as
+ *  an alarm. Twenty-one errored runs per target is not a per-run fault, it is a dead
+ *  engine, and the run should never have started.
+ *
+ *  So: probe every configured engine with one cheap call FIRST, and refuse to start
+ *  unless all of them answer. Fail closed. A partial-engine sweep is a different
+ *  measurement, not a degraded one, and it must be a deliberate choice rather than a
+ *  discovery made after the money is gone. `ALLOW_PARTIAL_ENGINES=1` makes it deliberate. */
+async function preflight(engines: Engine[]) {
+  const dead: string[] = [];
+  for (const e of engines) {
+    try { await ENGINE_ADAPTERS[e]('ping'); }
+    catch (err: any) { dead.push(`${e}: ${String(err?.message || err).slice(0, 120)}`); }
+  }
+  if (dead.length && process.env.ALLOW_PARTIAL_ENGINES !== '1') {
+    console.error(`\nPRE-FLIGHT FAILED — ${dead.length} of ${engines.length} engines are not answering:\n`);
+    for (const d of dead) console.error(`  ${d}`);
+    console.error(`\nNo sweep started and nothing was spent.`);
+    console.error(`Fix the engine, or set ALLOW_PARTIAL_ENGINES=1 to run a deliberate ${engines.length - dead.length}-engine measurement.`);
+    process.exit(1);
+  }
+  if (dead.length) console.error(`\n[deliberate partial] running without: ${dead.map((d) => d.split(':')[0]).join(', ')}\n`);
+  return engines.filter((e) => !dead.some((d) => d.startsWith(e + ':')));
+}
 
 async function sweepOne(t: any) {
-  const engines = configuredEngines() as Engine[];
+  const engines = LIVE_ENGINES;
   const competitors: Competitor[] = (t.competitors || []).map((n: string) => ({ name: n }));
   const runs: SweepRunResult[] = [];
   const tasks: { engine: Engine; query: string; queryType: 'branded' | 'category'; runIndex: number }[] = [];
@@ -82,6 +110,9 @@ async function sweepOne(t: any) {
 }
 
 (async () => {
+  LIVE_ENGINES = await preflight(configuredEngines() as Engine[]);
+  const live = LIVE_ENGINES;
+  console.error(`pre-flight OK — ${live.length} engines answering: ${live.join(', ')}`);
   const results: any[] = [];
   for (const t of CFG.targets) {
     process.stderr.write(`\n[${t.id}] `);
