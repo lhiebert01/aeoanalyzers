@@ -238,7 +238,9 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
             <p className="text-zinc-500 text-sm leading-relaxed">For unbranded category questions ("best [category] tools"), does AI pick you — and if not, exactly who is <strong>cited instead</strong>? Your real competitive gap, in AI answers.</p>
           </div>
         </div>
-        <p className="text-center text-zinc-400 text-sm mt-8 max-w-2xl mx-auto">Plus AI-crawler telemetry (Live / Search / Training bot hits) and drift monitoring — so you know you're being read, and stay that way. <strong className="text-zinc-600">Free visitors</strong> get a single-engine Quick Check; <strong className="text-zinc-600">paid plans</strong> unlock the full multi-engine sweep with stored transcripts.</p>
+        {/* Sep 7 2026: dropped the "AI-crawler telemetry" promise — no customer-facing
+            way to connect a domain exists yet (see Payments.tsx). Drift monitoring ships. */}
+        <p className="text-center text-zinc-400 text-sm mt-8 max-w-2xl mx-auto">Plus answer-drift monitoring across re-runs — so you know what the engines say about you, and whether it changed. <strong className="text-zinc-600">Free visitors</strong> get a single-engine Quick Check; <strong className="text-zinc-600">paid plans</strong> unlock the full multi-engine sweep with stored transcripts.</p>
       </section>
 
       {/* Trust & Authority Section */}

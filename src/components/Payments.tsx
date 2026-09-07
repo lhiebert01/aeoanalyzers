@@ -28,7 +28,14 @@ const PLANS = [
     features: [
       '20 Citation Sweeps / mo — all 4 AI engines, with transcripts',
       'Unlimited AEO analyses & fixes',
-      'AI-crawler telemetry & drift monitoring',
+      // Removed Sep 7 2026: "AI-crawler telemetry" was undeliverable on this tier.
+      // The ingest (api/bot-hit) and readback (api/bot-stats) exist and our own
+      // middleware.ts feeds them, but there is NO customer-facing way to connect a
+      // domain — no plugin, no copyable beacon, no setup page. Answer-drift IS
+      // shipped (src/lib/driftDiff.ts, api/drift-check.ts, per-run drift badges),
+      // so the true half of the claim stays. Restore the telemetry half only when a
+      // customer can actually connect a domain.
+      'Answer-drift monitoring across re-runs',
       'Competitor benchmarking & authority-gap report',
       'Priority processing & team tools'
     ],
