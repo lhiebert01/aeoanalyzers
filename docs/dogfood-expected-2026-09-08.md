@@ -71,3 +71,61 @@ Recorded so a grader can check a claim without re-deriving it. Each carries its 
 - Sealed by: aeo-app1 session, on founder instruction (QA-DOGFOOD-RUNBOOK-001 Step 0)
 - Report-generating code at sealing time: unchanged since `0360dcf`
 - Commit hash of this file: recorded in the close-out immediately below the commit
+
+---
+
+# APPENDED 2026-09-08 — corrections and additions
+
+**Appended, never edited.** Every line above is the record as sealed at `29c4645`. Corrections
+are added here so a grader can see both what was expected at sealing and what was learned after.
+
+## Correction 1 — corpus presence denominator: 0 of 215 → **0 of 214**
+
+The sealed acceptance list carries row 7 as **0 of 215**, taken verbatim from WO-AEO-FIX-LIST-001
+§7 as it read at sealing time. **That figure is superseded.**
+
+WO-AEO-FIX-LIST-001 was revised the same day: §4 C1 and §7 now read **0 of 214 (Sep)** and
+**0 of 295 (Aug)**. The earlier 215 and 296 were computed **including** Gemini's
+grounding-redirect wrapper, while the plan text claimed they excluded it. The audit was right and
+the plan was wrong. Excluding the wrapper removes exactly one host per month, so both months now
+read on the same basis and the shape of the contraction claim is unaffected.
+
+**Grading rule for row 7, effective now:** the report passes if it reports corpus presence with
+its N and date **and states which basis it used**. Either 214 or 215 is acceptable provided the
+basis is stated; a figure with no stated basis fails, because a reader recomputing it will land
+on 214.
+
+Source: `docs/SEPTEMBER-POST-AUDITS-2026-09-07.md` §C · WO-AEO-FIX-LIST-001 §4 C1, rev 3.
+
+## Addition 1 — the acceptance fixture is pinned (runbook Step 0b)
+
+Runbook rev 2 added Step 0b after sealing. Three of the eight rows had their ground truth
+repaired by the Sep 7 emergency work, so a run against the live site returns no signal on them
+and nothing distinguishes "the check is missing" from "the defect is gone".
+
+**Fixture commit: `9a53404`** — the last commit before any of the three repairs. Verified to
+serve all three defects intact:
+
+| Row | Defect | Verified on the fixture |
+|---|---|---|
+| 1 | duplicate routes | `/`, `/pricing`, `/guide`, `/terms` all serve **58,567 bytes** — one document at four URLs |
+| 2 | `sameAs` identity merge | Organization: `["https://pigenai.com","https://pigenai.com/#org"]` · SoftwareApplication: `["https://pigenai.com"]` |
+| 3 | sitemap declaring non-pages | `/analyzer`, `/guide`, `/press`, `/privacy`, `/terms` listed; four real blog pages omitted |
+
+**Both Run 1 and Run 2 grade against this fixture.** The live site is a separate, second run that
+answers whether the repairs held; its results are never substituted for the fixture's.
+
+**Origin note.** The fixture is served from a build of `9a53404`. A Vercel preview deployment was
+created (`fixture-bwm0prvx7`) but the project has Vercel Authentication enabled for all
+non-custom domains, so preview URLs return 302 to a login and are not fetchable by a report.
+**That setting was left untouched** — disabling it would expose every preview deployment, which is
+a security-posture change for the founder to make, not the agent. Until the founder either
+disables it or issues a protection-bypass secret, the fixture is served locally from the pinned
+commit, which satisfies real-origin, fetchable, reproducible and hash-pinned.
+
+## Addition 2 — the standing practice this implies
+
+**Capture a fixture at the moment a defect is discovered, before the fix ships.** Every defect
+repaired before its detector exists is a test case lost, and the loss is invisible until someone
+tries to grade the detector. A finding is not closed until either the detector exists or a fixture
+is pinned. Recorded here because this run nearly lost three of eight rows to it.
