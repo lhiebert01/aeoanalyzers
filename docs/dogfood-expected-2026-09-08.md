@@ -129,3 +129,42 @@ commit, which satisfies real-origin, fetchable, reproducible and hash-pinned.
 repaired before its detector exists is a test case lost, and the loss is invisible until someone
 tries to grade the detector. A finding is not closed until either the detector exists or a fixture
 is pinned. Recorded here because this run nearly lost three of eight rows to it.
+
+## Correction 2 — the corpus-presence basis is FIXED, not merely disclosed (appended 2026-09-08, later)
+
+Correction 1 above said either 214 or 215 passes provided the report states its basis.
+**Founder ruling: that is too loose and is superseded.**
+
+**The basis is fixed. The grounding-redirect wrapper is excluded, because a grounding redirect is
+not a publisher. The figures are 214 (Sep) and 295 (Aug).**
+
+**Why the looser rule fails.** Corpus presence is a trend indicator, and its only value is
+comparability — across months, and across the sixteen customer reports going out Sep 16. A metric
+whose denominator basis floats per report cannot show a trend, and two customers computed on
+different bases cannot be compared to each other at all. Disclosure does not repair that;
+it only makes the incomparability legible.
+
+**Grading rule for row 7, superseding Correction 1:** a report passes only if it **excludes the
+wrapper** and **states that it does**. Stating a wrong basis clearly is better than stating none,
+but it still fails.
+
+## Addition 3 — the fixture is never deployed publicly (founder ruling, 2026-09-08)
+
+**Vercel Authentication stays enabled. Do not disable it, now or later.**
+
+The reason is specific to this project rather than general caution. A public preview of `9a53404`
+would put **a second host on the internet serving byte-identical copies of aeoanalyzers.com pages,
+carrying the `sameAs` merge in its JSON-LD** — a duplicate-shell domain asserting same-entity with
+pigenai.com, indexable. That is exactly the defect class the Sep 7 emergency work removed,
+recreated on a `vercel.app` host. For a company whose measured problem is entity confusion and
+duplicate documents, publishing a broken clone of itself is the one thing not to do.
+
+The local build satisfies every requirement in the runbook — real origin, fetchable, reproducible,
+hash-pinned — and nothing in the gap audit needs a URL.
+
+**Standing rules that follow:**
+
+1. If a fixture URL is ever genuinely needed, the instrument is a **protection-bypass secret**:
+   scoped, revocable, no posture change. Never disable Vercel Authentication.
+2. **Any fixture deployment carries `X-Robots-Tag: noindex`**, regardless of how it is protected.
+   Protection and indexability are separate controls and both must hold.
