@@ -30,7 +30,21 @@ export async function generateDocxReport(
     Table,
     WidthType,
     ShadingType,
+    TableLayoutType,
   } = await import('docx');
+
+  // Table sizing (iPhone / Google Docs QA, Sep 7 2026). Percentage-only tables
+  // emit a <w:tblGrid> of 100-twip columns; Word auto-fits and looks fine, but
+  // Google Docs, iOS Quick Look and Pages honor that grid literally and collapse
+  // every column to one character wide. Explicit DXA column widths + a fixed
+  // layout render identically in all of them. A4 (11906) − 2×1440 margin = 9026.
+  const CONTENT_W = 9020;
+  const dxa = (w: number) => ({ size: w, type: WidthType.DXA });
+  const fixed = (cols: number[]) => ({
+    columnWidths: cols,
+    layout: TableLayoutType.FIXED,
+    width: { size: CONTENT_W, type: WidthType.DXA },
+  });
 
   const date = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -140,6 +154,7 @@ export async function generateDocxReport(
     ['86–100', 'Excellent', 'Source of Truth — AI engines actively prefer this site as a primary reference'],
   ];
   const activeTierIdx = result.score <= 30 ? 0 : result.score <= 50 ? 1 : result.score <= 70 ? 2 : result.score <= 85 ? 3 : 4;
+  const SCORE_COLS = [1300, 1900, 5820];
 
   children.push(
     sectionHeading('What Your Score Means'),
@@ -147,11 +162,11 @@ export async function generateDocxReport(
       rows: [
         new TableRow({
           children: ['Range', 'Rating', 'What it means'].map(
-            text =>
+            (text, ci) =>
               new TableCell({
                 children: [new Paragraph({ children: [new TextRun({ text, bold: true, size: 20, color: 'ffffff' })] })],
                 shading: { type: ShadingType.SOLID, color: '1a1a2e' },
-                width: { size: 33, type: WidthType.PERCENTAGE },
+                width: dxa(SCORE_COLS[ci]),
               })
           ),
         }),
@@ -159,17 +174,17 @@ export async function generateDocxReport(
           ([range, rating, desc], i) =>
             new TableRow({
               children: [range, rating, desc].map(
-                text =>
+                (text, ci) =>
                   new TableCell({
                     children: [new Paragraph({ children: [new TextRun({ text, bold: i === activeTierIdx, size: 20, color: i === activeTierIdx ? '1a1a2e' : '333333' })] })],
-                    width: { size: 33, type: WidthType.PERCENTAGE },
+                    width: dxa(SCORE_COLS[ci]),
                     ...(i === activeTierIdx ? { shading: { type: ShadingType.SOLID, color: 'e8e8ee' } } : {}),
                   })
               ),
             })
         ),
       ],
-      width: { size: 100, type: WidthType.PERCENTAGE },
+      ...fixed(SCORE_COLS),
     }),
     new Paragraph({
       children: [
@@ -237,6 +252,7 @@ export async function generateDocxReport(
   // Score Breakdown (if available)
   if (result.scoreBreakdown) {
     const sb = result.scoreBreakdown;
+    const BREAKDOWN_COLS = [4020, 2500, 2500];
     children.push(
       sectionHeading('Score Breakdown'),
       bodyText(`AEO Score = Entity × 0.3 + Density × 0.3 + Clarity × 0.2 + Structure × 0.2`),
@@ -244,11 +260,11 @@ export async function generateDocxReport(
         rows: [
           new TableRow({
             children: ['Dimension', 'Score', 'Weight'].map(
-              text =>
+              (text, ci) =>
                 new TableCell({
                   children: [new Paragraph({ children: [new TextRun({ text, bold: true, size: 20, color: 'ffffff' })] })],
                   shading: { type: ShadingType.SOLID, color: '1a1a2e' },
-                  width: { size: 33, type: WidthType.PERCENTAGE },
+                  width: dxa(BREAKDOWN_COLS[ci]),
                 })
             ),
           }),
@@ -261,16 +277,16 @@ export async function generateDocxReport(
             ([name, score, weight]) =>
               new TableRow({
                 children: [name, `${score}/100`, weight].map(
-                  text =>
+                  (text, ci) =>
                     new TableCell({
                       children: [new Paragraph({ children: [new TextRun({ text: String(text), size: 20 })] })],
-                      width: { size: 33, type: WidthType.PERCENTAGE },
+                      width: dxa(BREAKDOWN_COLS[ci]),
                     })
                 ),
               })
           ),
         ],
-        width: { size: 100, type: WidthType.PERCENTAGE },
+        ...fixed(BREAKDOWN_COLS),
       }),
       spacer()
     );
@@ -602,6 +618,7 @@ export async function generateDocxReport(
 
   // Appendix B: Content Rewrite Examples
   if (result.contentRewrites && result.contentRewrites.length > 0) {
+    const REWRITE_COLS = [2200, 3410, 3410];
     children.push(
       sectionHeading('Appendix B: Content Rewrite Examples'),
       bodyText(
@@ -611,11 +628,11 @@ export async function generateDocxReport(
         rows: [
           new TableRow({
             children: ['Page / Section', 'Current (Low Citation)', 'Proposed (High Citation)'].map(
-              text =>
+              (text, ci) =>
                 new TableCell({
                   children: [new Paragraph({ children: [new TextRun({ text, bold: true, size: 18, color: 'ffffff' })] })],
                   shading: { type: ShadingType.SOLID, color: '1a1a2e' },
-                  width: { size: 33, type: WidthType.PERCENTAGE },
+                  width: dxa(REWRITE_COLS[ci]),
                 })
             ),
           }),
@@ -623,16 +640,16 @@ export async function generateDocxReport(
             rw =>
               new TableRow({
                 children: [rw.page, rw.current, rw.proposed].map(
-                  text =>
+                  (text, ci) =>
                     new TableCell({
                       children: [new Paragraph({ children: [new TextRun({ text, size: 18 })] })],
-                      width: { size: 33, type: WidthType.PERCENTAGE },
+                      width: dxa(REWRITE_COLS[ci]),
                     })
                 ),
               })
           ),
         ],
-        width: { size: 100, type: WidthType.PERCENTAGE },
+        ...fixed(REWRITE_COLS),
       }),
       spacer()
     );
@@ -653,6 +670,7 @@ export async function generateDocxReport(
 
   // Appendix D: Knowledge Gap Action Table
   if (result.queryContentGap && result.queryContentGap.generatedQuestions.length > 0) {
+    const GAP_COLS = [3600, 1600, 3820];
     children.push(
       sectionHeading('Appendix D: Knowledge Gap Action Table'),
       bodyText(
@@ -662,11 +680,11 @@ export async function generateDocxReport(
         rows: [
           new TableRow({
             children: ['Question', 'Status', 'Required Action'].map(
-              text =>
+              (text, ci) =>
                 new TableCell({
                   children: [new Paragraph({ children: [new TextRun({ text, bold: true, size: 18, color: 'ffffff' })] })],
                   shading: { type: ShadingType.SOLID, color: '1a1a2e' },
-                  width: { size: 33, type: WidthType.PERCENTAGE },
+                  width: dxa(GAP_COLS[ci]),
                 })
             ),
           }),
@@ -675,16 +693,16 @@ export async function generateDocxReport(
             const action = docxGapAction(cat);
             return new TableRow({
               children: [q.question, docxGapStatus(cat), action].map(
-                text =>
+                (text, ci) =>
                   new TableCell({
                     children: [new Paragraph({ children: [new TextRun({ text, size: 18 })] })],
-                    width: { size: 33, type: WidthType.PERCENTAGE },
+                    width: dxa(GAP_COLS[ci]),
                   })
               ),
             });
           }),
         ],
-        width: { size: 100, type: WidthType.PERCENTAGE },
+        ...fixed(GAP_COLS),
       }),
       spacer()
     );

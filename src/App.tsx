@@ -1030,7 +1030,9 @@ export default function App() {
                 </div>
               ) : history.length > 0 ? (
                 <div className="bg-white border border-zinc-200 rounded-3xl overflow-hidden shadow-sm">
-                  <table className="w-full text-left">
+                  {/* Mobile: the table scrolls sideways inside the card instead of clipping columns (iPhone QA Sep 7). */}
+                  <div className="overflow-x-auto">
+                  <table className="w-full min-w-[560px] text-left">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
                       <tr>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Website</th>
@@ -1075,6 +1077,7 @@ export default function App() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-20 bg-white border border-zinc-200 rounded-3xl border-dashed">
@@ -1092,7 +1095,8 @@ export default function App() {
                       sweep re-scores from stored transcripts (errored runs excluded, branded
                       false-positives corrected), so a row and its opened view can differ. */}
                   <p className="px-6 pt-4 text-xs text-zinc-500">Figures below are as first stored. <b>Open a sweep to see the re-scored numbers</b> — errored runs are excluded and branded false-positives corrected on open, so an older row may read higher than its opened view.</p>
-                  <table className="w-full text-left">
+                  <div className="overflow-x-auto">
+                  <table className="w-full min-w-[560px] text-left">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
                       <tr>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Domain</th>
@@ -1138,6 +1142,7 @@ export default function App() {
                       })}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-20 bg-white border border-zinc-200 rounded-3xl border-dashed">

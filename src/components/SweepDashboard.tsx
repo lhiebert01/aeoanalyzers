@@ -637,6 +637,23 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
     URL.revokeObjectURL(url);
   }
 
+  // Same report text as the .md, rendered to .docx so it opens natively on
+  // iPhone / Files / Google Drive (iOS has no Markdown viewer — QA Sep 7 2026).
+  const [docxBusy, setDocxBusy] = useState(false);
+  async function downloadDocx() {
+    if (!result || docxBusy) return;
+    setDocxBusy(true);
+    try {
+      const stamp = new Date(result.generatedAt || Date.now()).toISOString().slice(0, 10);
+      const { generateSweepDocx } = await import('../services/sweepDocx');
+      await generateSweepDocx(buildReport(result), result.domain, stamp);
+    } catch (e: any) {
+      setError(`Word export failed: ${e?.message || e}`);
+    } finally {
+      setDocxBusy(false);
+    }
+  }
+
   const scorecard: SweepScorecard | null =
     result && !result.quickCheck
       ? sweepScorecard(result.runs, { domain: result.domain, brand: result.brand || undefined }, parseCompetitors(competitors))
@@ -871,7 +888,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
             // WO-INTEGRITY-002 B1(b): reps from the SAME planner run-sweep uses (no duplicate rule).
             const { reps, queriesRun } = planSweep(nQ, nEng, { admin: isAdmin, requestedReps: 3 });
             const answers = queriesRun * nEng * reps;
-            return <p className="text-xs text-zinc-500 mb-2">{queriesRun} question{queriesRun !== 1 ? 's' : ''} × {nEng} engines × {reps} run{reps > 1 ? 's' : ''} each ≈ {answers} answers · est. ~${(answers * 0.009).toFixed(2)}</p>;
+            // Raw provider cost is admin-only (never shown to customers — plan quotas cap spend server-side).
+            return <p className="text-xs text-zinc-500 mb-2">{queriesRun} question{queriesRun !== 1 ? 's' : ''} × {nEng} engines × {reps} run{reps > 1 ? 's' : ''} each ≈ {answers} answers{isAdmin ? ` · est. ~$${(answers * 0.009).toFixed(2)}` : ''}</p>;
           })()}
           <button onClick={run} disabled={running || !domain.trim() || categoryList.length === 0}
             className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold disabled:opacity-40">
@@ -1196,9 +1214,13 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
                     <ChevronsUpDown className="w-4 h-4" />{expandAll ? 'Collapse all' : 'Expand all'}
                   </button>
                 )}
+                <button onClick={downloadDocx} disabled={docxBusy}
+                  className="inline-flex items-center gap-1.5 bg-zinc-900 text-white px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-zinc-800 disabled:opacity-50">
+                  <Download className="w-4 h-4" />{docxBusy ? 'Preparing…' : 'Download report (Word)'}
+                </button>
                 <button onClick={downloadReport}
-                  className="inline-flex items-center gap-1.5 bg-zinc-900 text-white px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-zinc-800">
-                  <Download className="w-4 h-4" />Download report
+                  className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-700 px-3 py-1.5 rounded-xl text-sm font-semibold hover:bg-zinc-50">
+                  <Download className="w-4 h-4" />Markdown
                 </button>
               </div>
             </div>
