@@ -140,6 +140,22 @@ remedies differ:
 "governance assessment" as section-context sourced from the "AI governance" heading, and reports
 zero drift and zero collisions. Fixture: `docs/DISCOVERABILITY-FINDINGS-2026-09-07.md` §4.
 
-**Why it matters commercially.** It is a failure a customer cannot see and would never guess at.
-Their copy is right, their entity is unambiguous, and the answer is still wrong — because of a
-heading on a page they may not even own. No competitor in the authority table reports this.
+**Why it matters commercially — this is the v1.9 case, not a footnote.**
+
+**The customer cannot detect this themselves, by construction.** Every self-check they know how
+to run comes back clean. Their copy is right, so proofreading finds nothing. Their entity is
+unambiguous, so a disambiguation audit finds nothing. No fact in the answer is false, so a drift
+check finds nothing. And the cause may sit on a page they do not own and would never think to
+audit — a parent-company hub, a directory listing, a partner's category page. The only way to
+see it is to read what the engine actually says and compare its vocabulary against the subject's
+own description. That is precisely the data we already store and nobody else keeps.
+
+**No competitor in the authority table reports this.** The category reports a composite
+visibility score; the closest anyone comes is sentiment or brand-mention monitoring, neither of
+which distinguishes "the engine borrowed an attribute from a heading" from "the engine is
+correct". A finding a buyer cannot get anywhere else, about a problem they cannot find alone, is
+the strongest shape a feature can have.
+
+**The demo writes itself.** We found it on our own parent company, on a page whose prose is
+accurate, and the fix was a placement change plus one boundary sentence. That is a two-minute
+story with a real before-and-after.
