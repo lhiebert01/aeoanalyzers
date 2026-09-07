@@ -39,17 +39,34 @@ describe('sitemap lists only URLs that serve their own content', () => {
     expect(shellOnly).toEqual([]);
   });
 
-  it('every committed static page is listed', () => {
+  /** A page carrying `robots: noindex` is deliberately withheld — a review gate, a
+   *  draft, an internal page. It must be ABSENT from the sitemap: listing a page you
+   *  have told crawlers not to index is a contradiction they will believe half of. */
+  const isNoindex = (file: string) =>
+    /<meta\s+name=["']robots["']\s+content=["'][^"']*noindex/i.test(readFileSync(resolve(ROOT, file), 'utf8'));
+
+  const staticPages = () => {
     const { execFileSync } = require('node:child_process') as typeof import('node:child_process');
-    const pages = execFileSync('git', ['ls-files', 'public'], { encoding: 'utf8' })
+    return execFileSync('git', ['ls-files', 'public'], { encoding: 'utf8' })
       .split('\n')
       .filter((f) => f.endsWith('/index.html'))
-      .map((f) => '/' + f.replace(/^public\//, '').replace(/index\.html$/, '').replace(/\/$/, ''));
-    const missing = pages.filter((p) => {
-      const variants = [p, `${p}/`];
-      return !variants.some((v) => listedPaths.includes(v));
-    });
+      .map((f) => ({ file: f, path: '/' + f.replace(/^public\//, '').replace(/index\.html$/, '').replace(/\/$/, '') }));
+  };
+
+  it('every committed INDEXABLE static page is listed', () => {
+    const missing = staticPages()
+      .filter((p) => !isNoindex(p.file))
+      .filter((p) => ![p.path, `${p.path}/`].some((v) => listedPaths.includes(v)))
+      .map((p) => p.path);
     expect(missing).toEqual([]);
+  });
+
+  it('no noindex page is listed in the sitemap', () => {
+    const contradictions = staticPages()
+      .filter((p) => isNoindex(p.file))
+      .filter((p) => [p.path, `${p.path}/`].some((v) => listedPaths.includes(v)))
+      .map((p) => p.path);
+    expect(contradictions).toEqual([]);
   });
 
   it('no listed URL duplicates another', () => {
