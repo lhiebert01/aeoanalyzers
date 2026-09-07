@@ -25,3 +25,6 @@ exec-out/
 
 # Private, never-committed working files (GTM contacts/targets, etc.) — repo is PUBLIC
 /private/
+
+# Outreach copy references the private target slate — repo is public.
+private/outreach/
