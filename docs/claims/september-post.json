@@ -1,0 +1,23 @@
+[
+  {
+    "location": "September post — branded retrievability",
+    "rendered": "80",
+    "sweepId": "baseline:aeoanalyzers-2026-09-01.json",
+    "metric": "brandedRetrievabilityPct",
+    "statedN": 40
+  },
+  {
+    "location": "September post — category citation win",
+    "rendered": "0",
+    "sweepId": "baseline:aeoanalyzers-2026-09-01.json",
+    "metric": "categoryRecommendationWinPct",
+    "statedN": 200
+  },
+  {
+    "location": "September post — August comparator, category",
+    "rendered": "0",
+    "sweepId": "baseline:aeoanalyzers-SERIES-ANCHOR-2026-08-01.json",
+    "metric": "categoryRecommendationWinPct",
+    "statedN": 200
+  }
+]

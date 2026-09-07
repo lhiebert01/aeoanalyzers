@@ -17,7 +17,7 @@ and **3.4 Directories** are the manual listing work.
 | | Aug 1 anchor | Sep re-measure |
 |---|---|---|
 | Category citation win | 0% (N=200) | 0% (N=200) |
-| **Our domain among the cited source domains** | 0 / 296 | 0 / 215 |
+| **Corpus presence** (see definition below) | **0 / 295** | **0 / 214** |
 | The string "aeoanalyzers" in any answer text | 0 of 200 runs | 0 of 200 runs |
 
 That second and third row are new to this note, and they matter more than the headline. A 0%
@@ -60,7 +60,7 @@ different game from directory presence and it changes where the effort goes.
 
 ### The denominator is shrinking, and that changes the deadline
 
-The distinct-source-domain count fell from **296 (Aug 1) to 215 (Sep)** — a 27% contraction in
+The distinct-source-domain count fell from **295 (Aug 1) to 214 (Sep)** — a 27% contraction in
 one month — while tryprofound.com rose 38 → 57. **The engines are consolidating onto fewer, more
 authoritative sources.** Every month the set of pages that can carry us into an answer gets
 smaller and the incumbents' hold on the survivors gets stronger.
@@ -127,15 +127,21 @@ is landing. Add **corpus presence** to the monthly measure:
 > **Denominator derivation.** Take every run where `queryType === 'category'`. Union their
 > `sources` arrays. Reduce each URL to its registrable host, lower-cased, `www.` stripped.
 > **Exclude `vertexaisearch.cloud.google.com`** — it is Gemini's grounding redirect wrapper, not
-> a publisher, and it would otherwise dominate the count. The result is the denominator:
-> **296 distinct domains (Aug 1) · 215 distinct domains (Sep)**.
+> a publisher. The result is the denominator: **295 distinct domains (Aug 1) · 214 distinct
+> domains (Sep)**.
+>
+> **CORRECTED Sep 8 2026.** This section previously read 296 and 215 while claiming the wrapper
+> was excluded. Those figures were computed **including** it. The exclusion removes exactly one
+> host per month, so the corrected denominators are 295 and 214. Founder ruling: publish 295 and
+> 214, both months on the same basis, with the exclusion defined in one sentence. Audit:
+> `docs/SEPTEMBER-POST-AUDITS-2026-09-07.md` §C.
 >
 > **Numerator.** How many of those domains serve a page naming aeoanalyzers.com. Measuring this
 > strictly means fetching the cited URLs and checking for our name, which is a real fetch pass
 > and should be built into the monthly job. **Until it is, report the cheap lower bound and say
 > which one you are quoting:** how many of those domains ARE aeoanalyzers.com.
 >
-> **Today: 0 / 215 (Sep), cheap lower bound.** Our own domain appears in none of the cited
+> **Today: 0 / 214 (Sep), cheap lower bound.** Our own domain appears in none of the cited
 > sources, and the string "aeoanalyzers" appears in none of the 200 category answers.
 
 This moves the moment a directory or a listicle publishes, weeks before an engine starts citing
@@ -159,7 +165,7 @@ Google Search Console has been verified for aeoanalyzers.com since June: **5 pag
 **This is the corpus finding arriving from a second direction.** We are indexed and invisible.
 Nine clicks in ninety days from a fully indexed site is not a crawling problem, a robots problem
 or a content problem — it is an authority problem, and it is the same one the category sweep
-reports as 0 of 215 source domains.
+reports as 0 of 214 source domains.
 
 **And it isolates the mechanism.** Google and Bing have the site *because we submitted to them*.
 An index without a submission channel — including whatever backs Claude's search — finds sites
@@ -189,7 +195,7 @@ Three things have to be true, in order, and only the third is the goal.
 1. **Be retrievable.** Claude cannot find us today. Fixed by inbound links from indexed
    domains — starting with pigenai.com — plus time. Nothing else we control moves this.
 2. **Be in the corpus.** Be named on the pages engines already cite for this category. That is
-   directories, listicles, reviewer blogs and Reddit. 0 / 215 today, on the cheap lower bound.
+   directories, listicles, reviewer blogs and Reddit. 0 / 214 today, on the cheap lower bound.
 3. **Be recommended.** Only reachable after 2. This is the 0% we keep measuring.
 
 We have spent the most effort on the layer that is already fine — our own site — and the least
