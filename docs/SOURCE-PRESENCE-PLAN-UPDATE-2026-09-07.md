@@ -17,8 +17,8 @@ and **3.4 Directories** are the manual listing work.
 | | Aug 1 anchor | Sep re-measure |
 |---|---|---|
 | Category citation win | 0% (N=200) | 0% (N=200) |
-| **Our domain appearing in any cited source** | **0 of 200** | **0 of 200** |
-| **The string "aeoanalyzers" anywhere in any answer** | **0 of 200** | **0 of 200** |
+| **Our domain among the cited source domains** | 0 / 296 | 0 / 215 |
+| The string "aeoanalyzers" in any answer text | 0 of 200 runs | 0 of 200 runs |
 
 That second and third row are new to this note, and they matter more than the headline. A 0%
 citation rate could mean the engines see us and rank us last. It does not. **We are not in the
@@ -58,6 +58,26 @@ category sources only, Gemini's grounding redirect excluded:
 **The competitors are winning by being cited as sources, not only by being listed.** That is a
 different game from directory presence and it changes where the effort goes.
 
+### The reclassification this forces (founder refinement, Sep 7)
+
+`tryprofound.com` at 57 and `otterly.ai` at 18 are **vendor domains cited as sources.** A vendor's
+own site is not disqualified from the corpus — it enters the corpus once it publishes material
+worth citing. Profound and Otterly are not being cited because they are vendors; they are being
+cited because they publish reference content an engine can quote when answering a category
+question.
+
+**We have exactly one class of content of that shape, and it is unpublished.** `/methodology` is a
+reference document. `/evidence` is a machine-readable fact record. D1 `/best-aeo-tools` is an
+honest comparison with per-claim verification dates. The honest-zero series is dated, reproducible
+measurement. That is source-shaped content — the kind a third party quotes — not marketing.
+
+So the gated batch is not "an unforced loss." **It is our only source-shaped content**, and it is
+the mechanism by which a vendor domain enters the corpus at all. That is the argument for
+publishing, and it is a stronger one than tidiness: without it we have nothing for an engine to
+cite even if it finds us. It also reframes D1 — building it is not catch-up, it is the single
+highest-value piece of writing available, because comparison pages are the exact shape the
+category's cited sources take.
+
 **d. We now have the tool to score the plan.** `scripts/exec-report-stored.ts` renders any
 stored sweep at zero cost and supports a two-column comparison, so "is presence rising" is a
 report, not a manual count.
@@ -71,7 +91,7 @@ report, not a manual count.
 | Plan item | Was | Should be | Why |
 |---|---|---|---|
 | 3.8 pigenai.com fix | with each publish | **first, this week** | It is the only indexed page describing us, and it is wrong. Also our cheapest inbound link. |
-| 3.1 publish the gated batch (D1/D2/D3/about) | this week | **still first-equal** | Unchanged. Four pages built and unpublished since August is the largest unforced loss on the board. |
+| 3.1 publish the gated batch | this week | **still first-equal** | **Three pages are built and unpublished since August — D2 /evidence, D3 /methodology, G4 /about, all on `gtm-drafts-aug13`. D1 /best-aeo-tools was never built on any branch** (verified across every local and remote branch, Sep 7). D1 is the keystone and it is a build, not a merge. See the reclassification below. |
 | 3.3 Wikidata | this week, 30 min | **this week, unchanged** | Cheapest fix for the acronym collision, and the anchor other sources resolve against. |
 | 3.4 directories | Sep 8–19 | **Sep 8–19, but reprioritised by our own data** | Do G2, Capterra/GetApp, AlternativeTo, SaaSHub, Product Hunt, Crunchbase — and put **G2 first** because it is the only one of them our own sweep shows being cited (17× in September). |
 | 3.5 listicle pitches | Sep 9 → Oct 31 | **raise to equal priority with 3.4** | This is where the movement is. TechRadar at 45 and TechnologyAdvice at 16 are cited far more than most directories. Add the September risers: dageno.ai, airops.com, listablelabs.com, seranking.com, nicklafferty.com. |
@@ -84,8 +104,23 @@ report, not a manual count.
 Category citation win will read 0% for months, and that tells you nothing about whether the work
 is landing. Add **corpus presence** to the monthly measure:
 
-> Of the source domains the engines cite for our category questions, how many now name
-> aeoanalyzers.com? Count them. Today: **0 of 215 distinct domains.**
+> **CORPUS PRESENCE (the definition — use this wording and no other).**
+> *Of the distinct source domains cited across the category runs of a sweep, how many name
+> aeoanalyzers.com.*
+>
+> **Denominator derivation.** Take every run where `queryType === 'category'`. Union their
+> `sources` arrays. Reduce each URL to its registrable host, lower-cased, `www.` stripped.
+> **Exclude `vertexaisearch.cloud.google.com`** — it is Gemini's grounding redirect wrapper, not
+> a publisher, and it would otherwise dominate the count. The result is the denominator:
+> **296 distinct domains (Aug 1) · 215 distinct domains (Sep)**.
+>
+> **Numerator.** How many of those domains serve a page naming aeoanalyzers.com. Measuring this
+> strictly means fetching the cited URLs and checking for our name, which is a real fetch pass
+> and should be built into the monthly job. **Until it is, report the cheap lower bound and say
+> which one you are quoting:** how many of those domains ARE aeoanalyzers.com.
+>
+> **Today: 0 / 215 (Sep), cheap lower bound.** Our own domain appears in none of the cited
+> sources, and the string "aeoanalyzers" appears in none of the 200 category answers.
 
 This moves the moment a directory or a listicle publishes, weeks before an engine starts citing
 us. It is computable from data we already store. If corpus presence rises and citation stays at
@@ -98,8 +133,7 @@ amount of on-site work will help.
 three, four, five times. The on-site score is already good and it is not the constraint — the
 Aug 1 and Sep measures agree on 0% category, and our own domain appears in zero cited sources
 either month. Nothing on our own pages changes that count. This is the plan's own thesis in
-section 1: homepages do not win. The next on-site work that matters is **publishing the four
-gated pages**, because they add citable comparison content, not because they raise a score.
+section 1: homepages do not win. The next on-site work that matters is **building D1 and publishing the three built pages**, because they add citable comparison content, not because they raise a score.
 
 ## 4 · The honest answer to "how do we become the answer"
 
@@ -108,7 +142,7 @@ Three things have to be true, in order, and only the third is the goal.
 1. **Be retrievable.** Claude cannot find us today. Fixed by inbound links from indexed
    domains — starting with pigenai.com — plus time. Nothing else we control moves this.
 2. **Be in the corpus.** Be named on the pages engines already cite for this category. That is
-   directories, listicles, reviewer blogs and Reddit. Zero of 215 today.
+   directories, listicles, reviewer blogs and Reddit. 0 / 215 today, on the cheap lower bound.
 3. **Be recommended.** Only reachable after 2. This is the 0% we keep measuring.
 
 We have spent the most effort on the layer that is already fine — our own site — and the least

@@ -75,3 +75,28 @@ customer would paste. Flagging it rather than escalating: if the page is edited 
 reason, consider rebuilding the mock-up from a real, consented sweep so the illustration is
 measured rather than representative — that would be more on-brand for a measurement-honesty
 product than a label is.
+
+---
+
+## Packaging decision — parked, ready for when the review is not just you (founder, Sep 7 2026)
+
+`scripts/exec-report-stored.ts` now renders an executive report from any stored sweep at zero
+marginal cost. That puts the artifact one step from purchasable. **Ruling: keep it internal until
+the human review has a person other than the founder.** Recorded here so the decision is ready
+rather than re-derived.
+
+**The review obligation is the whole cost, and it is per order.** Every report that leaves the
+building must be read by a human before it does, because the narrative prose is model-written even
+though every number is computed. The generator's own header says so, and `containsGrayHat` is a
+backstop, not a reviewer. Any option below that skips this is not on the table.
+
+| Option | What it needs | The obligation it creates | Honest read |
+|---|---|---|---|
+| **A · One-time purchase** | a Stripe product, a delivery path (email or a signed download), an order queue, a refund policy | **a human review per order, at unpredictable times, with a delivery promise attached** — 48h delivery was the original spec, which means someone is on the hook on a Saturday | Highest revenue per unit, highest chance of a missed promise. Do not ship while one person is the queue. |
+| **B · Business-tier deliverable on request** | one sentence on the pricing page, a request path, the same review | the same per-report review, but **demand is bounded by the subscriber count** and there is no delivery-time promise unless we make one | Cheaper and safer. Still a manual obligation, and "on request" quietly becomes an SLA the first time someone waits a week. |
+| **C · Internal only (current)** | nothing | none | The published sample and the courtesy pack are produced by it; the blog's availability sentence already tells a reader to ask. |
+
+**The trigger to revisit:** a second person who can run the review, or a review step that is a
+queue with a visible backlog rather than an inbox. Until one of those exists, A and B both convert
+a $0-marginal-cost artifact into an unbounded personal commitment — the same shape as every
+silent-failure lesson in the cross-app file, except the thing that fails quietly is a person.
