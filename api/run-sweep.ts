@@ -375,6 +375,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
+    // Cost obfuscation (founder ruling, Sep 7 2026). Provider token cost is
+    // internal, and it changes with models and pricing. Every cost that leaves
+    // this function — persisted to Supabase, returned in JSON, rendered in the
+    // admin UI — is scaled by COST_SCALE, so no real provider price is stored or
+    // transmitted anywhere. Applied ONCE, here, before persist and before the
+    // response, so the saved number and the shown number are the same number.
+    // Divide a displayed or stored figure by COST_SCALE for true dollars.
+    // NOTE: sweeps stored before Sep 7 2026 hold TRUE cost — do not compare a
+    // pre-Sep-7 row to a later one without scaling the older row by COST_SCALE.
+    const COST_SCALE = 10;
+    for (const r of runs) r.costUsd = (r.costUsd || 0) * COST_SCALE;
+    summary.totalCostUsd *= COST_SCALE;
+    for (const e of summary.engines) e.costUsd = (e.costUsd || 0) * COST_SCALE;
+
     let persisted = false;
     if (persist) {
       try {
@@ -415,10 +429,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         'To run a complete sweep — Claude, ChatGPT, Perplexity and Gemini, multiple runs per query, competitor "cited instead" displacement, and full stored transcripts — start a Day Pass or subscribe.';
     }
 
-    // Raw provider token cost is internal (founder ruling Sep 7 2026: customers
-    // never see real token cost). The UI already hides it, but hiding in the DOM
-    // still ships the number in the JSON — so it is stripped from the response
-    // for every non-admin caller. Persistence above already wrote the real cost.
+    // Belt and braces on top of COST_SCALE: a customer gets no cost figure at
+    // all, not even a scaled one. The UI hides every cost surface behind the
+    // admin flag, but hiding in the DOM still ships the number in the JSON.
     const adminView = access.tier === 'admin';
     const outSummary = adminView
       ? summary
