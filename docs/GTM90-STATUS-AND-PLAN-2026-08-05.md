@@ -19,13 +19,20 @@
 
 **Founder decision (Aug 5, recorded in the workbook banner + col-M audit trail):** SMTP check WAIVED for source-verified addresses. Final tally:
 
-- **14 READY TO SEND = YES** — melissa.hlidek@rygr.us · jesse@thespearpoint.com (fully VERIFIED) · lance@avalanchegr.com · matt@icenineonline.com · pete@mainstreetroi.com · john@sixthcitymarketing.com · hello@thegray.company (role inbox; do NOT use tory@) · contact@invoiceninja.com (founder-read; do NOT use hillel@) · tyler@lessannoyingcrm.com · jon@nimble.com · kyle@proposify.com · jeroen@salesflare.com · derrick@savvycal.com · support@userlist.com (role inbox; do NOT use jane@; partners@ is a founder-monitored alt)
-- **2 HOLD — Instantly VALID required before ANY send:** grant@kcwebdesigner.com (third-party corroborated only; replace-from-bench PREFERRED) · sreedhar@engagebay.com (~70% pattern-guess)
+> **[REDACTED Sep 7 2026 — prospect data removed from the public repo.]** This
+> repository is public. The 16 target rows, their addresses, the per-row verification
+> status, the role-inbox rules, the fallback contacts and the roster history now live
+> **only** in the gitignored slate: `private/GTM90-Master-Target-Slate-v4.2.xlsx`
+> (mirrored at `private/outreach/`). Nothing about a named prospect belongs in a
+> tracked file. See `docs/outreach/README.md` for the split rule.
+
+- **14 READY TO SEND = YES** — see the slate. Mix is roughly 60% agency, 40% SMB SaaS. Three are role inboxes with a named alternate that must NOT be used.
+- **2 HOLD — Instantly VALID required before ANY send** — see the slate; one is third-party corroborated only (replace-from-bench preferred), one is a pattern-guess.
 - Optional free Instantly verification pass on the 14 remains available until Aug 20 (bounce-insurance; does not touch warmup or the 0-of-30 allowance).
 
-**Superseded — do not act on:** v3 workbook · "try tory@ first" · hillel@/jane@ as targets · "14 pending-verify, paste checker results" (resolved) · any Apollo step.
+**Superseded — do not act on:** v3 workbook · the earlier per-row address guesses · "14 pending-verify, paste checker results" (resolved) · any Apollo step.
 
-**Roster history (for context):** Phil Singleton (KC SEO) deceased May 23, 2025 — removed; verify-before-send discipline caught this. Main Street ROI: Phil Frost → Pete Kennedy (Co-Founder & President; company in Southampton NY, Pete in West Hartford CT). rygr fallback: Nate Simmons, Co-CEO. Ice Nine fallback inbox: messages@icenineonline.com.
+**Roster history:** held in the slate's audit trail. One target was removed after the verify-before-send discipline caught that the individual had died; another company's contact had changed role. Both are recorded per-row, not here.
 
 ## 3. INFRASTRUCTURE — READY, GATED
 
