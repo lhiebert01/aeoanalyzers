@@ -59,6 +59,17 @@ and every measurement fix and fidelity detector was **proven by breaking its gua
 
 ## Backlog — post-freeze unless a paying customer's report requires it
 
+- **v1.9 — CRAWLER PANEL: three honesty gaps (founder-logged Sep 7 2026).** (a) The panel
+  reports only what reached the app. The beacon runs in middleware, so anything blocked at a
+  CDN or firewall is invisible, and **blocked is indistinguishable from absent** — for us and
+  for every customer. Either reconcile against edge logs or state the limitation on the panel.
+  (b) `src/lib/botClassify.ts` silently drops unrecognised agents, so an unlisted crawler also
+  reads as absent: **Bravebot and Googlebot are both unclassified today**, confirmed by probe.
+  Add them, add a counter for unrecognised bot-shaped agents, and add a "first observed" date
+  per agent since adding agents changes what stored history means. (c) **No external-link
+  count.** Search Console's Links report gives one free; we have no equivalent, and link
+  acquisition is the mechanism that gets a site into a link-following index. Cheapest honest
+  version: teach the customer where to look and what a near-zero count means.
 - **v1.9 — SECTION-CONTEXT DRIFT, a third fidelity check (founder-logged Sep 7 2026).**
   Accurate prose, no entity collision, wrong answer — caused by heading hierarchy on a page
   that *contains* the subject. Observed live: Claude described AEO Analyzers as scanning

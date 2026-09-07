@@ -151,6 +151,37 @@ Aug 1 and Sep measures agree on 0% category, and our own domain appears in zero 
 either month. Nothing on our own pages changes that count. This is the plan's own thesis in
 section 1: homepages do not win. The next on-site work that matters is **building D1 and publishing the three built pages**, because they add citable comparison content, not because they raise a score.
 
+## 3b · Search Console confirms the corpus finding independently (founder evidence, Sep 7)
+
+Google Search Console has been verified for aeoanalyzers.com since June: **5 pages indexed,
+0 excluded, 9 web-search clicks in 90 days.** Bing likewise submitted.
+
+**This is the corpus finding arriving from a second direction.** We are indexed and invisible.
+Nine clicks in ninety days from a fully indexed site is not a crawling problem, a robots problem
+or a content problem — it is an authority problem, and it is the same one the category sweep
+reports as 0 of 215 source domains.
+
+**And it isolates the mechanism.** Google and Bing have the site *because we submitted to them*.
+An index without a submission channel — including whatever backs Claude's search — finds sites
+only by following links from pages it already has. We have never given it one.
+
+**So the pigenai.com link, the directory profiles and the reviewer pitches are one fix applied
+three times, not three separate chores.** Each is a link from a page an index already crawls. That
+is worth restating in the plan's own language because it changes how the work is prioritised: the
+question for every target is not "is this a good listing" but "is this page already crawled by an
+index we are missing from."
+
+**Ranking, pending the Links report.** If the external backlink count comes back near zero, that
+is the explanation of first resort and **link acquisition ranks above everything except the two
+structural fixes** — removing the `sameAs` identity assertion (done Sep 7) and prerendering the
+duplicate routes. Both of those change what an index sees when it finally arrives; links are what
+make it arrive.
+
+**Edge causes ruled out the same day** (`docs/EDGE-AND-CRAWLER-CHECKS-2026-09-07.md`): Vercel
+firewall not configured, attack mode off, no Cloudflare, robots.txt allows Claude-SearchBot by
+name, and live probes as five different crawler user-agents all returned 200 with the full page
+and no mitigation headers. Nothing is blocked. The crawler never came.
+
 ## 4 · The honest answer to "how do we become the answer"
 
 Three things have to be true, in order, and only the third is the goal.

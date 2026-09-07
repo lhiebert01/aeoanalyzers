@@ -1,16 +1,30 @@
 # Source Presence checklist — what has been done, what has not. Sep 7 2026
 
-Audited against the repo record, the live site, and the stored sweeps. **One caveat stated up
-front: a browser action leaves no trace in this repo.** If you verified Search Console in a
-browser three weeks ago and never wrote it down, I cannot see it. The four steps where that is
-possible are marked **⚑ confirm**. Everything else is verifiable either way.
+Audited against the repo record, the live site, and the stored sweeps.
+
+> **⚠ This document was wrong once and the correction is instructive.** I first reported layer 0
+> as never done, because I audited a git repository for actions taken in a browser. Search
+> Console and Bing had both been done since June. The caveat I wrote at the time — "a browser
+> action leaves no trace in this repo" — was correct and I should have weighted it far more
+> heavily than I did, rather than tabulating an absence of evidence as evidence of absence. The
+> table below is corrected. Steps still marked **⚑ confirm** are ones only you can settle.
 
 ---
 
 ## The short answer
 
-**The repeated work was on-site and measurement. This checklist is deliberately the off-site,
-manual work — and almost none of it has been done once.**
+**Corrected Sep 7 2026 after founder evidence.** Layer 0 submission WAS done: Google Search
+Console has been verified since June and Bing likewise. My original framing — "the entire layer
+that has never been done" — was wrong, and it was wrong because I audited a repo for actions
+taken in a browser. The corrected finding is narrower and more useful:
+
+**Where a submission channel exists, we used it and we are indexed. Where none exists, we are
+absent.** Google has 5 pages indexed with 0 excluded. Bing likewise. Claude's index has nothing.
+The difference between them is not effort or content — it is that Google and Bing accept a
+submission, and a link-following index does not. That is one mechanism, not three chores.
+
+**The repeated work was on-site, measurement, and submission. What has never been done is the
+off-site work that a link-following index requires.**
 
 You have run the analyzer on your own site and re-run citation sweeps many times, and each round
 produced real on-site improvements: JSON-LD and the connected `@graph`, entity disambiguation,
@@ -35,12 +49,12 @@ moved.
 | **0.5 Inbound link from an indexed domain** | **One exists, not by our action** | pigenai.com already links to aeoanalyzers.com as a real crawlable anchor — verified Sep 7. That is the single most valuable one and it is already in place; what is wrong there is the surrounding description, which is the handover already filed. |
 | **3.2 Answer the losing questions** | **Partly** | Several blog posts address category questions. The dedicated comparison page, D1, was never built. |
 
-## Not done — no record of ever being done
+## Not done — no record, and not contradicted by founder evidence
 
 | Step | Status | Note |
 |---|---|---|
-| **0.2 Google Search Console** | ⚑ **confirm** | No record anywhere in the repo. If the domain is verified and the sitemap submitted, tell me and I will log it. Note the sitemap only became correct today, so a submission before today submitted a list that declared five non-pages. |
-| **0.3 Bing Webmaster Tools** | ⚑ **confirm** | No record. |
+| ~~0.2 Google Search Console~~ | **DONE — moved to the completed list.** | Founder-confirmed Sep 7: verified since June, **5 pages indexed, 0 excluded, 9 web-search clicks in 90 days.** My "no record" was an artefact of auditing the repo for a browser action. **Resubmit the sitemap** — the one submitted before today declared five URLs that serve the homepage. |
+| ~~0.3 Bing Webmaster Tools~~ | **DONE — founder-confirmed Sep 7.** | Same correction. |
 | **0.4 IndexNow** | **Not done** | No key file, no ping code, no mention. Verifiable in the repo, so this one is certain. |
 | **1.1 Wikidata — both items** | **Not done** | Recorded repeatedly as pending, with a standing rule never to invent Q-IDs. Certain. |
 | **1.2 LinkedIn company page** | ⚑ **confirm** | Zero mentions in the entire repo. |
@@ -71,15 +85,21 @@ on-site, and the constraint is layer 2, which is other people's pages.
 
 1. **Wikidata, both items.** Forty minutes, certain to be undone, and it is the anchor for the
    American Eagle collision that nothing else fixes.
-2. **Search Console and Bing.** If already verified, re-submit the sitemap — the one you would
-   have submitted before today declared five URLs that serve the homepage shell.
+2. **Re-submit the sitemap in Search Console.** Both properties are verified; the sitemap they
+   hold predates today's correction and declares five URLs that serve the homepage.
 3. **IndexNow.** Cheap, certain to be undone, and you are about to publish several pages.
 4. **Publish /methodology and /evidence.** They are built, they are the most source-shaped
    content we have, and vendor domains do get cited once they publish exactly this shape.
 5. Then the Thursday directory research, then D1.
 
-**One correction to the checklist itself:** its "Today" line for 0.1 says the bot-log question has
-been theorised about for four days. It is now answered. ClaudeBot has crawled for training;
-Claude-SearchBot, the agent that populates the search index, never has. That is a discovery
-problem, so submission and inbound links are the right fixes, and no amount of content work
-substitutes for them.
+**Two corrections to the checklist itself.**
+
+Its "Today" line for 0.1 says the bot-log question has been theorised about for four days. It is
+answered: ClaudeBot has crawled for training, and Claude-SearchBot — the agent that populates the
+search index — never has, with every edge cause ruled out the same day.
+
+And its layer-0 framing needs the sharper version. Submission is done where a submission channel
+exists, and it worked: Google holds 5 pages indexed with 0 excluded. **The gap is not submission,
+it is that a link-following index has no submission channel at all.** For those, the only entry
+is a link from a page they already crawl — which makes the pigenai.com link, the directory
+profiles and the reviewer pitches one mechanism applied three times.
