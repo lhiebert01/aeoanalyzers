@@ -222,6 +222,14 @@ export default function App() {
       const path = window.location.pathname;
       if (path === '/privacy') setView('privacy');
       else if (path === '/terms') setView('terms');
+      // Sep 7 2026: these paths existed in the sitemap and in the nav but were never
+      // mapped here, so every one of them fell through to the landing view and served
+      // a byte-identical copy of the homepage. Five URLs, one document — a duplicate
+      // signal aimed at the engines this product measures, and our own pricing and
+      // terms unreadable to anything that does not run JavaScript.
+      else if (path === '/pricing') setView('payments');
+      else if (path === '/guide') setView('guide');
+      else if (path === '/press') setView('press');
       else if (path === '/sweeps') {
         // Deep-link / back-forward to a saved sweep view.
         const saved = new URLSearchParams(window.location.search).get('saved');

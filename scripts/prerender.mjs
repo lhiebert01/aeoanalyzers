@@ -11,7 +11,7 @@
 
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { writeFileSync, existsSync } from 'node:fs';
+import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -58,6 +58,23 @@ function dedupeHeadTags(html) {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.resolve(__dirname, '..', 'dist');
 const INDEX = path.join(DIST, 'index.html');
+
+/** Routes that get their OWN prerendered document. Keep in lockstep with
+ *  public/sitemap.xml and PRERENDERED in src/__tests__/sitemapHonesty.test.ts.
+ *  Admin routes are deliberately excluded — they must never be prerendered. */
+/** route -> a phrase that appears ONLY on that route once it has rendered. The
+ *  prerender waits for it, so a route that never switches view is skipped rather
+ *  than written as a copy of the homepage. App.tsx has a 2s auth safety timeout,
+ *  so these waits must outlast it. */
+const ROUTES = [
+  { path: '/', marker: null },
+  { path: '/pricing', marker: 'Choose your AEO Tier' },
+  { path: '/guide', marker: 'Getting Started' },
+  { path: '/privacy', marker: 'Our commitment to' },
+  { path: '/terms', marker: 'Acceptance of Terms' },
+];
+// /analyzer and /sweeps are app surfaces behind sign-in and are deliberately NOT
+// prerendered; /admin never is. /press is added the day that page exists.
 const PORT = 4317;
 const WAIT_SELECTOR = '#hero-title'; // MarketingLanding hero — present only after React renders
 
@@ -122,13 +139,58 @@ async function main() {
     });
     const page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (compatible; AEOAnalyzersPrerender/1.0)');
-    await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle0', timeout: 30000 });
-    await page.waitForSelector(WAIT_SELECTOR, { timeout: 15000 });
 
-    // Sanity: confirm real value-prop content rendered before we overwrite.
+    // Render each route to its OWN document. Before Sep 7 2026 only "/" was
+    // prerendered, so /pricing, /how-it-works, /guide, /privacy and /terms all
+    // served a byte-identical copy of the homepage via the SPA rewrite — five URLs,
+    // one document, and our own pricing and terms unreadable to anything that does
+    // not run JavaScript. Each route below writes dist/<route>/index.html, which
+    // Vercel serves ahead of the rewrite (the same mechanism the blog pages use).
+    // Adding a route here means also adding it to public/sitemap.xml and to
+    // PRERENDERED in src/__tests__/sitemapHonesty.test.ts, in the same commit.
+    for (const route of ROUTES) {
+      try {
+        await renderRoute(page, route.path, route.marker);
+      } catch (e) {
+        // Fail-open per route: one bad route must not cost the others or the build.
+        console.warn(`[prerender] ${route.path} failed (${e?.message || e}) — SPA fallback for this route.`);
+      }
+    }
+  } catch (err) {
+    console.warn('[prerender] failed (shipping SPA shell):', err?.message || err);
+  } finally {
+    if (browser) await browser.close().catch(() => {});
+    server.close();
+  }
+}
+
+/** Render one route and write its own document. */
+async function renderRoute(page, route, marker) {
+    await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle0', timeout: 30000 });
+    // The landing hero proves React mounted. For a non-root route the path->view
+    // effect runs just after mount, so give it a beat to settle before capturing —
+    // otherwise every route captures the landing page, which is the bug being fixed.
+    if (!marker) {
+      await page.waitForSelector(WAIT_SELECTOR, { timeout: 15000 });
+    } else {
+      // Wait for the route's OWN content. App.tsx maps path -> view in an effect and
+      // has a 2s auth safety timeout, so this must outlast both. If the phrase never
+      // appears the route did not switch view, and we must not write a duplicate.
+      await page.waitForFunction(
+        (m) => document.body && document.body.innerText.includes(m),
+        { timeout: 20000 },
+        marker
+      );
+    }
+
+    // Sanity: confirm real content rendered before we write anything.
     let html = await page.content();
-    if (!/Secure your|Citation|Simulation/i.test(html)) {
-      console.warn('[prerender] rendered HTML lacks expected content — skipping overwrite.');
+    if (marker && !html.includes(marker)) {
+      console.warn(`[prerender] ${route}: marker "${marker}" absent after render — skipping.`);
+      return;
+    }
+    if (!marker && !/Secure your|Citation|Simulation/i.test(html)) {
+      console.warn(`[prerender] ${route}: rendered HTML lacks expected content — skipping overwrite.`);
       return;
     }
     // The app derives some URLs from window.location.origin, which during
@@ -146,14 +208,26 @@ async function main() {
     // order is immaterial). Guarded per-key so we can never strip down to zero.
     html = dedupeHeadTags(html);
 
-    writeFileSync(INDEX, '<!doctype html>\n' + html.replace(/^<!doctype html>/i, ''), 'utf8');
-    console.log(`[prerender] wrote prerendered landing to dist/index.html (${html.length} bytes).`);
-  } catch (err) {
-    console.warn('[prerender] failed (shipping SPA shell):', err?.message || err);
-  } finally {
-    if (browser) await browser.close().catch(() => {});
-    server.close();
-  }
+    // REFUSE to write a duplicate. If a route renders the same document as the
+    // homepage it is not a distinct page, and writing it would recreate exactly the
+    // duplicate-content problem this change removes. Skipping leaves the SPA
+    // fallback in place and keeps the route out of the sitemap honestly.
+    if (route !== '/') {
+      // Compare the BODY, not the whole document: canonical and og:url legitimately
+      // differ per route, so a whole-document comparison never matches and the guard
+      // would never fire.
+      const bodyOf = (h) => (h.match(/<body[^>]*>([\s\S]*)<\/body>/i) || ['', ''])[1];
+      const home = readFileSync(INDEX, 'utf8');
+      if (bodyOf(home) === bodyOf(html)) {
+        console.warn(`[prerender] ${route}: renders the same document as / — NOT written (would be a duplicate).`);
+        return;
+      }
+    }
+
+    const out = route === '/' ? INDEX : path.join(DIST, route.replace(/^\//, ''), 'index.html');
+    mkdirSync(path.dirname(out), { recursive: true });
+    writeFileSync(out, '<!doctype html>\n' + html.replace(/^<!doctype html>/i, ''), 'utf8');
+    console.log(`[prerender] ${route} -> ${path.relative(DIST, out)} (${html.length} bytes)`);
 }
 
 // Watchdog: never let prerender hang a CI build. If it hasn't finished in 120s,

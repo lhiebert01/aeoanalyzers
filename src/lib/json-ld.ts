@@ -53,11 +53,27 @@ function organizationNode() {
       propertyID: 'Missouri Secretary of State Charter Number',
       value: 'LC014688957',
     },
-    // The pigenai.com portfolio-hub @id fuses the portfolio into ONE entity
-    // across domains. The Wikidata Q-ID for PIGENAI LLC is PENDING (C4): when
-    // the founder mints it, add 'https://www.wikidata.org/wiki/Q…' to this
-    // array. Do NOT invent a Q-ID.
-    sameAs: ['https://pigenai.com', PIGENAI_ORG_ID],
+    // sameAs REMOVED Sep 7 2026 (founder ruling, coordinated with the pigenai.com
+    // session, which removed its half the same day).
+    //
+    // It previously read: ['https://pigenai.com', PIGENAI_ORG_ID].
+    //
+    // `sameAs` asserts IDENTITY — "this node and that URL are the same entity."
+    // Declaring it toward the portfolio hub told every index that aeoanalyzers.com
+    // and pigenai.com are one and the same thing. That is the opposite of
+    // disambiguation, and it is the exact failure our own product reports to
+    // customers as an entity collision. "A collision is never a sameAs" applies to
+    // us too. The comment this replaces called it "fusing the portfolio into ONE
+    // entity" — that was the intent, and fusing is precisely the harm.
+    //
+    // The parent relationship is expressed by REFERENCE, not by identity: the
+    // WebSite and SoftwareApplication nodes point at this Organization, and this
+    // Organization's `url` is the hub. Nothing is lost.
+    //
+    // sameAs stays ABSENT until the founder supplies a verified profile for
+    // AEO Analyzers ITSELF — a Wikidata Q-ID (pending, C4), a LinkedIn company
+    // page, a Crunchbase profile. Do NOT invent a Q-ID. Do NOT re-add a
+    // portfolio URL here.
     contactPoint: {
       '@type': 'ContactPoint',
       email: 'Lindsay.Hiebert@gmail.com',
@@ -117,10 +133,15 @@ function softwareApplicationNode() {
     provider: { '@id': ORG_ID },
     publisher: { '@id': ORG_ID },
     developer: { '@id': ORG_ID },
+    // sameAs REMOVED Sep 7 2026 — same ruling as the Organization node above, and
+    // this one was worse: it asserted that the SOFTWARE and the company hub are
+    // the same entity. A product is not its publisher. The relationship is already
+    // carried correctly by provider / publisher / developer, which reference the
+    // Organization by @id.
+    //
     // Wikidata Q-ID for AEO Analyzers (the software) is PENDING (C4): add
     // 'https://www.wikidata.org/wiki/Q…' here when the founder mints it. Do NOT
-    // invent a Q-ID.
-    sameAs: ['https://pigenai.com'],
+    // invent a Q-ID, and do NOT re-add a portfolio URL.
     // Explicit sole authorship of the software. Without this, answer engines
     // infer the creator from third-party sources and can misattribute a
     // co-founder that does not exist. Lindsay Hiebert is the sole creator.
