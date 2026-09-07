@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AEO Tools: An Honest Comparison, With Dates On Every Claim | AEO Analyzers</title>
+<meta name="description" content="A dated, sourced comparison of answer engine optimization tools - Profound, Peec AI, Otterly AI, Scrunch AI and others - written by a vendor who says so, names no winner, and marks every unverified claim.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://aeoanalyzers.com/best-aeo-tools">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AEO Analyzers">
+<meta property="og:title" content="AEO Tools: An Honest Comparison, With Dates On Every Claim">
+<meta property="og:description" content="A dated, sourced comparison of AEO tools, written by a vendor who says so and names no winner.">
+<meta property="og:url" content="https://aeoanalyzers.com/best-aeo-tools">
+<meta name="theme-color" content="#08343B">
+<!-- REVIEW GATE: noindex until the founder clears every [[VERIFY]] cell (Oct 5 2026).
+     Flip robots to index,follow in the SAME commit that removes the last marker.
+     Publishing this with unverified competitor claims would be the exact failure
+     the page criticises. -->
+<style>
+:root{
+  --paper:#E7ECEE; --card:#FFFFFF; --ink:#0E1216; --muted:#3F4952; --hair:#C4CDD3;
+  --teal:#0B6E7A; --teal-deep:#08343B; --teal-tint:#E6F0F1;
+  --good:#137A4D; --good-tint:#E3F1E9; --warn:#B5820A; --gap:#B23A2E; --gap-tint:#F7E7E4;
+  --panel:#EBF0F2; --edge:#9FADB6;
+  --shadow:0 1px 2px rgba(20,26,31,.06), 0 18px 50px rgba(20,26,31,.12);
+  --card-shadow:0 1px 2px rgba(20,26,31,.06), 0 6px 18px rgba(20,26,31,.10);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+/* Committed LIGHT theme — matches the aeoanalyzers.com site (dark text on white). */
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:26px 20px 40px}
+
+/* ---- site header + footer ---- */
+.sitebar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:11px clamp(16px,4vw,28px);background:var(--card);border-bottom:1px solid var(--edge)}
+.sitebar .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.sitebar .brand .mk{display:inline-flex;width:27px;height:27px;border-radius:7px;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.sitebar .snav{display:flex;align-items:center;gap:6px}
+.sitebar .snav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:9px}
+.sitebar .snav a:hover{color:var(--ink);background:var(--panel)}
+.sitebar .snav a.primary{background:var(--teal-deep);color:#EAF4F5}
+.sitebar .snav a.primary:hover{color:#fff}
+.sitefoot{border-top:1px solid var(--edge);background:var(--card);margin-top:44px}
+.sitefoot .fin{max-width:960px;margin:0 auto;padding:24px clamp(16px,4vw,28px);display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.sitefoot .fnav{display:flex;flex-wrap:wrap;gap:8px 22px}
+.sitefoot a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+.sitefoot a:hover{color:var(--ink)}
+.sitefoot .fcop{color:var(--muted);font-size:12.5px}
+@media(max-width:520px){.sitebar .snav a:not(.primary){display:none}}
+
+header{padding:40px 0 24px;border-bottom:1px solid var(--hair)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4.6vw,42px);line-height:1.1;text-wrap:balance;margin:12px 0 14px;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:13.5px;margin:0}
+h2{font-family:var(--serif);font-weight:600;font-size:23px;margin:42px 0 14px;letter-spacing:-.01em}
+p{margin:0 0 14px;max-width:76ch}
+strong{color:var(--ink)}
+
+/* score tiles */
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 6px}
+.tile{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:18px 18px 16px;box-shadow:var(--card-shadow)}
+.tile .lab{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile .num{font-family:var(--serif);font-size:40px;font-weight:600;line-height:1;margin:10px 0 6px;font-variant-numeric:tabular-nums}
+.tile .note{font-size:12.5px;color:var(--muted);line-height:1.45}
+.tile.good{border-top:3px solid var(--good)} .tile.good .num{color:var(--good)}
+.tile.warn{border-top:3px solid var(--warn)} .tile.warn .num{color:var(--warn)}
+.tile.gap{border-top:3px solid var(--gap)}  .tile.gap .num{color:var(--gap)}
+
+/* three-layer list */
+ol.layers{counter-reset:f;list-style:none;padding:0;margin:6px 0 0;max-width:82ch}
+ol.layers li{position:relative;padding:16px 0 16px 46px;border-bottom:1px solid var(--edge)}
+ol.layers li:last-child{border-bottom:0}
+ol.layers li::before{counter-increment:f;content:counter(f);position:absolute;left:0;top:14px;
+  width:30px;height:30px;border-radius:50%;background:var(--teal-tint);color:var(--teal);
+  font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+ol.layers b{display:block;margin-bottom:3px}
+ol.layers .win{color:var(--good);font-weight:700}
+ol.layers .lose{color:var(--gap);font-weight:700}
+
+.samplenote{max-width:960px;margin:16px auto 0;padding:0 20px;text-align:center;color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+.samplenote b{color:var(--ink)}
+
+/* POSSE blog masthead + outro */
+.post{max-width:720px;margin:6px auto 4px;padding:0 8px}
+.posteyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.posttitle{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5.6vw,48px);line-height:1.06;letter-spacing:-.015em;text-wrap:balance;margin:12px 0 12px}
+.postmeta{color:var(--muted);font-size:13px;margin:0 0 24px;letter-spacing:.02em}
+.postbody p{font-size:17px;max-width:68ch;margin:0 0 16px;color:var(--ink)}
+.postbody .postlead{font-size:19.5px;line-height:1.5}
+.posth2{font-family:var(--serif);font-weight:600;font-size:clamp(22px,3.4vw,28px);line-height:1.12;letter-spacing:-.01em;text-wrap:balance;max-width:720px;margin:38px auto 2px;padding:0 8px}
+.postoutro{max-width:780px;margin:36px auto 0;padding:32px clamp(22px,4.5vw,44px);background:var(--teal-tint);border:1px solid var(--edge);border-radius:20px;box-shadow:var(--card-shadow)}
+.postoutro .eyebrow{margin-bottom:8px;display:block}
+.postoutro h3{font-family:var(--serif);font-weight:600;font-size:clamp(25px,4vw,34px);line-height:1.08;letter-spacing:-.015em;text-wrap:balance;margin:0 0 16px}
+.postoutro p{font-size:16.5px;max-width:72ch;margin:0 0 14px;color:var(--ink)}
+.cta{display:inline-block;background:var(--teal-deep);color:#EAF4F5;font-weight:600;font-size:15px;text-decoration:none;padding:11px 22px;border-radius:11px}
+.cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.ilink{color:var(--teal);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.ilink:hover{text-decoration-thickness:2px}
+.serieslink{max-width:720px;margin:26px auto 0;padding:0 8px;color:var(--muted);font-size:13.5px}
+.serieslink a{color:var(--teal)}
+@media(max-width:560px){.score{grid-template-columns:1fr}}
+/* ---- G1: follow-the-series email capture (Honest-Zero) ---- */
+.followseries{max-width:780px;margin:18px auto 0;padding:20px clamp(22px,4.5vw,34px);
+  display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;justify-content:space-between;
+  background:var(--card);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--card-shadow)}
+.followseries .fs-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:6px}
+.followseries .fs-line{font-size:15px;line-height:1.5;color:var(--ink);margin:0;max-width:60ch}
+.followseries .fs-cta{display:inline-block;white-space:nowrap;background:var(--card);color:var(--teal-deep);
+  border:1.5px solid var(--teal-deep);font-weight:600;font-size:14.5px;text-decoration:none;padding:10px 18px;border-radius:11px}
+.followseries .fs-cta:hover{background:var(--teal-deep);color:#EAF4F5}
+.followseries .fs-cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+</style>
+
+<style>
+/* D1-only additions, same palette as the rest of the site. */
+.posth2{font-family:var(--serif);font-size:1.42rem;line-height:1.25;margin:34px 0 10px;color:var(--teal-deep)}
+.callout{background:var(--teal-tint);border:1px solid var(--hair);border-left:4px solid var(--teal);border-radius:10px;padding:14px 16px;margin:18px 0;font-size:.95rem}
+.tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:16px 0}
+.tbl{width:100%;min-width:640px;border-collapse:collapse;font-size:.93rem;background:var(--card)}
+.tbl th,.tbl td{border:1px solid var(--hair);padding:10px 12px;vertical-align:top;text-align:left}
+.tbl thead th{background:var(--panel);color:var(--teal-deep);font-weight:700}
+.tbl tr.ours td{background:var(--good-tint)}
+.tbl td.unv{color:var(--gap);background:var(--gap-tint);font-weight:600;white-space:nowrap}
+.vdate{font-variant-numeric:tabular-nums}
+</style>
+
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="https://aeoanalyzers.com/"><span class="mk">A</span> AEO Analyzers</a>
+  <nav class="snav">
+    <a href="https://aeoanalyzers.com/">Home</a>
+    <a href="/blog/">Blog</a>
+    <a class="primary" href="https://aeoanalyzers.com/">Start free →</a>
+  </nav>
+</header>
+<div class="wrap">
+  <article class="post">
+    <div class="posteyebrow">AEO Analyzers · Category reference · Last reviewed <span class="vdate">2026-10-05</span></div>
+    <h1 class="posttitle">AEO Tools: An Honest Comparison, With Dates On Every Claim</h1>
+    <p class="postlead">We make one of these tools, so treat this page as interested testimony and check it. Every competitor fact below carries the date it was last verified and a link to the vendor's own page. Where we could not verify something, it says so instead of guessing. Nothing here ranks the tools, and we do not name a winner — including ourselves.</p>
+
+    <div class="callout">
+      <b>How this page is maintained.</b> Competitor facts are re-checked on the first of each month against the vendor's own published pages. A claim older than 90 days is removed rather than carried forward. If you find something wrong here, <a class="ilink" href="https://aeoanalyzers.com/">tell us</a> and we will correct it with a dated note.
+    </div>
+
+    <div class="postbody">
+
+      <h2 class="posth2">What is answer engine optimization (AEO) software?</h2>
+      <p>AEO software measures whether AI answer engines — ChatGPT, Claude, Perplexity, Gemini — mention or recommend a business when someone asks a question, and reports what to change. It is not the same as rank tracking. A rank tracker tells you where a page sits in a list of links; an AEO tool asks a question and reads the answer.</p>
+      <p>The category is also called GEO, generative engine optimization. See the section below on the difference.</p>
+
+      <h2 class="posth2">Which tools track AI search visibility?</h2>
+      <p>The tools named most often when we ask AI engines this question, in our own measurement, are Profound, Otterly AI, Peec AI, SE Ranking, AirOps, Scrunch AI, AthenaHQ and Rankscale, alongside broader SEO suites that have added AI-visibility features, including Semrush, Ahrefs, Conductor and HubSpot.</p>
+      <p><b>How that list was produced, so you can weigh it.</b> We asked four engines ten unbranded category questions, five times each, in our September 2026 measurement — <b>200 recorded answers</b> — and counted how many answers mentioned each product at least once. Profound and Otterly AI each appeared in <b>119</b>, Peec AI in <b>89</b>, Semrush in 77, Ahrefs in 56, SE Ranking in 45, AirOps in 32, Scrunch AI in 31, AthenaHQ in 29 and Rankscale in 16. <b>AEO Analyzers appeared in 0 of 200.</b> The transcripts are stored and the question set is published.</p>
+      <p>That is a measurement of what engines say, not of product quality. A tool can be excellent and unnamed, and being named often is partly a function of how long a vendor has been publishing.</p>
+
+      <h2 class="posth2">What does each tool do?</h2>
+      <p>Every cell below is either verified against the vendor's own page on the date shown, or marked unverified. We do not restate a competitor's pricing or feature from memory.</p>
+
+      <div class="tblwrap">
+      <table class="tbl">
+        <thead><tr><th>Tool</th><th>What the vendor says it does</th><th>Pricing</th><th>Last verified</th></tr></thead>
+        <tbody>
+          <tr><td><b>Profound</b><br><span class="note">tryprofound.com</span></td><td>[[VERIFY: one sentence from the vendor's own homepage, quoted or closely paraphrased]]</td><td>[[VERIFY: published price, or "not published"]]</td><td class="unv">[[VERIFY-DATE]]</td></tr>
+          <tr><td><b>Peec AI</b><br><span class="note">peec.ai</span></td><td>[[VERIFY]]</td><td>[[VERIFY]]</td><td class="unv">[[VERIFY-DATE]]</td></tr>
+          <tr><td><b>Otterly AI</b><br><span class="note">otterly.ai</span></td><td>[[VERIFY]]</td><td>[[VERIFY]]</td><td class="unv">[[VERIFY-DATE]]</td></tr>
+          <tr><td><b>Scrunch AI</b><br><span class="note">scrunchai.com</span></td><td>[[VERIFY]]</td><td>[[VERIFY]]</td><td class="unv">[[VERIFY-DATE]]</td></tr>
+          <tr><td><b>AthenaHQ</b><br><span class="note">athenahq.ai</span></td><td>[[VERIFY]]</td><td>[[VERIFY]]</td><td class="unv">[[VERIFY-DATE]]</td></tr>
+          <tr><td><b>Rankscale</b><br><span class="note">rankscale.ai</span></td><td>[[VERIFY]]</td><td>[[VERIFY]]</td><td class="unv">[[VERIFY-DATE]]</td></tr>
+          <tr><td><b>SE Ranking</b><br><span class="note">seranking.com</span></td><td>[[VERIFY]]</td><td>[[VERIFY]]</td><td class="unv">[[VERIFY-DATE]]</td></tr>
+          <tr class="ours"><td><b>AEO Analyzers</b><br><span class="note">aeoanalyzers.com — ours</span></td><td>Reports three layers separately: whether an engine finds you by name, whether what it says about you is accurate, and whether it recommends you to a buyer who did not ask for you. Every score is backed by the stored answer text.</td><td>Free check · $24 Day Pass · $49/mo Pro · $199/mo Business</td><td>2026-09-07</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="note">Empty cells are honest. We would rather publish a gap than a guess about someone else's product.</p>
+
+      <h2 class="posth2">Profound vs Otterly AI: how do you choose?</h2>
+      <p>We are not the right source for that comparison and we will not pretend otherwise. Both are competitors of ours, and a head-to-head written by a third competitor is worth very little. What we can offer is a method: ask each vendor for the raw answers behind a score, not just the score. If a tool reports that you appear in 34% of answers, ask which answers, from which engine, on which date, and whether you can read them.</p>
+      <p>The reason that question matters is that these numbers are not directly comparable between vendors. Different tools ask different questions, a different number of times, on different days, and an engine's answer varies between runs. A percentage without its question set, its repetition count and its date is not a measurement you can check.</p>
+
+      <h2 class="posth2">What is the difference between GEO software and AEO software?</h2>
+      <p>In practice the terms are used interchangeably by most vendors, and the distinction is more editorial than technical. Answer engine optimization tends to emphasise being the answer to a direct question; generative engine optimization tends to emphasise appearing inside generated content of any kind. If a vendor draws a sharp line between them, ask what they measure differently as a result.</p>
+
+      <h2 class="posth2">What should an AEO tool actually report?</h2>
+      <p>Four things, and they are separable. Whether an engine can retrieve you when asked by name. Whether what it says about you is accurate. Whether it recommends you to someone who did not ask for you. And which sources it cited instead. A single composite score can hide a business that is perfectly findable by name and never recommended, which is a different problem with a different fix.</p>
+      <p>Two more worth asking about: whether the tool distinguishes an answer that came from a live web search from one that came from the model's memory, and whether it stores the answer text so you can reproduce a figure or dispute it.</p>
+
+      <h2 class="posth2">Are there affordable alternatives for a small business?</h2>
+      <p>Several tools in the table publish entry pricing; the table shows what we verified and when. Before paying for any of them, including ours, run one free check somewhere and see whether the output tells you what to change. A visibility score you cannot act on is a subscription, not a tool.</p>
+
+      <h2 class="posth2">How can I check my own brand right now?</h2>
+      <p>You do not need a tool for the first look. Open ChatGPT, Claude, Perplexity and Gemini, ask each the question a buyer would ask — not your brand name, the category — and write down which companies get named. Do it three times per engine, because the answers vary. That is the whole method; the tools automate it, add repetition, and keep the receipts.</p>
+      <p>If you want that automated, <a class="ilink" href="https://aeoanalyzers.com/">our free check</a> reports the diagnosis without an account. We published our own result: on those category questions, AI recommended us <b>0% of the time</b> across 200 recorded answers, and we <a class="ilink" href="/blog/i-scored-zero">wrote up the zero</a> rather than quietly fixing it.</p>
+
+      <h2 class="posth2">What we are not telling you</h2>
+      <p>We have not tested our competitors' products. We have not been paid by anyone on this page, and no one on it has paid to be here or to be left off. We do not claim to be the best tool in this category, and we would distrust any vendor page that did. This page exists because our own measurement showed us losing these questions, and we thought the honest response was to write the reference we were missing rather than to complain about the result.</p>
+
+    </div>
+
+    <div class="postoutro">
+      <p><b>Corrections.</b> Every claim about another company here is dated and sourced to that company's own material. If a fact is out of date or wrong, we will correct it and leave a dated note saying what changed.</p>
+    </div>
+  </article>
+</div>
+<footer class="sitefoot">
+  <div class="fin">
+    <nav class="fnav">
+      <a href="https://aeoanalyzers.com/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://aeoanalyzers.com/privacy">Privacy</a>
+      <a href="https://aeoanalyzers.com/terms">Terms</a>
+    </nav>
+    <div class="fcop">© 2026 AEO Analyzers · PI GenAI LLC</div>
+  </div>
+</footer>
+</body>
+</html>
