@@ -44,7 +44,7 @@ Add a dated note to `/blog/i-scored-zero` that says both things plainly: the Sep
 80% under the corrected rule, and the July figure predates transcript retention so it cannot be
 re-derived. Draft:
 
-> **Note, September 12 2026.** Two corrections to the measurement, both found by our own checks.
+> **Note, September 8 2026.** Two corrections to the measurement, both found by our own checks.
 > A scoring rule was fixed in September: an engine that runs a search, fails to find the site and
 > says so was previously counted as a mention. Under the corrected rule the September branded
 > figure is 80% of 40 runs, not 82%. Separately, the July figure of 98% was recorded before we
