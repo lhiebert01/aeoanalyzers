@@ -847,7 +847,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           </p>
           <p className="text-sm text-zinc-500 max-w-xl mx-auto mb-7">
             There is no sample run, on purpose. One engine asked once is not a measurement, and handing
-            you a number we would not stand behind is the opposite of what this tool is for.{' '}
+            you a number we would not stand behind is the opposite of what this tool is for. The way to
+            try it is the Day Pass — a full sweep, not a sample of one.{' '}
             <span className="text-zinc-600">Your AEO score and your gaps stay free — run those on the{' '}
             <button onClick={onOpenAnalyzer} className="font-semibold text-indigo-600 hover:underline">Analyzer</button>{' '}
             as often as you like.</span>
@@ -856,7 +857,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
             className="inline-flex items-center gap-2 bg-zinc-900 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-zinc-800 transition-all shadow-xl shadow-zinc-900/20">
             Get a Day Pass or subscribe <ArrowLeft className="w-5 h-5 rotate-180" />
           </button>
-          <p className="text-xs text-zinc-400 mt-4">$24 Day Pass — 24 hours, no subscription. Or Pro / Business.</p>
+          <p className="text-xs text-zinc-400 mt-4">$24 Day Pass — 24 hours, full sweeps, no subscription. Or Pro / Business for ongoing measurement.</p>
         </div>
       )}
 
