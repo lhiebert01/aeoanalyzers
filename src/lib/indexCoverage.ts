@@ -154,6 +154,26 @@ export function evaluateIndexCoverage(input: {
   }
 
   // --- 2. Bing Webmaster verification --------------------------------------
+  //
+  // THE ONE DELIBERATE EXCEPTION TO THE FREE-TIER FIX WALL — WO-AEO-TIER-LEAK-007
+  // §2.4, ruled Sep 8 2026, recorded here rather than left to be re-litigated.
+  //
+  // This sentence names bing.com/webmasters and it renders on the FREE tier, where
+  // every other fix link is gated. It stays, for three reasons:
+  //
+  //  1. It names where the gap lives. A diagnosis that cannot say where the problem
+  //     is stops being a diagnosis. "You have no Bing verification signal" is not
+  //     actionable without the name of the place that issues one.
+  //  2. The fix is not here. Step 1 of the Do-Now plan (src/lib/doNowPlan.ts) is
+  //     the actual procedure — the verification method to choose, what it changes,
+  //     what it does not, how long it takes — and that is gated and stays gated.
+  //     The two occurrences of this URL are on opposite sides of the wall ON
+  //     PURPOSE. Do not "harmonise" them.
+  //  3. It is a free public tool at a URL any search returns, so withholding it
+  //     costs the customer and protects nothing.
+  //
+  // The caveat clause matters too: verification by DNS or XML file is invisible
+  // from the page, so this finding can be a false positive and says so.
   if (!bingVerificationMetaFound) {
     score = Math.max(0, score - 15);
     recommendations.push(

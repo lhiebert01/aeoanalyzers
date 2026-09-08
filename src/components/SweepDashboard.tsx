@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Type } from '@google/genai';
-import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, ArrowLeft, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, ArrowLeft, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil, ShieldAlert, ShieldCheck, Lock } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, largestLosingSegment, segmentSummaryNote, SEGMENT_LABEL } from '../lib/querySegment';
@@ -48,7 +48,10 @@ async function llmJson(prompt: string, schema: any): Promise<string> {
   const resp = await fetch('/api/llm-generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-    body: JSON.stringify({ prompt, schema }),
+    // `purpose` is what lets the shared LLM proxy refuse sweep setup for a free
+    // caller (WO-AEO-TIER-LEAK-007 §2.1). The analyzer's own calls carry no
+    // purpose and are unaffected — a free user's score still works.
+    body: JSON.stringify({ prompt, schema, purpose: 'sweep-config' }),
   });
   if (!resp.ok) {
     let detail = '';
@@ -186,6 +189,13 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
   // depth are NOT persisted (derived live at run time) and are intentionally not
   // re-queried here, so those sections simply don't render in a saved view.
   const savedView = !!savedSweepId;
+  // WO-AEO-TIER-LEAK-007 — founder ruling, Sep 8 2026: "unless users pay for the
+  // sweep, no sweep functionality should work." Not the questions, not the
+  // competitor inference, not the auto-fill, not the downloads. The page still
+  // explains what a sweep is and offers the Day Pass; nothing on it runs.
+  // The server refuses independently (api/run-sweep 402, api/llm-generate 402 on
+  // purpose=sweep-config) — this flag only decides what is worth drawing.
+  const paidViewer = !!isAdmin || !!isPaidUser;
   const [savedLoading, setSavedLoading] = useState(false);
   const [savedError, setSavedError] = useState<string | null>(null);
   const [savedDate, setSavedDate] = useState<string | null>(null);
@@ -358,6 +368,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
   // buyer questions, then surface them for confirmation (nothing runs/costs a
   // sweep yet). Falls back to the manual confirm panel if the site can't be read.
   async function analyze(forceGuess = false) {
+    if (!paidViewer) return; // WO-007: no site read, no inference, no auto-fill on free
     const d = normDomain(domain);
     if (!d) return;
     setAnalyzing(true); setExtractError(null);
@@ -431,6 +442,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
   }
 
   async function run() {
+    if (!paidViewer) return; // WO-007: the server refuses too (402); this saves the round trip
     setError(null); setResult(null); setAuthority(null); setFidelity(null); setEntityLinking(null); setPageFactDensity(null); setTruth(null); setRunning(true);
     try {
       const d = normDomain(domain);
@@ -810,8 +822,38 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
         </div>
       )}
 
+      {/* WO-AEO-TIER-LEAK-007 — the free-tier wall. The page above explains what a
+          sweep is and what it returns; from here down, nothing runs. No domain box,
+          so no site fetch, no competitor inference, no drafted question bank, no
+          engine call, no download. The question bank is the expensive half of this
+          product and it was being handed over before payment. */}
+      {!paidViewer && !savedView && (
+        <div className="bg-white border-2 border-dashed border-zinc-300 rounded-3xl p-8 text-center">
+          <div className="inline-flex bg-zinc-900 p-4 rounded-2xl mb-5 shadow-xl">
+            <Lock className="w-7 h-7 text-white" />
+          </div>
+          <h2 className="text-2xl font-black tracking-tight mb-3">Citation Sweeps are a paid feature</h2>
+          <p className="text-zinc-600 max-w-xl mx-auto mb-2">
+            A sweep asks ChatGPT, Claude, Perplexity and Gemini the questions your buyers actually type,
+            several times each, and stores every answer as a transcript you can check. We work out your
+            category and your closest competitors, draft the buyer questions, and you edit them before
+            anything runs.
+          </p>
+          <p className="text-zinc-600 max-w-xl mx-auto mb-7">
+            Your AEO score and your gaps stay free — run those on the{' '}
+            <button onClick={onOpenAnalyzer} className="font-semibold text-indigo-600 hover:underline">Analyzer</button>{' '}
+            as often as you like.
+          </p>
+          <button onClick={onUpgrade}
+            className="inline-flex items-center gap-2 bg-zinc-900 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-zinc-800 transition-all shadow-xl shadow-zinc-900/20">
+            Get a Day Pass or subscribe <ArrowLeft className="w-5 h-5 rotate-180" />
+          </button>
+          <p className="text-xs text-zinc-400 mt-4">$24 Day Pass — 24 hours, no subscription. Or Pro / Business.</p>
+        </div>
+      )}
+
       {/* Input — phase 1: just the domain. The AI infers everything else. */}
-      {phase === 'input' && !savedView && (
+      {phase === 'input' && !savedView && paidViewer && (
         <div className="bg-white border border-zinc-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
           <div>
             <label htmlFor="sweep-domain" className="text-lg font-bold text-zinc-900">Enter your website — we&apos;ll do the rest</label>
@@ -837,7 +879,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
       )}
 
       {/* Input — phase 2: verify the guesses + review the drafted questions, then run. */}
-      {phase === 'confirm' && !savedView && (
+      {phase === 'confirm' && !savedView && paidViewer && (
         <div className="bg-white border border-zinc-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -970,7 +1012,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
         </div>
       )}
 
-      {result && (
+      {result && (paidViewer || savedView) && (
         <>
           {result.quickCheck && (
             <div className="rounded-3xl p-6 border-2 border-amber-300 bg-amber-50 shadow-sm">
@@ -1319,14 +1361,21 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                     <ChevronsUpDown className="w-4 h-4" />{expandAll ? 'Collapse all' : 'Expand all'}
                   </button>
                 )}
-                <button onClick={downloadDocx} disabled={docxBusy}
-                  className="inline-flex items-center gap-1.5 bg-zinc-900 text-white px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-zinc-800 disabled:opacity-50">
-                  <Download className="w-4 h-4" />{docxBusy ? 'Preparing…' : 'Download report (Word)'}
-                </button>
-                <button onClick={downloadReport}
-                  className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-700 px-3 py-1.5 rounded-xl text-sm font-semibold hover:bg-zinc-50">
-                  <Download className="w-4 h-4" />Markdown
-                </button>
+                {/* Both downloads, or neither. Word is the readable one — Markdown is
+                    unreadable on iOS and awkward without an editor — so gating one and
+                    leaving the other open is the shape this defect already had. */}
+                {paidViewer && (
+                  <>
+                    <button onClick={downloadDocx} disabled={docxBusy}
+                      className="inline-flex items-center gap-1.5 bg-zinc-900 text-white px-3 py-1.5 rounded-xl text-sm font-bold hover:bg-zinc-800 disabled:opacity-50">
+                      <Download className="w-4 h-4" />{docxBusy ? 'Preparing…' : 'Download report (Word)'}
+                    </button>
+                    <button onClick={downloadReport}
+                      className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-700 px-3 py-1.5 rounded-xl text-sm font-semibold hover:bg-zinc-50">
+                      <Download className="w-4 h-4" />Markdown
+                    </button>
+                  </>
+                )}
               </div>
             </div>
             {showTranscripts && (

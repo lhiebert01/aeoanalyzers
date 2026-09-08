@@ -46,6 +46,16 @@ function alertSweepEngineFail(engine: string, total: number, sample: string) {
 }
 
 const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com'];
+// WO-AEO-TIER-LEAK-007, founder ruling Sep 8 2026, stated three times and once
+// against the work order's own §2.3, which argued for keeping a teaser:
+// "unless users pay for the sweep, no sweep functionality should work" and
+// "no, not a teaser sweep." There is deliberately NO flag here to turn one back
+// on. The quickCheck branches further down are now unreachable; they are left in
+// place rather than ripped out in the same commit as the wall, because deleting
+// them touches the scoring path and this change must not.
+const PAYWALL_MESSAGE =
+  'A Citation Sweep asks the real answer engines your buyers\' questions and stores every answer. ' +
+  'It is a paid feature — start a $24 Day Pass or a plan to run one.';
 // Monthly sweep quota per tier — the real-money spend guardrail. A size-capped
 // sweep MEASURED at ~$1.34 COGS (Haiku + economical engines, max_searches 3), so
 // gross margin stays ≥75% even at max usage: Day Pass ~79%, Pro ~75%, Business ~84%.
@@ -68,14 +78,22 @@ class HttpError extends Error {
 /** Resolve the caller's access level. Sweeps spend real money, so:
  *  - Paid (Pro/Business/Day Pass) or admin → FULL sweep (all engines, N up to 5,
  *    competitors, transcripts, persisted), subject to a per-tier monthly quota.
- *  - Free / unauthenticated → DOWNGRADED to a near-zero-cost QUICK CHECK
- *    (Gemini-only, 1 branded + 1 category, N=1, not persisted) — a teaser, not a
- *    hard paywall. Only paid users hitting their quota get an error. */
+ *  - Free / unauthenticated → REFUSED with 402. No engine call, no cost.
+ *
+ *  It used to downgrade a free caller to a near-zero-cost quick check (Gemini
+ *  only, 1 branded + 1 category, N=1, not persisted) — a teaser rather than a
+ *  wall. That teaser was the leak: reaching it meant a free account had already
+ *  been handed the drafted competitor set and the twelve-question buyer panel,
+ *  which is the expensive half of this product. WO-AEO-TIER-LEAK-007. */
 async function resolveAccess(req: VercelRequest): Promise<{ userId: string | null; tier: string; quickCheck: boolean }> {
   const supaUrl = process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const anon = process.env.VITE_SUPABASE_ANON_KEY;
-  const FREE = { userId: null, tier: 'free', quickCheck: true };
+  // WO-AEO-TIER-LEAK-007 — the wall, and it is here rather than in the interface.
+  // A gate written for a button is not a gate; anyone with the URL still has the
+  // endpoint. This refuses before a single engine call is made, so a free caller
+  // costs nothing and receives nothing.
+  const FREE = (): never => { throw new HttpError(402, PAYWALL_MESSAGE); };
 
   // Admin/service bypass (cron, internal testing).
   const adminToken = process.env.ADMIN_SWEEP_TOKEN;
@@ -83,11 +101,11 @@ async function resolveAccess(req: VercelRequest): Promise<{ userId: string | nul
 
   const authHeader = String(req.headers['authorization'] || '');
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-  if (!token || !supaUrl || !anon || !serviceKey) return FREE; // no session → free quick check
+  if (!token || !supaUrl || !anon || !serviceKey) return FREE(); // no session → refused
 
   // Verify the Supabase JWT; an invalid/expired token just gets the free teaser.
   const ures = await fetch(`${supaUrl}/auth/v1/user`, { headers: { apikey: anon, Authorization: `Bearer ${token}` } });
-  if (!ures.ok) return FREE;
+  if (!ures.ok) return FREE();
   const u: any = await ures.json();
   const userId: string = u.id;
   const email = String(u.email || '').toLowerCase();
@@ -102,7 +120,7 @@ async function resolveAccess(req: VercelRequest): Promise<{ userId: string | nul
   let tier: string | null = null;
   if (sub === 'Business' || sub === 'Pro') tier = sub;
   else if (dayPassActive) tier = 'daypass';
-  if (!tier) return { userId, tier: 'free', quickCheck: true }; // signed-in free user → quick check
+  if (!tier) return FREE(); // signed-in free user → refused (WO-007)
 
   // Paid: enforce the monthly quota (this is the only hard error).
   const monthStart = new Date();
@@ -237,7 +255,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     access = await resolveAccess(req);
   } catch (e: any) {
     if (e instanceof HttpError) return res.status(e.status).json({ error: e.message });
-    access = { userId: null, tier: 'free', quickCheck: true };
+    // An unexpected failure resolving entitlement must NOT hand out a sweep. This
+    // endpoint spends money per call, so it fails CLOSED — the opposite of
+    // llm-generate, which fails open to protect a paying customer during an outage.
+    return res.status(503).json({ error: 'Could not verify your plan. Try again shortly.' });
   }
 
   try {

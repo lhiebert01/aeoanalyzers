@@ -145,11 +145,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
   const prompt: string = body.prompt;
   const schema: any = body.schema;
+  // WO-AEO-TIER-LEAK-007 §2.1. The sweep's setup calls come through this same
+  // proxy, and the redaction below only knows the ANALYZER's fix fields — so a
+  // drafted competitor set and a twelve-question buyer panel passed through it
+  // whole. They are the expensive half of the product. `purpose` names the caller
+  // so this route can refuse the sweep's calls outright for a non-paying user.
+  const purpose: string = typeof body.purpose === 'string' ? body.purpose : '';
   if (!prompt || typeof prompt !== 'string') {
     return res.status(400).json({ error: 'prompt is required' });
   }
 
   try {
+    // Sweep setup is refused BEFORE generating, not redacted afterwards: a free
+    // caller must not cost us the inference either. Fails CLOSED — an
+    // indeterminate entitlement gets no sweep config — because the free path here
+    // is a refusal, so nobody legitimate is locked out of anything they paid for.
+    if (purpose === 'sweep-config') {
+      const gate = await isPaidRequest(req);
+      if (!gate.paid) {
+        return res.status(402).json({
+          error: 'A Citation Sweep is a paid feature. Start a $24 Day Pass or a plan to run one.',
+        });
+      }
+    }
+
     // Resolve entitlement in parallel with generation (no added latency).
     const entP = isPaidRequest(req);
 
