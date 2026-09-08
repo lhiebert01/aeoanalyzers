@@ -991,6 +991,7 @@ export default function App() {
               <SweepDashboard
                 onUpgrade={() => navigateTo('payments')}
                 isAdmin={isAdmin}
+                isPaidUser={isPaidUser}
                 onOpenAnalyzer={() => navigateTo('analyzer')}
                 savedSweepId={savedSweepId}
                 onBackToHistory={() => { setSavedSweepId(null); setView('history'); window.history.pushState({}, '', '/'); window.scrollTo(0, 0); }}

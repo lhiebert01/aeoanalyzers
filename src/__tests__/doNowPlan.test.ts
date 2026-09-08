@@ -217,3 +217,39 @@ describe('§3.3, §3.4 and Part C', () => {
     expect(JSON.stringify(a)).toBe(JSON.stringify(b));
   });
 });
+
+/** THE GATE FOLLOWS THE VIEWER, NOT THE RUN — found Sep 8 2026 while writing the
+ *  check-7 instructions, by asking what `result.tier` is in a rebuilt saved sweep.
+ *
+ *  It was nothing. The saved-view reconstruction built a SweepResponse with no `tier`
+ *  field, and the gate reads `result.tier !== 'free'` — which is true for `undefined`.
+ *  So every saved sweep rendered the paid step-by-step to whoever opened it.
+ *
+ *  Not reachable by an account that never paid: a free sweep is a quick check and is
+ *  never persisted, so a never-paid account has no saved sweep to open. Reachable by
+ *  the one account that does have both — a Pro subscriber whose plan lapses. They keep
+ *  every stored sweep and read it as a free user.
+ *
+ *  The component is not unit-mountable here, so this asserts on its source. Prove it by
+ *  deleting the `tier:` line from the reconstruction: this test goes red. */
+describe('the paid gate in a saved sweep follows the viewer', () => {
+  const src = () => {
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { resolve } = require('node:path') as typeof import('node:path');
+    return readFileSync(resolve(__dirname, '../components/SweepDashboard.tsx'), 'utf8');
+  };
+
+  it('the rebuilt result carries a tier derived from the viewer, not left undefined', () => {
+    expect(src()).toMatch(/tier:\s*\(isAdmin \|\| isPaidUser\) \? 'paid' : 'free'/);
+  });
+
+  it('the component takes the viewer entitlement as a prop', () => {
+    expect(src()).toMatch(/isPaidUser\?: boolean/);
+  });
+
+  it('App passes it, so the prop is not silently undefined in production', () => {
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { resolve } = require('node:path') as typeof import('node:path');
+    expect(readFileSync(resolve(__dirname, '../App.tsx'), 'utf8')).toContain('isPaidUser={isPaidUser}');
+  });
+});

@@ -160,7 +160,7 @@ const ENGINE_LABEL: Record<string, string> = {
   claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini',
 };
 
-export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, savedSweepId, onBackToHistory }: { onUpgrade?: () => void; isAdmin?: boolean; onOpenAnalyzer?: () => void; savedSweepId?: string | null; onBackToHistory?: () => void }) {
+export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenAnalyzer, savedSweepId, onBackToHistory }: { onUpgrade?: () => void; isAdmin?: boolean; isPaidUser?: boolean; onOpenAnalyzer?: () => void; savedSweepId?: string | null; onBackToHistory?: () => void }) {
   const [domain, setDomain] = useState('');
   const [brand, setBrand] = useState('');
   const [coreCategory, setCoreCategory] = useState('');
@@ -266,6 +266,15 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           runs: scored,
           persisted: true,
           generatedAt: sweep.created_at,
+          // THE GATE FOLLOWS THE VIEWER, NOT THE RUN. A live run carries the tier the
+          // server resolved for whoever asked. A rebuild carried none, so `tier` was
+          // undefined and `tier !== 'free'` was true — every saved sweep rendered the
+          // paid Do-Now steps to whoever could open it. Unreachable for a never-paid
+          // account (free sweeps are quick checks and are never persisted) but wide
+          // open on the one path that exists: a Pro subscriber whose plan lapses keeps
+          // every stored sweep and reads it as a free user. Found writing the check-7
+          // instructions, Sep 8 2026.
+          tier: (isAdmin || isPaidUser) ? 'paid' : 'free',
         };
         if (cancelled) return;
         setResult(reconstructed);
