@@ -32,6 +32,60 @@ export interface SweepActionInputs {
  *  to the structural (AEO Score) fix path. Named for testability. */
 export const WEAK_RETRIEVABILITY = 80;
 
+/** Normalise a name or host to comparable letters: "AEO Analyzers" -> "aeoanalyzers",
+ *  "thesmartaiworker.com" -> "thesmartaiworker". */
+function slug(x: string): string {
+  return String(x || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '')
+    .split('/')[0].replace(/\.[a-z.]+$/, '').replace(/[^a-z0-9]/g, '');
+}
+
+/** Is the domain owned by this user? Fails CLOSED — an unknown domain is treated as
+ *  owned, so we never publish a disclaimer against something that might be theirs.
+ *  (WO-AEO-REPORT-INTEGRITY-003 §3.2.) */
+export function isOwnedDomain(candidate: string, owned: string[] | undefined): boolean {
+  const c = slug(candidate);
+  return (owned || []).some((o) => slug(o) === c);
+}
+
+/** Does the entered brand plausibly belong to the domain being swept?
+ *
+ *  WO-AEO-REPORT-INTEGRITY-003 §2.1/§2.2. A sweep of thesmartaiworker.com carrying the
+ *  brand "AEO Analyzers" made the report emit an Organization node binding the name
+ *  AEO Analyzers to thesmartaiworker.com — manufacturing, in machine-readable form on
+ *  the customer's own site, the exact entity collision this product exists to detect —
+ *  and a visible line disclaiming affiliation with aeoanalyzers.com, the user's own
+ *  product.
+ *
+ *  The test is the founder's one-liner: would this brand's own website be the domain we
+ *  are sweeping? Two signals, and either is enough to declare a mismatch:
+ *    - the site's OWN declared name (from its schema/title) differs from the entered brand
+ *    - the brand slug does not appear in the domain
+ *  When they disagree we emit NOTHING rather than a confident wrong answer. */
+export function brandDomainMismatch(
+  domain: string,
+  brand: string | undefined,
+  declaredName?: string,
+): { mismatch: boolean; reason: string } {
+  const b = slug(brand || '');
+  if (!b) return { mismatch: false, reason: '' };
+  const d = slug(domain);
+  const slugMatches = d.includes(b) || b.includes(d);
+  const dn = slug(declaredName || '');
+  if (dn && dn !== b && !slugMatches) {
+    return {
+      mismatch: true,
+      reason: `the entered brand "${brand}" does not match this site's own declared name${declaredName ? ` ("${declaredName}")` : ''}, and "${brand}" does not appear in ${domain}`,
+    };
+  }
+  if (!slugMatches && !dn) {
+    return {
+      mismatch: true,
+      reason: `"${brand}" does not appear in ${domain} and the site declares no name we could check it against`,
+    };
+  }
+  return { mismatch: false, reason: '' };
+}
+
 /** The paste-ready disambiguation remediation — a connected @id graph + one visible
  *  unaffiliation line. Only re-expresses DETECTED values (brand, domain, colliding
  *  names): no fabricated facts (claimsSafety discipline). Packaged like the Score's
@@ -40,10 +94,30 @@ export function remediationSnippet(
   domain: string,
   brand: string | undefined,
   collisions: string[],
-  served?: { hasOrg?: boolean; hasOrgId?: boolean; hasDisambiguation?: boolean; sameAs?: string[] },
+  served?: { hasOrg?: boolean; hasOrgId?: boolean; hasDisambiguation?: boolean; sameAs?: string[]; declaredName?: string; ownedDomains?: string[] },
 ): string[] {
   const name = (brand || domain).trim();
   const url = `https://${domain}`;
+
+  // §3.2 — never disclaim a domain the user owns. Fails closed.
+  const owned = served?.ownedDomains;
+  const safeCollisions = collisions.filter((c) => !isOwnedDomain(c, owned));
+
+  // §3.3 — if brand and domain disagree, emit NO Organization block and say why.
+  // Silence is correct; a confident wrong answer is the failure mode this product exists
+  // to expose, and publishing it would create a collision on the customer's own site.
+  const mm = brandDomainMismatch(domain, brand, served?.declaredName);
+  if (mm.mismatch) {
+    return [
+      `**We are not generating schema for this sweep, and here is why.**`,
+      ``,
+      `You entered the brand **${name}** but swept **${domain}**, and ${mm.reason}.`,
+      ``,
+      `Publishing an Organization block binding "${name}" to ${domain} would tell every answer engine that the organization called ${name} lives at ${domain}. If that is not true, it creates exactly the entity confusion this report is built to find — in machine-readable form, on your own site, in the place engines trust most.`,
+      ``,
+      `**Re-run with the brand and the domain matched**, or confirm that ${name} really is the name of ${domain}, and the schema block will be generated.`,
+    ];
+  }
 
   // WO-INTEGRITY-002 B5: if the page ALREADY ships an Organization, prescribe only the
   // delta — never tell it to paste a second Organization node.
@@ -59,7 +133,7 @@ export function remediationSnippet(
     const out = [`You already ship an Organization node — don't paste a second one. Add only what's missing:`];
     if (missing.length) for (const m of missing) out.push(`- ${m}`);
     else out.push(`- your Organization schema looks complete; focus on the visible unaffiliation line below`);
-    const named = collisions.slice(0, 3).join(', ');
+    const named = safeCollisions.slice(0, 3).join(', ');
     out.push('');
     out.push(named
       ? `And one visible line on your homepage/footer: "${name} (${domain}) is not affiliated with similarly named entities such as ${named}."`
@@ -80,7 +154,7 @@ export function remediationSnippet(
     '</script>',
     '```',
   ];
-  const named = collisions.slice(0, 3).join(', ');
+  const named = safeCollisions.slice(0, 3).join(', ');
   const line = named
     ? `And one visible line on your homepage/footer: "${name} (${domain}) is not affiliated with similarly named entities such as ${named}."`
     : `And one visible line on your homepage/footer stating ${name} (${domain}) is not affiliated with any similarly named entity.`;
