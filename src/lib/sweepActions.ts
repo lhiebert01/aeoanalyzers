@@ -2,9 +2,14 @@
 //
 // Every sweep report (web + .md + exec variant) ends by mapping each MEASURED
 // layer to the concrete next action — so a sweep is a work order, not just a
-// scoreboard. Deterministic + self-contained (no intra-lib imports) so it renders
-// identically in the client and in a serverless exec-report build. The monthly
-// re-sweep line makes the measurement loop a product behavior, not a blog promise.
+// scoreboard. Deterministic so it renders identically in the client and in a
+// serverless exec-report build. Its ONE intra-lib import is ./schemaGenerator, a
+// pure module with no further imports — WO-AEO-REPORT-INTEGRITY-003 Rev B §2.1
+// requires a single schema source of truth, and duplicating it here to preserve
+// zero-imports is exactly the divergence that order exists to remove.
+// The monthly re-sweep line makes the measurement loop a product behavior.
+
+import { generateSchema, isOwnedDomain, brandDomainMismatch } from './schemaGenerator';
 
 export interface SweepActionInputs {
   /** Branded retrievability %, or null if unmeasured. Weak → structural fix path. */
@@ -32,60 +37,6 @@ export interface SweepActionInputs {
  *  to the structural (AEO Score) fix path. Named for testability. */
 export const WEAK_RETRIEVABILITY = 80;
 
-/** Normalise a name or host to comparable letters: "AEO Analyzers" -> "aeoanalyzers",
- *  "thesmartaiworker.com" -> "thesmartaiworker". */
-function slug(x: string): string {
-  return String(x || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '')
-    .split('/')[0].replace(/\.[a-z.]+$/, '').replace(/[^a-z0-9]/g, '');
-}
-
-/** Is the domain owned by this user? Fails CLOSED — an unknown domain is treated as
- *  owned, so we never publish a disclaimer against something that might be theirs.
- *  (WO-AEO-REPORT-INTEGRITY-003 §3.2.) */
-export function isOwnedDomain(candidate: string, owned: string[] | undefined): boolean {
-  const c = slug(candidate);
-  return (owned || []).some((o) => slug(o) === c);
-}
-
-/** Does the entered brand plausibly belong to the domain being swept?
- *
- *  WO-AEO-REPORT-INTEGRITY-003 §2.1/§2.2. A sweep of thesmartaiworker.com carrying the
- *  brand "AEO Analyzers" made the report emit an Organization node binding the name
- *  AEO Analyzers to thesmartaiworker.com — manufacturing, in machine-readable form on
- *  the customer's own site, the exact entity collision this product exists to detect —
- *  and a visible line disclaiming affiliation with aeoanalyzers.com, the user's own
- *  product.
- *
- *  The test is the founder's one-liner: would this brand's own website be the domain we
- *  are sweeping? Two signals, and either is enough to declare a mismatch:
- *    - the site's OWN declared name (from its schema/title) differs from the entered brand
- *    - the brand slug does not appear in the domain
- *  When they disagree we emit NOTHING rather than a confident wrong answer. */
-export function brandDomainMismatch(
-  domain: string,
-  brand: string | undefined,
-  declaredName?: string,
-): { mismatch: boolean; reason: string } {
-  const b = slug(brand || '');
-  if (!b) return { mismatch: false, reason: '' };
-  const d = slug(domain);
-  const slugMatches = d.includes(b) || b.includes(d);
-  const dn = slug(declaredName || '');
-  if (dn && dn !== b && !slugMatches) {
-    return {
-      mismatch: true,
-      reason: `the entered brand "${brand}" does not match this site's own declared name${declaredName ? ` ("${declaredName}")` : ''}, and "${brand}" does not appear in ${domain}`,
-    };
-  }
-  if (!slugMatches && !dn) {
-    return {
-      mismatch: true,
-      reason: `"${brand}" does not appear in ${domain} and the site declares no name we could check it against`,
-    };
-  }
-  return { mismatch: false, reason: '' };
-}
-
 /** The paste-ready disambiguation remediation — a connected @id graph + one visible
  *  unaffiliation line. Only re-expresses DETECTED values (brand, domain, colliding
  *  names): no fabricated facts (claimsSafety discipline). Packaged like the Score's
@@ -98,6 +49,13 @@ export function remediationSnippet(
 ): string[] {
   const name = (brand || domain).trim();
   const url = `https://${domain}`;
+
+  // One generator, one source of truth (§2.1). It also applies §2.2 (never bind an
+  // unverified name to a URL) and §2.3 (never disclaim an owned domain).
+  const generated = generateSchema({
+    domain, brand, declaredName: served?.declaredName,
+    ownedDomains: served?.ownedDomains, collisions, served,
+  });
 
   // §3.2 — never disclaim a domain the user owns. Fails closed.
   const owned = served?.ownedDomains;
@@ -144,13 +102,10 @@ export function remediationSnippet(
   const graph = [
     '```html',
     '<script type="application/ld+json">',
-    '{',
-    '  "@context": "https://schema.org",',
-    '  "@graph": [',
-    `    { "@type": "Organization", "@id": "${url}/#org", "name": ${JSON.stringify(name)}, "url": "${url}" },`,
-    `    { "@type": "WebSite", "@id": "${url}/#website", "url": "${url}", "publisher": { "@id": "${url}/#org" } }`,
-    '  ]',
-    '}',
+    // WO-AEO-REPORT-INTEGRITY-003 Rev B §2.1: the block comes from the ONE generator
+    // both reports call, so two documents for the same domain cannot contradict each
+    // other. This renderer composes no markup of its own.
+    ...(generated.jsonLd ? generated.jsonLd.split('\n') : []),
     '</script>',
     '```',
   ];

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { remediationSnippet, brandDomainMismatch, isOwnedDomain } from '../lib/sweepActions';
+import { remediationSnippet } from '../lib/sweepActions';
+import { brandDomainMismatch, isOwnedDomain } from '../lib/schemaGenerator';
 
 /** WO-AEO-REPORT-INTEGRITY-003 — regression tests for four defects found in a real run.
  *
