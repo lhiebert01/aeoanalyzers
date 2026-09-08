@@ -7,6 +7,7 @@ import { segmentBreakdown, winnableSegment, largestLosingSegment, segmentSummary
 import { sanitizeCompetitors, lintDefunctNames, stripNonQuestionLines } from '../lib/sweepConfig';
 import { buildSweepActionAgenda } from '../lib/sweepActions';
 import { planSweep } from '../lib/sweepPlan';
+import { estimateSweepCost } from '../lib/costEstimate';
 import { SCORE_VS_SWEEP } from '../content/scoreVsSweep';
 import { ScoreVsSweepCard, CrossLink, AgendaBlock } from './ScoreVsSweepCard';
 import { avgPawc } from '../lib/pawc';
@@ -894,8 +895,26 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
             // WO-INTEGRITY-002 B1(b): reps from the SAME planner run-sweep uses (no duplicate rule).
             const { reps, queriesRun } = planSweep(nQ, nEng, { admin: isAdmin, requestedReps: 3 });
             const answers = queriesRun * nEng * reps;
-            // Raw provider cost is admin-only (never shown to customers — plan quotas cap spend server-side).
-            return <p className="text-xs text-zinc-500 mb-2">{queriesRun} question{queriesRun !== 1 ? 's' : ''} × {nEng} engines × {reps} run{reps > 1 ? 's' : ''} each ≈ {answers} answers{isAdmin ? ` · est. ~$${(answers * 0.009).toFixed(2)}` : ''}</p>;
+            // Raw provider cost is admin-only (never shown to customers — plan quotas cap
+            // spend server-side). WO-AEO-REPORT-INTEGRITY-003 Rev B §2.6: the estimate is
+            // built on MEASURED per-engine cost, not a flat per-answer figure, so the
+            // pre-run and post-run admin figures agree. Per-call cost spans ~307× between
+            // engines, so the mix decides the price far more than the answer count.
+            const est = isAdmin
+              ? estimateSweepCost({ questions: queriesRun, reps, engines: ['claude', 'openai', 'perplexity', 'gemini'] })
+              : null;
+            return (
+              <div className="mb-2">
+                <p className="text-xs text-zinc-500">{queriesRun} question{queriesRun !== 1 ? 's' : ''} × {nEng} engines × {reps} run{reps > 1 ? 's' : ''} each ≈ {answers} answers{est ? ` · est. $${est.expectedUsd.toFixed(2)} (upper $${est.upperUsd.toFixed(2)})` : ''}</p>
+                {est && (
+                  <details className="mt-1">
+                    <summary className="text-xs text-zinc-400 cursor-pointer">show the arithmetic</summary>
+                    <pre className="mt-1 text-[11px] leading-tight text-zinc-500 whitespace-pre-wrap font-mono">{est.arithmetic}</pre>
+                    <p className="mt-1 text-[11px] text-zinc-400">{est.accuracyNote}</p>
+                  </details>
+                )}
+              </div>
+            );
           })()}
           <button onClick={run} disabled={running || !domain.trim() || categoryList.length === 0}
             className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold disabled:opacity-40">
