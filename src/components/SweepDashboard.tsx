@@ -6,6 +6,7 @@ import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, largestLosingSegment, segmentSummaryNote, SEGMENT_LABEL } from '../lib/querySegment';
 import { sanitizeCompetitors, lintDefunctNames, stripNonQuestionLines } from '../lib/sweepConfig';
 import { buildSweepActionAgenda } from '../lib/sweepActions';
+import { buildDoNowPlan } from '../lib/doNowPlan';
 import { planSweep } from '../lib/sweepPlan';
 import { estimateSweepCost } from '../lib/costEstimate';
 import { SCORE_VS_SWEEP } from '../content/scoreVsSweep';
@@ -598,6 +599,33 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
         for (const t of ['live', 'search', 'training']) out.push(`- ${t}: ${bots.tierTotals?.[t] || 0}`);
       }
       out.push('');
+    }
+
+    // WO-003 Rev B §3.1/§3.2 — name which problem they have, then give steps they can
+    // execute. Derived from their OWN per-engine branded retrieval, so a discovery
+    // problem is never handed a schema checklist.
+    {
+      const plan = buildDoNowPlan({
+        domain: r.domain,
+        perEngine: r.summary.engines.map((e) => ({ engine: ENGINE_LABEL[e.engine] || e.engine, found: e.brandedCited, total: e.brandedRuns })),
+        collisions: entityLinking?.collisions ?? [],
+        authorityGap: authority ? authority.authorityDomains.map((d) => ({ domain: d.domain, citations: d.citations })) : [],
+        paid: !!isAdmin || r.tier !== 'free',
+      });
+      out.push('## What to do about these results');
+      out.push('');
+      for (const line of plan.situation) { out.push(line); out.push(''); }
+      if (plan.gatedNote) { out.push(plan.gatedNote); out.push(''); }
+      for (const step of plan.steps) {
+        out.push(`**${step.n}. ${step.what}**`);
+        out.push(`- Why it matters for AI answers: ${step.why}`);
+        if (step.link) out.push(`- Link: ${step.link}`);
+        out.push(`- Time: ${step.time}`);
+        out.push(`- What changes: ${step.changes}`);
+        out.push(`- What does NOT change: ${step.doesNotChange}`);
+        out.push('');
+      }
+      if (plan.noChannelNote) { out.push(plan.noChannelNote); out.push(''); }
     }
 
     // WO-UX-CLARITY-001: map each measured layer to its next action (closing agenda).

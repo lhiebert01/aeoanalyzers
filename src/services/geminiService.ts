@@ -7,7 +7,9 @@ import {
   stripUngroundedNumbers,
   conditionalizeMetricInstruction,
 } from "../lib/claimsSafety";
-import { extractJsonLdNodes } from "../lib/truthRecord";
+import { extractJsonLdNodes, extractTruthRecord } from "../lib/truthRecord";
+import { generateSchema } from "../lib/schemaGenerator";
+import { detectFirstPersonBlank } from "../lib/personIdentity";
 import {
   categoryFromAnswerQuality,
   filterCandidateQueries,
@@ -44,6 +46,15 @@ export interface AnalysisResult {
   recommendations: string[];
   citationProbability: number;
   schemaSnippet?: string;
+  /** WO-003 Rev B §2.1 — deterministic markup from the ONE shared generator. */
+  generatedSchema?: string | null;
+  /** Why the generator refused, when it did. Silence beats a confident wrong answer. */
+  generatedSchemaRefusedBecause?: string | null;
+  /** §2.5 — name/title inconsistencies found while building the markup. */
+  schemaFindings?: string[];
+  /** §2.7 — the first-person blank. */
+  personIdentityFinding?: string;
+  personIdentityRemediation?: string[];
   // Phase 2: Score Breakdown
   scoreBreakdown?: {
     entity: number;    // 0-100: Schema.org, OpenGraph, entity identity
@@ -968,6 +979,58 @@ export function applyAccuracyGuards(
       const existing = new Set(result.recommendations);
       const toAdd = result.indexCoverage.recommendations.filter((r) => !existing.has(r));
       result.recommendations = [...result.recommendations, ...toAdd];
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // WO-003 Rev B §2.1 — ONE schema generator, called by BOTH renderers.
+  //
+  // Until now the analysis report shipped JSON-LD authored by the language model,
+  // while the sweep report used deterministic code. The two disagreed for the same
+  // domain on the same day, and nothing told the customer which to paste. A model
+  // must not author machine-readable claims: markup is a factual assertion about
+  // identity, so the grounded-output rule that governs numbers governs it too.
+  //
+  // The generator refuses rather than guessing, so when it declines we carry its
+  // reason into the report instead of falling back to the model's block.
+  if (pageHtml) {
+    const truth = extractTruthRecord(pageHtml, null);
+    const domain = (() => {
+      try { return new URL(pageUrl || '').hostname.replace(/^www\./, ''); } catch { return ''; }
+    })();
+    if (domain) {
+      const gen = generateSchema({
+        domain,
+        brand: truth.brandName || undefined,
+        declaredName: truth.brandName || undefined,
+        ownedDomains: [domain],
+        collisions: [], // the analysis path has no collision detector; the sweep supplies them
+      });
+      result.generatedSchema = gen.jsonLd;
+      result.generatedSchemaRefusedBecause = gen.refusedBecause;
+      result.schemaFindings = gen.findings;
+      // The model's own markup is replaced, never merged: two sources is the defect.
+      if (gen.jsonLd) {
+        result.verifiedSchema = gen.jsonLd;
+        result.comprehensiveSchema = gen.jsonLd;
+        result.schemaSnippet = gen.jsonLd;
+      } else {
+        result.verifiedSchema = undefined;
+        result.comprehensiveSchema = undefined;
+        result.schemaSnippet = undefined;
+      }
+    }
+
+    // §2.7 — the first-person blank. A page asserting a Person with no third-person
+    // pronoun and no gender property gives an engine nothing to read, and it infers
+    // from the name. Detected by nothing else, ours or a competitor's.
+    const fp = detectFirstPersonBlank(pageHtml);
+    if (fp.firstPersonBlank && fp.finding) {
+      result.personIdentityFinding = fp.finding;
+      result.personIdentityRemediation = fp.remediation;
+      if (Array.isArray(result.recommendations) && !result.recommendations.includes(fp.finding)) {
+        result.recommendations = [...result.recommendations, fp.finding];
+      }
     }
   }
 

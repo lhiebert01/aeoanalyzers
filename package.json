@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/prerender.mjs",
+    "build": "node scripts/check-no-orphan-modules.mjs && vite build && node scripts/prerender.mjs",
     "build:nopre": "vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
