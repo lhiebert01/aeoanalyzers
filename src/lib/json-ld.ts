@@ -90,9 +90,26 @@ function founderNode() {
     '@type': 'Person',
     '@id': FOUNDER_ID,
     name: 'Lindsay Hiebert',
-    jobTitle: 'Founder & Sole Creator',
+    // WO-PORTFOLIO-PERSON-IDENTITY-001 §2.2. A Sep 8 2026 sweep of a sibling property
+    // returned "She is the founder of PI GenAI LLC" — the engine was not working from
+    // bad data but from NO data: first-person copy throughout, and no gender in the
+    // markup. Asked who this person is, it inferred from the name and inferred wrong.
+    // These four fields are the fix, and they are identity facts rather than claims.
+    givenName: 'Lindsay',
+    familyName: 'Hiebert',
+    gender: 'Male',
+    // §2.3 one property, one Person: the ratified jobTitle form, identical across every
+    // PI GenAI property. Was 'Founder & Sole Creator', which differed from the others.
+    jobTitle: 'Founder and CEO, PIGENAI LLC',
+    // CORRECTED Sep 8 2026. This previously asserted "30+ years across major US carriers
+    // (AT&T, Verizon, T-Mobile)". That claim is UNVERIFIED — no carrier employment
+    // appears in the founder's LinkedIn record, and the repo has carried it flagged as
+    // unverified since August. Served JSON-LD is a machine-readable factual assertion,
+    // so the grounded-output rule applies to it exactly as it does to a number in a
+    // report: an unverified claim is removed, not softened. What remains is the
+    // verified employment record.
     description:
-      '30+ years across major US carriers (AT&T, Verizon, T-Mobile), ~15 years at Cisco Systems, and ~7 years at Intel — including leading the Intel Network Builders ecosystem (550+ partners). CISSP. Solo builder of 15+ production AI apps.',
+      'Founder and CEO of PIGENAI LLC. 15 years at Cisco Systems and 8 years at Intel Corporation, including Senior Product Manager for AI, Network and Edge, and the Intel Network Builders ecosystem. CISSP. Builder of the PI GenAI portfolio of production AI applications.',
     worksFor: { '@id': ORG_ID },
     sameAs: [
       'https://www.linkedin.com/in/lindsayhiebert/',

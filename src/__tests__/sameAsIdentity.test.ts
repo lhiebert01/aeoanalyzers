@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { getGraphJsonLd } from '../lib/json-ld';
 
 /** sameAs asserts IDENTITY — "this node and that URL are the same entity."
  *
@@ -57,5 +58,44 @@ describe('sameAs never asserts identity with the portfolio hub', () => {
     const founder = sameAsArrays().find((a) => a.some((v) => /credly\.com/.test(v)));
     expect(founder).toBeDefined();
     expect(founder!.some((v) => /linkedin\.com/.test(v))).toBe(true);
+  });
+});
+
+/** WO-PORTFOLIO-PERSON-IDENTITY-001 — the first-person blank.
+ *
+ *  A Sep 8 2026 sweep of a sibling property returned "She is the founder of PI GenAI
+ *  LLC". The engine was not working from bad data but from NO data: the page is written
+ *  entirely in the first person, so no third-person pronoun appears anywhere, and the
+ *  markup declared no gender. Asked who this person is, it inferred from the name.
+ *
+ *  These four fields are identity facts, not claims, and they are the fix. */
+describe('the Person node states identity rather than leaving it to inference', () => {
+  // Assert on the EMITTED graph, not the source text: a comment explaining what was
+  // removed legitimately quotes it, and a source-text test would fail on the comment
+  // while passing on a genuine regression.
+  const person = () => {
+    const g: any = getGraphJsonLd();
+    const nodes = g['@graph'] || g;
+    return (Array.isArray(nodes) ? nodes : [nodes]).find((n: any) => n['@type'] === 'Person');
+  };
+
+  it('declares givenName, familyName and gender', () => {
+    const p = person();
+    expect(p.givenName).toBe('Lindsay');
+    expect(p.familyName).toBe('Hiebert');
+    expect(p.gender).toBe('Male');
+  });
+
+  it('uses the ratified jobTitle form shared across every PI GenAI property', () => {
+    expect(person().jobTitle).toBe('Founder and CEO, PIGENAI LLC');
+  });
+
+  it('asserts no unverified employment history', () => {
+    // Served JSON-LD is a machine-readable factual assertion, so the grounded-output
+    // rule applies to it exactly as it does to a number in a report. The carrier claim
+    // has no support in the founder's public record and must not be asserted.
+    const blob = JSON.stringify(person());
+    expect(blob).not.toMatch(/AT&T|Verizon|T-Mobile/);
+    expect(blob).not.toMatch(/30\+ years across major US carriers/);
   });
 });
