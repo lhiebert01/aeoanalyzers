@@ -45,6 +45,17 @@ const brandedQuestions = (domain: string): string[] => [`who is ${domain}`, `wha
 let spent = 0;
 let LIVE_ENGINES: Engine[] = [];
 
+/** The Sep 7 four-engine run stopped at $6.0161 against a $6.00 authorisation. The guard
+ *  checked `spent >= BUDGET` BEFORE each call, so the call that crossed the line had already
+ *  been paid for — it detected the overrun instead of preventing it. A budget that can be
+ *  exceeded is not a budget.
+ *
+ *  Now: RESERVE the cost of the next call before making it, using the most expensive call
+ *  observed so far (with a conservative floor until there is evidence). If the reserve does
+ *  not fit under the ceiling, stop before spending, not after. */
+let maxCallUsd = 0.02; // conservative floor; rises to the worst call actually seen
+function canAfford(): boolean { return spent + maxCallUsd <= BUDGET; }
+
 /** PRE-FLIGHT. The Sep 7 run spent $2.92 before anyone noticed that the Claude adapter
  *  had failed on every single call — the Anthropic balance was too low, and each failure
  *  was caught, badged and correctly excluded, which is right for scoring and useless as
@@ -84,10 +95,12 @@ async function sweepOne(t: any) {
   }
 
   for (const task of tasks) {
-    if (spent >= BUDGET) throw new Error(`BUDGET ABORT at $${spent.toFixed(2)} (max $${BUDGET})`);
+    if (!canAfford()) throw new Error(`BUDGET STOP — spent $${spent.toFixed(4)}, next call reserves $${maxCallUsd.toFixed(4)}, ceiling $${BUDGET}. Stopped BEFORE spending.`);
     try {
       const a: any = await ENGINE_ADAPTERS[task.engine](task.query);
-      spent += a.costUsd || 0;
+      const cost = a.costUsd || 0;
+      spent += cost;
+      if (cost > maxCallUsd) maxCallUsd = cost;
       runs.push({
         engine: task.engine, query: task.query, queryType: task.queryType, runIndex: task.runIndex,
         transcript: a.transcript, sources: a.sources || [], costUsd: a.costUsd || 0,
@@ -110,11 +123,24 @@ async function sweepOne(t: any) {
 }
 
 (async () => {
+  // Resume-safe: a target that already has a result file is not re-run, so topping up the
+  // budget never re-spends on work already banked. ONLY_IDS forces a subset.
+  const only = (process.env.ONLY_IDS || '').split(',').map((x) => x.trim()).filter(Boolean);
+  const { readdirSync } = await import('node:fs');
+  const existing = new Set(
+    readdirSync(OUT).filter((f) => /^S\d+-.*\.json$/.test(f)).map((f) => f.split('-')[0])
+  );
+  const todo = CFG.targets.filter((t: any) =>
+    only.length ? only.includes(t.id) : !existing.has(t.id)
+  );
+  if (!todo.length) { console.log('Nothing to do — every target already has a stored result.'); process.exit(0); }
+  console.error(`to run: ${todo.map((t: any) => t.id).join(', ')} (${CFG.targets.length - todo.length} already banked)`);
+
   LIVE_ENGINES = await preflight(configuredEngines() as Engine[]);
   const live = LIVE_ENGINES;
   console.error(`pre-flight OK — ${live.length} engines answering: ${live.join(', ')}`);
   const results: any[] = [];
-  for (const t of CFG.targets) {
+  for (const t of todo) {
     process.stderr.write(`\n[${t.id}] `);
     try {
       const r = await sweepOne(t);
@@ -125,7 +151,7 @@ async function sweepOne(t: any) {
     } catch (e: any) {
       process.stderr.write(` FAILED: ${String(e?.message || e).slice(0, 120)}`);
       results.push({ target: t, failed: String(e?.message || e) });
-      if (String(e?.message || e).includes('BUDGET ABORT')) break;
+      if (String(e?.message || e).includes('BUDGET STOP')) break;
     }
   }
   writeFileSync(`${OUT}/_wo-sweep-configs-001-results.json`, JSON.stringify({ spentUsd: Number(spent.toFixed(4)), reps: REPS, results }, null, 1));
