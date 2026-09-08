@@ -107,3 +107,38 @@ describe('customer-facing output carries no cost figure', () => {
     }
   });
 });
+
+/** §2.4 amendment — the cost gate must be enforced on the ARTIFACT, not the screen.
+ *
+ *  Two paths produce a downloadable report. The live path zeroes cost server-side in
+ *  `api/run-sweep` for non-admins. The SAVED path reads `cost_usd` straight from
+ *  Supabase, so before this fix the real figure reached the client and only a
+ *  render-time `isAdmin` flag kept it out of the download — "a flag checked at render
+ *  time in one path but not another is exactly how an admin-only field ends up in a
+ *  customer's download."
+ *
+ *  These assert the source-level contract on both paths, because the artifact is
+ *  produced by a React component that cannot be rendered here. */
+describe('2.4 — cost is stripped from the DATA on every export path', () => {
+  const { readFileSync } = require('node:fs') as typeof import('node:fs');
+  const { resolve } = require('node:path') as typeof import('node:path');
+  const ROOT = resolve(__dirname, '../..');
+  const dash = readFileSync(resolve(ROOT, 'src/components/SweepDashboard.tsx'), 'utf8');
+  const api = readFileSync(resolve(ROOT, 'api/run-sweep.ts'), 'utf8');
+
+  it('the saved-view path zeroes cost for non-admins as it maps stored rows', () => {
+    expect(dash).toMatch(/costUsd:\s*isAdmin\s*\?\s*Number\(r\.cost_usd\)\s*\|\|\s*0\s*:\s*0/);
+    // and never maps it unconditionally
+    expect(dash).not.toMatch(/costUsd:\s*Number\(r\.cost_usd\)\s*\|\|\s*0\s*,/);
+  });
+
+  it('the live path zeroes cost server-side, so the client never receives it', () => {
+    expect(api).toMatch(/const adminView = access\.tier === 'admin';/);
+    expect(api).toMatch(/totalCostUsd: 0/);
+  });
+
+  it('both cost lines in the report builder remain admin-gated', () => {
+    expect(dash).toMatch(/if \(isAdmin\) out\.push\(`Total sweep cost/);
+    expect(dash).toMatch(/if \(isAdmin\) out\.push\(`- Cost:/);
+  });
+});

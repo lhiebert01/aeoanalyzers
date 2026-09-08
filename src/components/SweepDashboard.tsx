@@ -216,7 +216,13 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           runIndex: r.run_index,
           transcript: r.transcript || '',
           sources: r.sources || [],
-          costUsd: Number(r.cost_usd) || 0,
+          // WO-AEO-REPORT-INTEGRITY-003 §2.4 amendment. The LIVE path zeroes cost
+          // server-side in api/run-sweep for non-admins, but this SAVED path reads
+          // cost_usd straight from Supabase, so without this the real figure reaches
+          // the client and only a render-time flag keeps it out of the download.
+          // Strip it from the DATA, so the field is absent from the artifact and not
+          // merely hidden on the screen.
+          costUsd: isAdmin ? Number(r.cost_usd) || 0 : 0,
           citedCompetitors: r.cited_competitors || [],
           truncated: r.truncated ?? undefined,
           grounding: (r.grounding as SweepRunResult['grounding']) ?? undefined,
