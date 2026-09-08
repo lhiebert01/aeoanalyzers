@@ -70,6 +70,17 @@ describe('§3.2 — every step carries all five fields, and the tier rule holds'
     }
   });
 
+  it('the G2 step never implies a listing is sufficient', () => {
+    // G2's cited page is REVIEW-RANKED, so a listing alone can put a customer in the
+    // corpus without getting them into an answer. Saying otherwise is precisely the
+    // overpromise this section exists to prevent.
+    const g2 = p.steps.find((s) => /G2/.test(s.what))!;
+    expect(g2.doesNotChange).toMatch(/review-ranked/);
+    expect(g2.doesNotChange).toMatch(/listing alone does not/);
+    expect(g2.doesNotChange).toMatch(/corpus without yet putting you in an answer/);
+    expect(g2.doesNotChange).not.toMatch(/will (get|put) you (into|in) (an )?answer/i);
+  });
+
   it('recommends a directory ONLY from the customer\'s own authority data, and cites the count', () => {
     const g2 = p.steps.find((s) => /G2/.test(s.what));
     expect(g2!.why).toContain('cited 7 times');
@@ -83,6 +94,21 @@ describe('§3.2 — every step carries all five fields, and the tier rule holds'
     expect(w!.doesNotChange).toContain('flagged for deletion');
     const noCollision = buildDoNowPlan({ ...paid, perEngine: [{ engine: 'openai', found: 6, total: 6 }] });
     expect(noCollision.steps.find((s) => /Wikidata/.test(s.what))).toBeUndefined();
+  });
+
+  it('keeps every caveat ON its step — information belongs where it is read', () => {
+    // Reached independently by three sessions in one week. A reader acting on step five
+    // does not scroll back for a caution filed under step one, so no caveat may be moved
+    // into a footnote, an appendix, or a general note at the end.
+    const wikidata = p.steps.find((s) => /Wikidata/.test(s.what))!;
+    const g2 = p.steps.find((s) => /G2/.test(s.what))!;
+    const reddit = p.steps.find((s) => /Reddit/.test(s.what))!;
+    expect(wikidata.doesNotChange).toMatch(/person item/i);
+    expect(g2.doesNotChange).toMatch(/review-ranked/);
+    expect(reddit.doesNotChange).toMatch(/astroturfing/i);
+    // and the plan carries no catch-all caveat block that these could be tidied into
+    expect(Object.keys(p)).not.toContain('caveats');
+    expect(Object.keys(p)).not.toContain('footnotes');
   });
 
   it('ships the Reddit guardrail attached to the step, not as a footnote', () => {
@@ -101,5 +127,31 @@ describe('§3.2 — every step carries all five fields, and the tier rule holds'
     expect(free.steps).toEqual([]);
     expect(free.gatedNote).toContain('Day Pass');
     expect(free.situation.join(' ')).toContain('discovery problem'); // diagnosis is theirs either way
+  });
+
+  /** Green-light checklist item 7 — the check that catches the instinct to make a good
+   *  how-to available. Run against the richest possible input, so any leak shows. */
+  it('item 7: a free-tier pull leaks no link and no pre-filled value', () => {
+    const free = buildDoNowPlan({
+      domain: 'example.com', paid: false,
+      perEngine: [{ engine: 'openai', found: 6, total: 6 }, { engine: 'claude', found: 0, total: 6 }],
+      collisions: ['lantern.io'],
+      authorityGap: [{ domain: 'g2.com', citations: 7 }, { domain: 'reddit.com', citations: 9 }],
+    });
+    const blob = JSON.stringify(free);
+    expect(free.steps).toEqual([]);
+    expect(blob).not.toMatch(/https?:\/\//);
+    expect(blob).not.toMatch(/sell\.g2\.com|bing\.com\/webmasters|search-console|indexnow|wikidata/i);
+    expect(free.situation.length).toBeGreaterThan(0);
+  });
+
+  it('free-tier copy never refers to steps it does not render', () => {
+    const free = buildDoNowPlan({
+      domain: 'example.com', paid: false,
+      perEngine: [{ engine: 'openai', found: 6, total: 6 }, { engine: 'claude', found: 0, total: 6 }],
+    });
+    expect(free.situation.join(' ')).not.toMatch(/steps below|list below/i);
+    const notFound = buildDoNowPlan({ domain: 'example.com', paid: false, perEngine: [{ engine: 'claude', found: 0, total: 6 }] });
+    expect(notFound.situation.join(' ')).not.toMatch(/steps below|on this list/i);
   });
 });

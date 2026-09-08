@@ -14,7 +14,16 @@
 //  2. **Say what does NOT change.** Overpromising is how this category earned its
 //     reputation, and the honest line costs nothing.
 //  3. **Recommend from the customer's own data.** A generic directory checklist is noise;
-//     a directory the engines demonstrably cite for THEIR category is a finding.
+//     a directory the engines demonstrably cite for THEIR category is a finding. As steps
+//     are added, each new one must earn its place from the customer's own evidence. The
+//     day this becomes the same eight bullets for everyone, it is a listicle.
+//  4. **Information belongs where it is read, not where it is filed.** Every caveat lives
+//     ON the step it qualifies — the Wikidata person-item warning sits in that step's
+//     doesNotChange, the Reddit guardrail in Reddit's, the G2 review-ranking caveat in
+//     G2's. None is a footnote, an appendix, or a general note at the end, because a
+//     reader acting on step five does not scroll back for a caution filed under step one.
+//     This principle was reached independently by three sessions in one week and is
+//     recorded here so a later refactor does not tidy the caveats into a block.
 //
 // Tier: the step-by-step with links and pre-filled values is PAID. Free and public
 // surfaces teach principles only (standing founder ruling).
@@ -84,6 +93,8 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
   const foundBy = scored.filter((e) => e.found > 0).map((e) => e.engine);
   const notFoundBy = scored.filter((e) => e.found === 0).map((e) => e.engine);
   const problem = classifyProblem(input.perEngine);
+  const verb = (list: string[]) => (list.length === 1 ? 'says' : 'say');
+  const does = (list: string[]) => (list.length === 1 ? 'does' : 'do');
 
   const situation: string[] = [];
   if (problem === 'unmeasured') {
@@ -91,14 +102,23 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
   } else if (problem === 'not-found') {
     situation.push(`**You have a discovery problem.** No engine in this sweep retrieved ${input.domain} when asked for you by name.`);
     situation.push(`Nothing you put on your own page fixes this. A page cannot invite a crawler that never arrives. ${STRUCTURED_DATA_RULE}`);
-    situation.push('The steps below are about getting into an index. Schema work is not on this list, and doing it now would cost you time and change nothing.');
+    situation.push(
+      input.paid
+        ? 'The steps below are about getting into an index. Schema work is not on this list, and doing it now would cost you time and change nothing.'
+        : 'The fix is about getting into an index. Schema work will not do it, and doing it now would cost you time and change nothing.'
+    );
   } else if (problem === 'found-but-misdescribed') {
     situation.push(`**You have an accuracy problem, not a discovery problem.** Every engine in this sweep retrieved ${input.domain} when asked for you by name.`);
     situation.push(`They can find you. What they say about you is the thing to fix, and that is what structured data is for. ${STRUCTURED_DATA_RULE}`);
   } else {
     situation.push(`**You have both problems, split by engine.** ${foundBy.join(', ')} retrieved ${input.domain} when asked for you by name. ${notFoundBy.join(', ')} did not.`);
     situation.push(`Those need different fixes and the difference matters: ${STRUCTURED_DATA_RULE}`);
-    situation.push(`So the schema steps below will improve what ${foundBy.join(' and ')} say about you, and will do nothing at all for ${notFoundBy.join(' and ')} until those engines can retrieve you.`);
+    // Free tier renders no steps, so this must not refer to "the steps below".
+    situation.push(
+      input.paid
+        ? `So the schema steps below will improve what ${foundBy.join(' and ')} ${verb(foundBy)} about you, and will do nothing at all for ${notFoundBy.join(' and ')} until ${notFoundBy.length === 1 ? 'that engine' : 'those engines'} can retrieve you.`
+        : `So schema work will improve what ${foundBy.join(' and ')} ${verb(foundBy)} about you, and will do nothing at all for ${notFoundBy.join(' and ')} until ${notFoundBy.length === 1 ? 'that engine' : 'those engines'} can retrieve you.`
+    );
   }
 
   // §3.2 tier rule — the recipe is paid.
@@ -174,7 +194,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
         link: 'https://sell.g2.com',
         time: '30 minutes to create; reviews take longer',
         changes: 'An indexed page carrying your canonical description, on a domain the engines already cite for you.',
-        doesNotChange: 'Category placement on its own. G2 category pages generally need real customer reviews, so expect the profile to sit outside them until you have some.',
+        doesNotChange: "Whether an engine recommends you. The page engines cite is G2's review-ranked category page, and ranking on it needs real customer reviews — a listing alone does not get you onto it. So expect this to put you in the corpus without yet putting you in an answer. That is still progress, because you cannot be recommended from a corpus you are absent from, but do not read a live listing as a result.",
       });
     }
     if (/(^|\.)linkedin\.com$/i.test(d.domain)) {

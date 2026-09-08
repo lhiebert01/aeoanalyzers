@@ -495,6 +495,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
     out.push('| --- | --- |');
     out.push(`| Found when asked by name (retrievability) | ${scoreCell(sc.brandedRetrievabilityPct, sc.brandedRuns)} |`);
     out.push(`| Recommended to new buyers (category win) | ${scoreCell(sc.categoryRecommendationWinPct, sc.categoryRuns)} |`);
+    // State the basis in the report itself, in the same words as the History list and
+    // the opened view, so the three cannot be read as three different measurements.
+    out.push('');
+    out.push('_Category win is pooled across engines over **search-grounded runs only**. An answer given from the model\'s memory is reported as unmeasured, never as a zero, and is excluded from the denominator. N is the number of search-grounded runs._');
     out.push(`| Your own site cited (owned citation rate) | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
     out.push(`| Your share of the category | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
     out.push('');

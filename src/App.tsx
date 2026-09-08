@@ -1102,7 +1102,7 @@ export default function App() {
                   {/* WO-INTEGRITY-002 B7: these figures are the AS-STORED summary; opening a
                       sweep re-scores from stored transcripts (errored runs excluded, branded
                       false-positives corrected), so a row and its opened view can differ. */}
-                  <p className="px-6 pt-4 text-xs text-zinc-500">Figures below are as first stored. <b>Open a sweep to see the re-scored numbers</b> — errored runs are excluded and branded false-positives corrected on open, so an older row may read higher than its opened view.</p>
+                  <p className="px-6 pt-4 text-xs text-zinc-500">Figures below are as first stored, pooled across engines over <b>search-grounded runs only</b> — the same basis as the opened view and the downloaded report. Answers given from the model's memory are unmeasured, not zero, and are excluded. <b>Open a sweep to see the re-scored numbers</b> — errored runs are excluded and branded false-positives corrected on open, so an older row may read higher than its opened view.</p>
                   <div className="overflow-x-auto">
                   <table className="w-full min-w-[560px] text-left">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
@@ -1117,11 +1117,34 @@ export default function App() {
                     </thead>
                     <tbody className="divide-y divide-zinc-100">
                       {sweepHistory.map((s) => {
-                        const engines = (s.summary?.engines || []) as Array<{ retrievabilityPct?: number; citationWinPct?: number }>;
-                        const avg = (k: 'retrievabilityPct' | 'citationWinPct') =>
-                          engines.length ? Math.round(engines.reduce((a, e) => a + (e[k] || 0), 0) / engines.length) : null;
-                        const branded = avg('retrievabilityPct');
-                        const category = avg('citationWinPct');
+                        // POOLED, not averaged — and unmeasured engines are excluded.
+                        //
+                        // This list previously took an unweighted mean of each engine's
+                        // percentage. Two problems compounded. An engine that answered every
+                        // category question from memory has ZERO search-grounded runs, and
+                        // `aggregateSweep` reports its citationWinPct as 0 rather than null —
+                        // so a non-measurement entered the average as a real zero. Averaging
+                        // percentages then weighted an engine with 15 grounded runs the same
+                        // as one with none.
+                        //
+                        // On a real sweep that read 27% here against 53% in the opened view
+                        // and the report: claude 1/15, perplexity 15/15, and two engines at
+                        // 0/0 counted as 0%. Pooling the runs gives 16/30 = 53%, which is what
+                        // the scorecard, the saved view and the downloaded report all use.
+                        // The list is now on the same basis as everything else.
+                        const engines = (s.summary?.engines || []) as Array<{
+                          retrievabilityPct?: number; citationWinPct?: number;
+                          brandedRuns?: number; brandedCited?: number;
+                          categoryRuns?: number; categoryCited?: number;
+                        }>;
+                        const pooled = (citedKey: 'brandedCited' | 'categoryCited', runsKey: 'brandedRuns' | 'categoryRuns') => {
+                          const runs = engines.reduce((a, e) => a + (e[runsKey] || 0), 0);
+                          if (!runs) return null; // nothing measured — never render this as 0%
+                          const cited = engines.reduce((a, e) => a + (e[citedKey] || 0), 0);
+                          return Math.round((cited / runs) * 100);
+                        };
+                        const branded = pooled('brandedCited', 'brandedRuns');
+                        const category = pooled('categoryCited', 'categoryRuns');
                         return (
                           <tr
                             key={s.id}
