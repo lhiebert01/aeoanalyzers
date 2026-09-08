@@ -82,7 +82,34 @@ describe('the remediation states the fact positively and names no engine error',
     expect(text).not.toMatch(/\bwrong(ly)? (described|called|identified)\b/i);
     expect(text).not.toMatch(/engines (?:have )?(?:got|get) (?:this|it) wrong/i);
     expect(text).not.toMatch(/\bincorrectly\b/i);
-    expect(text).toMatch(/is male; he\/him/);
-    expect(text).toContain('statement of fact');
+    // The requirement applies to the SUGGESTED LINE — the thing a customer publishes and
+    // an engine may quote verbatim. Instructions to the customer are not published copy.
+    const suggested = (text.match(/```\n([^`]*is male[^`]*)\n```/) || [])[1] || '';
+    expect(suggested).toMatch(/is male; he\/him\./);
+    expect(suggested).not.toMatch(/wrong|incorrect|mistak|misread/i);
+    expect(text).toContain('as a fact rather than a correction');
+  });
+});
+
+/** Found by running checklist check 8 on Sep 8 2026, not by a unit test.
+ *  "I build tools and I ship them" is first-person copy about PRODUCTS, but the original
+ *  detector counted "them" as a third-person pronoun and let the blank through. Object
+ *  references must not mask the finding. */
+describe('object pronouns do not mask the blank', () => {
+  const node = '<script type="application/ld+json">{"@type":"Person","name":"Lindsay Hiebert"}</script>';
+
+  it('still flags a page whose only "them" refers to objects', () => {
+    const r = detectFirstPersonBlank(node + '<p>I build tools. I ship them every week. I test them myself.</p>');
+    expect(r.firstPersonBlank).toBe(true);
+  });
+
+  it('does NOT flag when a gendered pronoun is present', () => {
+    expect(detectFirstPersonBlank(node + '<p>He founded the company.</p>').firstPersonBlank).toBe(false);
+  });
+
+  it('does NOT flag when singular they refers to the named person', () => {
+    const r = detectFirstPersonBlank(node + '<p>Lindsay Hiebert founded it and they still run it.</p>');
+    expect(r.pronounsFound).toContain('they');
+    expect(r.firstPersonBlank).toBe(false);
   });
 });

@@ -35,7 +35,14 @@ export interface PersonIdentityReport {
   remediation: string[];
 }
 
-const THIRD_PERSON = /\b(he|him|his|she|her|hers|they|them|their|theirs)\b/gi;
+// Pronouns that can only refer to a person. These are the reliable signal.
+const PERSONAL_PRONOUN = /\b(he|him|his|she|her|hers)\b/gi;
+// Singular they is also used for people, but "them" and "their" are constantly used for
+// OBJECTS — "I build tools and I ship them" is first-person copy about products, not a
+// third-person reference to a human. Counting those produced a false negative on exactly
+// that sentence during the Sep 8 checklist run, so they only count when they appear in a
+// sentence that also names the person.
+const SINGULAR_THEY = /\b(they|them|their|theirs)\b/gi;
 
 function visibleText(html: string): string {
   return String(html || '')
@@ -73,7 +80,18 @@ export function detectFirstPersonBlank(html: string): PersonIdentityReport {
   const personName: string | null = person?.name || authorMeta || null;
   const assertsPerson = Boolean(person || authorMeta);
 
-  const pronounsFound = Array.from(new Set((text.match(THIRD_PERSON) || []).map((p) => p.toLowerCase())));
+  const pronounsFound = Array.from(new Set((text.match(PERSONAL_PRONOUN) || []).map((p) => p.toLowerCase())));
+  // Singular "they" counts only in a sentence that also names the person, so object
+  // references do not mask the blank.
+  if (personName) {
+    for (const sentence of text.split(/(?<=[.!?])\s+/)) {
+      if (!sentence.toLowerCase().includes(personName.toLowerCase())) continue;
+      for (const m of sentence.match(SINGULAR_THEY) || []) {
+        const v = m.toLowerCase();
+        if (!pronounsFound.includes(v)) pronounsFound.push(v);
+      }
+    }
+  }
   const declaresGender = Boolean(person && (person.gender || person.Gender));
 
   const firstPersonBlank = assertsPerson && pronounsFound.length === 0 && !declaresGender;
@@ -106,10 +124,17 @@ export function detectFirstPersonBlank(html: string): PersonIdentityReport {
       '}',
       '```',
       '',
-      // Positive assertion only — never a line naming what engines got wrong.
-      `Optionally state it plainly in \`llms.txt\` as a positive fact, for example: ` +
-        `"${personName || 'Full Name'} is male; he/him." Keep it a statement of fact — a machine-readable ` +
-        `file exists to be quoted, so do not write a line about what engines have got wrong.`,
+      // The suggested line is a POSITIVE assertion and nothing else. A machine-readable
+      // file exists to be quoted, so the line must read correctly if an engine repeats it
+      // verbatim in an answer. The override value comes from the field, not the editorial.
+      `You can also state it plainly in \`llms.txt\`, as a fact rather than a correction:`,
+      '',
+      '```',
+      `${personName || 'Full Name'} is male; he/him.`,
+      '```',
+      '',
+      `Write it exactly like that. Anything that describes how the fact has been misread ` +
+        `belongs in your own notes, not in a file whose whole purpose is to be quoted.`,
     ],
   };
 }
