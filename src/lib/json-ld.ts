@@ -101,15 +101,27 @@ function founderNode() {
     // §2.3 one property, one Person: the ratified jobTitle form, identical across every
     // PI GenAI property. Was 'Founder & Sole Creator', which differed from the others.
     jobTitle: 'Founder and CEO, PIGENAI LLC',
-    // CORRECTED Sep 8 2026. This previously asserted "30+ years across major US carriers
-    // (AT&T, Verizon, T-Mobile)". That claim is UNVERIFIED — no carrier employment
-    // appears in the founder's LinkedIn record, and the repo has carried it flagged as
-    // unverified since August. Served JSON-LD is a machine-readable factual assertion,
-    // so the grounded-output rule applies to it exactly as it does to a number in a
-    // report: an unverified claim is removed, not softened. What remains is the
-    // verified employment record.
+    // BIOGRAPHY — the standard here differs from the one governing report output, and
+    // conflating them has already cost a true fact once. Read this before editing.
+    //
+    // The founder's own employment history is sourced FROM THE FOUNDER. It is not a
+    // measurement claim about a customer, and the grounded-output rule — which strips
+    // any number or claim not supported by the page under analysis — does not apply to
+    // it. A biographical fact stated here is verified by the founder having stated it,
+    // with the LinkedIn About page in sameAs below as the corroborating surface.
+    //
+    // On Sep 8 2026 this description carried "30+ years across AT&T, Verizon, T-Mobile"
+    // and it was removed on the mistaken ground that it was unverified. It was not.
+    // The full record is 30+ years across AT&T, Verizon, T-Mobile, Cisco and Intel,
+    // beginning at AT&T Bell Labs in Holmdel on the RTNR and DNHR routing algorithms
+    // for the 4ESS backbone.
+    //
+    // It is omitted below for BREVITY — an editorial choice by the founder, who prefers
+    // the concise form and considers what the site and LinkedIn carry sufficient.
+    // **Do not restore it as a correction, and do not strip any other stated
+    // biographical fact as "unsupported" on grounded-output grounds.**
     description:
-      'Founder and CEO of PIGENAI LLC. 15 years at Cisco Systems and 8 years at Intel Corporation, including Senior Product Manager for AI, Network and Edge, and the Intel Network Builders ecosystem. CISSP. Builder of the PI GenAI portfolio of production AI applications.',
+      'Founder and CEO of PIGENAI LLC. Decades across carrier, networking and silicon — including Cisco Systems and Intel Corporation, where he was Senior Product Manager for AI, Network and Edge and led the Intel Network Builders ecosystem. CISSP. Builder of the PI GenAI portfolio of production AI applications.',
     worksFor: { '@id': ORG_ID },
     sameAs: [
       'https://www.linkedin.com/in/lindsayhiebert/',

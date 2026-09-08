@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { getGraphJsonLd } from '../lib/json-ld';
 
+const ROOT_DIR = resolve(__dirname, '../..');
+
 /** sameAs asserts IDENTITY — "this node and that URL are the same entity."
  *
  *  Until Sep 7 2026 our Organization node declared
@@ -90,12 +92,25 @@ describe('the Person node states identity rather than leaving it to inference', 
     expect(person().jobTitle).toBe('Founder and CEO, PIGENAI LLC');
   });
 
-  it('asserts no unverified employment history', () => {
-    // Served JSON-LD is a machine-readable factual assertion, so the grounded-output
-    // rule applies to it exactly as it does to a number in a report. The carrier claim
-    // has no support in the founder's public record and must not be asserted.
+  it('carries the concise biography the founder prefers', () => {
     const blob = JSON.stringify(person());
-    expect(blob).not.toMatch(/AT&T|Verizon|T-Mobile/);
-    expect(blob).not.toMatch(/30\+ years across major US carriers/);
+    expect(blob).toContain('Cisco');
+    expect(blob).toContain('Intel');
+    expect(blob).toContain('CISSP');
+  });
+
+  it('records the OMISSION as editorial, never as unverified', () => {
+    // Founder ruling Sep 8 2026. The carrier detail is left out for BREVITY. The
+    // founder's own employment history is sourced from the founder; it is not a
+    // measurement claim about a customer, and the grounded-output rule does not reach
+    // it. Conflating the two standards already cost a true fact once, so the reason is
+    // pinned here: a future session must not strip other biographical facts as
+    // "unsupported", nor re-add this one as a correction.
+    const src = readFileSync(resolve(ROOT_DIR, 'src/lib/json-ld.ts'), 'utf8');
+    expect(src).toMatch(/omitted below for BREVITY/);
+    expect(src).toMatch(/sourced FROM THE FOUNDER/);
+    expect(src).toMatch(/do not strip any other stated/i);
+    // and it must NOT record the omission as a verification failure
+    expect(src).not.toMatch(/removed[^.]*because it was unverified\b(?!\.)/);
   });
 });
