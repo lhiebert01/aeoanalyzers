@@ -833,16 +833,24 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
             <Lock className="w-7 h-7 text-white" />
           </div>
           <h2 className="text-2xl font-black tracking-tight mb-3">Citation Sweeps are a paid feature</h2>
-          <p className="text-zinc-600 max-w-xl mx-auto mb-2">
-            A sweep asks ChatGPT, Claude, Perplexity and Gemini the questions your buyers actually type,
-            several times each, and stores every answer as a transcript you can check. We work out your
-            category and your closest competitors, draft the buyer questions, and you edit them before
-            anything runs.
+          <p className="text-zinc-600 max-w-xl mx-auto mb-3">
+            A sweep reads your site, works out your category and your closest competitors, and drafts the
+            questions your buyers actually type — which you edit before anything runs. Then it asks
+            ChatGPT, Claude, Perplexity and Gemini, several times each, with web search on, and stores
+            every answer as a transcript you can open and check yourself.
           </p>
-          <p className="text-zinc-600 max-w-xl mx-auto mb-7">
-            Your AEO score and your gaps stay free — run those on the{' '}
+          <p className="text-zinc-600 max-w-xl mx-auto mb-3">
+            You get three separately measured things — whether you are found when asked by name, whether
+            you are recommended when buyers ask the category, and who gets cited instead of you by name —
+            each with the fixes that follow from your own results. Every sweep is kept, so the next one
+            measures whether the fixes worked.
+          </p>
+          <p className="text-sm text-zinc-500 max-w-xl mx-auto mb-7">
+            There is no sample run, on purpose. One engine asked once is not a measurement, and handing
+            you a number we would not stand behind is the opposite of what this tool is for.{' '}
+            <span className="text-zinc-600">Your AEO score and your gaps stay free — run those on the{' '}
             <button onClick={onOpenAnalyzer} className="font-semibold text-indigo-600 hover:underline">Analyzer</button>{' '}
-            as often as you like.
+            as often as you like.</span>
           </p>
           <button onClick={onUpgrade}
             className="inline-flex items-center gap-2 bg-zinc-900 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-zinc-800 transition-all shadow-xl shadow-zinc-900/20">
