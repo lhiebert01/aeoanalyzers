@@ -828,36 +828,74 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           engine call, no download. The question bank is the expensive half of this
           product and it was being handed over before payment. */}
       {!paidViewer && !savedView && (
-        <div className="bg-white border-2 border-dashed border-zinc-300 rounded-3xl p-8 text-center">
-          <div className="inline-flex bg-zinc-900 p-4 rounded-2xl mb-5 shadow-xl">
-            <Lock className="w-7 h-7 text-white" />
+        <div className="bg-white border-2 border-dashed border-zinc-300 rounded-3xl p-8 sm:p-10">
+          <div className="text-center">
+            <div className="inline-flex bg-zinc-900 p-4 rounded-2xl mb-5 shadow-xl">
+              <Lock className="w-7 h-7 text-white" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight mb-3">Citation Sweeps are a paid feature</h2>
+            <p className="text-zinc-600 max-w-2xl mx-auto">
+              A sweep is not a score. It is a measurement of what the answer engines actually say about
+              you, run against your buyers&apos; own questions, with every answer kept so you can check it.
+            </p>
           </div>
-          <h2 className="text-2xl font-black tracking-tight mb-3">Citation Sweeps are a paid feature</h2>
-          <p className="text-zinc-600 max-w-xl mx-auto mb-3">
-            A sweep reads your site, works out your category and your closest competitors, and drafts the
-            questions your buyers actually type — which you edit before anything runs. Then it asks
-            ChatGPT, Claude, Perplexity and Gemini, several times each, with web search on, and stores
-            every answer as a transcript you can open and check yourself.
-          </p>
-          <p className="text-zinc-600 max-w-xl mx-auto mb-3">
-            You get three separately measured things — whether you are found when asked by name, whether
-            you are recommended when buyers ask the category, and who gets cited instead of you by name —
-            each with the fixes that follow from your own results. Every sweep is kept, so the next one
-            measures whether the fixes worked.
-          </p>
-          <p className="text-sm text-zinc-500 max-w-xl mx-auto mb-7">
-            There is no sample run, on purpose. One engine asked once is not a measurement, and handing
-            you a number we would not stand behind is the opposite of what this tool is for. The way to
-            try it is the Day Pass — a full sweep, not a sample of one.{' '}
-            <span className="text-zinc-600">Your AEO score and your gaps stay free — run those on the{' '}
-            <button onClick={onOpenAnalyzer} className="font-semibold text-indigo-600 hover:underline">Analyzer</button>{' '}
-            as often as you like.</span>
-          </p>
-          <button onClick={onUpgrade}
-            className="inline-flex items-center gap-2 bg-zinc-900 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-zinc-800 transition-all shadow-xl shadow-zinc-900/20">
-            Get a Day Pass or subscribe <ArrowLeft className="w-5 h-5 rotate-180" />
-          </button>
-          <p className="text-xs text-zinc-400 mt-4">$24 Day Pass — 24 hours, full sweeps, no subscription. Or Pro / Business for ongoing measurement.</p>
+
+          <ul className="mt-7 max-w-2xl mx-auto space-y-3 text-sm text-zinc-700">
+            <li className="flex gap-3">
+              <ShieldCheck className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
+              <span><b>Four answer engines, with web search on</b> — ChatGPT, Claude, Perplexity and Gemini,
+              asked the way a buyer asks them.</span>
+            </li>
+            <li className="flex gap-3">
+              <ShieldCheck className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
+              <span><b>Your buyers&apos; questions, not a generic list</b> — we read your site and draft them
+              from your brand, your category and your closest competitors. You edit them before anything runs.</span>
+            </li>
+            <li className="flex gap-3">
+              <ShieldCheck className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
+              <span><b>Repeated runs per question</b> — engines are not deterministic, so each question is
+              asked more than once and the per-cell N is shown on every number.</span>
+            </li>
+            <li className="flex gap-3">
+              <ShieldCheck className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
+              <span><b>Three separate measurements, never one blended score</b> — whether you are found when
+              asked by name, whether you are recommended when the category is asked, and who gets cited
+              instead of you, by name.</span>
+            </li>
+            <li className="flex gap-3">
+              <ShieldCheck className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
+              <span><b>Every answer stored as a transcript</b> — open any number, read the answer behind it,
+              and run the same question yourself to see we are telling you the truth.</span>
+            </li>
+            <li className="flex gap-3">
+              <ShieldCheck className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
+              <span><b>Written to your history</b> — so a later sweep measures before against after, and the
+              fixes either moved the number or they did not.</span>
+            </li>
+            <li className="flex gap-3">
+              <ShieldCheck className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
+              <span><b>It ends in an action plan, not a number</b> — what to change, where, and what each
+              change does and does not do.</span>
+            </li>
+          </ul>
+
+          <div className="mt-8 text-center">
+            <button onClick={onUpgrade}
+              className="inline-flex items-center gap-2 bg-zinc-900 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-zinc-800 transition-all shadow-xl shadow-zinc-900/20">
+              Get a Day Pass or subscribe <ArrowLeft className="w-5 h-5 rotate-180" />
+            </button>
+            <p className="text-sm text-zinc-600 mt-4 max-w-xl mx-auto">
+              <b>The Day Pass is the trial</b> — $24 for twenty-four hours, no subscription, and a real
+              full sweep. There is no sample run and no cut-down version, because one engine asked once is
+              not a measurement, and a number we would not stand behind is the opposite of what this tool
+              is for.
+            </p>
+            <p className="text-xs text-zinc-500 mt-3">
+              Your AEO score and your gaps stay free — run those on the{' '}
+              <button onClick={onOpenAnalyzer} className="font-semibold text-indigo-600 hover:underline">Analyzer</button>{' '}
+              as often as you like.
+            </p>
+          </div>
         </div>
       )}
 

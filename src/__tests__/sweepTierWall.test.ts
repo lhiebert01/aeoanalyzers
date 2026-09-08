@@ -91,6 +91,44 @@ describe('the sweep interface runs nothing for a free viewer', () => {
     expect(src).toContain('Citation Sweeps are a paid feature');
     expect(src).toContain('Get a Day Pass or subscribe');
   });
+
+  /** Rev B §2.1a — the wall is the PITCH, not an error page. It is now the only
+   *  place the depth of a sweep gets explained to someone who has not paid, so a
+   *  lock icon and a button is a failure, not a minimal implementation. Seven
+   *  points, each required by name. */
+  it('carries all seven things §2.1a requires the wall to say', () => {
+    for (const point of [
+      'Four answer engines, with web search on',           // the panel
+      'Your buyers&apos; questions, not a generic list',    // generated from their site
+      'Repeated runs per question',                         // and the per-cell N
+      'the per-cell N is shown on every number',
+      'Three separate measurements, never one blended score',
+      'Every answer stored as a transcript',
+      'Written to your history',                            // before/after proof
+      'It ends in an action plan, not a number',
+    ]) {
+      expect(src, `wall is missing §2.1a point: ${point}`).toContain(point);
+    }
+  });
+
+  it('names the Day Pass as the trial, and refuses a sample in the same breath', () => {
+    expect(src).toContain('The Day Pass is the trial');
+    expect(src).toContain('There is no sample run and no cut-down version');
+  });
+
+  /** Rev B §2.1a copy constraint, and it is not optional: this product's position is
+   *  that it prints no number it cannot back. An unmeasured claim about a competitor
+   *  on this page would be the same defect as the teaser's N=1, on the same screen. */
+  it('asserts nothing about what competitors charge or how accurate they are', () => {
+    const wall = src.slice(src.indexOf('{!paidViewer && !savedView && ('), src.indexOf("{/* Input — phase 1"));
+    expect(wall).not.toMatch(/competitors? (charge|cost|price)/i);
+    expect(wall).not.toMatch(/other tools?\b/i);
+    expect(wall).not.toMatch(/\bthousands of dollars\b/i);
+    expect(wall).not.toMatch(/\d+\s?%\s?(worse|better|more accurate|less accurate)/i);
+    // and no bare percentage or dollar figure at all except the Day Pass price
+    const money = wall.match(/\$\d[\d,.]*/g) || [];
+    expect(new Set(money)).toEqual(new Set(['$24']));
+  });
 });
 
 describe('the one deliberate free-tier exception is recorded where it lives', () => {
