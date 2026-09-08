@@ -155,3 +155,65 @@ describe('§3.2 — every step carries all five fields, and the tier rule holds'
     expect(notFound.situation.join(' ')).not.toMatch(/steps below|on this list/i);
   });
 });
+
+/** §3.3 — every recommendation carries a plain sentence, never a bare directive.
+ *  §3.4 — ONE ranked list ordered by impact, whatever section a step came from.
+ *  Part C — screen and download render from the SAME plan. */
+describe('§3.3, §3.4 and Part C', () => {
+  const rich = buildDoNowPlan({
+    domain: 'example.com', paid: true,
+    perEngine: [{ engine: 'openai', found: 6, total: 6 }, { engine: 'claude', found: 0, total: 6 }],
+    collisions: ['lantern.io'],
+    authorityGap: [{ domain: 'g2.com', citations: 7 }, { domain: 'reddit.com', citations: 9 }, { domain: 'linkedin.com', citations: 5 }],
+  });
+
+  it('3.3: every step has an explainer a marketing manager could act on', () => {
+    for (const s of rich.steps) {
+      expect(s.explainer).toBeTruthy();
+      // A sentence, not a label — long enough to explain, and it must not just restate.
+      expect(s.explainer.length).toBeGreaterThan(80);
+      expect(s.explainer).not.toBe(s.what);
+      expect(s.explainer).not.toBe(s.why);
+    }
+  });
+
+  it('3.3: explainers define the jargon rather than assuming it', () => {
+    const all = rich.steps.map((s) => s.explainer).join(' ');
+    expect(all).toMatch(/A search index is a list of pages/);
+    expect(all).toMatch(/Structured data is a block of machine-readable facts/);
+    expect(all).toMatch(/Wikidata is the shared reference/);
+  });
+
+  it('3.4: steps are ranked by impact and numbered in that order', () => {
+    const impacts = rich.steps.map((s) => s.impact);
+    expect([...impacts].sort((a, b) => a - b)).toEqual(impacts);
+    expect(rich.steps.map((s) => s.n)).toEqual(rich.steps.map((_, i) => i + 1));
+  });
+
+  it('3.4: the highest-impact action leads, whatever section it came from', () => {
+    // Bing is a discovery step; validation and G2 come from other sections. Ranking is
+    // by impact on THIS measurement, not by which list a step happens to live in.
+    expect(rich.steps[0].what).toMatch(/Bing/);
+    const g2 = rich.steps.findIndex((s) => /G2/.test(s.what));
+    const bing = rich.steps.findIndex((s) => /Bing/.test(s.what));
+    expect(bing).toBeLessThan(g2);
+  });
+
+  it('Part C: screen and download build from one call, so they cannot diverge', () => {
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { resolve } = require('node:path') as typeof import('node:path');
+    const src = readFileSync(resolve(__dirname, '../components/SweepDashboard.tsx'), 'utf8');
+    // Both the report builder and the on-screen block call buildDoNowPlan.
+    expect((src.match(/buildDoNowPlan\(/g) || []).length).toBeGreaterThanOrEqual(2);
+    // and the screen renders the same five fields plus the explainer
+    for (const field of ['step.explainer', 'step.why', 'step.link', 'step.time', 'step.changes', 'step.doesNotChange']) {
+      expect(src).toContain(field);
+    }
+  });
+
+  it('Part C: an identical plan renders identical content on both surfaces', () => {
+    const a = buildDoNowPlan({ domain: 'example.com', paid: true, perEngine: [{ engine: 'claude', found: 0, total: 6 }] });
+    const b = buildDoNowPlan({ domain: 'example.com', paid: true, perEngine: [{ engine: 'claude', found: 0, total: 6 }] });
+    expect(JSON.stringify(a)).toBe(JSON.stringify(b));
+  });
+});

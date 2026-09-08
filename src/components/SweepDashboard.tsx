@@ -616,8 +616,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
       out.push('');
       for (const line of plan.situation) { out.push(line); out.push(''); }
       if (plan.gatedNote) { out.push(plan.gatedNote); out.push(''); }
+      // §3.4 — already ranked by impact across sections, so render in order.
       for (const step of plan.steps) {
         out.push(`**${step.n}. ${step.what}**`);
+        out.push('');
+        out.push(step.explainer); // §3.3 — one plain sentence, never a bare directive
+        out.push('');
         out.push(`- Why it matters for AI answers: ${step.why}`);
         if (step.link) out.push(`- Link: ${step.link}`);
         out.push(`- Time: ${step.time}`);
@@ -1232,6 +1236,41 @@ export default function SweepDashboard({ onUpgrade, isAdmin, onOpenAnalyzer, sav
           {scorecard && (
             <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
               <h3 className="font-bold mb-3">What to do about these results</h3>
+              {/* PART C — screen and download parity. This renders from the SAME
+                  buildDoNowPlan call the .md/.docx uses, in the same order, with the
+                  same wording. A customer reads on screen and acts from the download,
+                  or the reverse, so any divergence is a support ticket. */}
+              {(() => {
+                const plan = buildDoNowPlan({
+                  domain: result.domain,
+                  perEngine: result.summary.engines.map((e) => ({ engine: ENGINE_LABEL[e.engine] || e.engine, found: e.brandedCited, total: e.brandedRuns })),
+                  collisions: entityLinking?.collisions ?? [],
+                  authorityGap: authority ? authority.authorityDomains.map((d) => ({ domain: d.domain, citations: d.citations })) : [],
+                  paid: !!isAdmin || result.tier !== 'free',
+                });
+                return (
+                  <div className="mb-5">
+                    {plan.situation.map((line, i) => (
+                      <p key={i} className="text-sm text-zinc-700 mb-2" dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
+                    ))}
+                    {plan.gatedNote && <p className="text-sm text-zinc-500 italic mt-2">{plan.gatedNote}</p>}
+                    {plan.steps.map((step) => (
+                      <div key={step.n} className="mt-4 pt-4 border-t border-zinc-100">
+                        <p className="font-bold text-sm">{step.n}. {step.what}</p>
+                        <p className="text-sm text-zinc-600 mt-1">{step.explainer}</p>
+                        <ul className="mt-2 space-y-1 text-sm text-zinc-700">
+                          <li><span className="text-zinc-400">Why it matters for AI answers:</span> {step.why}</li>
+                          {step.link && <li><span className="text-zinc-400">Link:</span> <span className="break-all">{step.link}</span></li>}
+                          <li><span className="text-zinc-400">Time:</span> {step.time}</li>
+                          <li><span className="text-zinc-400">What changes:</span> {step.changes}</li>
+                          <li><span className="text-zinc-400">What does NOT change:</span> {step.doesNotChange}</li>
+                        </ul>
+                      </div>
+                    ))}
+                    {plan.noChannelNote && <p className="text-sm text-zinc-600 mt-4 pt-4 border-t border-zinc-100">{plan.noChannelNote}</p>}
+                  </div>
+                );
+              })()}
               <AgendaBlock lines={buildSweepActionAgenda({
                 brandedRetrievabilityPct: scorecard.brandedRetrievabilityPct,
                 categoryWinPct: scorecard.categoryRecommendationWinPct,

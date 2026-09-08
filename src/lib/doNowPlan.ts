@@ -58,6 +58,12 @@ export interface DoNowStep {
   /** The honest half. Never optional. */
   changes: string;
   doesNotChange: string;
+  /** §3.4 — impact rank. Lower sorts first. Set from the customer's own measurement,
+   *  never from which section the step happens to live in. */
+  impact: number;
+  /** §3.3 — one plain sentence a marketing manager can act on and defend internally.
+   *  No bare directives: the customer is buying understanding as much as a fix. */
+  explainer: string;
 }
 
 export interface DoNowPlan {
@@ -132,13 +138,15 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
   }
 
   const steps: DoNowStep[] = [];
-  const add = (s: Omit<DoNowStep, 'n'>) => steps.push({ n: steps.length + 1, ...s });
+  const add = (s: Omit<DoNowStep, 'n'>) => steps.push({ n: 0, ...s });
 
   const discovery = problem === 'not-found' || problem === 'mixed';
 
   if (discovery) {
     add({
       what: 'Submit to Bing Webmaster Tools',
+      impact: 1,
+      explainer: 'A search index is a list of pages an engine knows exist. If your site is not on that list, the engine cannot quote you no matter how good the page is — so this is the one action that has to happen before any other action can help.',
       why: "Bing's index feeds both ChatGPT search and Microsoft Copilot. It is free, and it is the most-neglected action in this category.",
       link: 'https://www.bing.com/webmasters',
       time: '10 minutes, once',
@@ -147,6 +155,8 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     });
     add({
       what: 'Submit to Google Search Console',
+      impact: 2,
+      explainer: 'Google keeps its own index, and Gemini draws on it. Verifying the site tells Google the pages exist and, just as usefully, shows you which pages it has decided not to keep — information you cannot get any other way.',
       why: 'Feeds Google and, through it, Gemini. It is also the only free view of what Google thinks of your pages.',
       link: 'https://search.google.com/search-console',
       time: '10 minutes, once',
@@ -155,6 +165,8 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     });
     add({
       what: 'Set up IndexNow',
+      impact: 6,
+      explainer: 'Normally you publish and wait for a crawler to come back. IndexNow reverses that: your site tells the index a page changed, so the gap between shipping something and an engine seeing it shrinks from weeks to days.',
       why: 'Supported by Bing. A one-time key file plus a ping when you publish, which shortens the lag between shipping a change and Bing seeing it.',
       link: 'https://www.indexnow.org/',
       time: '20 minutes to wire up, then automatic',
@@ -166,6 +178,8 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
   if (problem !== 'not-found') {
     add({
       what: 'Validate the markup this report gave you',
+      impact: 3,
+      explainer: 'Structured data is a block of machine-readable facts about your business. A single syntax error makes an engine skip the whole block silently — no warning, no error, it simply reads nothing. These two checkers tell you it parses before you rely on it.',
       why: 'We handed you JSON-LD. These two checkers tell you whether it parses before you rely on it.',
       link: 'https://validator.schema.org/ and https://search.google.com/test/rich-results',
       time: '5 minutes',
@@ -177,6 +191,8 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
   if ((input.collisions || []).length) {
     add({
       what: 'Create a Wikidata item for the organization',
+      impact: 2,
+      explainer: 'Wikidata is the shared reference that search engines and AI assistants use to decide which real-world thing a name refers to. When several companies share your name, an entry there is what tells them you are a distinct one — which is why it is the strongest fix available for a confusion problem.',
       why: `Engines confused you with ${(input.collisions || []).slice(0, 3).join(', ')}. A Wikidata item is a machine-readable statement that you are a distinct entity from the similarly-named ones, and for a misattribution finding it is the highest-value action available.`,
       link: 'https://www.wikidata.org/wiki/Special:NewItem · notability rules at https://www.wikidata.org/wiki/Wikidata:Notability',
       time: '30–40 minutes',
@@ -190,6 +206,8 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     if (/(^|\.)g2\.com$/i.test(d.domain)) {
       add({
         what: 'Claim or create your G2 vendor listing',
+      impact: 4,
+      explainer: 'Engines answer category questions largely by summarising pages that already compare products. G2 is one of the pages yours is answered from, so being absent there means being absent from the summary — though a listing is a foot in the door, not a place in the answer.',
         why: `g2.com was cited ${d.citations} times in your own category results. This is not a generic directory suggestion — it is a source the engines demonstrably use for your category.`,
         link: 'https://sell.g2.com',
         time: '30 minutes to create; reviews take longer',
@@ -200,6 +218,8 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     if (/(^|\.)linkedin\.com$/i.test(d.domain)) {
       add({
         what: 'Point your LinkedIn company page and founder profile at the domain',
+      impact: 5,
+      explainer: 'A LinkedIn page is a page you control on a domain engines already trust, which makes it cheap corroboration: it independently confirms your company name, what you do, and which website is yours.',
         why: `linkedin.com appeared ${d.citations} times in your own cited sources. It is the cheapest owned-and-controlled entity signal there is.`,
         link: 'https://www.linkedin.com/company/setup/new/',
         time: '20 minutes',
@@ -210,6 +230,8 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     if (/(^|\.)reddit\.com$/i.test(d.domain)) {
       add({
         what: 'Participate where the question is already being asked on Reddit',
+      impact: 7,
+      explainer: 'Engines lean heavily on Reddit because it is where people ask the questions your buyers ask. Being present in those threads as a genuine participant puts you in the material an engine reads when it answers — and being present dishonestly gets you removed from it.',
         why: `reddit.com was cited ${d.citations} times in your category. Engines lean on it heavily.`,
         link: 'https://www.reddit.com/',
         time: 'ongoing, a few minutes a day',
@@ -218,6 +240,12 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
       });
     }
   }
+
+  // §3.4 — ONE ranked list, ordered by impact on THIS customer's measurement, not by
+  // which section a step came from. Renumber after sorting so the numbers a customer
+  // reads match the order they should work in.
+  steps.sort((a, b) => a.impact - b.impact);
+  steps.forEach((s2, i) => { s2.n = i + 1; });
 
   const noChannelNote = notFoundBy.length
     ? `One thing worth knowing before you go looking: **${notFoundBy.join(' and ')} have no submission mechanism.** There is no equivalent of Search Console for them. Claude's search is reportedly Brave-backed, and Brave takes no submissions either. The only route into those indexes is links from pages they already crawl, which is why the steps above are about being cited elsewhere rather than about filling in a form.`

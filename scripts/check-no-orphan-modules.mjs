@@ -8,9 +8,9 @@
 //
 // "There is no reason to think the fourth won't." So this fails the build instead.
 //
-// Scope is deliberately narrow: modules on the paths that produce customer-facing
-// remediation. A general orphan check across the repo would fire on entry points and
-// type-only modules and get switched off, which is worse than not having it.
+// Scope is stated below rather than assumed. It was widened from a hand-listed six to
+// all of src/lib after measuring: the wider boundary produces exactly ONE false
+// positive, which has a real reason and is exempted by name.
 //
 // Run by `npm run build` before vite. Prove it by orphaning a module: the build fails.
 
@@ -19,16 +19,30 @@ import path from 'node:path';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 
-/** Modules that MUST be reachable from something that renders. Add a module here in
- *  the same commit that creates it, not after it has silently shipped unused. */
-const MUST_BE_IMPORTED = [
-  'src/lib/schemaGenerator.ts',
-  'src/lib/personIdentity.ts',
-  'src/lib/doNowPlan.ts',
-  'src/lib/costEstimate.ts',
-  'src/lib/sweepActions.ts',
-  'src/lib/claimsSafety.ts',
-];
+// THE BOUNDARY, stated so the next person adding a module knows whether it is covered.
+//
+// SCOPE: every module in `src/lib/`, automatically. Nothing hand-listed.
+//
+// Why src/lib and not the whole tree. src/lib is the deterministic-core directory by
+// this repo's own architecture: pure logic, no framework, no side effects, existing to
+// be called by a renderer or a route. A module there with no caller is by definition
+// dead. Everything outside it has a legitimate reason to have no in-repo importer —
+// `api/*` handlers are invoked by the platform, `src/main.tsx` is the entry point,
+// `scripts/*` are invoked by npm or a human, and components are reached through JSX
+// rather than a bare `from` path. A guard that fires on those gets switched off, which
+// is worse than a narrow one.
+//
+// The earlier version hand-listed six modules. That was arbitrary: a NEW module on this
+// path was uncovered unless someone remembered to add it, which is the same
+// remembering-based failure the guard exists to replace. Automatic scope removes that.
+//
+// EXEMPTIONS must name a reason. There is one, and it is a real category rather than a
+// convenience: a module whose intended caller IS a test.
+const EXEMPT = {
+  'src/lib/voiceLint.ts':
+    'Enforcement module: it lints published copy for hype, and its caller is deliberately a test ' +
+    '(src/__tests__/voiceLint.test.ts). Like this guard, the test IS the mechanism. Verified Sep 8 2026.',
+};
 
 /** Test files do not count as importers — that is exactly the failure mode. */
 const isTest = (f) => /__tests__|\.test\.|\.spec\./.test(f);
@@ -46,7 +60,12 @@ function walk(dir, out = []) {
 const files = [...walk(path.join(ROOT, 'src')), ...walk(path.join(ROOT, 'api')), ...walk(path.join(ROOT, 'scripts'))];
 const orphans = [];
 
-for (const target of MUST_BE_IMPORTED) {
+const inScope = walk(path.join(ROOT, 'src', 'lib'))
+  .filter((f) => !isTest(f))
+  .map((f) => path.relative(ROOT, f).split(path.sep).join('/'))
+  .filter((f) => !(f in EXEMPT));
+
+for (const target of inScope) {
   const stem = path.basename(target).replace(/\.tsx?$/, '');
   const importers = files.filter((f) => {
     if (isTest(f)) return false;
@@ -63,9 +82,9 @@ if (orphans.length) {
   console.error('\nBUILD FAILED — module(s) on the schema/plan path have no importer:\n');
   for (const o of orphans) console.error(`  ${o}`);
   console.error('\nA module nothing calls is code on disk, not a feature. Passing tests do not');
-  console.error('change that. Wire it into a renderer, or remove it from MUST_BE_IMPORTED in');
-  console.error('scripts/check-no-orphan-modules.mjs and say why.\n');
+  console.error('change that. Wire it into a renderer or a route, or add it to EXEMPT in');
+  console.error('scripts/check-no-orphan-modules.mjs WITH A STATED REASON.\n');
   process.exit(1);
 }
 
-console.log(`[orphan-check] ${MUST_BE_IMPORTED.length} modules on the schema/plan path all have importers.`);
+console.log(`[orphan-check] ${inScope.length} modules in src/lib all have importers (${Object.keys(EXEMPT).length} exempt, each with a stated reason).`);
