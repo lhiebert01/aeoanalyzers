@@ -1061,21 +1061,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
 
       {result && (paidViewer || savedView) && (
         <>
-          {result.quickCheck && (
-            <div className="rounded-3xl p-6 border-2 border-amber-300 bg-amber-50 shadow-sm">
-              <div className="flex items-start gap-4">
-                <div className="text-4xl font-black text-amber-700 leading-none">{result.provisional?.score ?? '—'}</div>
-                <div className="flex-1">
-                  <div className="font-bold text-amber-900">Free quick check · {result.provisional?.label}</div>
-                  <p className="text-sm text-amber-800 mt-1">{result.provisional?.message}</p>
-                  <p className="text-sm text-amber-900 mt-3 font-semibold">{result.upgrade}</p>
-                  <button onClick={onUpgrade} className="mt-3 bg-zinc-900 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-zinc-800 transition-colors">
-                    Get a Day Pass or subscribe →
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* The free quick-check banner was removed with the teaser it belonged to
+              (WO-AEO-TIER-LEAK-007 Rev B). The server can no longer return
+              quickCheck — a free caller gets 402 — so this block was unreachable,
+              and it was the one place in the product that printed a headline
+              percentage from a single observation. `quickCheck` survives on the
+              response type because stored sweeps predating the wall carry it.  */}
           {result.skippedEngines?.length > 0 && !result.quickCheck && (
             <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
               Skipped (no API key set): {result.skippedEngines.join(', ')}. Configured: {result.configured.join(', ') || 'none'}.

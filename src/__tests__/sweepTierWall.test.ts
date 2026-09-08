@@ -83,6 +83,15 @@ describe('the sweep interface runs nothing for a free viewer', () => {
     expect(src).toMatch(/async function run\(\) \{\s*\n\s*if \(!paidViewer\) return;/);
   });
 
+  /** The teaser's banner was the one place this product printed a headline
+   *  percentage from a single observation — "Citation win 0% · N=1" — on the screen
+   *  more strangers saw than any other. Unreachable is not the same as gone: a
+   *  string in the bundle gets screenshotted, and gets revived. */
+  it('carries no free quick-check banner at all', () => {
+    expect(src).not.toContain('Free quick check');
+    expect(src).not.toContain('result.provisional');
+  });
+
   it('stamps every sweep-setup LLM call so the server can refuse it', () => {
     expect(src).toContain("purpose: 'sweep-config'");
   });
