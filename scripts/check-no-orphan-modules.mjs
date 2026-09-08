@@ -39,6 +39,11 @@ const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 // EXEMPTIONS must name a reason. There is one, and it is a real category rather than a
 // convenience: a module whose intended caller IS a test.
 const EXEMPT = {
+  'src/lib/pickRate.ts':
+    'Its only importer, api/pick-rate.ts, is listed in .vercelignore to stay under the Hobby ' +
+    '12-function cap, so it is genuinely dead in production. Kept in the repo deliberately; the ' +
+    'endpoint is re-enabled by removing that line. Exempted Sep 8 2026 after a CI build correctly ' +
+    'failed on it — do NOT remove this exemption without first re-enabling the endpoint.',
   'src/lib/voiceLint.ts':
     'Enforcement module: it lints published copy for hype, and its caller is deliberately a test ' +
     '(src/__tests__/voiceLint.test.ts). Like this guard, the test IS the mechanism. Verified Sep 8 2026.',
@@ -57,7 +62,26 @@ function walk(dir, out = []) {
   return out;
 }
 
-const files = [...walk(path.join(ROOT, 'src')), ...walk(path.join(ROOT, 'api')), ...walk(path.join(ROOT, 'scripts'))];
+// Evaluate the SAME file set the deployed build sees. `.vercelignore` excludes files
+// from the builder, so a module whose only importer is ignored is dead in production
+// even though it looks wired locally. That exact disagreement failed a deploy on Sep 8:
+// the guard passed here and failed in CI, and CI was right. A guard that disagrees
+// between environments is worse than no guard.
+const vercelIgnored = (() => {
+  try {
+    return readFileSync(path.join(ROOT, '.vercelignore'), 'utf8')
+      .split('\n').map((l) => l.trim())
+      .filter((l) => l && !l.startsWith('#'))
+      .map((l) => l.replace(/^\.\//, ''));
+  } catch { return []; }
+})();
+const isDeployIgnored = (f) => {
+  const rel = path.relative(ROOT, f).split(path.sep).join('/');
+  return vercelIgnored.some((pat) => rel === pat || rel.startsWith(pat.replace(/\/$/, '') + '/'));
+};
+
+const files = [...walk(path.join(ROOT, 'src')), ...walk(path.join(ROOT, 'api')), ...walk(path.join(ROOT, 'scripts'))]
+  .filter((f) => !isDeployIgnored(f));
 const orphans = [];
 
 const inScope = walk(path.join(ROOT, 'src', 'lib'))
