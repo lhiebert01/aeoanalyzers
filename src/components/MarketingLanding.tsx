@@ -59,7 +59,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     },
     {
       q: "How much does AEO Analyzers cost, and what are Citation Sweeps limited to?",
-      a: "Start free — a full AEO analysis plus a single-engine Quick Check on Google/Gemini. Day Pass is $24 for 24 hours (includes 3 sweeps), Pro is $49/month (unlimited analysis + 8 sweeps/month), and Business is $199/month (20 sweeps/month). A full sweep runs across all four engines with stored transcripts."
+      a: "Start free — a full AEO analysis: your score, the four sub-scores and the formula, crawler access, index coverage, and every gap named. Citation Sweeps and the fixes are paid. Day Pass is $24 for 24 hours (includes 3 sweeps), Pro is $49/month (unlimited analysis + 8 sweeps/month), and Business is $199/month (20 sweeps/month). A sweep runs across all four engines with stored transcripts."
     },
     {
       q: "How is this different from other AEO tools?",
@@ -240,7 +240,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         </div>
         {/* Sep 7 2026: dropped the "AI-crawler telemetry" promise — no customer-facing
             way to connect a domain exists yet (see Payments.tsx). Drift monitoring ships. */}
-        <p className="text-center text-zinc-400 text-sm mt-8 max-w-2xl mx-auto">Plus answer-drift monitoring across re-runs — so you know what the engines say about you, and whether it changed. <strong className="text-zinc-600">Free visitors</strong> get a single-engine Quick Check; <strong className="text-zinc-600">paid plans</strong> unlock the full multi-engine sweep with stored transcripts.</p>
+        <p className="text-center text-zinc-400 text-sm mt-8 max-w-2xl mx-auto">Plus answer-drift monitoring across re-runs — so you know what the engines say about you, and whether it changed. <strong className="text-zinc-600">The AEO analysis is free</strong> &mdash; your score, your sub-scores and every gap named. <strong className="text-zinc-600">Citation Sweeps are paid</strong>: all four engines, repeated runs, every answer stored as a transcript.</p>
       </section>
 
       {/* Trust & Authority Section */}

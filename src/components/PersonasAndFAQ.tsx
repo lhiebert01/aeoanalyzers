@@ -126,11 +126,11 @@ const measurementFaqs: FAQItem[] = [
   },
   {
     question: "Can you show me when AI bots crawl my site?",
-    answer: "Yes. AI crawlers don't run JavaScript, so normal analytics never see them. Our telemetry captures them server-side and sorts them into three tiers: Live (a person just asked an AI and it fetched your page to answer them), Search (indexing for answer engines), and Training (knowledge ingestion) — so you know whether you're actually being read, and for what."
+    answer: "Not on your site — and we would rather say so than imply otherwise. AI crawlers do not run JavaScript, so normal analytics never see them, and capturing them needs a first-party log or pixel on the site itself. We run that on our own domain as dogfood, which is where our three-tier reading comes from — Live (a person just asked an AI and it fetched the page to answer them), Search (indexing for answer engines) and Training (knowledge ingestion) — and those tiers mean very different things for visibility. There is no setup we can hand you for your own domain today, so we do not sell it as a feature."
   },
   {
     question: "How many Citation Sweeps do I get, and what do they cost me?",
-    answer: "Sweeps are included with paid plans: Day Pass includes 3, Pro includes 8 per month, and Business includes 20 per month. Anyone — even signed-out visitors — can run a free single-engine Quick Check on Google/Gemini to preview their citability before upgrading."
+    answer: "Sweeps are included with paid plans: Day Pass includes 3, Pro includes 8 per month, and Business includes 20 per month. A Citation Sweep is a paid feature — there is no free or cut-down version, because one engine asked once is not a measurement. What is free is the AEO analysis: your score, the four sub-scores and the formula, crawler access, index coverage, and every gap named. The fixes are what you pay for."
   },
   {
     question: "How is this different from other AEO tools?",
@@ -146,7 +146,7 @@ const glossary: { term: string; def: string }[] = [
   { term: "Citation Win", def: "Whether AI picks you for an unbranded category question ('best [category] tools'). The competitive metric." },
   { term: "Cited Instead", def: "The competitors an AI names in your place on a category query." },
   { term: "Truth Record", def: "The canonical facts about you (from your schema and llms.txt) that AI answers are checked against." },
-  { term: "Quick Check", def: "The free, single-engine (Google/Gemini) citability preview available to everyone." },
+  { term: "Free tier", def: "The full AEO analysis — score, sub-scores, crawler access, index coverage, and every gap named. Citation Sweeps and the fixes are paid." },
   { term: "AI Crawler Tiers", def: "Live (a human just asked, the engine fetched your page now), Search (indexing), Training (knowledge ingestion) — each means something different for your visibility." },
 ];
 

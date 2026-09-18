@@ -94,15 +94,15 @@ export default function UserGuideDashboard() {
             <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 space-y-8">
               <div className="flex justify-between items-end">
                 <div className="space-y-1">
-                  <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Probability · illustrative</div>
-                  <div className="text-5xl font-black tracking-tighter text-emerald-400">94%</div>
+                  <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Citation Readiness &middot; your score appears here</div>
+                  <div className="text-5xl font-black tracking-tighter text-emerald-400">&mdash;</div>
                 </div>
                 <div className="text-[10px] font-black text-emerald-500/60 uppercase tracking-widest mb-2">Example</div>
               </div>
               <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
                 <motion.div 
                   initial={{ width: 0 }}
-                  whileInView={{ width: '94%' }}
+                  whileInView={{ width: '62%' }}
                   className="h-full bg-emerald-500"
                 />
               </div>
@@ -138,7 +138,7 @@ export default function UserGuideDashboard() {
           <Step 
             number="03" 
             title="Close the Gap" 
-            description="Identify exactly where they are beating you—usually in Schema implementation."
+            description="Identify exactly where they are beating you — in structure, in answerable copy, or in entity clarity."
             icon={<Zap className="w-5 h-5" />}
           />
         </div>
@@ -212,17 +212,17 @@ export default function UserGuideDashboard() {
           />
           <PracticeCard 
             title="Structured Data" 
-            description="Always implement Schema.org (Article, FAQ, Organization) to provide a machine-readable data layer."
+            description="Implement Schema.org (Article, FAQ, Organization) for Google rich results and for entity disambiguation. It is not how you get quoted — see section 04 — so anything a model needs must also appear in your visible text."
             icon={<ShieldCheck className="w-5 h-5" />}
           />
           <PracticeCard 
             title="Authoritative Tone" 
-            description="AI models favor content that sounds expert, objective, and unbiased. Avoid marketing fluff."
+            description="Write plainly and make claims checkable. The Princeton GEO study associated adding statistics and quotations with higher citation visibility, and keyword stuffing with a ~10% decrease."
             icon={<AlertCircle className="w-5 h-5" />}
           />
           <PracticeCard 
             title="Mobile Speed" 
-            description="AI crawlers prioritize fast-loading, technically sound sites. Performance is a ranking factor for AEO."
+            description="A fetcher that times out reads nothing, and ChatGPT rejects pages over 4MB outright rather than trimming them. Beyond that we have no evidence that speed affects whether you are cited, so we do not claim it."
             icon={<Zap className="w-5 h-5" />}
           />
         </div>

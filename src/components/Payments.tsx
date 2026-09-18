@@ -240,7 +240,7 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
           <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm">
             <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Included Citation Sweeps</div>
             <ul className="space-y-2 text-sm text-zinc-700">
-              <li className="flex justify-between"><span>Free</span><span className="font-bold text-zinc-700">1 Quick Check (Google/Gemini)</span></li>
+              <li className="flex justify-between"><span>Free</span><span className="font-bold text-zinc-700">None &mdash; the AEO analysis is free</span></li>
               <li className="flex justify-between"><span>Day Pass ($24)</span><span className="font-bold">3 full sweeps</span></li>
               <li className="flex justify-between"><span>Pro ($49/mo)</span><span className="font-bold">8 full sweeps / month</span></li>
               <li className="flex justify-between"><span>Business ($199/mo)</span><span className="font-bold">20 full sweeps / month</span></li>

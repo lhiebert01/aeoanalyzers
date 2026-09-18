@@ -207,3 +207,54 @@ describe('claims about how well something works are not exempt from the voice ru
     ]) expect(bannedAbsolutes(s), `false positive: ${s}`).toEqual([]);
   });
 });
+
+/** THE FREE TIER IS WHAT THE SERVER DOES, NOT WHAT THE COPY SAYS.
+ *
+ *  The hard wall shipped on Sep 8 2026: api/run-sweep returns 402 to a signed-out or
+ *  free-tier caller, and api/llm-generate refuses purpose=sweep-config. Twelve days
+ *  later the Resources tab, the landing FAQ, the PRICING TABLE and a published blog post
+ *  were all still advertising a "free single-engine Quick Check available to everyone".
+ *
+ *  A prospect reading the pricing page was told they could try something the server
+ *  refuses. That is the worst kind of false claim: it is on the page that takes money,
+ *  and the person discovers it personally. */
+describe('no surface advertises a free Citation Sweep', () => {
+  const { readFileSync, readdirSync, statSync } = require('node:fs') as typeof import('node:fs');
+  const { resolve, join } = require('node:path') as typeof import('node:path');
+  const ROOT = resolve(__dirname, '..', '..');
+  const walk = (d: string, out: string[] = []): string[] => {
+    for (const n of readdirSync(d)) {
+      if (['node_modules', 'dist', '.git', 'docs', 'private'].includes(n) || n.startsWith('.')) continue;
+      const f = join(d, n);
+      if (statSync(f).isDirectory()) walk(f, out);
+      else if (/\.(tsx?|html)$/.test(f) && !/__tests__|\.test\./.test(f)) out.push(f);
+    }
+    return out;
+  };
+
+  it('the words "Quick Check" appear on no served surface', () => {
+    const offenders: string[] = [];
+    for (const f of [...walk(resolve(ROOT, 'src')), ...walk(resolve(ROOT, 'public'))]) {
+      for (const [i, line] of readFileSync(f, 'utf8').split('\n').entries()) {
+        if (/quick check/i.test(line) && !/^\s*(\/\/|\*|\/\*|<!--)/.test(line)) {
+          offenders.push(`${f.replace(ROOT, '')}:${i + 1}`);
+        }
+      }
+    }
+    expect(offenders, `the free Quick Check was removed on Sep 8 2026:\n${offenders.join('\n')}`).toEqual([]);
+  });
+
+  it('nothing offers a free, single-engine or cut-down sweep', () => {
+    const offenders: string[] = [];
+    for (const f of [...walk(resolve(ROOT, 'src')), ...walk(resolve(ROOT, 'public'))]) {
+      for (const [i, line] of readFileSync(f, 'utf8').split('\n').entries()) {
+        if (/^\s*(\/\/|\*|\/\*|<!--)/.test(line)) continue;
+        if (/free[^.]{0,40}(single-engine|one engine)[^.]{0,20}(sweep|check|preview)/i.test(line)
+          || /(sweep|citation sweep)[^.]{0,30}free (to|for) (everyone|all)/i.test(line)) {
+          offenders.push(`${f.replace(ROOT, '')}:${i + 1}`);
+        }
+      }
+    }
+    expect(offenders, `free-sweep claim:\n${offenders.join('\n')}`).toEqual([]);
+  });
+});
