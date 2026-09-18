@@ -29,6 +29,12 @@ import { getOrganizationJsonLd, getWebSiteJsonLd, getBreadcrumbJsonLd } from './
 
 type View = 'analyzer' | 'sweeps' | 'history' | 'payments' | 'settings' | 'auth' | 'admin' | 'guide' | 'landing' | 'privacy' | 'terms' | 'press';
 
+/** Views a signed-out visitor is entitled to sit on, so the auth reset never
+ *  drags a public URL back to the homepage. Adding a public route means adding
+ *  it here, to the path->view map, to public/sitemap.xml, and to ROUTES in
+ *  scripts/prerender.mjs — the prerender gate fails the build if you forget. */
+const PUBLIC_VIEWS: View[] = ['landing', 'privacy', 'terms', 'payments', 'guide', 'press'];
+
 // Simple GA4 Tracking Hook
 const useGA4 = () => {
   const trackEvent = (eventName: string, params?: any) => {
@@ -300,9 +306,25 @@ export default function App() {
           setAccessToken(null);
           setUser(null);
           setUserProfile(null);
-          if (view !== 'privacy' && view !== 'terms') {
-            setView('landing');
-          }
+          // FOUR PUBLIC URLS SERVED THE HOMEPAGE TO EVERY SIGNED-OUT VISITOR.
+          //
+          // This reset exists so an anonymous visitor does not sit on a signed-in
+          // surface (analyzer, sweeps, history, admin). It had two defects.
+          //
+          // First, the allowlist named only privacy and terms, so /pricing, /guide
+          // and /press were forced back to the landing view — /pricing being the page
+          // that takes money. Second, it read `view` from the closure captured before
+          // handlePath() had run, so the value was almost always 'landing' and the
+          // guard never fired: privacy and terms were not reliably spared either.
+          //
+          // The result was the exact defect this product measures and sells against:
+          // several URLs returning HTTP 200 with one byte-identical document. It also
+          // made the Sep 7 path->view fix inert and made four prerender routes fail
+          // on every build for eleven days, silently, because prerender is fail-open.
+          //
+          // Now: keep any PUBLIC view, reset only the signed-in ones, and read the
+          // current value functionally so no stale closure can decide it.
+          setView((current) => (PUBLIC_VIEWS.includes(current) ? current : 'landing'));
         }
       } catch (err) {
         console.error('[Auth] Unexpected error in handleSession:', err);
