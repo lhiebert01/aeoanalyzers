@@ -55,7 +55,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     },
     {
       q: "How do you catch facts AI gets wrong about my business?",
-      a: "We build a 'truth record' from your own structured data and site, then compare each AI engine's answer against it. If an engine invents a fact — a wrong founder, a stale price, a feature you don't have — we flag it with the correct value and the fix. No other AEO tool measures whether AI is telling the truth about you."
+      a: "We build a 'truth record' from your own structured data and site, then compare each AI engine's answer against it. If an engine invents a fact — a wrong founder, a stale price, a feature you don't have — we flag it with the correct value and the fix. We report it as a separate layer from whether you were mentioned at all, because being cited wrongly costs you the sale just as surely as not being cited."
     },
     {
       q: "How much does AEO Analyzers cost, and what are Citation Sweeps limited to?",

@@ -118,7 +118,7 @@ const measurementFaqs: FAQItem[] = [
   },
   {
     question: "What is Answer Fidelity — how do you catch facts AI gets wrong about me?",
-    answer: "We build a 'truth record' from your own structured data and site, then compare each engine's answer against it. If an engine invents a fact — a wrong founder, a stale price, a feature you don't have — we flag it with the correct value and the source to fix it. No other AEO tool measures whether AI is telling the truth about you."
+    answer: "We build a 'truth record' from your own structured data and site, then compare each engine's answer against it. If an engine invents a fact — a wrong founder, a stale price, a feature you don't have — we flag it with the correct value and the source to fix it. We report it as a separate layer from whether you were mentioned at all, because being cited wrongly costs you the sale just as surely as not being cited."
   },
   {
     question: "Who gets 'cited instead' of me?",
