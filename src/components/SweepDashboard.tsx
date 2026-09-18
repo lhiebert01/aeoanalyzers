@@ -364,6 +364,25 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
       return { name, domain: dom || undefined };
     });
 
+  /** Targets for the Do-Now pitch step: the earn-tier authorities from THIS sweep, with
+   *  their counts, so the highest-evidence action names the customer's own cited pages
+   *  rather than a category list. Competitors are dropped — they are not pitchable — and
+   *  the report builder and the on-screen block both call this, so the two cannot
+   *  diverge (Part C). */
+  const pitchTargetsFrom = (auth: AuthorityGapReport | null) => {
+    if (!auth) return [];
+    const rivals = parseCompetitors(competitors)
+      .map((c) => (c.domain || '').toLowerCase().replace(/^www\./, ''))
+      .filter(Boolean);
+    return auth.authorityDomains
+      .filter((d) => tierForDomain(d.domain).tier === 'earned' && d.citations >= 2)
+      .filter((d) => {
+        const dom = d.domain.toLowerCase();
+        return !rivals.some((rv) => dom === rv || dom.endsWith('.' + rv));
+      })
+      .map((d) => ({ domain: d.domain, citations: d.citations }));
+  };
+
   // Step 1: user enters only the domain → crawl it, infer the basics, draft the
   // buyer questions, then surface them for confirmation (nothing runs/costs a
   // sweep yet). Falls back to the manual confirm panel if the site can't be read.
@@ -631,6 +650,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
         perEngine: r.summary.engines.map((e) => ({ engine: ENGINE_LABEL[e.engine] || e.engine, found: e.brandedCited, total: e.brandedRuns })),
         collisions: entityLinking?.collisions ?? [],
         authorityGap: authority ? authority.authorityDomains.map((d) => ({ domain: d.domain, citations: d.citations })) : [],
+        pitchTargets: pitchTargetsFrom(authority),
         paid: !!isAdmin || r.tier !== 'free',
       });
       out.push('## What to do about these results');
@@ -643,6 +663,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
         out.push('');
         out.push(step.explainer); // §3.3 — one plain sentence, never a bare directive
         out.push('');
+        out.push(`- Moves: ${step.moves === 'citation' ? 'citation win — being the answer' : step.moves === 'discovery' ? 'discovery — being retrievable at all' : 'accuracy — what they say about you'}`);
         out.push(`- Why it matters for AI answers: ${step.why}`);
         if (step.link) out.push(`- Link: ${step.link}`);
         out.push(`- Time: ${step.time}`);
@@ -1335,6 +1356,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                   perEngine: result.summary.engines.map((e) => ({ engine: ENGINE_LABEL[e.engine] || e.engine, found: e.brandedCited, total: e.brandedRuns })),
                   collisions: entityLinking?.collisions ?? [],
                   authorityGap: authority ? authority.authorityDomains.map((d) => ({ domain: d.domain, citations: d.citations })) : [],
+                  pitchTargets: pitchTargetsFrom(authority),
                   paid: !!isAdmin || result.tier !== 'free',
                 });
                 return (
@@ -1348,6 +1370,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                         <p className="font-bold text-sm">{step.n}. {step.what}</p>
                         <p className="text-sm text-zinc-600 mt-1">{step.explainer}</p>
                         <ul className="mt-2 space-y-1 text-sm text-zinc-700">
+                          <li><span className="text-zinc-400">Moves:</span> {step.moves === 'citation' ? 'citation win — being the answer' : step.moves === 'discovery' ? 'discovery — being retrievable at all' : 'accuracy — what they say about you'}</li>
                           <li><span className="text-zinc-400">Why it matters for AI answers:</span> {step.why}</li>
                           {step.link && <li><span className="text-zinc-400">Link:</span> <span className="break-all">{step.link}</span></li>}
                           <li><span className="text-zinc-400">Time:</span> {step.time}</li>

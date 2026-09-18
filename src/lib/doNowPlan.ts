@@ -17,7 +17,17 @@
 //     a directory the engines demonstrably cite for THEIR category is a finding. As steps
 //     are added, each new one must earn its place from the customer's own evidence. The
 //     day this becomes the same eight bullets for everyone, it is a listicle.
-//  4. **Information belongs where it is read, not where it is filed.** Every caveat lives
+//  4. **Every step must move a measured layer, and it says which one.** Founder ruling,
+//     Sep 18 2026: "if it does not do that, do not give an instruction to do steps that
+//     accomplishes nothing useful." So each step carries `moves` — discovery, accuracy or
+//     citation — and a step that moves none of the three is not a step. Two consequences
+//     already applied: the markup validator was removed from this list (by its own
+//     admission it changed "anything an engine says: nothing" — it is a correctness check
+//     on OUR output, so it now travels with the markup it guards), and a directory is only
+//     a numbered action once the customer's own data cites it three times or more. Below
+//     that it is a lead, and our own evidence says review platforms attract almost no
+//     citations, so printing it as an action would be selling motion as progress.
+//  5. **Information belongs where it is read, not where it is filed.** Every caveat lives
 //     ON the step it qualifies — the Wikidata person-item warning sits in that step's
 //     doesNotChange, the Reddit guardrail in Reddit's, the G2 review-ranking caveat in
 //     G2's. None is a footnote, an appendix, or a general note at the end, because a
@@ -43,6 +53,11 @@ export interface DoNowInputs {
   collisions?: string[];
   /** Domains the engines cite for THIS customer's category, with counts. */
   authorityGap?: { domain: string; citations: number }[];
+  /** The "earn" tier of that same list — third-party pages that already answer the
+   *  customer's category questions and could include them. Pitching these is the only
+   *  action on the whole list with direct evidence of moving CITATION, so it must be
+   *  passed in; when it is absent the plan simply cannot offer its best step. */
+  pitchTargets?: { domain: string; citations: number }[];
   /** Paid tiers get the recipe; free gets the principle. */
   paid: boolean;
 }
@@ -64,6 +79,10 @@ export interface DoNowStep {
   /** §3.3 — one plain sentence a marketing manager can act on and defend internally.
    *  No bare directives: the customer is buying understanding as much as a fix. */
   explainer: string;
+  /** Which of the three measured layers this step actually moves. A step that moves
+   *  none of them does not belong on the list at all (rule 4). Rendered to the customer,
+   *  so they can see why a step is where it is in the order. */
+  moves: 'discovery' | 'accuracy' | 'citation';
 }
 
 export interface DoNowPlan {
@@ -81,6 +100,15 @@ export interface DoNowPlan {
   gatedNote: string | null;
 }
 
+/** Travels WITH the emitted markup rather than as a step of its own — it guards our
+ *  output, it is not customer work, and it moves no measured layer (rule 4). */
+export const VALIDATE_MARKUP_NOTE =
+  'Structured data is a block of machine-readable facts about your business. ' +
+  'Before you rely on this block, paste it into https://validator.schema.org/ and ' +
+  'https://search.google.com/test/rich-results. A single syntax error makes an engine skip ' +
+  'the whole block silently — no warning, it simply reads nothing. This checks our output ' +
+  'parses; it does not change anything an engine says.';
+
 /** The honest rule, in the words the order asks for. */
 export const STRUCTURED_DATA_RULE =
   'Structured data improves accuracy for engines that already find you. It cannot improve discovery for engines that do not.';
@@ -94,20 +122,14 @@ export function classifyProblem(perEngine: EngineRetrieval[]): Problem {
   return anyFound ? 'found-but-misdescribed' : 'not-found';
 }
 
-/** How often a source was cited, in words, with an honest note when the count is thin.
- *  The Sep 18 report said "g2.com was cited 1 times … a source the engines demonstrably
- *  use for your category". Two defects in one sentence: the grammar, and a claim of
- *  demonstration resting on a single observation. This product does not get to print
- *  "demonstrably" off an N of one. */
-function citedPhrase(n: number): { count: string; strength: string } {
-  const count = n === 1 ? 'once' : `${n} times`;
-  return {
-    count,
-    strength:
-      n >= 3
-        ? 'This is not a generic directory suggestion — it is a source the engines repeatedly used for your category.'
-        : 'That is a thin count from a single sweep, so treat it as a lead rather than a demonstrated pattern — it is still your own data rather than a generic directory suggestion.',
-  };
+/** How often a source was cited, in words. The Sep 18 report said "g2.com was cited
+ *  1 times", which is the grammar; the same sentence then claimed the engines
+ *  "demonstrably use" that source, off a single observation, which was the real defect.
+ *  The count is phrased here and the strength claim now lives with the citation
+ *  THRESHOLD on the step itself — a directory only renders at three or more, so the
+ *  claim is true whenever it is printed rather than hedged after the fact. */
+function citedPhrase(n: number): { count: string } {
+  return { count: n === 1 ? 'once' : `${n} times` };
 }
 
 export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
@@ -162,6 +184,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     add({
       what: 'Submit to Bing Webmaster Tools',
       impact: 1,
+      moves: 'discovery',
       explainer: 'A search index is a list of pages an engine knows exist. If your site is not on that list, the engine cannot quote you no matter how good the page is — so this is the one action that has to happen before any other action can help.',
       why: "Bing's index feeds both ChatGPT search and Microsoft Copilot. It is free, and it is the most-neglected action in this category.",
       link: 'https://www.bing.com/webmasters',
@@ -172,6 +195,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     add({
       what: 'Submit to Google Search Console',
       impact: 2,
+      moves: 'discovery',
       explainer: 'Google keeps its own index, and Gemini draws on it. Verifying the site tells Google the pages exist and, just as usefully, shows you which pages it has decided not to keep — information you cannot get any other way.',
       why: 'Feeds Google and, through it, Gemini. It is also the only free view of what Google thinks of your pages.',
       link: 'https://search.google.com/search-console',
@@ -182,6 +206,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     add({
       what: 'Set up IndexNow',
       impact: 6,
+      moves: 'discovery',
       explainer: 'Normally you publish and wait for a crawler to come back. IndexNow reverses that: your site tells the index a page changed, so the gap between shipping something and an engine seeing it shrinks from weeks to days.',
       why: 'Supported by Bing. A one-time key file plus a ping when you publish, which shortens the lag between shipping a change and Bing seeing it.',
       link: 'https://www.indexnow.org/',
@@ -191,52 +216,89 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     });
   }
 
-  if (problem !== 'not-found') {
-    add({
-      what: 'Validate the markup this report gave you',
-      impact: 3,
-      explainer: 'Structured data is a block of machine-readable facts about your business. A single syntax error makes an engine skip the whole block silently — no warning, no error, it simply reads nothing. These two checkers tell you it parses before you rely on it.',
-      why: 'We handed you JSON-LD. These two checkers tell you whether it parses before you rely on it.',
-      link: 'https://validator.schema.org/ and https://search.google.com/test/rich-results',
-      time: '5 minutes',
-      changes: 'Confidence that what you pasted is actually readable.',
-      doesNotChange: 'Anything an engine says. This is a correctness check on our output, not an improvement.',
-    });
-  }
+  // REMOVED, Sep 18 2026 — "Validate the markup this report gave you" used to be step
+  // three here. Its own doesNotChange read "Anything an engine says. This is a
+  // correctness check on our output, not an improvement," which is rule 4 failing out
+  // loud: a numbered action in a plan for becoming the answer, that by its own admission
+  // moves no layer. It is a guard on the schema we emit, not work the customer chose, so
+  // it now ships as one line beside that schema (see VALIDATE_MARKUP_NOTE) where a person
+  // pasting the block will actually read it. Do not restore it as a step.
 
   if ((input.collisions || []).length) {
     add({
       what: 'Create a Wikidata item for the organization',
       impact: 2,
+      moves: 'accuracy',
       explainer: 'Wikidata is the shared reference that search engines and AI assistants use to decide which real-world thing a name refers to. When several companies share your name, an entry there is what tells them you are a distinct one — which is why it is the strongest fix available for a confusion problem.',
       why: `Engines confused you with ${(input.collisions || []).slice(0, 3).join(', ')}. A Wikidata item is a machine-readable statement that you are a distinct entity from the similarly-named ones, and for a misattribution finding it is the highest-value action available.`,
       link: 'https://www.wikidata.org/wiki/Special:NewItem · notability rules at https://www.wikidata.org/wiki/Wikidata:Notability',
       time: '30–40 minutes',
       changes: 'The anchor engines and knowledge graphs resolve your name against.',
-      doesNotChange: 'Anything immediately. And note the caveat: an organization or product item with a real website and a registry record is usually fine, but a person item without independent published coverage is likely to be flagged for deletion. Do the organization item; the person item can wait.',
+      doesNotChange: 'Your category-win number — there is no published evidence a Wikidata item produces AI citations, so watch the accuracy layer afterwards, not citation. Do the organization item only: a person item with no independent published coverage tends to be flagged for deletion.',
+    });
+  }
+
+  // THE STEP THAT WAS MISSING, added Sep 18 2026.
+  //
+  // Every other action on this list is something the customer does to a surface they
+  // control, and the evidence for those moving CITATION is weak to absent. The action
+  // with the strongest evidence was not on the list at all: getting named on the specific
+  // third-party pages the engines already retrieved for this customer's own questions.
+  // Across 75,000 brands, branded web mentions correlated with AI brand mentions at
+  // ρ = 0.664 while backlinks managed 0.218; the top mention quartile averaged 169 AI
+  // mentions against 14 for the next.
+  //
+  // It is deliberately the named pages from THEIR sweep, not "listicles" as a category. A
+  // page no engine retrieved for their questions is a page nobody's engine reads, however
+  // authoritative it looks — which is the difference between this step and the generic
+  // advice the whole category sells.
+  const pitch = (input.pitchTargets || []).filter((t) => t.citations >= 2).slice(0, 6);
+  if (pitch.length) {
+    add({
+      what: `Get named on the pages that already answer your category questions — start with ${pitch.slice(0, 3).map((t) => t.domain).join(', ')}`,
+      impact: 3,
+      moves: 'citation',
+      explainer:
+        'When an engine is asked what the best tools are, it summarises pages that already compare them — so the way into that answer is to be named on those pages. It is the only action here with direct evidence of moving your category number, and the only one you cannot do alone.',
+      why:
+        `The engines returned these for YOUR questions in this sweep: ` +
+        pitch.map((t) => `${t.domain} (${citedPhrase(t.citations).count})`).join(', ') +
+        `. Work them in that order, and buy no placement on a page absent from this list — no engine retrieved it for your questions.`,
+      link: null,
+      time: '1–2 hours per pitch, ongoing; expect 4–12 weeks before anything moves',
+      changes:
+        'Your presence in the set of sources the engines choose from. Watch the cited-source set, not your rank — appearing in the corpus at all is measurable months before winning, and it moves first.',
+      doesNotChange:
+        'Anything quickly, and most pitches are declined — send them anyway and log the date, so the next sweep is readable against it. Send a fact block and a reason the reader benefits, never a favour request, and skip any competitor on that list.',
     });
   }
 
   // §3.2 — recommend a directory only when the customer's OWN data cites it.
   for (const d of input.authorityGap || []) {
-    if (/(^|\.)g2\.com$/i.test(d.domain)) {
+    // Rule 4: a directory becomes a numbered ACTION only once their own data cites it
+    // three times or more. Our own evidence is that review platforms attract almost no
+    // citations (233 ChatGPT software recommendations, aggregators 0.9% of citations), so
+    // at one or two hits this is a lead, and printing it as an action sells motion.
+    if (/(^|\.)g2\.com$/i.test(d.domain) && d.citations >= 3) {
       add({
         what: 'Claim or create your G2 vendor listing',
-      impact: 4,
+      impact: 8,
+      moves: 'citation',
       explainer: 'Engines answer category questions largely by summarising pages that already compare products. G2 is one of the pages yours is answered from, so being absent there means being absent from the summary — though a listing is a foot in the door, not a place in the answer.',
-        why: `g2.com was cited ${citedPhrase(d.citations).count} in your own category results. ${citedPhrase(d.citations).strength}`,
+        why: `g2.com was cited ${citedPhrase(d.citations).count} in your own category results — a source the engines repeatedly used for your category, not a generic directory suggestion.`,
         link: 'https://sell.g2.com',
         time: '30 minutes to create; reviews take longer',
         changes: 'An indexed page carrying your canonical description, on a domain the engines already cite for you.',
-        doesNotChange: "Whether an engine recommends you. The page engines cite is G2's review-ranked category page, and ranking on it needs real customer reviews — a listing alone does not get you onto it. So expect this to put you in the corpus without yet putting you in an answer. That is still progress, because you cannot be recommended from a corpus you are absent from, but do not read a live listing as a result.",
+        doesNotChange: "Whether an engine recommends you — the cited page is G2's review-ranked category page, and getting onto it needs real customer reviews. Expect this to put you in the corpus without yet putting you in an answer.",
       });
     }
     if (/(^|\.)linkedin\.com$/i.test(d.domain)) {
       add({
         what: 'Point your LinkedIn company page and founder profile at the domain',
       impact: 5,
+      moves: 'citation',
       explainer: 'A LinkedIn page is a page you control on a domain engines already trust, which makes it cheap corroboration: it independently confirms your company name, what you do, and which website is yours.',
-        why: `linkedin.com appeared ${citedPhrase(d.citations).count} in your own cited sources. It is the cheapest owned-and-controlled entity signal there is, whatever the count.`,
+        why: `linkedin.com appeared ${citedPhrase(d.citations).count} in your own cited sources, and it is the cheapest owned-and-controlled entity signal there is.`,
         link: 'https://www.linkedin.com/company/setup/new/',
         time: '20 minutes',
         changes: 'A controlled, indexed profile that corroborates your identity.',
@@ -246,13 +308,14 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     if (/(^|\.)reddit\.com$/i.test(d.domain)) {
       add({
         what: 'Participate where the question is already being asked on Reddit',
-      impact: 7,
+      impact: 4,
+      moves: 'citation',
       explainer: 'Engines lean heavily on Reddit because it is where people ask the questions your buyers ask. Being present in those threads as a genuine participant puts you in the material an engine reads when it answers — and being present dishonestly gets you removed from it.',
         why: `reddit.com was cited ${citedPhrase(d.citations).count} in your category, and it is the most-cited domain across answer engines generally.`,
         link: 'https://www.reddit.com/',
         time: 'ongoing, a few minutes a day',
         changes: 'Presence in a source the engines already retrieve for your category.',
-        doesNotChange: 'Nothing, if you do it wrong — and it can cost you. No astroturfing, no seeded questions, and never post the same thing to several subreddits at once. Participate as yourself, and link only when someone asks.',
+        doesNotChange: 'Nothing if you do it wrong, and it can cost you — no astroturfing, no seeded questions, never the same text to several subreddits at once. Participate as yourself and link only when someone asks.',
       });
     }
   }

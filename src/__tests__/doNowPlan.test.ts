@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { buildDoNowPlan, classifyProblem, STRUCTURED_DATA_RULE } from '../lib/doNowPlan';
 import { publishableCollisions } from '../lib/schemaGenerator';
 import { answerShape, buildSweepActionAgenda } from '../lib/sweepActions';
+import { VALIDATE_MARKUP_NOTE } from '../lib/doNowPlan';
 
 /** WO-AEO-REPORT-INTEGRITY-003 Rev B Part B. The measurement was already good; the
  *  failure was in the layer where the product stops reporting and starts advising. */
@@ -26,7 +27,9 @@ describe('§3.1 — name the problem before prescribing', () => {
     ]});
     expect(p.problem).toBe('found-but-misdescribed');
     expect(p.situation.join(' ')).toContain('accuracy problem');
-    expect(p.steps.map((s) => s.what).join(' ')).toContain('Validate the markup');
+    // The validator is no longer a step — founder ruling, Sep 18 2026: no step that
+    // moves nothing. Whatever steps this customer gets, each must declare a real layer.
+    for (const st of p.steps) expect(['discovery', 'accuracy', 'citation']).toContain(st.moves);
     // no index-submission steps for a customer who is already found
     expect(p.steps.map((s) => s.what).join(' ')).not.toMatch(/Bing Webmaster/);
   });
@@ -78,7 +81,7 @@ describe('§3.2 — every step carries all five fields, and the tier rule holds'
     // overpromise this section exists to prevent.
     const g2 = p.steps.find((s) => /G2/.test(s.what))!;
     expect(g2.doesNotChange).toMatch(/review-ranked/);
-    expect(g2.doesNotChange).toMatch(/listing alone does not/);
+    expect(g2.doesNotChange).toMatch(/needs real customer reviews/);
     expect(g2.doesNotChange).toMatch(/corpus without yet putting you in an answer/);
     expect(g2.doesNotChange).not.toMatch(/will (get|put) you (into|in) (an )?answer/i);
   });
@@ -115,7 +118,7 @@ describe('§3.2 — every step carries all five fields, and the tier rule holds'
 
   it('ships the Reddit guardrail attached to the step, not as a footnote', () => {
     const r = p.steps.find((s) => /Reddit/.test(s.what));
-    expect(r!.doesNotChange).toContain('No astroturfing');
+    expect(r!.doesNotChange).toMatch(/no astroturfing/i);
     expect(r!.doesNotChange).toContain('several subreddits');
   });
 
@@ -182,7 +185,7 @@ describe('§3.3, §3.4 and Part C', () => {
   it('3.3: explainers define the jargon rather than assuming it', () => {
     const all = rich.steps.map((s) => s.explainer).join(' ');
     expect(all).toMatch(/A search index is a list of pages/);
-    expect(all).toMatch(/Structured data is a block of machine-readable facts/);
+    expect(VALIDATE_MARKUP_NOTE).toMatch(/Structured data is a block of machine-readable facts/);
     expect(all).toMatch(/Wikidata is the shared reference/);
   });
 
@@ -347,10 +350,13 @@ describe('the instructions the report gives are ones a customer can safely follo
   });
 
   describe('a count of one is not a demonstrated pattern', () => {
-    const plan = (citations: number) => buildDoNowPlan({
+    // reddit.com carries no citation threshold — it is participation on the most-cited
+    // domain, not a directory listing — so it exercises the phrasing at a count of one.
+    // g2.com no longer renders at one at all, which is the point of the rule.
+    const plan = (citations: number, domain = 'reddit.com') => buildDoNowPlan({
       domain: 'x.com', paid: true,
       perEngine: [{ engine: 'claude', found: 2, total: 2 }],
-      authorityGap: [{ domain: 'g2.com', citations }],
+      authorityGap: [{ domain, citations }],
     } as any);
 
     it('reads grammatically at one, which it did not', () => {
@@ -359,17 +365,125 @@ describe('the instructions the report gives are ones a customer can safely follo
       expect(why).not.toContain('1 times');
     });
 
-    it('does not claim "demonstrably" off a single observation', () => {
-      const why = plan(1).steps.map((s) => s.why).join(' ');
-      expect(why).toContain('thin count');
-      expect(why).not.toMatch(/demonstrably/);
+    it('does not claim "demonstrably" anywhere, at any count', () => {
+      for (const n of [1, 3, 7]) {
+        expect(plan(n).steps.map((s) => s.why).join(' ')).not.toMatch(/demonstrably/);
+        expect(plan(n, 'g2.com').steps.map((s) => s.why).join(' ')).not.toMatch(/demonstrably/);
+      }
     });
 
-    it('does claim a repeated pattern once there is one', () => {
-      const why = plan(7).steps.map((s) => s.why).join(' ');
+    it('claims a repeated pattern only where the threshold guarantees one', () => {
+      // g2 renders only at three or more, so the claim is true whenever it is printed.
+      const why = plan(7, 'g2.com').steps.map((s) => s.why).join(' ');
       expect(why).toContain('cited 7 times');
       expect(why).toContain('repeatedly used');
-      expect(why).not.toContain('thin count');
+      expect(plan(1, 'g2.com').steps.map((s) => s.what).join(' ')).not.toMatch(/G2/);
     });
+  });
+});
+
+/** Founder ruling, Sep 18 2026, twice in one hour: "we only want clear succinct helpful
+ *  instructions that can or DO improve the answers AI engines give — if the steps do not
+ *  help, then they should not direct users to follow steps that accomplish nothing."
+ *
+ *  Two enforceable halves. Every step must move a measured layer, and every step must be
+ *  short enough to read. Both are guards rather than review notes, because prose grows
+ *  back and a passing suite is the only thing that notices. */
+describe('every step earns its place and says which layer it moves', () => {
+  const rich = () => buildDoNowPlan({
+    domain: 'aeoanalyzers.com', paid: true,
+    perEngine: [{ engine: 'Claude', found: 2, total: 2 }, { engine: 'ChatGPT', found: 2, total: 2 }],
+    collisions: ['aeoanalyzer.com', 'aeoanalytics.com'],
+    authorityGap: [{ domain: 'g2.com', citations: 5 }, { domain: 'linkedin.com', citations: 3 }, { domain: 'reddit.com', citations: 3 }],
+    pitchTargets: [{ domain: 'rankability.com', citations: 9 }, { domain: 'useomnia.com', citations: 7 }, { domain: 'brightedge.com', citations: 7 }],
+  } as any);
+
+  it('declares a layer on every step, and only one of the three', () => {
+    for (const s of rich().steps) {
+      expect(['discovery', 'accuracy', 'citation'], `step ${s.n}: ${s.what}`).toContain(s.moves);
+    }
+  });
+
+  it('carries no step that moves nothing — the markup validator is gone from the list', () => {
+    const plan = rich();
+    const whats = plan.steps.map((s) => s.what).join(' | ');
+    expect(whats).not.toMatch(/Validate the markup/i);
+    // and nothing else sneaked in claiming to change nothing an engine says
+    for (const s of plan.steps) {
+      expect(s.changes.toLowerCase(), `step ${s.n} promises nothing`).not.toMatch(/^nothing\b/);
+      expect(s.doesNotChange).not.toMatch(/not an improvement/i);
+    }
+  });
+
+  it('the validator note still exists, travelling with the markup it guards', () => {
+    expect(VALIDATE_MARKUP_NOTE).toContain('validator.schema.org');
+    expect(VALIDATE_MARKUP_NOTE).toContain('does not change anything an engine says');
+  });
+
+  it('a directory is an action only once their own data cites it three times', () => {
+    const thin = buildDoNowPlan({
+      domain: 'x.com', paid: true, perEngine: [{ engine: 'Claude', found: 2, total: 2 }],
+      authorityGap: [{ domain: 'g2.com', citations: 1 }],
+    } as any);
+    expect(thin.steps.map((s) => s.what).join(' ')).not.toMatch(/G2/);
+    const thick = buildDoNowPlan({
+      domain: 'x.com', paid: true, perEngine: [{ engine: 'Claude', found: 2, total: 2 }],
+      authorityGap: [{ domain: 'g2.com', citations: 3 }],
+    } as any);
+    expect(thick.steps.map((s) => s.what).join(' ')).toMatch(/G2/);
+  });
+
+  it('offers the highest-evidence citation step when the data supports it', () => {
+    const plan = rich();
+    const pitch = plan.steps.find((s) => /already answer your category questions/.test(s.what));
+    expect(pitch, 'the pitch step must be offered').toBeTruthy();
+    // it names THEIR pages, not a generic list
+    expect(pitch!.why).toContain('rankability.com');
+    expect(pitch!.moves).toBe('citation');
+    // and it outranks the surfaces the customer merely controls
+    const reddit = plan.steps.find((s) => /Reddit/.test(s.what))!;
+    expect(pitch!.n).toBeLessThan(reddit.n);
+  });
+
+  it('never claims Wikidata moves the category number', () => {
+    const wd = rich().steps.find((s) => /Wikidata/.test(s.what))!;
+    expect(wd.moves).toBe('accuracy');
+    expect(wd.doesNotChange).toMatch(/category-win number/);
+    expect(wd.doesNotChange).toMatch(/no published evidence/);
+  });
+
+  it('keeps every field to at most two sentences — succinct is a rule, not a preference', () => {
+    for (const s of rich().steps) {
+      for (const f of ['explainer', 'why', 'changes', 'doesNotChange'] as const) {
+        const v = s[f];
+        const sentences = (v.match(/[.!?](\s|$)/g) || []).length;
+        expect(sentences, `step ${s.n} ${f} runs to ${sentences} sentences: ${v}`).toBeLessThanOrEqual(2);
+        expect(v.length, `step ${s.n} ${f} is ${v.length} chars`).toBeLessThanOrEqual(300);
+      }
+    }
+  });
+});
+
+/** The orphan lesson again: a step the renderers pass no data to is dead code with
+ *  passing tests. The pitch step exists only if both surfaces feed it. */
+describe('the pitch step is actually wired into both renderers', () => {
+  const src = () => {
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { resolve } = require('node:path') as typeof import('node:path');
+    return readFileSync(resolve(__dirname, '../components/SweepDashboard.tsx'), 'utf8');
+  };
+
+  it('both buildDoNowPlan call sites pass pitchTargets', () => {
+    expect((src().match(/pitchTargets: pitchTargetsFrom\(authority\)/g) || []).length).toBe(2);
+  });
+
+  it('the targets come from one shared derivation, so the surfaces cannot diverge', () => {
+    expect((src().match(/const pitchTargetsFrom = /g) || []).length).toBe(1);
+  });
+
+  it('both surfaces print which layer a step moves', () => {
+    const s = src();
+    expect(s).toContain("out.push(`- Moves: ${step.moves ===");
+    expect(s).toContain('<span className="text-zinc-400">Moves:</span>');
   });
 });
