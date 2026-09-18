@@ -94,3 +94,67 @@ describe('sweep cost never leaves the process as a real provider price', () => {
     expect(SRC).toMatch(/costUsd: 0 \}\)\)/);
   });
 });
+
+/** COST NEVER APPEARS IN CUSTOMER-FACING CONTENT — founder rule, restated 2026-09-20.
+ *
+ *  Prices belong on the pricing page. What a sweep COSTS US does not belong anywhere a
+ *  customer can read it, because a reader immediately does the subtraction and forgets
+ *  everything the tool did between the two numbers.
+ *
+ *  It was published. The primer carried "costs us about $2.70 in engine fees — measured,
+ *  from a run of ours on 18 September that came to $0.54 for 48 answers." I put it there
+ *  on an instruction to replace a hedge with the measured figure, and did not weigh that
+ *  instruction against the older standing rule. The conflict was mine to raise and I did
+ *  not raise it.
+ *
+ *  This test is the raising. */
+describe('no customer-facing surface states what anything costs us', () => {
+  const { readFileSync, readdirSync, statSync } = require('node:fs') as typeof import('node:fs');
+  const { resolve, join } = require('node:path') as typeof import('node:path');
+  const ROOT = resolve(__dirname, '..', '..');
+
+  const walk = (d: string, out: string[] = []): string[] => {
+    for (const n of readdirSync(d)) {
+      if (['node_modules', 'dist', '.git', 'docs', 'private'].includes(n) || n.startsWith('.')) continue;
+      const f = join(d, n);
+      if (statSync(f).isDirectory()) walk(f, out);
+      else if (/\.(tsx?|html)$/.test(f) && !/__tests__|\.test\./.test(f)) out.push(f);
+    }
+    return out;
+  };
+
+  // Everything a logged-out or paying customer can read. Deliberately excludes
+  // src/lib and api/, where cost is computed and shown to the admin alone.
+  const SURFACES = [
+    ...walk(resolve(ROOT, 'public')),
+    ...walk(resolve(ROOT, 'src/components')),
+  ];
+
+  const COST_TO_US = [
+    /\bcosts?\s+us\b/i,
+    /\bengine fees?\b/i,
+    /\bour (own )?cost\b/i,
+    /\bCOGS\b/,
+    /\bcost per (call|answer|query|sweep|run)\b/i,
+    /\$[\d.]+\s+(in|of)\s+(engine|api|llm|provider)\b/i,
+  ];
+
+  it('states no cost-to-us figure anywhere a customer can read it', () => {
+    const offenders: string[] = [];
+    for (const f of SURFACES) {
+      for (const [i, line] of readFileSync(f, 'utf8').split('\n').entries()) {
+        if (/^\s*(\/\/|\*|\/\*|<!--)/.test(line)) continue;           // comments record why, and must survive
+        if (/isAdmin|adminView|admin-only/.test(line)) continue;      // admin-gated cost display is allowed
+        for (const rx of COST_TO_US) {
+          if (rx.test(line)) { offenders.push(`${f.replace(ROOT, '')}:${i + 1}  ${line.trim().slice(0, 80)}`); break; }
+        }
+      }
+    }
+    expect(offenders, `cost-to-us on a customer surface:\n${offenders.join('\n')}`).toEqual([]);
+  });
+
+  it('prices are still allowed — the rule is about our costs, not our prices', () => {
+    const pricing = readFileSync(resolve(ROOT, 'src/components/Payments.tsx'), 'utf8');
+    expect(pricing).toMatch(/\$24|\$49|\$199/);
+  });
+});
