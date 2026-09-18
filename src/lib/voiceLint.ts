@@ -41,9 +41,12 @@ const BANNED: { rx: RegExp; label: string }[] = [
   // Subject AND predicate, same clause. `[^.<]{0,60}` keeps it inside one sentence and
   // stops it leaping an HTML tag boundary into unrelated copy.
   {
-    // The category words between subject and noun may be quoted and alternated —
-    // `Most “AEO” or “GEO” tools` shipped in the blog and the first pattern missed it.
-    rx: /\b(most|other|many|rival|competing)\s+(?:["“”']?(?:aeo|geo)["“”']?\s*(?:or\s+)?){0,2}(tools?|platforms?|vendors?|apps?|software|consultants?)\b[^.<]{0,60}\b(only|just|merely|never|stop|stops|hand you|hands you|give you|gives you|leave you|leaves you|can'?t|cannot|don'?t|do not|fail to|fails to)\b/i,
+    // ANY short modifier may sit between the subject and the noun. The first version
+    // allowed only `aeo`/`geo`, so `Most “AEO” or “GEO” tools` was missed, and then so
+    // was `Most AI-visibility tools hand you a number and a vibe` — which had been live
+    // on /blog/how-it-works the whole time the truth pass reported twelve surfaces
+    // cleared. Two misses from the same too-specific middle.
+    rx: /\b(most|other|many|rival|competing)\s+(?:[\w“”"'&-]+\s+){0,3}(tools?|platforms?|vendors?|apps?|software|consultants?)\b[^.<]{0,60}\b(only|just|merely|never|stop|stops|hand you|hands you|give you|gives you|leave you|leaves you|can'?t|cannot|don'?t|do not|fail to|fails to)\b/i,
     label: 'comparative-deficiency claim about competitors',
   },
   // The bare scaffold: "Most tools: <anything>" as a labelled contrast. Five of the six

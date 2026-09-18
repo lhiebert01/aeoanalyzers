@@ -61,6 +61,12 @@ describe('comparative-deficiency claims about competitors are banned', () => {
     'Most tools: never look at the front door.',
     'Most tools: check only whether you’re mentioned, never whether it’s right.',
     'Most tools & consultants: a one-time PDF you have to take on faith.',
+    // MISSED BY THE FIRST PASS. The pattern allowed only "aeo"/"geo" between the
+    // subject and the noun, so an ordinary modifier walked straight through it while
+    // the truth pass reported twelve surfaces cleared. It had been the LEAD SENTENCE
+    // of /blog/how-it-works the whole time.
+    'Most AI-visibility tools hand you a number and a vibe.',
+    'Other AI search platforms give you a score and nothing else.',
   ];
 
   it('fires on every line that actually shipped', () => {
