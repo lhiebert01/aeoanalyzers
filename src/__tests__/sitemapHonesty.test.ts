@@ -114,3 +114,37 @@ describe('every prerendered public view declares its own head tags', () => {
     }
   });
 });
+
+/** THE BLOG INDEX IS HAND-MAINTAINED, and the primer proved it. The post shipped live,
+ *  declared in sitemap.xml and llms.txt, cross-linked FROM — and absent from /blog/, so
+ *  nothing on the site linked TO it and a browsing reader could not reach it.
+ *
+ *  Same defect class as the seven hand-written heads: publishing requires remembering to
+ *  edit a second file. Until a generator exists, this test is the remembering. */
+describe('every published post is reachable from the blog index', () => {
+  const { readFileSync, readdirSync, existsSync } = require('node:fs') as typeof import('node:fs');
+  const { resolve, join } = require('node:path') as typeof import('node:path');
+  const ROOT = resolve(__dirname, '..', '..');
+  const BLOG = resolve(ROOT, 'public/blog');
+
+  const slugs = readdirSync(BLOG).filter((d) => existsSync(join(BLOG, d, 'index.html')));
+  const index = readFileSync(join(BLOG, 'index.html'), 'utf8');
+
+  it('finds the posts on disk', () => {
+    expect(slugs.length).toBeGreaterThanOrEqual(6);
+  });
+
+  for (const slug of slugs) {
+    it(`/blog/${slug} is linked from /blog/`, () => {
+      expect(index, `/blog/${slug} exists on disk but nothing on the index links to it`)
+        .toContain(`/blog/${slug}`);
+    });
+  }
+
+  it('and every link on the index points at a post that exists', () => {
+    const linked = [...index.matchAll(/href="\/blog\/([a-z0-9-]+)"/g)].map((m) => m[1]);
+    for (const l of [...new Set(linked)]) {
+      expect(existsSync(join(BLOG, l, 'index.html')), `/blog/ links to /blog/${l}, which does not exist`).toBe(true);
+    }
+  });
+});
