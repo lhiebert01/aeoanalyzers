@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why AI still doesn't mention your business | AEO Analyzers</title>
+<meta name="description" content="Most AI-visibility advice aims at the wrong problem. What we measured: llms.txt goes unread on 97% of sites, six of seven AI platforms cannot read your schema, the four assistants read four different indexes, and an AI sees about 200 characters of your page. Includes the free self-checks, and two of our own failures.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AEO Analyzers">
+<meta property="og:title" content="Why AI still doesn't mention your business">
+<meta property="og:description" content="Most AI-visibility advice aims at the wrong problem. What we measured: llms.txt goes unread on 97% of sites, six of seven AI platforms cannot read your schema, the four assistants read four different indexes, and an AI sees about 200 characters of your page. Includes the free self-checks, and two of our own failures.">
+<meta property="og:url" content="https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you">
+<meta property="og:image" content="https://aeoanalyzers.com/aeo-og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="AEO Analyzers — why AI still doesn't mention your business">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Why AI still doesn't mention your business">
+<meta name="twitter:description" content="Most AI-visibility advice aims at the wrong problem. What we measured: llms.txt goes unread on 97% of sites, six of seven AI platforms cannot read your schema, the four assistants read four different indexes, and an AI sees about 200 characters of your page. Includes the free self-checks, and two of our own failures.">
+<meta name="twitter:image" content="https://aeoanalyzers.com/aeo-og.png">
+<meta name="theme-color" content="#08343B">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Why AI still doesn't mention your business",
+  "description": "Most AI-visibility advice aims at the wrong problem. What we measured: llms.txt goes unread on 97% of sites, six of seven AI platforms cannot read your schema, the four assistants read four different indexes, and an AI sees about 200 characters of your page. Includes the free self-checks, and two of our own failures.",
+  "datePublished": "2026-09-19",
+  "dateModified": "2026-09-19",
+  "author": { "@type": "Organization", "name": "AEO Analyzers", "url": "https://aeoanalyzers.com" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "PIGENAI LLC",
+    "url": "https://pigenai.com",
+    "logo": { "@type": "ImageObject", "url": "https://aeoanalyzers.com/aeo-og.png" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you" },
+  "image": "https://aeoanalyzers.com/aeo-og.png",
+  "url": "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you"
+}
+</script>
+<style>
+:root{
+  --paper:#E7ECEE; --card:#FFFFFF; --ink:#0E1216; --muted:#3F4952; --hair:#C4CDD3;
+  --teal:#0B6E7A; --teal-deep:#08343B; --teal-tint:#E6F0F1;
+  --good:#137A4D; --good-tint:#E3F1E9; --warn:#B5820A; --gap:#B23A2E; --gap-tint:#F7E7E4;
+  --panel:#EBF0F2; --edge:#9FADB6;
+  --shadow:0 1px 2px rgba(20,26,31,.06), 0 18px 50px rgba(20,26,31,.12);
+  --card-shadow:0 1px 2px rgba(20,26,31,.06), 0 6px 18px rgba(20,26,31,.10);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+/* Committed LIGHT theme — matches the aeoanalyzers.com site (dark text on white).
+   No prefers-color-scheme flip, so every visitor sees the same page the live site does. */
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:26px 20px 40px}
+
+/* ---- site header + footer: give the page a clear way back to the app ---- */
+.sitebar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:11px clamp(16px,4vw,28px);background:var(--card);border-bottom:1px solid var(--edge)}
+.sitebar .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.sitebar .brand .mk{display:inline-flex;width:27px;height:27px;border-radius:7px;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.sitebar .snav{display:flex;align-items:center;gap:6px}
+.sitebar .snav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:9px}
+.sitebar .snav a:hover{color:var(--ink);background:var(--panel)}
+.sitebar .snav a.primary{background:var(--teal-deep);color:#EAF4F5}
+.sitebar .snav a.primary:hover{color:#fff}
+.sitefoot{border-top:1px solid var(--edge);background:var(--card);margin-top:44px}
+.sitefoot .fin{max-width:960px;margin:0 auto;padding:24px clamp(16px,4vw,28px);display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.sitefoot .fnav{display:flex;flex-wrap:wrap;gap:8px 22px}
+.sitefoot a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+.sitefoot a:hover{color:var(--ink)}
+.sitefoot .fcop{color:var(--muted);font-size:12.5px}
+@media(max-width:520px){.sitebar .snav a:not(.primary){display:none}}
+
+/* ---- bento card ---- */
+.bento{background:var(--card);border:1px solid var(--edge);border-radius:22px;box-shadow:var(--shadow);margin-top:38px}
+.ribbon{background:var(--teal-deep);color:#EAF4F5;text-align:center;font-size:12.5px;font-weight:600;
+  letter-spacing:.03em;padding:10px 18px;border-radius:21px 21px 0 0}
+.ribbon b{color:#fff}
+.pad{padding:0 clamp(24px,4.5vw,54px) 40px}
+
+header{padding:40px 0 24px;border-bottom:1px solid var(--hair)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4.6vw,42px);line-height:1.1;
+  text-wrap:balance;margin:12px 0 14px;letter-spacing:-.01em}
+.doctitle{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4.6vw,42px);line-height:1.1;
+  text-wrap:balance;margin:12px 0 14px;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:13.5px;margin:0}
+.meta span{white-space:nowrap}
+h2{font-family:var(--serif);font-weight:600;font-size:23px;margin:42px 0 14px;letter-spacing:-.01em}
+p{margin:0 0 14px;max-width:76ch}
+.lead{font-size:17.5px;max-width:80ch}
+strong{color:var(--ink)}
+
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 6px}
+.tile{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:18px 18px 16px;box-shadow:var(--card-shadow)}
+.tile .lab{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile .num{font-family:var(--serif);font-size:40px;font-weight:600;line-height:1;margin:10px 0 6px;font-variant-numeric:tabular-nums}
+.tile .note{font-size:12.5px;color:var(--muted);line-height:1.45}
+.tile.good{border-top:3px solid var(--good)} .tile.good .num{color:var(--good)}
+.tile.warn{border-top:3px solid var(--warn)} .tile.warn .num{color:var(--warn)}
+.tile.gap{border-top:3px solid var(--gap)}  .tile.gap .num{color:var(--gap)}
+
+.results{background:var(--panel);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--card-shadow);padding:6px 24px 18px;margin-top:30px}
+.results h2{margin:22px 0 4px}
+.rq{font-family:var(--serif);font-size:19px;font-weight:600;margin:0 0 12px;padding-bottom:14px;border-bottom:1px solid var(--edge);max-width:none;line-height:1.35}
+.rq .yes{color:var(--good);font-weight:700}
+.rq .no{color:var(--gap);font-weight:700}
+ul.find{list-style:none;padding:0;margin:6px 0 0;max-width:82ch}
+ul.find li{position:relative;padding:9px 0 9px 26px;border-bottom:1px solid var(--hair);font-size:15.5px}
+ul.find li:last-child{border-bottom:0}
+ul.find li::before{content:"";position:absolute;left:2px;top:16px;width:8px;height:8px;border-radius:2px;background:var(--teal)}
+ul.find li.bad::before{background:var(--gap)}
+
+.callouts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+.callout{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:18px;box-shadow:var(--card-shadow);border-top:2px solid var(--teal)}
+.callout .k{font-family:var(--serif);font-size:17.5px;font-weight:600;color:var(--teal);margin:0 0 6px;line-height:1.25}
+.callout p{font-size:14px;margin:0 0 10px;color:var(--ink);max-width:none}
+.callout .vs{font-size:13.5px;color:var(--ink);border-top:1px dashed var(--edge);padding-top:9px;margin:0}
+.callout .vs b{color:var(--gap);font-weight:600}
+.callout.span{grid-column:1 / -1}
+
+ol.fixes{counter-reset:f;list-style:none;padding:0;margin:6px 0 0;max-width:82ch}
+ol.fixes li{position:relative;padding:18px 0 18px 46px;border-bottom:1px solid var(--edge)}
+ol.fixes li:last-child{border-bottom:0}
+ol.fixes li::before{counter-increment:f;content:counter(f);position:absolute;left:0;top:12px;
+  width:30px;height:30px;border-radius:50%;background:var(--teal-tint);color:var(--teal);
+  font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+ol.fixes b{display:block;margin-bottom:3px}
+ol.fixes span{color:var(--muted);font-size:14px}
+
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--hair);color:var(--muted);font-size:12.5px}
+footer b{color:var(--ink)}
+footer p{max-width:none}
+.samplenote{max-width:960px;margin:16px auto 0;padding:0 20px;text-align:center;
+  color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+.samplenote b{color:var(--ink)}
+/* ---- POSSE blog masthead + outro ---- */
+.post{max-width:720px;margin:6px auto 4px;padding:0 8px}
+.posteyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.posttitle{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5.6vw,48px);line-height:1.06;
+  letter-spacing:-.015em;text-wrap:balance;margin:12px 0 12px}
+.postmeta{color:var(--muted);font-size:13px;margin:0 0 24px;letter-spacing:.02em}
+.postbody p{font-size:17px;max-width:68ch;margin:0 0 16px;color:var(--ink)}
+.postbody .postlead{font-size:19.5px;line-height:1.5}
+.jumpcue{max-width:68ch;margin:20px 0 0;color:var(--muted);font-size:13.5px;
+  border-top:1px solid var(--edge);padding-top:16px}
+.jumpcue b{color:var(--ink)}
+.postoutro{max-width:780px;margin:36px auto 0;padding:32px clamp(22px,4.5vw,44px);
+  background:var(--teal-tint);border:1px solid var(--edge);border-radius:20px;box-shadow:var(--card-shadow)}
+.postoutro .eyebrow{margin-bottom:8px;display:block}
+.postoutro h3{font-family:var(--serif);font-weight:600;font-size:clamp(25px,4vw,34px);line-height:1.08;
+  letter-spacing:-.015em;text-wrap:balance;margin:0 0 16px}
+.postoutro p{font-size:16.5px;max-width:72ch;margin:0 0 14px;color:var(--ink)}
+.postoutro .bigline{font-size:19px;line-height:1.45}
+.postoutro .hl{color:var(--teal);font-weight:700}
+.cta{display:inline-block;background:var(--teal-deep);color:#EAF4F5;font-weight:600;font-size:15px;
+  text-decoration:none;padding:11px 22px;border-radius:11px}
+.cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.ilink{color:var(--teal);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.ilink:hover{text-decoration-thickness:2px}
+@media(max-width:560px){.score{grid-template-columns:1fr}.callouts{grid-template-columns:1fr}}
+/* ---- G1: follow-the-series email capture (Honest-Zero) ---- */
+.followseries{max-width:780px;margin:18px auto 0;padding:20px clamp(22px,4.5vw,34px);
+  display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;justify-content:space-between;
+  background:var(--card);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--card-shadow)}
+.followseries .fs-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:6px}
+.followseries .fs-line{font-size:15px;line-height:1.5;color:var(--ink);margin:0;max-width:60ch}
+.followseries .fs-cta{display:inline-block;white-space:nowrap;background:var(--card);color:var(--teal-deep);
+  border:1.5px solid var(--teal-deep);font-weight:600;font-size:14.5px;text-decoration:none;padding:10px 18px;border-radius:11px}
+.followseries .fs-cta:hover{background:var(--teal-deep);color:#EAF4F5}
+.followseries .fs-cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+</style>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="https://aeoanalyzers.com/"><span class="mk">A</span> AEO Analyzers</a>
+  <nav class="snav">
+    <a href="https://aeoanalyzers.com/">Home</a>
+    <a href="/blog/">Blog</a>
+    <a class="primary" href="https://aeoanalyzers.com/">Start free &rarr;</a>
+  </nav>
+</header>
+<div class="wrap">
+  <article class="post">
+    <div class="posteyebrow">AEO Analyzers &middot; A primer</div>
+    <h1 class="posttitle">Why AI Still Doesn&rsquo;t Mention Your Business</h1>
+    <div class="postbody">
+      <p class="postlead">You added the structured data. You wrote the FAQ page. You put an llms.txt file at the root of your site because someone said the AI crawlers read it. Months later you ask ChatGPT what the best options in your category are, and your name does not come up.</p>
+      <p class="postmeta">PIGENAI LLC &middot; September 2026 &middot; 8-minute read</p>
+      <p>You are probably not doing it wrong. Most of the advice is aimed at the wrong problem.</p>
+      <p>Here is what we have measured, on our own site and from published research, written as plainly as we can manage.</p>
+
+      <h2>Three things you were told to do that do very little</h2>
+
+      <h3>1. The llms.txt file</h3>
+      <p>This is a file you put on your site to tell AI systems what your pages are about. Ahrefs looked at 137,000 sites that had one. In 97% of cases, nothing ever requested the file. SE Ranking looked at around 300,000 domains and found no link between having it and being mentioned in AI answers. Google has said it does not support it. No other major AI company has committed to reading it either.</p>
+      <p>It takes ten minutes to create, so keep yours if you like it. It is not a plan.</p>
+
+      <h3>2. Schema markup &mdash; at least for the reason you were given</h3>
+      <p>Schema is the hidden code that describes your page to machines. A controlled test across seven AI platforms, run between December 2025 and March 2026, found that only one of them &mdash; Google&rsquo;s Gemini &mdash; could read it at all. When the testers put a fact ONLY in the schema and then asked each platform about that fact, not one of them could answer.</p>
+      <p>ChatGPT is the clearest case. When it converts your page into something the model can read, it strips the schema out first.</p>
+      <p>Keep your schema. It still earns rich results in Google, and it still helps machines tell your company apart from a similarly named one. It is simply not how you get quoted.</p>
+
+      <h3>3. &ldquo;Just publish more content&rdquo;</h3>
+      <p>Sometimes true. Often not, for a reason we will come back to at the end.</p>
+
+      <blockquote class="callout-quote">
+        <p><strong>The rule underneath all three.</strong> If a fact matters, it has to appear in the visible words on your page. Your price. What you actually do. Who it is for. If those live only in your schema or only in your meta description, an AI cannot quote you on them.</p>
+        <p>We failed this ourselves. Our own homepage used the word &ldquo;software&rdquo; exactly once, and that once was inside the hidden code. In the visible text, we never said what kind of thing we were. We are in the business of catching that, and we did it to ourselves.</p>
+      </blockquote>
+
+      <h2>There is no single &ldquo;AI,&rdquo; and the ones people use do not read the same web</h2>
+      <p>This is the part that explains most of the confusion, and almost nobody says it plainly.</p>
+      <p>There are a lot of assistants now, and more arriving. But there are fewer indexes behind them than there are names on the front, and that is the thing worth understanding.</p>
+      <p>These are the ones people go to with a question and get an answer with sources attached. Where each looks, as far as anyone has published:</p>
+      <ul>
+        <li><strong>ChatGPT</strong> built its own index of the web, alongside other sources. Researchers found only about 1.5% of the pages in that index appear in Bing&rsquo;s top results for the same question.</li>
+        <li><strong>Claude</strong> looks things up through Brave Search. Anthropic documents Brave as the search service its web search calls.</li>
+        <li><strong>Gemini</strong>, and Google&rsquo;s AI Overviews, use Google&rsquo;s index.</li>
+        <li><strong>Perplexity</strong> runs its own crawler and its own index, along with some third-party sources. The mix has changed over the product&rsquo;s life.</li>
+        <li><strong>Copilot</strong> uses Bing.</li>
+        <li><strong>Grok</strong> has its own web search, plus search across X, which is why people reach for it on anything current. Who supplies the underlying web results is not published.</li>
+        <li><strong>Meta AI</strong> has drawn on Google and Bing, and has been reported to be building its own. It is used inside Meta&rsquo;s apps more than as a place people go to look something up.</li>
+      </ul>
+      <p>One kind of assistant is deliberately missing from that list, and the distinction matters because it changes what you can do about it. A different sort of assistant lives inside a single company&rsquo;s product &mdash; the one on a large retailer&rsquo;s site, the one inside a messaging app, the support bot on a software vendor&rsquo;s dashboard. Those mostly answer from their host&rsquo;s own catalogue or their own documentation, not from the open web. If your customers meet you through one of those, none of this applies and a different discipline does.</p>
+      <p>Two things follow from the list above.</p>
+      <p>The first is that one index can cost you several assistants. Brave is not only behind Claude. Mistral&rsquo;s Le Chat, you.com and Kagi build on the same search service. Being absent there is not a one-assistant problem.</p>
+      <p>The second is scope, and we would rather tell you than have you find out. <strong>We measure four: ChatGPT, Claude, Gemini and Perplexity.</strong> Copilot, Grok, Meta AI and others matter too, and we do not measure them. If a tool tells you it covers every AI, ask which ones, and ask where each one looks.</p>
+      <p>For the four we do measure: when researchers compared which sources they cite for the same questions, the overlap between any two of them ran from 16% to 59%. And only about 12% of the pages ChatGPT cites are in Google&rsquo;s top ten for that query.</p>
+      <p>So being first on Google tells you very little about whether ChatGPT or Claude will mention you.</p>
+      <p>It also means you can be invisible to one assistant for a reason that has nothing to do with your website. We are the example. In early September, three of the four found us by name on ten attempts out of ten. Claude managed three. Same site, same day. Later we found out why: our site is not in Brave&rsquo;s index, and Brave is where Claude looks. No amount of work on our pages would ever have changed that. We only found out because we checked the index directly instead of assuming.</p>
+
+      <h2>Three gates, and they happen in order</h2>
+      <p>Everything above fits into a simple sequence. An assistant has to get through three gates before it mentions you.</p>
+      <ol>
+        <li><strong>Is your site in the index this particular assistant looks in?</strong> If not, nothing else matters.</li>
+        <li><strong>Does it pull your page in when somebody asks this question?</strong></li>
+        <li><strong>Having read your page, does it name you and link to you?</strong></li>
+      </ol>
+      <p>Nearly all the advice you will read is about gate three. Write better answers. Add structure. Improve the page. That advice is fine. It is useless if you are failing gate one.</p>
+      <p>So the first useful question is not &ldquo;how do I get cited.&rdquo; It is &ldquo;which gate am I failing.&rdquo; You can find that out in about an hour, and we will show you how below.</p>
+
+      <h2>What an AI actually reads of your page</h2>
+      <p>Far less than you would think.</p>
+      <p>Research published in 2026 into how ChatGPT retrieves pages found that in its fast mode, the only body text the model sees is roughly the first 200 characters after your main heading. It is the same 200 characters no matter what was asked. Your meta description is ignored completely.</p>
+      <p>On most sites, those 200 characters are spent on a breadcrumb trail, a date, a byline and a cookie notice.</p>
+      <p>Two more findings from the same work. The fetcher does not run JavaScript, so anything your site draws after the page loads is invisible to it. And pages larger than 4MB are rejected outright rather than trimmed.</p>
+      <p>One number worth carrying away: when a page is merely retrieved, it gets cited about 7% of the time. When it is actually opened and read, that rises to about 74%.</p>
+
+      <h2>The uncomfortable part: the answer is mostly built from other people&rsquo;s pages</h2>
+      <p>When somebody asks &ldquo;what are the best tools for X,&rdquo; the assistant is mostly not reading vendor websites. It is reading the pages that write about vendors. Roundups. Reddit threads. Review sites. Industry blogs.</p>
+      <p>Ahrefs studied 75,000 brands. The strongest thing associated with being mentioned by AI was how often the brand was mentioned on other people&rsquo;s web pages. Backlinks mattered far less. Brands in the top quarter for mentions averaged 169 AI mentions. The next quarter down averaged 14.</p>
+      <p>A separate analysis of 30 million cited sources found the most-cited sites were Reddit, YouTube and LinkedIn, followed by Wikipedia and Forbes.</p>
+      <p>Here is what that means in practice, and it is the thing we resisted longest. There is no setting you can change on your own website that puts you inside somebody else&rsquo;s article. Someone else has to write about you. Almost every task on the usual checklist is something you do to your own property, which is exactly why the checklist can be completed perfectly and change nothing.</p>
+
+      <blockquote class="callout-quote">
+        <p><strong>Our own number for this is still zero.</strong></p>
+        <p>Across 200 answers to category questions, measured five times each across four assistants, our domain appears in none of the cited sources. Not ranked last. Absent from the material the answers are built from.</p>
+      </blockquote>
+
+      <h2>How to check all of this yourself, free, without any tool</h2>
+      <p>You do not need us for this part, and we would rather you did it than took our word for anything.</p>
+      <ol>
+        <li>Search <code>site:yourdomain.com</code> on Google, on Bing, and on Brave. Brave matters because it is what Claude uses. If one of them returns nothing, that is gate one, on that assistant.</li>
+        <li>Look at what your page sends before any code runs on it. Instructions are in the box below. If a sentence you care about is not in there, the fetcher cannot see it.</li>
+        <li>Read the first sentence after your main heading. Does it say what you are, in the words a buyer would use? If it is a slogan, an AI has nothing to quote.</li>
+        <li>Look for your price and your main claim in the visible words on the page, not only in the code.</li>
+        <li>Open four or five of your own URLs and compare them to your homepage. If several return the same document, you have one page, not five.</li>
+      </ol>
+      <blockquote class="callout-quote">
+        <p><strong>How to see what the fetcher sees.</strong></p>
+        <p>The simplest way takes one keystroke and changes no settings.</p>
+        <p>Open the page you want to check, then press <strong>Ctrl+U</strong> on Windows, or <strong>Cmd+Option+U</strong> on a Mac. A new tab opens showing the raw page exactly as your server sent it, before any code ran. That is close to what an AI fetcher receives.</p>
+        <p>Now press <strong>Ctrl+F</strong> and search for a distinctive sentence from your page. Your price. Your main claim. The line under your heading. If you cannot find it in there, it is not in what the fetcher sees, no matter how clearly it appears in a normal browser.</p>
+        <p>The thorough version, if you want it: in Chrome, Edge or Brave, press <strong>F12</strong> to open developer tools, then <strong>Ctrl+Shift+P</strong> (<strong>Cmd+Shift+P</strong> on a Mac), type &ldquo;javascript&rdquo;, and choose <strong>Disable JavaScript</strong>. Reload the page. What remains is roughly what the fetcher gets. Close developer tools when you are done and everything goes back to normal.</p>
+      </blockquote>
+
+      <p>That last one caught us. Four of our own public pages, including our pricing page, were serving the homepage to everybody who was not logged in. The page returned a normal &ldquo;OK&rdquo; response the entire time, so nothing looked broken. We build a check for exactly this failure, and we still missed it on our own site for eleven days. We found it by running our own tool on ourselves, which is the only reason we can tell you about it.</p>
+
+      <h2>Can you do all this yourself?</h2>
+      <p>Yes. And for the five checks above, you should. They cost nothing, they take about an hour, and you will learn more from doing them than from reading about them.</p>
+      <p>The full measurement is a different kind of job, and it is worth being precise about why, because it is not expertise. It is arithmetic.</p>
+      <p>A proper measurement is twelve questions your buyers actually ask, put to four assistants, five times each. That is <strong>240 separate questions</strong>, asked one at a time, with every answer read and every cited source written down. Then the same 240 again next month, worded identically, or the comparison means nothing.</p>
+      <p>Five times each is not padding. One answer from one assistant is a coin flip. Ask the same question twice and you will often get two different answers, and neither one is the truth on its own. The pattern is the measurement.</p>
+      <p>That is where doing it by hand tends to come apart. Not at the start. At question ninety, when you ask once instead of five times. When you quietly drop the run that errored instead of excluding it properly. When you reword a question slightly next month because the old wording felt clumsy, and the comparison you were building stops working without telling you.</p>
+      <p>Our site analysis takes about ninety seconds. The four-assistant sweep takes a few minutes and costs us a few dollars in engine fees. It asks the same questions the same way every month, keeps every transcript, and prints how many runs each number came from.</p>
+      <p>A few of the checks are simply too dull for a person to do reliably. Comparing five of your own URLs by their exact byte length. Extracting the precise first two hundred characters after your heading. Looking up whether your domain sits in each of four separate search indexes. None of that is difficult. All of it is the kind of thing a person does correctly the first time and approximately by the fourth.</p>
+      <p>We have been building this since March 2026, and most of what is in this article we found by getting it wrong on our own site first.</p>
+      <p>So if you have the patience, do it yourself. We would rather you measured badly than not at all. What we sell is the repetition and the discipline, not a secret.</p>
+
+      <h2>What we do about it</h2>
+      <p>Briefly, because the sections above matter more than this one.</p>
+      <p>We check which index each assistant&rsquo;s search actually finds you in, and we report it one engine at a time rather than as a single blended score, because one number hides the one assistant you are invisible to.</p>
+      <p>We check whether the facts you care about appear in the visible words on your page, not only in the code.</p>
+      <p>We ask the questions your buyers ask, across four assistants, several times each. We keep the transcripts. We print how many runs each number came from. We keep answers that came from a live search separate from answers written from the model&rsquo;s memory, because those are different claims about the world. If a run errors out, we exclude it rather than counting it as a &ldquo;no&rdquo;.</p>
+      <h3>The part we care about most</h3>
+      <p>Here is a problem you would never think to worry about, and it is the one that worries us.</p>
+      <p>A tool can be completely broken and still look completely fine. When a check quietly stops working, it does not show you an error. It shows you a reassuring result. Everything comes back green, and you have no way of knowing that the green meant nothing.</p>
+      <p>So we test every check twice. Once against something we know is broken, to be sure it says so. Once against something we know is fine, to be sure it does not raise a false alarm. If a check cannot correctly spot a problem we planted on purpose, it does not ship.</p>
+      <p>That is how we caught one of our own. We had built a way to look up whether a website was in a particular search index, and it appeared to work. Then we ran it against a web address we made up, a domain that does not exist and could not possibly be in any index. It reported that one as present too. It had never been checking anything at all. We deleted it and started again.</p>
+      <p>Had it shipped, it would have told every customer their site was fine. They would have believed it, because there would have been nothing to see.</p>
+      <p>This sounds like a technicality. It is the thing that decides whether any number anyone gives you means anything at all. Ask any tool you are considering whether they test their own checks this way, and what happened the last time one of them failed.</p>
+
+      <h2>What nobody can do</h2>
+      <p>We cannot make an assistant quote you. Nobody can, and anyone telling you otherwise is selling something.</p>
+      <p>What can be done is finding out which gate you are failing, fixing the part that is genuinely in your control, and measuring again to see whether it moved.</p>
+      <p>Our own category number is still zero. When it changes, we will publish that too.</p>
+
+      <h2>Related reading</h2>
+      <ul>
+        <li><a href="/blog/i-scored-zero">I scored zero on my own tool</a> &mdash; the dated narrative this primer grew out of.</li>
+        <li><a href="/blog/reading-isnt-citing">Reading isn&rsquo;t citing</a> &mdash; why crawler traffic is not the same as being mentioned.</li>
+        <li><a href="/blog/how-it-works">How it works</a> &mdash; the method, step by step.</li>
+        <li><a href="/blog/what-you-actually-get">What you actually get</a> &mdash; the five layers of the action plan.</li>
+        <li><a href="/best-aeo-tools">AEO tools: an honest comparison</a> &mdash; with dates on every claim.</li>
+      </ul>
+    </div>
+    <p class="samplenote"><em>AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PIGENAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</em></p>
+  </article>
+</div>
+
+<aside class="followseries" aria-label="Follow the Honest-Zero series">
+  <div>
+    <span class="fs-eyebrow">The Honest-Zero series</span>
+    <p class="fs-line">A live experiment in AI-search visibility: I re-measure my own numbers monthly &mdash; same questions, same way &mdash; and publish them whatever they are. Follow the next entry by email.</p>
+  </div>
+  <a class="fs-cta" href="https://lindsayhiebert.substack.com/subscribe">Follow by email &rarr;</a>
+</aside>
+<footer class="sitefoot">
+  <div class="fin">
+    <nav class="fnav">
+      <a href="https://aeoanalyzers.com/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://aeoanalyzers.com/privacy">Privacy</a>
+      <a href="https://aeoanalyzers.com/terms">Terms</a>
+    </nav>
+    <div class="fcop">&copy; 2026 AEO Analyzers &middot; PIGENAI LLC</div>
+  </div>
+</footer>
+</body>
+</html>

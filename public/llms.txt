@@ -23,13 +23,18 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 
 ## Key pages
 - Home / Why AEO: https://www.aeoanalyzers.com/
-- Pricing: https://www.aeoanalyzers.com/ (Pricing view)
-- FAQ: https://www.aeoanalyzers.com/ (FAQ view)
+- Pricing: https://aeoanalyzers.com/pricing
+- User guide and FAQ: https://aeoanalyzers.com/guide
 - Blog (index): https://www.aeoanalyzers.com/blog/
 - Blog — Is your brand the answer AI gives, or is a competitor? (a walkthrough of a sample AI Visibility Executive Report): https://www.aeoanalyzers.com/blog/are-you-the-answer-ai-gives
 - Blog — What you actually get: the action plan inside every Citation Sweep: https://www.aeoanalyzers.com/blog/what-you-actually-get
 - Blog — How AEO Analyzers works (a visual explainer of the pipeline): https://www.aeoanalyzers.com/blog/how-it-works
 - Blog — I ran my own AI-visibility tool on my own site; it scored 0% (Honest-Zero, Part 1): https://www.aeoanalyzers.com/blog/i-scored-zero
+- Blog — Reading isn't citing: why crawler traffic is not the same as being mentioned: https://aeoanalyzers.com/blog/reading-isnt-citing
+- Primer — Why AI still doesn't mention your business (what does not work, why, and the free self-checks): https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you
+- AEO tools: an honest comparison, with dates on every claim: https://aeoanalyzers.com/best-aeo-tools
+- Privacy policy: https://aeoanalyzers.com/privacy
+- Terms of service: https://aeoanalyzers.com/terms
 - Blog — The engines read my site 265 times; reading isn't citing (Honest-Zero, Part 2): https://www.aeoanalyzers.com/blog/reading-isnt-citing
 
 ## Publisher

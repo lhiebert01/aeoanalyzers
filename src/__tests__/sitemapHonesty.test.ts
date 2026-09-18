@@ -23,9 +23,12 @@ const sitemap = readFileSync(resolve(ROOT, 'public/sitemap.xml'), 'utf8');
 const listedPaths = [...sitemap.matchAll(/<loc>https:\/\/aeoanalyzers\.com([^<]*)<\/loc>/g)]
   .map((m) => m[1] || '/');
 
-/** Routes the prerender step emits a distinct document for. Root only today;
- *  add a route here in the same commit that teaches the prerender to emit it. */
-const PRERENDERED = new Set(['/']);
+/** Routes the prerender step emits a distinct document for. Add a route here in the
+ *  same commit that teaches the prerender to emit it — and the build's own
+ *  scripts/check-prerender.mjs fails if the prerender then does not produce it, so the
+ *  two lists cannot drift apart silently. Verified live on 2026-09-18: five distinct
+ *  documents of 58503, 25574, 37556, 14427 and 14303 bytes. */
+const PRERENDERED = new Set(['/', '/pricing', '/guide', '/privacy', '/terms']);
 
 function hasOwnSource(path: string): boolean {
   if (PRERENDERED.has(path)) return true;
