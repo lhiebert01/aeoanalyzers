@@ -69,7 +69,22 @@ describe('crawler access: robots.txt parsing + AI-bot gate', () => {
 
   it('AI_BOTS includes the major citation engines as critical', () => {
     const critical = AI_BOTS.filter((b) => b.critical).map((b) => b.name);
-    expect(critical).toEqual(expect.arrayContaining(['GPTBot', 'ClaudeBot', 'Google-Extended', 'PerplexityBot']));
+    expect(critical).toEqual(expect.arrayContaining(['GPTBot', 'ClaudeBot', 'PerplexityBot']));
+  });
+
+  /** Google-Extended was in the list above until Sep 18 2026. It is a training and
+   *  grounding OPT-OUT CONTROL, not a fetcher — Googlebot does the crawling — so marking
+   *  it critical capped a deliberate AI-training opt-out at a score of 35 and told the
+   *  customer the engine "cannot read your page". Applebot-Extended, the same class of
+   *  directive, was already non-critical, so the list disagreed with itself. */
+  it('classifies opt-out directives as non-critical, because they fetch nothing', () => {
+    const optOuts = AI_BOTS.filter((b) => /-Extended$/.test(b.name));
+    expect(optOuts.map((b) => b.name)).toEqual(
+      expect.arrayContaining(['Google-Extended', 'Applebot-Extended']),
+    );
+    for (const b of optOuts) {
+      expect(b.critical, `${b.name} fetches nothing and must not cap a score`).toBe(false);
+    }
   });
 });
 
