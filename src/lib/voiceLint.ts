@@ -37,6 +37,14 @@ const BANNED: { rx: RegExp; label: string }[] = [
   { rx: /hands down/i, label: 'hands down' },
   { rx: /\bwe guarantee\b/i, label: 'we guarantee' },
   { rx: /guaranteed results/i, label: 'guaranteed results' },
+  // EFFICACY SUPERLATIVES — added Sep 20 2026. The User Guide claimed schema was
+  // "the single most effective way to improve your AEO score", which is both an
+  // unqualified superlative AND contradicted by our own published primer: six of
+  // seven platforms cannot read schema and a schema-only fact was answered by none.
+  // The BANNED list had eleven entries and none of them covered a claim about how
+  // well something works, which is the most consequential kind to get wrong.
+  { rx: /\b(the\s+)?(single\s+)?most\s+(effective|powerful|important|impactful)\b/i, label: 'efficacy superlative' },
+  { rx: /\bfastest way to\b|\bsurest way to\b|\bbest way to (get|be|become) (cited|mentioned|recommended)\b/i, label: 'efficacy superlative (idiom)' },
   // --- comparative-deficiency claims about competitors (added Sep 19 2026) ---
   // Subject AND predicate, same clause. `[^.<]{0,60}` keeps it inside one sentence and
   // stops it leaping an HTML tag boundary into unrelated copy.

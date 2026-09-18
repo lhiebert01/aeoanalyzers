@@ -77,11 +77,39 @@ Raw served bytes: `</h1>` at 13715, `class="postlead"` at **13757 (+42)**, `clas
 **Lesson:** it is not only our checks. Any rendering between you and the artifact is a check
 you did not write and cannot see the assumptions of.
 
+## 7. The image pack — a manifest that could not tell me it was stale
+
+**What ran:** `sha256sum -c MANIFEST.sha256` on a delivered asset pack, then an independent
+channel check for opaque RGB, then a re-check of every digest **after** copying the files into
+`public/`.
+**What it reported:** all eight files verified. Every check passed. The pack was wired and shipped.
+**What was actually happening:** two newer revisions of that pack existed. The hero I shipped was
+`ALT-three-gates-clean-geometric`, which the current pack lists in `alternates/` as **not for
+use** — the treatment the founder had looked at and rejected as unreadable at thumbnail size.
+**Caught by:** the founder sending a revision, and a pack-to-pack diff.
+
+**Why this one is different from the other six.** Those checks were broken or aimed at the wrong
+artifact. This one was **correct and structurally incapable of catching the error**. A manifest
+proves a file matches its own manifest. It cannot prove the manifest is current. There is no
+amount of care inside that check that would have found it.
+
+**The tell that was available and was not used:** the wired filename,
+`primer-hero-three-gates-1600x900.jpg`, does not exist in the current pack — the chosen source is
+natively 2:1 and the hero is `1600x800`. A name that no longer exists upstream is a staleness
+signal that no digest can give you.
+
+**The rule that falls out of it:** for any delivered artifact, establish *which* delivery is
+current before verifying *that* it is intact. In practice: list every candidate file by
+timestamp, take the newest rather than the shortest name, and state the identifying facts of the
+revision you built from — here, ten manifest entries, a 1600x800 hero, and a 147,111-byte OG.
+Four document revisions of the work order were diffed correctly this same evening; the zip was
+not, because a zip felt like a thing rather than a version.
+
 ---
 
 ## The pattern, stated once
 
-Five of these six were **our own verification steps**, not our product. The product's checks are
+Six of these seven were **our own verification steps**, not our product. The product's checks are
 tested against planted failures; the steps we use to confirm our own work were not, until this
 week. Three of the six were caught only because a number disagreed with another number.
 

@@ -176,3 +176,34 @@ describe('marketing copy in components stays on-voice too', () => {
     });
   }
 });
+
+/** EFFICACY SUPERLATIVES — added Sep 20 2026 after the User Guide was found claiming
+ *  schema is "the single most effective way to improve your AEO score". Two problems in
+ *  one sentence: an unqualified superlative, and a claim our own published primer
+ *  contradicts — six of seven platforms cannot read schema, and a fact placed only there
+ *  was answered by none of them.
+ *
+ *  The BANNED list had eleven entries and not one covered a claim about how WELL
+ *  something works, which is the most consequential kind to get wrong. */
+describe('claims about how well something works are not exempt from the voice rule', () => {
+  it('catches the sentence that shipped', () => {
+    expect(bannedAbsolutes('This is the single most effective way to improve your AEO score.')).not.toEqual([]);
+  });
+
+  it('catches the family, not just that phrasing', () => {
+    for (const s of [
+      'the most important thing you can do for AI visibility',
+      'the most powerful lever available',
+      'the fastest way to get cited',
+      'the surest way to be recommended',
+    ]) expect(bannedAbsolutes(s), `missed: ${s}`).not.toEqual([]);
+  });
+
+  it('does not fire on ordinary comparative prose', () => {
+    for (const s of [
+      'We report three separable layers rather than one blended number.',
+      'Index presence matters more than page structure when you are failing gate one.',
+      'This is effective for entity disambiguation.',
+    ]) expect(bannedAbsolutes(s), `false positive: ${s}`).toEqual([]);
+  });
+});
