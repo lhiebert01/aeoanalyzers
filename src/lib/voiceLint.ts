@@ -54,7 +54,7 @@ const BANNED: { rx: RegExp; label: string }[] = [
     // was `Most AI-visibility tools hand you a number and a vibe` — which had been live
     // on /blog/how-it-works the whole time the truth pass reported twelve surfaces
     // cleared. Two misses from the same too-specific middle.
-    rx: /\b(most|other|many|rival|competing)\s+(?:[\w“”"'&-]+\s+){0,3}(tools?|platforms?|vendors?|apps?|software|consultants?)\b[^.<]{0,60}\b(only|just|merely|never|stop|stops|hand you|hands you|give you|gives you|leave you|leaves you|can'?t|cannot|don'?t|do not|fail to|fails to)\b/i,
+    rx: /\b(most|other|many|plenty of|lots of|a lot of|some|several|rival|competing|legacy|traditional|score-only|keyword-era|the rest of the)\s+(?:[\w“”"'&-]+\s+){0,3}(tools?|platforms?|vendors?|apps?|software|consultants?|products?|services?|providers?|suites?)\b[^.<]{0,60}\b(only|just|merely|never|stop|stops|hand you|hands you|give you|gives you|leave you|leaves you|can'?t|cannot|don'?t|do not|fail to|fails to)\b/i,
     label: 'comparative-deficiency claim about competitors',
   },
   // The bare scaffold: "Most tools: <anything>" as a labelled contrast. Five of the six
@@ -63,7 +63,7 @@ const BANNED: { rx: RegExp; label: string }[] = [
   {
     // Up to 24 chars before the colon so a compound subject still matches — the blog
     // shipped "Most tools & consultants:" and a 12-char gap missed it.
-    rx: /\b(most|other|rival|competing)\s+(tools?|platforms?|vendors?|consultants?)\b[^.<]{0,24}:/i,
+    rx: /\b(most|other|plenty of|lots of|some|several|rival|competing|legacy|traditional)\s+(tools?|platforms?|vendors?|consultants?)\b[^.<]{0,24}:/i,
     label: 'competitor contrast scaffold ("Most tools: …")',
   },
 ];

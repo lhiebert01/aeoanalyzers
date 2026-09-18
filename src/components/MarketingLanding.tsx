@@ -173,7 +173,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
                   </div>
                   <div>
                     <h4 className="font-bold text-lg mb-1">The Problem</h4>
-                    <p className="text-zinc-500">AI uses your expertise but sends you zero traffic. Keyword-era tools can't see how answer engines choose what to cite — and score-only AEO tools just tell you you're losing, without telling you how to win.</p>
+                    <p className="text-zinc-500">AI uses your expertise but sends you zero traffic. Keyword-era tooling was built for a different question — which page ranks — and a score on its own tells you where you stand without telling you what to change.</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -248,7 +248,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         <div className="text-center mb-16">
           <h2 id="trust-title" className="text-4xl md:text-6xl font-black tracking-tight mb-6">Why <span className="text-zinc-400">Analyzers</span>, Plural?</h2>
           <p className="text-zinc-500 text-xl max-w-3xl mx-auto leading-relaxed">
-            Legacy tools check keywords. We analyze the structural, content, entity, and authority signals tied to retrievability and citation — then test the outcome directly across Gemini, ChatGPT, Claude, and Perplexity. We don't claim to know their algorithms; we measure what they actually do. That's why it's Analyzer<strong>s</strong>.
+            Keywords answer a different question. We analyze the structural, content, entity, and authority signals tied to retrievability and citation — then test the outcome directly across Gemini, ChatGPT, Claude, and Perplexity. We don't claim to know their algorithms; we measure what they actually do. That's why it's Analyzer<strong>s</strong>.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
@@ -271,7 +271,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
               <Zap className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-black mb-4">Visibility That Pays</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">More AI citations means more qualified traffic and easier discovery of your pages, products, and storefronts — growth you can trace to revenue, not vanity metrics.</p>
+            <p className="text-zinc-500 text-sm leading-relaxed">Being cited is how a buyer reaches you from an AI answer at all. We measure whether it happens and who is named instead; what that is worth to you is yours to judge, and we do not model it for you.</p>
           </div>
         </div>
       </section>
