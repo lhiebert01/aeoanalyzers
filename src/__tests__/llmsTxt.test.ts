@@ -72,3 +72,42 @@ describe('extractLlmsDoc', () => {
     expect(validateLlmsTxt(renderLlmsTxt(d)).valid).toBe(true);
   });
 });
+
+/** Founder ruling, Sep 18 2026: "just relabel this, not remove — it is of value to show
+ *  it but it does not impact sweeps." WO-003 Lane E: llms.txt drops to an optional item
+ *  marked No evidence, with the study numbers printed inline, and the generator stays. */
+describe('llms.txt is labelled as unproven rather than presented as a fix', () => {
+  const read = (rel: string) => {
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { resolve } = require('node:path') as typeof import('node:path');
+    return readFileSync(resolve(__dirname, '..', rel), 'utf8');
+  };
+
+  it('says "no evidence this affects citations" in the recommendation itself', () => {
+    expect(read('lib/crawlerAccess.ts')).toContain('no evidence this affects citations');
+  });
+
+  it('prints the study numbers inline rather than asserting a verdict', () => {
+    const src = read('lib/crawlerAccess.ts');
+    expect(src).toContain('97%');
+    expect(src).toContain('137,000');
+    expect(src).toContain('300,000');
+  });
+
+  it('never calls it required, a priority, or a fix', () => {
+    const src = read('lib/crawlerAccess.ts');
+    const line = src.slice(src.indexOf('no evidence this affects citations') - 400, src.indexOf('Indexing, visible body text'));
+    expect(line).not.toMatch(/\brequired\b/i);
+    expect(line).toContain('it is not a fix');
+  });
+
+  it('the roadmap carries the same label, so the two surfaces agree', () => {
+    expect(read('components/ImplementationRoadmap.tsx')).toContain('no evidence this affects citations');
+  });
+
+  it('the generator is NOT removed — relabel, not delete', () => {
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { resolve } = require('node:path') as typeof import('node:path');
+    expect(() => readFileSync(resolve(__dirname, '../lib/llmsTxt.ts'), 'utf8')).not.toThrow();
+  });
+});

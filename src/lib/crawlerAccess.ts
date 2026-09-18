@@ -282,7 +282,12 @@ export function evaluateCrawlerAccess(input: {
     // data, or independent authority, which are what actually move citations.
     score = Math.max(0, score - 2);
     recommendations.push(
-      'Optional (low priority): add an /llms.txt file — a concise, LLM-friendly index of your key pages and facts. Note that Google Search does not use llms.txt and no major answer engine currently commits to consuming it, so treat this as a cheap experiment, not a priority. Indexing, structured data, and independent citations matter far more.'
+      'Optional, and labelled honestly: **no evidence this affects citations.** An /llms.txt is a concise, ' +
+      'LLM-friendly index of your key pages and facts. The measured picture: 97% of llms.txt files across ' +
+      '137,000 sites received zero traffic, no correlation with citations was found across ~300,000 domains, ' +
+      'Google Search states it does not use the file, and no other major answer engine commits to reading it. ' +
+      'It costs ten minutes and does no harm, so it is worth having and worth showing — it is not a fix, and ' +
+      'it is not a step in a plan. Indexing, visible body text and independent citations are what move a citation rate.'
     );
     summaryParts.push('No /llms.txt was found (optional — low priority).');
   }

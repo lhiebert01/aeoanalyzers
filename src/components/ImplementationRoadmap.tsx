@@ -325,7 +325,7 @@ ${analysisResult.implementationChecklist.map(item => `- [ ] [${item.priority.toU
 ### Phase 4: Independent authority & citation-building (ongoing, highest long-term impact)
 * Earn real third-party citations, listings, reviews, and mentions
 * Publish FAQ pages with structured data and technical explainer content
-* (Optional, low priority) add an llms.txt — Google Search does not use it; treat as a cheap experiment, not a priority
+* (Optional — no evidence this affects citations) add an llms.txt. 97% of files across 137,000 sites saw zero traffic and no correlation with citations was found across ~300,000 domains; Google states it does not use the file. Worth having, not a fix.
 * Add use-case and deployment documentation
 
 ---
