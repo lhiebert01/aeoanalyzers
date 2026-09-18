@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { buildDoNowPlan, classifyProblem, STRUCTURED_DATA_RULE } from '../lib/doNowPlan';
+import { publishableCollisions } from '../lib/schemaGenerator';
+import { answerShape, buildSweepActionAgenda } from '../lib/sweepActions';
 
 /** WO-AEO-REPORT-INTEGRITY-003 Rev B Part B. The measurement was already good; the
  *  failure was in the layer where the product stops reporting and starts advising. */
@@ -251,5 +253,123 @@ describe('the paid gate in a saved sweep follows the viewer', () => {
     const { readFileSync } = require('node:fs') as typeof import('node:fs');
     const { resolve } = require('node:path') as typeof import('node:path');
     expect(readFileSync(resolve(__dirname, '../App.tsx'), 'utf8')).toContain('isPaidUser={isPaidUser}');
+  });
+});
+
+/** WO-AEO-TIER-LEAK follow-on, Sep 18 2026 — three things the product told the founder
+ *  that were slightly wrong, found by reading a real report of aeoanalyzers.com as a
+ *  customer rather than by any test. Each is a sentence the customer was invited to act
+ *  on, so "slightly wrong" meant wasted days or bad copy on their own site. */
+describe('the instructions the report gives are ones a customer can safely follow', () => {
+  describe('the paste-ready unaffiliation line names only nameable entities', () => {
+    // The real collision list from the Sep 18 sweep. Three domains and three Wikipedia
+    // disambiguation hits that arrived with their source prefix attached.
+    const REAL = [
+      'aeoanalyzer.com', 'Wikipedia: aea investors', 'Wikipedia: aer',
+      'Wikipedia: aeon display and security system', 'aeoanalytics.com', 'aeoanalyzer.it',
+    ];
+
+    it('drops a knowledge-base hit, because "not affiliated with aer" is unbackable', () => {
+      const out = publishableCollisions(REAL);
+      expect(out).toEqual(['aeoanalyzer.com', 'aeoanalytics.com', 'aeoanalyzer.it']);
+      for (const o of out) expect(o).not.toMatch(/Wikipedia/i);
+    });
+
+    it('never puts a prefixed label in the line the customer pastes', () => {
+      const agenda = buildSweepActionAgenda({
+        domain: 'aeoanalyzers.com', brand: 'AEO Analyzers',
+        brandedRetrievabilityPct: 100, categoryWinPct: 0,
+        hasFidelityOrCollision: true, collisions: REAL,
+        losingCategoryQuestions: [], doNowAuthorities: [],
+        served: { hasOrg: true, hasOrgId: true, hasDisambiguation: true, sameAs: ['x'] } as any,
+      } as any).join('\n');
+      const pasteLine = agenda.split('\n').find((l) => l.includes('not affiliated with')) || '';
+      expect(pasteLine).toContain('aeoanalyzer.com');
+      expect(pasteLine).not.toMatch(/Wikipedia/i);
+    });
+
+    it('still keeps every collision in the FINDING — the split is deliberate', () => {
+      const agenda = buildSweepActionAgenda({
+        domain: 'aeoanalyzers.com', brand: 'AEO Analyzers',
+        brandedRetrievabilityPct: 100, categoryWinPct: 0,
+        hasFidelityOrCollision: true, collisions: REAL,
+        losingCategoryQuestions: [], doNowAuthorities: [],
+        served: { hasOrg: true, hasOrgId: true, hasDisambiguation: true, sameAs: ['x'] } as any,
+      } as any).join('\n');
+      // "an engine has something else under this name" is worth reporting, prefix included
+      expect(agenda).toMatch(/Wikipedia: aea investors/);
+    });
+
+    it('an owned domain is never disclaimed', () => {
+      expect(publishableCollisions(['aeoanalyzers.com', 'aeoanalyzer.com'], ['aeoanalyzers.com']))
+        .toEqual(['aeoanalyzer.com']);
+    });
+  });
+
+  describe('a question that asks for a procedure is not scored as a lost comparison', () => {
+    it('classifies the two real advice-shaped questions from the Sep 18 panel', () => {
+      expect(answerShape('how do I get my business recommended when people ask ChatGPT for product recommendations')).toBe('advice');
+      expect(answerShape("why isn't my website showing up in Google AI Overviews and how to fix it")).toBe('advice');
+    });
+
+    it('a list request stays a list request even in how-shaped clothing', () => {
+      expect(answerShape('free tool to check if my brand appears in perplexity and copilot answers')).toBe('recommendation');
+      expect(answerShape('best answer engine optimization platforms for agencies managing multiple clients')).toBe('recommendation');
+      expect(answerShape('affordable alternative to Profound for tracking brand mentions in AI engines')).toBe('recommendation');
+      expect(answerShape('how do I choose the best AEO software')).toBe('recommendation');
+    });
+
+    it('the agenda separates them and says a zero there is weaker evidence', () => {
+      const agenda = buildSweepActionAgenda({
+        domain: 'x.com', brand: 'X', brandedRetrievabilityPct: 100, categoryWinPct: 0,
+        hasFidelityOrCollision: false, collisions: [],
+        losingCategoryQuestions: [
+          'best AEO tools for agencies',
+          "why isn't my website showing up in Google AI Overviews and how to fix it",
+        ],
+        doNowAuthorities: [],
+      } as any).join('\n');
+      expect(agenda).toContain('Write the page that answers: "best AEO tools for agencies"');
+      expect(agenda).toContain('Read these');
+      expect(agenda).toContain('weaker evidence');
+      expect(agenda).toContain('not that you lost a comparison');
+    });
+
+    it('says nothing of the sort when every losing question asks for a shortlist', () => {
+      const agenda = buildSweepActionAgenda({
+        domain: 'x.com', brand: 'X', brandedRetrievabilityPct: 100, categoryWinPct: 0,
+        hasFidelityOrCollision: false, collisions: [],
+        losingCategoryQuestions: ['best AEO tools for agencies', 'top AEO software'],
+        doNowAuthorities: [],
+      } as any).join('\n');
+      expect(agenda).not.toContain('weaker evidence');
+    });
+  });
+
+  describe('a count of one is not a demonstrated pattern', () => {
+    const plan = (citations: number) => buildDoNowPlan({
+      domain: 'x.com', paid: true,
+      perEngine: [{ engine: 'claude', found: 2, total: 2 }],
+      authorityGap: [{ domain: 'g2.com', citations }],
+    } as any);
+
+    it('reads grammatically at one, which it did not', () => {
+      const why = plan(1).steps.map((s) => s.why).join(' ');
+      expect(why).toContain('cited once');
+      expect(why).not.toContain('1 times');
+    });
+
+    it('does not claim "demonstrably" off a single observation', () => {
+      const why = plan(1).steps.map((s) => s.why).join(' ');
+      expect(why).toContain('thin count');
+      expect(why).not.toMatch(/demonstrably/);
+    });
+
+    it('does claim a repeated pattern once there is one', () => {
+      const why = plan(7).steps.map((s) => s.why).join(' ');
+      expect(why).toContain('cited 7 times');
+      expect(why).toContain('repeatedly used');
+      expect(why).not.toContain('thin count');
+    });
   });
 });

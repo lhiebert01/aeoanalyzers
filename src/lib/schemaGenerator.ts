@@ -127,6 +127,45 @@ export function reconcileProperty(
 }
 
 /** Build the block, or refuse. Called by BOTH renderers. */
+/** THE DIAGNOSIS / PUBLISHABLE SPLIT — added Sep 18 2026 after a real report.
+ *
+ *  Collision detection returns two different kinds of thing. Some are domains:
+ *  `aeoanalyzer.com`, `aeoanalytics.com`, `aeoanalyzer.it`. Some are Wikipedia
+ *  disambiguation hits, and they arrive carrying their source prefix:
+ *  `Wikipedia: aea investors`, `Wikipedia: aer`.
+ *
+ *  Both are legitimate FINDINGS — "an engine has something else under this name" is
+ *  worth telling a customer, and the source prefix is informative there. Neither of
+ *  the second kind is publishable. The sweep of aeoanalyzers.com on Sep 18 generated
+ *  this line for the customer to paste into their own footer:
+ *
+ *    "…is not affiliated with similarly named entities such as aeoanalyzer.com,
+ *     Wikipedia: aea investors, Wikipedia: aer."
+ *
+ *  `Wikipedia: aer` is not an entity name, and asserting non-affiliation with a thing
+ *  we cannot even name is a claim we cannot back — on a product whose whole position is
+ *  that it prints nothing it cannot back, in copy that goes on the customer's own site.
+ *
+ *  So: publishable copy names only domain-shaped collisions. Everything else stays in
+ *  the finding. Do not "unify" these two lists.
+ */
+export function publishableCollisions(collisions: string[], owned?: string[]): string[] {
+  const out: string[] = [];
+  for (const raw of collisions || []) {
+    const c = String(raw || '').trim();
+    if (!c) continue;
+    // A source prefix means this came from a knowledge-base disambiguation page, not
+    // from a real competing domain. Finding: yes. Publishable claim: no.
+    if (/^[A-Za-z][A-Za-z ]*:\s/.test(c)) continue;
+    // Domain-shaped only: a label with no dot is an acronym clash, not a nameable entity.
+    if (!/^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(c)) continue;
+    if (isOwnedDomain(c, owned)) continue;
+    const key = c.toLowerCase();
+    if (!out.some((x) => x.toLowerCase() === key)) out.push(c);
+  }
+  return out;
+}
+
 export function generateSchema(facts: SchemaFacts): SchemaResult {
   const findings: string[] = [];
   const domain = String(facts.domain || '').replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
@@ -163,7 +202,7 @@ export function generateSchema(facts: SchemaFacts): SchemaResult {
   const url = `https://${domain}`;
   // §2.3 — an owned domain is never disclaimed and never treated as an impostor.
   const owned = facts.ownedDomains;
-  const safe = (facts.collisions || []).filter((c) => !isOwnedDomain(c, owned));
+  const safe = publishableCollisions(facts.collisions || [], owned);
 
   const node: Record<string, unknown> = {
     '@type': 'Organization',

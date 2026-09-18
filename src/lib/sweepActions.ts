@@ -9,7 +9,7 @@
 // zero-imports is exactly the divergence that order exists to remove.
 // The monthly re-sweep line makes the measurement loop a product behavior.
 
-import { generateSchema, isOwnedDomain, brandDomainMismatch } from './schemaGenerator';
+import { generateSchema, isOwnedDomain, brandDomainMismatch, publishableCollisions } from './schemaGenerator';
 
 export interface SweepActionInputs {
   /** Branded retrievability %, or null if unmeasured. Weak → structural fix path. */
@@ -59,7 +59,9 @@ export function remediationSnippet(
 
   // §3.2 — never disclaim a domain the user owns. Fails closed.
   const owned = served?.ownedDomains;
-  const safeCollisions = collisions.filter((c) => !isOwnedDomain(c, owned));
+  // Findings keep every collision (see the diagnosis/publishable split in
+  // schemaGenerator). Only the line the customer PASTES is narrowed to real domains.
+  const safeCollisions = publishableCollisions(collisions, owned);
 
   // §3.3 — if brand and domain disagree, emit NO Organization block and say why.
   // Silence is correct; a confident wrong answer is the failure mode this product exists
@@ -116,6 +118,34 @@ export function remediationSnippet(
   return [...graph, '', line];
 }
 
+/** ANSWER SHAPE — added Sep 18 2026, from reading a real report as a customer.
+ *
+ *  The agenda used to say "write the page that answers this" for every question with a
+ *  zero against it. For most that is right. For some it is not, and following it wastes
+ *  days.
+ *
+ *  Two of the ten questions in the Sep 18 sweep of aeoanalyzers.com were
+ *  "how do I get my business recommended when people ask ChatGPT…" and "why isn't my
+ *  website showing up in Google AI Overviews and how to fix it". An engine answering
+ *  those returns a procedure, not a list of vendors. A zero there is not a lost
+ *  comparison — the answer was never shaped like a recommendation.
+ *
+ *  This is a heuristic on the wording and the product says so rather than asserting it.
+ *  The rule: a question that names a tool, product or category of software is asking to
+ *  be handed candidates; a bare how/why question about the reader's own site is asking
+ *  to be taught. Checked for the product request FIRST, because "best tools for how to
+ *  track X" is a list question in how-shaped clothing.
+ */
+const WANTS_CANDIDATES =
+  /\b(best|top|leading|cheapest|affordable|alternatives?|alternative to|vs\.?|versus|compared|comparison|tools?|software|platforms?|apps?|services?|solutions?|vendors?|providers?|suites?)\b/i;
+
+export function answerShape(question: string): 'recommendation' | 'advice' {
+  const q = String(question || '');
+  if (WANTS_CANDIDATES.test(q)) return 'recommendation';
+  if (/^\s*(how|why|can|should|do|does|is|are|what)\b/i.test(q)) return 'advice';
+  return 'recommendation';
+}
+
 /** Build the closing "What to do" agenda as markdown lines (no trailing blank). */
 export function buildSweepActionAgenda(inp: SweepActionInputs): string[] {
   const out: string[] = [];
@@ -140,8 +170,20 @@ export function buildSweepActionAgenda(inp: SweepActionInputs): string[] {
 
   // Category 0%/low → losing questions as a content agenda + authority checklist.
   if (inp.categoryWinPct !== null && inp.categoryWinPct < 100 && inp.losingCategoryQuestions.length) {
+    const losing = inp.losingCategoryQuestions.slice(0, 12);
+    const wantsList = losing.filter((q) => answerShape(q) === 'recommendation');
+    const wantsAdvice = losing.filter((q) => answerShape(q) === 'advice');
     out.push(`**You aren't recommended on the questions buyers actually ask (${inp.categoryWinPct}% category win).** Turn each losing question into a page that answers it head-on — this is your content agenda:`);
-    for (const q of inp.losingCategoryQuestions.slice(0, 12)) out.push(`- Write the page that answers: "${q}"`);
+    if (wantsList.length) {
+      // The winnable set: the buyer asked to be handed candidates, so a page that
+      // answers the question is a page that can be one of them.
+      for (const q of wantsList) out.push(`- Write the page that answers: "${q}"`);
+    }
+    if (wantsAdvice.length) {
+      out.push('');
+      out.push(`**Read these ${wantsAdvice.length === 1 ? 'one' : `${wantsAdvice.length}`} differently.** ${wantsAdvice.length === 1 ? 'This question reads' : 'These read'} as a request for a procedure rather than for a shortlist, so an engine tends to answer ${wantsAdvice.length === 1 ? 'it' : 'them'} with steps and name no vendor at all. A zero here is weaker evidence than a zero on the questions above — it may mean the answer was never shaped like a recommendation, not that you lost a comparison. Worth a page for the reader; not worth reading as a citation loss:`);
+      for (const q of wantsAdvice) out.push(`- Write the page that answers: "${q}"`);
+    }
     out.push('');
     if (inp.doNowAuthorities.length) {
       out.push(`**This month's authority checklist (Do-now tier):** get an accurate, current listing/profile on ${inp.doNowAuthorities.slice(0, 6).join(', ')} — the sources engines already trust in your category.`);

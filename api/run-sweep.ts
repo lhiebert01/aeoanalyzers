@@ -22,6 +22,7 @@ import {
   type QueryType,
 } from '../src/lib/citationSweep.js';
 import { extractTruthRecord, type TruthRecord } from '../src/lib/truthRecord.js';
+import { COST_SCALE } from '../src/lib/costEstimate.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
 import { planSweep } from '../src/lib/sweepPlan.js';
 
@@ -405,7 +406,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Divide a displayed or stored figure by COST_SCALE for true dollars.
     // NOTE: sweeps stored before Sep 7 2026 hold TRUE cost — do not compare a
     // pre-Sep-7 row to a later one without scaling the older row by COST_SCALE.
-    const COST_SCALE = 10;
+    // Imported, not redeclared — a second copy of this constant is how the pre-run
+    // estimate and the post-run actual ended up in different currencies.
     for (const r of runs) r.costUsd = (r.costUsd || 0) * COST_SCALE;
     summary.totalCostUsd *= COST_SCALE;
     for (const e of summary.engines) e.costUsd = (e.costUsd || 0) * COST_SCALE;

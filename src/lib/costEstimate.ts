@@ -15,6 +15,22 @@
 //
 // Rates are MEASURED, from 672 stored calls across eight four-engine sweeps on 2026-09-07.
 // They are not list prices and not guesses. Re-derive them after any model change.
+//
+// ── THE SCALE, AND WHY THIS MODULE OWNS IT ────────────────────────────────────
+// Every cost the admin UI shows or stores is multiplied by COST_SCALE, so no real
+// provider price is written to the database or rendered anywhere. That was a founder
+// ruling: "just multiply by 10 when you save and when you show."
+//
+// This estimator did not apply it, and the stored actual did. So the two admin figures
+// on one screen were in different currencies and appeared to disagree by ~11×. That is
+// the exact symptom quoted at the top of this file — "$0.43 estimated for a run that
+// cost $5.156" — and rebuilding the estimator around engine mix, which was a real and
+// separate flaw, did not fix it. It reproduced on 2026-09-18: a sweep of aeoanalyzers.com
+// estimated $0.47 and displayed $5.419, which is $0.54 of true spend against a $0.47
+// estimate and therefore INSIDE the band, reported as an 11.5× overrun.
+//
+// So the scale lives here, both admin surfaces use it, and `reconcileEstimate` compares
+// like with like. Divide any displayed or stored figure by COST_SCALE for true dollars.
 
 export type CostEngine = 'claude' | 'openai' | 'perplexity' | 'gemini';
 
@@ -25,6 +41,10 @@ export const MEASURED_USD_PER_CALL: Record<CostEngine, number> = {
   perplexity: 0.00521,
   gemini: 0.00007,
 };
+
+/** The admin display/storage multiplier. Single source — api/run-sweep.ts imports it
+ *  rather than redeclaring 10, which is how the two surfaces drifted apart. */
+export const COST_SCALE = 10;
 
 /** Measured p90, used for the upper bound rather than a guessed margin. */
 const P90_USD_PER_CALL: Record<CostEngine, number> = {
@@ -74,15 +94,15 @@ export function estimateSweepCost(input: EstimateInput): CostEstimate {
   const lines: EngineLine[] = engines.map((engine) => ({
     engine,
     calls: callsPerEngine,
-    usdPerCall: MEASURED_USD_PER_CALL[engine],
-    subtotal: callsPerEngine * MEASURED_USD_PER_CALL[engine],
+    usdPerCall: MEASURED_USD_PER_CALL[engine] * COST_SCALE,
+    subtotal: callsPerEngine * MEASURED_USD_PER_CALL[engine] * COST_SCALE,
     shareOfTotalPct: 0,
   }));
   const expectedUsd = lines.reduce((a, l) => a + l.subtotal, 0);
   for (const l of lines) l.shareOfTotalPct = expectedUsd > 0 ? (l.subtotal / expectedUsd) * 100 : 0;
   lines.sort((a, b) => b.subtotal - a.subtotal);
 
-  const upperUsd = engines.reduce((a, e) => a + callsPerEngine * P90_USD_PER_CALL[e], 0);
+  const upperUsd = engines.reduce((a, e) => a + callsPerEngine * P90_USD_PER_CALL[e] * COST_SCALE, 0);
 
   const arithmetic = [
     `${questions} question${questions === 1 ? '' : 's'} × ${reps} run${reps === 1 ? '' : 's'} × ${engines.length} engine${engines.length === 1 ? '' : 's'} = ${totalCalls} calls`,
@@ -103,7 +123,8 @@ export function estimateSweepCost(input: EstimateInput): CostEstimate {
       `Rates are measured from ${RATES_SAMPLE_CALLS} stored calls on ${RATES_MEASURED_ON}, not list prices. ` +
       `Per-call cost spans about 307× between the cheapest and dearest engine, so the engine mix decides ` +
       `the price far more than the answer count does. Longer questions and heavier search raise it; ` +
-      `re-derive the rates after any model change, and compare this figure against the actual after each run.`,
+      `re-derive the rates after any model change, and compare this figure against the actual after each run. ` +
+      `Both admin figures are on the same ×${COST_SCALE} scale as every stored cost — divide by ${COST_SCALE} for true dollars.`,
   };
 }
 

@@ -14,12 +14,18 @@ import { resolve } from 'node:path';
  *  asserting that some helper was called. */
 
 const SRC = readFileSync(resolve(__dirname, '../../api/run-sweep.ts'), 'utf8');
+const LIB = readFileSync(resolve(__dirname, '../lib/costEstimate.ts'), 'utf8');
 
 /** The scale the route actually ships, read from source — a silent edit to the
- *  constant must not silently pass this suite. */
+ *  constant must not silently pass this suite.
+ *
+ *  It moved to src/lib/costEstimate.ts on Sep 18 2026 and the route now imports it.
+ *  It had been declared in the route alone, while the pre-run ESTIMATE was computed in
+ *  true dollars — so the two admin figures for one sweep were in different currencies
+ *  and appeared to disagree by ~11x. One home, both surfaces. */
 function shippedScale(): number {
-  const m = SRC.match(/const COST_SCALE = (\d+);/);
-  if (!m) throw new Error('COST_SCALE not found in api/run-sweep.ts');
+  const m = LIB.match(/export const COST_SCALE = (\d+);/);
+  if (!m) throw new Error('COST_SCALE not found in src/lib/costEstimate.ts');
   return Number(m[1]);
 }
 
@@ -27,6 +33,12 @@ describe('sweep cost never leaves the process as a real provider price', () => {
   it('ships a scale greater than 1, so a stored or transmitted cost is never true dollars', () => {
     expect(shippedScale()).toBeGreaterThan(1);
     expect(shippedScale()).toBe(10);
+  });
+
+  it('the route imports the scale rather than declaring its own copy', () => {
+    // A second copy is exactly how the estimate and the actual drifted apart.
+    expect(SRC).toContain("import { COST_SCALE } from '../src/lib/costEstimate.js';");
+    expect(SRC).not.toMatch(/const COST_SCALE = \d+;/);
   });
 
   it('scales runs, engine aggregates and the total by exactly the shipped scale', () => {

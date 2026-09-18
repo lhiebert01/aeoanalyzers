@@ -94,6 +94,22 @@ export function classifyProblem(perEngine: EngineRetrieval[]): Problem {
   return anyFound ? 'found-but-misdescribed' : 'not-found';
 }
 
+/** How often a source was cited, in words, with an honest note when the count is thin.
+ *  The Sep 18 report said "g2.com was cited 1 times … a source the engines demonstrably
+ *  use for your category". Two defects in one sentence: the grammar, and a claim of
+ *  demonstration resting on a single observation. This product does not get to print
+ *  "demonstrably" off an N of one. */
+function citedPhrase(n: number): { count: string; strength: string } {
+  const count = n === 1 ? 'once' : `${n} times`;
+  return {
+    count,
+    strength:
+      n >= 3
+        ? 'This is not a generic directory suggestion — it is a source the engines repeatedly used for your category.'
+        : 'That is a thin count from a single sweep, so treat it as a lead rather than a demonstrated pattern — it is still your own data rather than a generic directory suggestion.',
+  };
+}
+
 export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
   const scored = input.perEngine.filter((e) => e.total > 0);
   const foundBy = scored.filter((e) => e.found > 0).map((e) => e.engine);
@@ -208,7 +224,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
         what: 'Claim or create your G2 vendor listing',
       impact: 4,
       explainer: 'Engines answer category questions largely by summarising pages that already compare products. G2 is one of the pages yours is answered from, so being absent there means being absent from the summary — though a listing is a foot in the door, not a place in the answer.',
-        why: `g2.com was cited ${d.citations} times in your own category results. This is not a generic directory suggestion — it is a source the engines demonstrably use for your category.`,
+        why: `g2.com was cited ${citedPhrase(d.citations).count} in your own category results. ${citedPhrase(d.citations).strength}`,
         link: 'https://sell.g2.com',
         time: '30 minutes to create; reviews take longer',
         changes: 'An indexed page carrying your canonical description, on a domain the engines already cite for you.',
@@ -220,7 +236,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
         what: 'Point your LinkedIn company page and founder profile at the domain',
       impact: 5,
       explainer: 'A LinkedIn page is a page you control on a domain engines already trust, which makes it cheap corroboration: it independently confirms your company name, what you do, and which website is yours.',
-        why: `linkedin.com appeared ${d.citations} times in your own cited sources. It is the cheapest owned-and-controlled entity signal there is.`,
+        why: `linkedin.com appeared ${citedPhrase(d.citations).count} in your own cited sources. It is the cheapest owned-and-controlled entity signal there is, whatever the count.`,
         link: 'https://www.linkedin.com/company/setup/new/',
         time: '20 minutes',
         changes: 'A controlled, indexed profile that corroborates your identity.',
@@ -232,7 +248,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
         what: 'Participate where the question is already being asked on Reddit',
       impact: 7,
       explainer: 'Engines lean heavily on Reddit because it is where people ask the questions your buyers ask. Being present in those threads as a genuine participant puts you in the material an engine reads when it answers — and being present dishonestly gets you removed from it.',
-        why: `reddit.com was cited ${d.citations} times in your category. Engines lean on it heavily.`,
+        why: `reddit.com was cited ${citedPhrase(d.citations).count} in your category, and it is the most-cited domain across answer engines generally.`,
         link: 'https://www.reddit.com/',
         time: 'ongoing, a few minutes a day',
         changes: 'Presence in a source the engines already retrieve for your category.',
