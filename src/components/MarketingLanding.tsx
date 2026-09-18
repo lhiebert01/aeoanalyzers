@@ -63,7 +63,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     },
     {
       q: "How is this different from other AEO tools?",
-      a: "Most tools hand you a score and stop — and some report a scary 'you're invisible to AI' that falls apart the moment you test it live. We report three separable, honest layers, each backed by the actual engine transcript. Our promise: run the query yourself and you'll get what our report says."
+      a: "We report three separable layers rather than one blended number — whether engines retrieve you when asked by name, whether what they say about you is accurate, and whether they cite you for category questions — each backed by the actual engine transcript, with the N printed on every figure. Our promise: run the query yourself and you'll get what our report says."
     },
     {
       q: "Does AEO Analyzers support e-commerce, Shopify, WordPress, or custom apps?",
@@ -118,7 +118,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           transition={{ delay: 0.1 }}
           className="text-zinc-500 text-xl md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. Most AEO tools hand you a score and walk away. AEO Analyzers shows you exactly <em>why</em> AI overlooks you and gives you the fixes — then <strong>proves it worked</strong> with live Citation Sweeps across ChatGPT, Claude, Perplexity, and Gemini, showing who they actually cite. Diagnose in ~90 seconds; measure the outcome for real.
+          <strong>AEO Analyzers is answer engine optimization (AEO) software — a tool that measures whether ChatGPT, Claude, Perplexity and Gemini retrieve your site, describe it accurately, and cite it for category questions.</strong> Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. AEO Analyzers shows you exactly <em>why</em> AI overlooks you and gives you the fixes — then re-runs the engines to show whether it worked, with live Citation Sweeps across ChatGPT, Claude, Perplexity, and Gemini, showing who they actually cite. Diagnose in ~90 seconds; measure the outcome for real.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -257,7 +257,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
               <ShieldCheck className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-black mb-4">The Cure, Not Just a Score</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">Other tools hand you a number and stop. We hand you the fixes — verified JSON-LD, content rewrites, and a deploy-ready Word report — so you actually <em>move</em> your AI visibility, not just measure it.</p>
+            <p className="text-zinc-500 text-sm leading-relaxed">A score on its own is a number to look at. We hand you the fixes too — verified JSON-LD, content rewrites, and a deploy-ready Word report — so there is something specific to change, and a re-sweep to check whether it moved.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">

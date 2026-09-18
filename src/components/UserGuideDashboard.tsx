@@ -259,7 +259,7 @@ export default function UserGuideDashboard() {
         </div>
 
         <p className="text-zinc-600 max-w-2xl leading-relaxed">
-          Plus AI-crawler telemetry and drift monitoring, so you know you're being read — and stay that way. Re-run sweeps monthly to track your progress over time. Every result is backed by the actual transcript: run the query yourself and you'll get what the report says.
+          Plus answer-drift monitoring across re-runs, so you can see when what the engines say about you changes. Re-run sweeps monthly to track your progress over time. Every result is backed by the actual transcript: run the query yourself and you'll get what the report says.
         </p>
       </section>
 

@@ -1,6 +1,10 @@
 // WO-2 — Answer-Fidelity scoring. Diffs an engine's answer against the client's
 // truth record (truthRecord.ts) and produces the "facts AI gets wrong about you"
-// list. No competitor measures this.
+// list. Retired Sep 19 2026: this line read "No competitor measures this." It was the
+// same claim as the retired "no other AEO tool measures whether AI is telling the truth
+// about you" — Lilypath publicly measures drift against a controlled source of truth.
+// A claim we removed from copy but left in the reasoning of the module that computes the
+// thing is how it finds its way back into copy in six months.
 //
 // The highest-value, fully-deterministic check is FOUNDER MISATTRIBUTION: an
 // engine naming a founder/creator who isn't in the client's canonical set (the

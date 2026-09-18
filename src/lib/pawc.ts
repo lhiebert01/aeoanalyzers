@@ -1,6 +1,6 @@
 // WO-QA-003 E1 — Position-Adjusted Word Count (PAWC) citation scoring.
 //
-// Every other tool scores a citation as binary (mentioned / not). The Princeton
+// A binary citation score (mentioned / not) discards position and prominence. The Princeton
 // GEO study (arXiv:2311.09735, SIGKDD 2024) weights a citation by how MUCH of the
 // answer is attributed to it and WHERE — early, prominent mentions count for more
 // than a footnote (exponential position decay). "Cited in sentence one" and "cited

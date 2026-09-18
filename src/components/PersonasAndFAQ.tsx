@@ -134,7 +134,7 @@ const measurementFaqs: FAQItem[] = [
   },
   {
     question: "How is this different from other AEO tools?",
-    answer: "Most tools hand you a score and stop — and some report a scary 'you're invisible to AI' that falls apart the moment you test it live. We report three separable layers, each backed by the actual engine transcript. Our promise: run the query yourself and you'll get what our report says."
+    answer: "We report three separable layers rather than one blended number — whether engines retrieve you when asked by name, whether what they say about you is accurate, and whether they cite you for category questions — each backed by the actual engine transcript, with the N printed on every figure. Our promise: run the query yourself and you'll get what our report says."
   }
 ];
 
