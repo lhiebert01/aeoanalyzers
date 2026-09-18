@@ -1074,7 +1074,7 @@ export default function App() {
                 <div className="bg-white border border-zinc-200 rounded-3xl overflow-hidden shadow-sm">
                   {/* Mobile: the table scrolls sideways inside the card instead of clipping columns (iPhone QA Sep 7). */}
                   <div className="overflow-x-auto">
-                  <table className="w-full min-w-[560px] text-left">
+                  <table className="w-full min-w-[900px] text-left">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
                       <tr>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Website</th>
@@ -1138,7 +1138,7 @@ export default function App() {
                       false-positives corrected), so a row and its opened view can differ. */}
                   <p className="px-6 pt-4 text-xs text-zinc-500">Figures below are as first stored, pooled across engines over <b>search-grounded runs only</b> — the same basis as the opened view and the downloaded report. Answers given from the model's memory are unmeasured, not zero, and are excluded. <b>Open a sweep to see the re-scored numbers</b> — errored runs are excluded and branded false-positives corrected on open, so an older row may read higher than its opened view.</p>
                   <div className="overflow-x-auto">
-                  <table className="w-full min-w-[560px] text-left">
+                  <table className="w-full min-w-[900px] text-left">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
                       <tr>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Domain</th>
