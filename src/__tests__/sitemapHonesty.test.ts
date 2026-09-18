@@ -74,3 +74,40 @@ describe('sitemap lists only URLs that serve their own content', () => {
     expect(new Set(seen).size).toBe(seen.length);
   });
 });
+
+/** Every prerendered route must declare its own head tags. /pricing shipped with NO
+ *  <title>, canonical or description, because the payments view rendered no <SEO>
+ *  block and the prerender's title handling then dropped the static fallback as well.
+ *  It was the page that takes money, and the gap was invisible until the route
+ *  started prerendering at all. Prove by breaking: delete the SEO block from the
+ *  payments view and this goes red. */
+describe('every prerendered public view declares its own head tags', () => {
+  const app = (() => {
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { resolve } = require('node:path') as typeof import('node:path');
+    return readFileSync(resolve(__dirname, '../App.tsx'), 'utf8');
+  })();
+
+  it('the payments view renders an SEO block with a canonical', () => {
+    const block = app.slice(app.indexOf("{view === 'payments' && ("), app.indexOf('<Payments'));
+    expect(block).toContain('<SEO');
+    expect(block).toContain('canonical="https://aeoanalyzers.com/pricing"');
+    expect(block).toMatch(/title="Pricing/);
+  });
+
+  it('privacy and terms still declare theirs', () => {
+    for (const view of ['privacy', 'terms']) {
+      const i = app.indexOf(`{view === '${view}' && (`);
+      expect(app.slice(i, i + 1200), `${view} lost its SEO block`).toContain('<SEO');
+    }
+  });
+
+  it('a public view is only public if the auth reset spares it', () => {
+    // PUBLIC_VIEWS is what stops handleSession dragging a public URL to the homepage.
+    const m = app.match(/const PUBLIC_VIEWS: View\[\] = \[([^\]]*)\]/);
+    expect(m, 'PUBLIC_VIEWS must exist').toBeTruthy();
+    for (const v of ['payments', 'guide', 'privacy', 'terms', 'press']) {
+      expect(m![1], `${v} must be public`).toContain(`'${v}'`);
+    }
+  });
+});

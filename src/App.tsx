@@ -850,6 +850,17 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
+              {/* /pricing shipped with ZERO head tags — no title, no canonical, no
+                  description — because this view rendered no SEO block, and with no
+                  helmet title the prerender's title handling dropped the static one
+                  too. Found Sep 19 2026 by checking the served document after the
+                  route finally prerendered. Privacy, terms and the guide all had one;
+                  the page that takes money did not. */}
+              <SEO
+                title="Pricing - AEO Analyzers"
+                description="AEO Analyzers pricing: your AEO score and gaps are free. Unlock every fix — paste-ready schema, content rewrites and the full Word report — with a $24 Day Pass, or a Pro or Business plan."
+                canonical="https://aeoanalyzers.com/pricing"
+              />
               <Payments
                 user={user}
                 userProfile={userProfile}
