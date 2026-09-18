@@ -29,8 +29,23 @@ export const AI_BOTS: AiBot[] = [
   { name: 'Claude-User', engine: 'Anthropic (Claude browsing)', critical: true },
   { name: 'Claude-SearchBot', engine: 'Anthropic (Claude Search)', critical: true },
   { name: 'anthropic-ai', engine: 'Anthropic (legacy)', critical: false },
-  // Google Gemini grounding
-  { name: 'Google-Extended', engine: 'Google (Gemini)', critical: true },
+  // Google Gemini — NOT a crawler, and deliberately not `critical`.
+  //
+  // Google-Extended is a training-and-grounding OPT-OUT CONTROL. It fetches nothing;
+  // Googlebot does the crawling and Google-Extended only tells Google whether the
+  // already-crawled content may be used for Gemini grounding and model training.
+  //
+  // It was marked critical, which meant a site choosing to opt out of AI training — a
+  // legitimate, deliberate decision — was told "these engines cannot read your page, so
+  // your schema and content are invisible to them" and had its score capped at 35. Both
+  // halves were wrong: the sentence describes a fetcher, and the cap punished a policy
+  // choice rather than a discoverability defect. Applebot-Extended, the same class of
+  // directive, was already correctly non-critical, so this file disagreed with itself.
+  //
+  // Still audited and still reported — a customer should know what they have opted out
+  // of — but it no longer caps a score and is no longer called a crawler. Found by the
+  // Sep 17 playbook review (S1), fixed Sep 18 2026.
+  { name: 'Google-Extended', engine: 'Google (Gemini grounding opt-out — not a crawler)', critical: false },
   // Perplexity
   { name: 'PerplexityBot', engine: 'Perplexity', critical: true },
   { name: 'Perplexity-User', engine: 'Perplexity (browsing)', critical: true },
