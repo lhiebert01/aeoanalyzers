@@ -373,9 +373,14 @@ export default function App() {
     setLoadingHistory(true);
     try {
       // Use direct REST API to bypass Supabase client issues
+      // WO-AEO-TIER-LEAK-008: NEVER `select=*` here. `full_result` holds the whole
+      // stored analysis, so a wildcard select shipped every past run's fixes to the
+      // History tab in one response — readable in DevTools without opening a row.
+      // The list needs only what the table renders; the detail view fetches the one
+      // row it opens.
       const { data, error } = await supabaseQuery(
         'analysis_history',
-        `select=*&user_id=eq.${id}&order=created_at.desc&limit=20`,
+        `select=id,url,score,citation_probability,created_at,is_duel,competitor_url,competitor_score&user_id=eq.${id}&order=created_at.desc&limit=20`,
         10000
       );
       console.log('[History] Query result:', { count: data?.length, error });
@@ -597,13 +602,27 @@ export default function App() {
     }
   };
 
-  const handleViewHistoryDetail = (item: any) => {
-    if (!item.full_result) {
+  const handleViewHistoryDetail = async (item: any) => {
+    // The list no longer carries `full_result` (see fetchHistory), so fetch the one
+    // row being opened. RLS scopes this to the owner, and what was stored is what
+    // the caller was entitled to at run time — a free run stored a redacted object.
+    let raw: string | undefined = item.full_result;
+    if (!raw && item.id) {
+      try {
+        const { data: rows } = await supabaseQuery(
+          'analysis_history',
+          `select=full_result&id=eq.${item.id}`,
+          10000
+        );
+        raw = rows?.[0]?.full_result;
+      } catch { /* fall through to the saved-without-details message */ }
+    }
+    if (!raw) {
       setError('This analysis was saved without detailed results. Please re-run the analysis.');
       return;
     }
     try {
-      const data = JSON.parse(item.full_result);
+      const data = JSON.parse(raw);
       if (item.is_duel) {
         setDuelResult({
           user: data.user || data,
