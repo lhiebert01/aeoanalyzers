@@ -65,6 +65,9 @@ const ADVANCED = JSON.stringify({
     chunkingScore: 95,
     longBlocks: [{ approximateWordCount: 320, context: 'About section', suggestedHeading: 'What Example Co does' }],
   },
+  schemaProvenance: [
+    { field: 'Organization.name', value: 'Example Co', provenance: 'detected', confidence: 1, sourceQuote: 'Example Co is a free service' },
+  ],
 });
 
 describe('redactFixFields (server-side paywall for fixes)', () => {
@@ -134,6 +137,10 @@ describe('redactFixFields — nested paid content in the advanced cards', () => 
     }
   });
 
+  it('withholds the schema audit trail along with the schema itself', () => {
+    expect(out().schemaProvenance).toEqual([]);
+  });
+
   it('removes snippet opportunities and suggested headings', () => {
     expect(out().zeroClickPredictor.snippetOpportunities[0].currentText).toBeUndefined();
     expect(out().zeroClickPredictor.snippetOpportunities[0].suggestedFormat).toBeUndefined();
@@ -152,6 +159,7 @@ describe('redactFixFields — nested paid content in the advanced cards', () => 
       'Receiving a card is free',        // on-page quote to reuse
       'HowTo Schema',                    // snippet format
       'What Example Co does',            // suggested heading
+      'Example Co is a free service',    // provenance sourceQuote
     ];
     for (const s of MUST_NOT_APPEAR) {
       expect(redacted, `"${s}" must not survive redaction`).not.toContain(s);

@@ -101,6 +101,12 @@ function redactNestedFixes(obj: Record<string, any>): boolean {
     for (const q of obj.queryContentGap.generatedQuestions) drop(q, 'sourceQuote');
   }
 
+  // Schema provenance — the field-by-field audit trail for verifiedSchema /
+  // candidateSchema, which are stripped above, and it carries `sourceQuote`
+  // (exact page text). No surface renders it, paid or free; it exists so a
+  // paying user can audit schema they are given. Withheld with that schema.
+  emptyArray(obj, 'schemaProvenance');
+
   // Zero-Click / Snippet Predictor and Semantic Chunking — free keeps the score
   // and the count ("1 text block could be reformatted"); the blocks, the formats
   // and the suggested headings are paid.
