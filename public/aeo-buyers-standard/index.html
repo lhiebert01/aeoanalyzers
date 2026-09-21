@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>The AEO Buyer's Standard: 13 Questions to Ask Before You Buy | AEO Analyzers</title>
+<meta name="description" content="Purchasing requirements for answer engine optimization software. Seven requirements and thirteen questions to put to any AEO vendor - including us.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<link rel="canonical" href="https://aeoanalyzers.com/aeo-buyers-standard">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AEO Analyzers">
+<meta property="og:title" content="The AEO Buyer's Standard: 13 Questions to Ask Before You Buy">
+<meta property="og:description" content="Purchasing requirements for answer engine optimization software. Seven requirements and thirteen questions to put to any AEO vendor - including us.">
+<meta property="og:url" content="https://aeoanalyzers.com/aeo-buyers-standard">
+<meta name="theme-color" content="#08343B">
+<style>
+:root{
+  --paper:#E7ECEE; --card:#FFFFFF; --ink:#0E1216; --muted:#3F4952; --hair:#C4CDD3;
+  --teal:#0B6E7A; --teal-deep:#08343B; --teal-tint:#E6F0F1;
+  --good:#137A4D; --good-tint:#E3F1E9; --warn:#B5820A; --gap:#B23A2E; --gap-tint:#F7E7E4;
+  --panel:#EBF0F2; --edge:#9FADB6;
+  --shadow:0 1px 2px rgba(20,26,31,.06), 0 18px 50px rgba(20,26,31,.12);
+  --card-shadow:0 1px 2px rgba(20,26,31,.06), 0 6px 18px rgba(20,26,31,.10);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+/* Committed LIGHT theme — matches the aeoanalyzers.com site (dark text on white). */
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:26px 20px 40px}
+
+/* ---- site header + footer ---- */
+.sitebar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:11px clamp(16px,4vw,28px);background:var(--card);border-bottom:1px solid var(--edge)}
+.sitebar .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.sitebar .brand .mk{display:inline-flex;width:27px;height:27px;border-radius:7px;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.sitebar .snav{display:flex;align-items:center;gap:6px}
+.sitebar .snav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:9px}
+.sitebar .snav a:hover{color:var(--ink);background:var(--panel)}
+.sitebar .snav a.primary{background:var(--teal-deep);color:#EAF4F5}
+.sitebar .snav a.primary:hover{color:#fff}
+.sitefoot{border-top:1px solid var(--edge);background:var(--card);margin-top:44px}
+.sitefoot .fin{max-width:960px;margin:0 auto;padding:24px clamp(16px,4vw,28px);display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.sitefoot .fnav{display:flex;flex-wrap:wrap;gap:8px 22px}
+.sitefoot a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+.sitefoot a:hover{color:var(--ink)}
+.sitefoot .fcop{color:var(--muted);font-size:12.5px}
+@media(max-width:520px){.sitebar .snav a:not(.primary){display:none}}
+
+header{padding:40px 0 24px;border-bottom:1px solid var(--hair)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4.6vw,42px);line-height:1.1;text-wrap:balance;margin:12px 0 14px;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:13.5px;margin:0}
+h2{font-family:var(--serif);font-weight:600;font-size:23px;margin:42px 0 14px;letter-spacing:-.01em}
+p{margin:0 0 14px;max-width:76ch}
+strong{color:var(--ink)}
+
+/* score tiles */
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 6px}
+.tile{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:18px 18px 16px;box-shadow:var(--card-shadow)}
+.tile .lab{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile .num{font-family:var(--serif);font-size:40px;font-weight:600;line-height:1;margin:10px 0 6px;font-variant-numeric:tabular-nums}
+.tile .note{font-size:12.5px;color:var(--muted);line-height:1.45}
+.tile.good{border-top:3px solid var(--good)} .tile.good .num{color:var(--good)}
+.tile.warn{border-top:3px solid var(--warn)} .tile.warn .num{color:var(--warn)}
+.tile.gap{border-top:3px solid var(--gap)}  .tile.gap .num{color:var(--gap)}
+
+/* three-layer list */
+ol.layers{counter-reset:f;list-style:none;padding:0;margin:6px 0 0;max-width:82ch}
+ol.layers li{position:relative;padding:16px 0 16px 46px;border-bottom:1px solid var(--edge)}
+ol.layers li:last-child{border-bottom:0}
+ol.layers li::before{counter-increment:f;content:counter(f);position:absolute;left:0;top:14px;
+  width:30px;height:30px;border-radius:50%;background:var(--teal-tint);color:var(--teal);
+  font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+ol.layers b{display:block;margin-bottom:3px}
+ol.layers .win{color:var(--good);font-weight:700}
+ol.layers .lose{color:var(--gap);font-weight:700}
+
+.samplenote{max-width:960px;margin:16px auto 0;padding:0 20px;text-align:center;color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+.samplenote b{color:var(--ink)}
+
+/* POSSE blog masthead + outro */
+.post{max-width:720px;margin:6px auto 4px;padding:0 8px}
+.posteyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.posttitle{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5.6vw,48px);line-height:1.06;letter-spacing:-.015em;text-wrap:balance;margin:12px 0 12px}
+.postmeta{color:var(--muted);font-size:13px;margin:0 0 24px;letter-spacing:.02em}
+.postbody p{font-size:17px;max-width:68ch;margin:0 0 16px;color:var(--ink)}
+.postbody .postlead{font-size:19.5px;line-height:1.5}
+.posth2{font-family:var(--serif);font-weight:600;font-size:clamp(22px,3.4vw,28px);line-height:1.12;letter-spacing:-.01em;text-wrap:balance;max-width:720px;margin:38px auto 2px;padding:0 8px}
+.postoutro{max-width:780px;margin:36px auto 0;padding:32px clamp(22px,4.5vw,44px);background:var(--teal-tint);border:1px solid var(--edge);border-radius:20px;box-shadow:var(--card-shadow)}
+.postoutro .eyebrow{margin-bottom:8px;display:block}
+.postoutro h3{font-family:var(--serif);font-weight:600;font-size:clamp(25px,4vw,34px);line-height:1.08;letter-spacing:-.015em;text-wrap:balance;margin:0 0 16px}
+.postoutro p{font-size:16.5px;max-width:72ch;margin:0 0 14px;color:var(--ink)}
+.cta{display:inline-block;background:var(--teal-deep);color:#EAF4F5;font-weight:600;font-size:15px;text-decoration:none;padding:11px 22px;border-radius:11px}
+.cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.ilink{color:var(--teal);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.ilink:hover{text-decoration-thickness:2px}
+.serieslink{max-width:720px;margin:26px auto 0;padding:0 8px;color:var(--muted);font-size:13.5px}
+.serieslink a{color:var(--teal)}
+@media(max-width:560px){.score{grid-template-columns:1fr}}
+/* ---- G1: follow-the-series email capture (Honest-Zero) ---- */
+.followseries{max-width:780px;margin:18px auto 0;padding:20px clamp(22px,4.5vw,34px);
+  display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;justify-content:space-between;
+  background:var(--card);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--card-shadow)}
+.followseries .fs-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:6px}
+.followseries .fs-line{font-size:15px;line-height:1.5;color:var(--ink);margin:0;max-width:60ch}
+.followseries .fs-cta{display:inline-block;white-space:nowrap;background:var(--card);color:var(--teal-deep);
+  border:1.5px solid var(--teal-deep);font-weight:600;font-size:14.5px;text-decoration:none;padding:10px 18px;border-radius:11px}
+.followseries .fs-cta:hover{background:var(--teal-deep);color:#EAF4F5}
+.followseries .fs-cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.posth3{font-family:var(--serif);font-weight:600;font-size:20px;line-height:1.25;margin:26px 0 8px;color:var(--ink)}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The AEO Buyer's Standard: 13 Questions to Ask Before You Buy", "description": "Purchasing requirements for AEO software.", "datePublished": "2026-09-21", "dateModified": "2026-09-21", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://aeoanalyzers.com/aeo-buyers-standard"}, "author": {"@id": "https://aeoanalyzers.com/#founder"}, "publisher": {"@id": "https://aeoanalyzers.com/#organization"}, "isAccessibleForFree": true}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What should you require from an AEO platform?", "acceptedAnswer": {"@type": "Answer", "text": "Do not accept “AI visibility” as a description. Ask which of these it reports, separately: brand mention, link, citation, recommendation, position, sentiment, factual accuracy, unbranded category selection."}}, {"@type": "Question", "name": "What should you ask an AEO vendor before buying?", "acceptedAnswer": {"@type": "Answer", "text": "Take these into the call. They are written to be answerable in a sentence each, and a vendor who cannot answer one is telling you something."}}, {"@type": "Question", "name": "How does AEO Analyzers score against its own standard?", "acceptedAnswer": {"@type": "Answer", "text": "It would be convenient to publish a standard and not apply it to ourselves, so here is the honest version, including where we fall short."}}]}</script>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="https://aeoanalyzers.com/"><span class="mk">A</span> AEO Analyzers</a>
+  <nav class="snav">
+    <a href="https://aeoanalyzers.com/">Home</a>
+    <a href="/blog/">Blog</a>
+    <a class="primary" href="https://aeoanalyzers.com/">Start free →</a>
+  </nav>
+</header>
+<div class="wrap">
+  <article class="post">
+    <div class="posteyebrow">AEO Analyzers · Purchasing standard · Last reviewed <span class="vdate">2026-09-21</span></div>
+    <h1 class="posttitle">The AEO Buyer&rsquo;s Standard</h1>
+    <p class="postlede">Seven requirements and thirteen questions to put to any answer engine optimization
+    vendor before you buy &mdash; including us.</p>
+
+    <div class="callout">
+      <p>We make one of the tools in this category. This page deliberately names no vendor and ranks
+      nothing. It is the standard we think a competent buyer should apply, published so you can apply it
+      to us as readily as to anyone else. If it is only useful when it favours the company that wrote it,
+      it is not a standard.</p>
+    </div>
+
+    <div class="postbody">
+      <p><b>The AEO market does not need another feature checklist. Buyers need purchasing requirements.</b></p>
+      <p>Most comparisons start with vendors. That is backwards. Before comparing any platform &mdash;
+      including the ones that enter the category next year &mdash; establish what you are requiring it to
+      do. A long feature list does not tell you whether a tool can answer the six questions that decide
+      the purchase: can it see the problem, explain the problem, tell you what to change, show whether the
+      change worked, let you inspect the evidence, and do all of that at your scale and cost?</p>
+
+      <h2 class="posth2">What should you require from an AEO platform?</h2>
+      <h3 class="posth3">1. Observe &mdash; Can it measure the outcome you actually care about?</h3>
+      <p>Do not accept &ldquo;AI visibility&rdquo; as a description. Ask which of these it reports, separately: brand mention, link, citation, recommendation, position, sentiment, factual accuracy, unbranded category selection.</p>
+      <p class="note"><b>Purchasing requirement.</b> The vendor should be able to define, in one sentence each, what every primary metric counts.</p>
+
+      <h3 class="posth3">2. Diagnose &mdash; Can it tell you why the result happened?</h3>
+      <p>A serious platform should distinguish between: the engine cannot retrieve you; the engine has the wrong facts; the page is reachable but poorly structured; competitors have stronger supporting sources; you win branded questions and lose unbranded ones; an entity collision is suppressing you.</p>
+      <p class="note"><b>Purchasing requirement.</b> The tool should move past detection into a defensible explanation of the failure.</p>
+
+      <h3 class="posth3">3. Remediate &mdash; Does it tell you what to change?</h3>
+      <p>There is a real difference between &ldquo;your competitor is cited more often&rdquo;, &ldquo;these are the pages and schema elements most likely to address it&rdquo;, and &ldquo;here is the artifact to deploy&rdquo;.</p>
+      <p class="note"><b>Purchasing requirement.</b> Establish whether you are buying data, recommendations, or implementation-ready fixes. They are not equivalent and they are not priced the same.</p>
+
+      <h3 class="posth3">4. Verify &mdash; Can it prove the fix worked?</h3>
+      <p>A recommendation is a hypothesis. A schema change, a rewrite or a citation campaign matters only if the engines answer differently afterwards. You should be able to return to the same question and see whether the result moved.</p>
+      <p class="note"><b>Purchasing requirement.</b> There should be a closed loop: measure, diagnose, change, retest &mdash; on the same questions, the same way.</p>
+
+      <h3 class="posth3">5. Show the receipts &mdash; Can you inspect the evidence?</h3>
+      <p>If a platform reports 42%, you should be able to ask: 42% of what? Which prompts, which engines, which dates, how many runs, which citation, which competitor &mdash; and what exactly did the model say?</p>
+      <p class="note"><b>Purchasing requirement.</b> Metrics that drive spending should be traceable to the answer text behind them, wherever that is technically possible.</p>
+
+      <h3 class="posth3">6. Scale &mdash; Does it fit the operating problem you actually have?</h3>
+      <p>A group managing forty brands across twenty countries with executive dashboards, APIs and SSO has a genuinely different requirement from a company asking why ChatGPT does not recommend its product. Neither is more legitimate.</p>
+      <p class="note"><b>Purchasing requirement.</b> Match the operating model to your organisation rather than buying unused breadth &mdash; or buying a single-site tool for a portfolio problem.</p>
+
+      <h3 class="posth3">7. Economics &mdash; What are you actually paying for?</h3>
+      <p>Platforms meter prompts, checks, responses, engines, projects, credits, locations, competitors, seats, crawl volume, or combinations. Two plans at $99/month can deliver wildly different usable measurement.</p>
+      <p class="note"><b>Purchasing requirement.</b> Price the workflow you intend to run, not the number on the pricing page. Useful cost = price &divide; the volume of evidence you actually need.</p>
+
+      <h2 class="posth2">AEO metrics should have receipts</h2>
+      <p>If one line survives from this page, we would choose that one. A score you cannot trace to the
+      answer behind it cannot be audited, reproduced or disputed &mdash; by you, by your agency, or by the
+      vendor when you challenge it. Ask for the transcript. Every vendor on your shortlist should have an
+      answer to that request, and the answer tells you most of what you need to know.</p>
+
+      <h2 class="posth2">What should you ask an AEO vendor before buying?</h2>
+      <p>Take these into the call. They are written to be answerable in a sentence each, and a vendor who
+      cannot answer one is telling you something.</p>
+      <ol>
+        <li>What exactly does your visibility metric measure?</li>
+        <li>Do you distinguish mentions, citations, links and recommendations?</li>
+        <li>Do you test branded and unbranded questions separately?</li>
+        <li>Can you identify factual errors in AI responses about us?</li>
+        <li>Can I inspect the underlying AI answers?</li>
+        <li>How many repetitions do you run to account for response variability?</li>
+        <li>Can you diagnose why a competitor appears instead of us?</li>
+        <li>What remediation does the platform produce?</li>
+        <li>Are the fixes recommendations, or implementation-ready artifacts?</li>
+        <li>Can we retest the same questions after making a change?</li>
+        <li>How is usage actually metered?</li>
+        <li>Which capabilities shown in the demo require a higher-priced tier?</li>
+        <li>If the score changes tomorrow, can you show me why?</li>
+      </ol>
+      <p class="note">Question thirteen is the one that matters most, and it is the one we would most want
+      asked of us.</p>
+
+      <h2 class="posth2">How does AEO Analyzers score against its own standard?</h2>
+      <p>It would be convenient to publish a standard and not apply it to ourselves, so here is the
+      honest version, including where we fall short.</p>
+      <div class="tblwrap"><table>
+        <thead><tr><th>Requirement</th><th>Where AEO Analyzers stands</th></tr></thead>
+        <tbody>
+        <tr><td><b>Observe</b></td><td>Four engines with web search on. Reports retrievability, fidelity and citation win as three separate numbers, each with its sample size printed next to it.</td></tr>
+        <tr><td><b>Diagnose</b></td><td>Separates a retrieval failure from a factual error from a competitive-selection loss, and names the colliding entities when identity is the cause.</td></tr>
+        <tr><td><b>Remediate</b></td><td>Produces paste-ready schema, content rewrites and a prioritised checklist rather than a list of themes.</td></tr>
+        <tr><td><b>Verify</b></td><td>Re-sweep the same questions the same way and compare. This is the loop the product is built around.</td></tr>
+        <tr><td><b>Receipts</b></td><td>Every number is backed by the stored answer text, and you can re-run the question yourself.</td></tr>
+        <tr><td><b>Scale</b></td><td><b>Weakest here.</b> Narrower engine coverage than the broadest platforms, and no multi-brand, multi-country or SSO tooling. A portfolio operator should look at the enterprise systems instead.</td></tr>
+        <tr><td><b>Economics</b></td><td>Free diagnosis, $24 day pass, $49 and $199 monthly plans. Metered in sweeps, not credits.</td></tr>
+        </tbody>
+      </table></div>
+      <p>And the number we are least comfortable publishing: on unbranded category questions in our own
+      September 2026 measurement, engines recommended us in <b>0 of 200 recorded answers</b>. We publish
+      that monthly whatever it says.</p>
+
+      <div class="callout">
+        <p><b>This is part of a three-part series on buying AEO software.</b></p>
+        <ul>
+          <li><b>New to the category?</b> <a class="ilink" href="/what-should-an-aeo-tool-do">What should an AEO tool actually do?</a></li>
+          <li><b>Evaluating vendors?</b> You are here.</li>
+          <li><b>Ready to compare products?</b> <a class="ilink" href="/best-aeo-tools">Best AEO tools &amp; software in 2026</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="postoutro">
+      <p><b>Use this freely.</b> If this standard is useful in a procurement document, a vendor call or
+      your own comparison, take it. Attribution is welcome and not required. A standard that only one
+      company may use is marketing.</p>
+      <p><b>Corrections.</b> If something here is wrong, tell us and we will correct it with a dated note.</p>
+    </div>
+</article>
+</div>
+<footer class="sitefoot">
+  <div class="fin">
+    <nav class="fnav">
+      <a href="https://aeoanalyzers.com/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://aeoanalyzers.com/privacy">Privacy</a>
+      <a href="https://aeoanalyzers.com/terms">Terms</a>
+      <a href="https://aeoanalyzers.com/#contact">Contact</a>
+    </nav>
+    <div class="fcop">© 2026 AEO Analyzers · PI GenAI LLC</div>
+  </div>
+</footer>
+</body>
+</html>

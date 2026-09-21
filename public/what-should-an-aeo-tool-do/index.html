@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>What Should an AEO Tool Actually Do? | AEO Analyzers</title>
+<meta name="description" content="AI visibility is only the beginning. A useful AEO platform should help you observe the problem, diagnose the cause, make a change, and verify that the answer moved.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<link rel="canonical" href="https://aeoanalyzers.com/what-should-an-aeo-tool-do">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AEO Analyzers">
+<meta property="og:title" content="What Should an AEO Tool Actually Do?">
+<meta property="og:description" content="AI visibility is only the beginning. A useful AEO platform should help you observe the problem, diagnose the cause, make a change, and verify that the answer moved.">
+<meta property="og:url" content="https://aeoanalyzers.com/what-should-an-aeo-tool-do">
+<meta name="theme-color" content="#08343B">
+<style>
+:root{
+  --paper:#E7ECEE; --card:#FFFFFF; --ink:#0E1216; --muted:#3F4952; --hair:#C4CDD3;
+  --teal:#0B6E7A; --teal-deep:#08343B; --teal-tint:#E6F0F1;
+  --good:#137A4D; --good-tint:#E3F1E9; --warn:#B5820A; --gap:#B23A2E; --gap-tint:#F7E7E4;
+  --panel:#EBF0F2; --edge:#9FADB6;
+  --shadow:0 1px 2px rgba(20,26,31,.06), 0 18px 50px rgba(20,26,31,.12);
+  --card-shadow:0 1px 2px rgba(20,26,31,.06), 0 6px 18px rgba(20,26,31,.10);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+/* Committed LIGHT theme — matches the aeoanalyzers.com site (dark text on white). */
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:26px 20px 40px}
+
+/* ---- site header + footer ---- */
+.sitebar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:11px clamp(16px,4vw,28px);background:var(--card);border-bottom:1px solid var(--edge)}
+.sitebar .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.sitebar .brand .mk{display:inline-flex;width:27px;height:27px;border-radius:7px;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.sitebar .snav{display:flex;align-items:center;gap:6px}
+.sitebar .snav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:9px}
+.sitebar .snav a:hover{color:var(--ink);background:var(--panel)}
+.sitebar .snav a.primary{background:var(--teal-deep);color:#EAF4F5}
+.sitebar .snav a.primary:hover{color:#fff}
+.sitefoot{border-top:1px solid var(--edge);background:var(--card);margin-top:44px}
+.sitefoot .fin{max-width:960px;margin:0 auto;padding:24px clamp(16px,4vw,28px);display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.sitefoot .fnav{display:flex;flex-wrap:wrap;gap:8px 22px}
+.sitefoot a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+.sitefoot a:hover{color:var(--ink)}
+.sitefoot .fcop{color:var(--muted);font-size:12.5px}
+@media(max-width:520px){.sitebar .snav a:not(.primary){display:none}}
+
+header{padding:40px 0 24px;border-bottom:1px solid var(--hair)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4.6vw,42px);line-height:1.1;text-wrap:balance;margin:12px 0 14px;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:13.5px;margin:0}
+h2{font-family:var(--serif);font-weight:600;font-size:23px;margin:42px 0 14px;letter-spacing:-.01em}
+p{margin:0 0 14px;max-width:76ch}
+strong{color:var(--ink)}
+
+/* score tiles */
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px 0 6px}
+.tile{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:18px 18px 16px;box-shadow:var(--card-shadow)}
+.tile .lab{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile .num{font-family:var(--serif);font-size:40px;font-weight:600;line-height:1;margin:10px 0 6px;font-variant-numeric:tabular-nums}
+.tile .note{font-size:12.5px;color:var(--muted);line-height:1.45}
+.tile.good{border-top:3px solid var(--good)} .tile.good .num{color:var(--good)}
+.tile.warn{border-top:3px solid var(--warn)} .tile.warn .num{color:var(--warn)}
+.tile.gap{border-top:3px solid var(--gap)}  .tile.gap .num{color:var(--gap)}
+
+/* three-layer list */
+ol.layers{counter-reset:f;list-style:none;padding:0;margin:6px 0 0;max-width:82ch}
+ol.layers li{position:relative;padding:16px 0 16px 46px;border-bottom:1px solid var(--edge)}
+ol.layers li:last-child{border-bottom:0}
+ol.layers li::before{counter-increment:f;content:counter(f);position:absolute;left:0;top:14px;
+  width:30px;height:30px;border-radius:50%;background:var(--teal-tint);color:var(--teal);
+  font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+ol.layers b{display:block;margin-bottom:3px}
+ol.layers .win{color:var(--good);font-weight:700}
+ol.layers .lose{color:var(--gap);font-weight:700}
+
+.samplenote{max-width:960px;margin:16px auto 0;padding:0 20px;text-align:center;color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+.samplenote b{color:var(--ink)}
+
+/* POSSE blog masthead + outro */
+.post{max-width:720px;margin:6px auto 4px;padding:0 8px}
+.posteyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.posttitle{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5.6vw,48px);line-height:1.06;letter-spacing:-.015em;text-wrap:balance;margin:12px 0 12px}
+.postmeta{color:var(--muted);font-size:13px;margin:0 0 24px;letter-spacing:.02em}
+.postbody p{font-size:17px;max-width:68ch;margin:0 0 16px;color:var(--ink)}
+.postbody .postlead{font-size:19.5px;line-height:1.5}
+.posth2{font-family:var(--serif);font-weight:600;font-size:clamp(22px,3.4vw,28px);line-height:1.12;letter-spacing:-.01em;text-wrap:balance;max-width:720px;margin:38px auto 2px;padding:0 8px}
+.postoutro{max-width:780px;margin:36px auto 0;padding:32px clamp(22px,4.5vw,44px);background:var(--teal-tint);border:1px solid var(--edge);border-radius:20px;box-shadow:var(--card-shadow)}
+.postoutro .eyebrow{margin-bottom:8px;display:block}
+.postoutro h3{font-family:var(--serif);font-weight:600;font-size:clamp(25px,4vw,34px);line-height:1.08;letter-spacing:-.015em;text-wrap:balance;margin:0 0 16px}
+.postoutro p{font-size:16.5px;max-width:72ch;margin:0 0 14px;color:var(--ink)}
+.cta{display:inline-block;background:var(--teal-deep);color:#EAF4F5;font-weight:600;font-size:15px;text-decoration:none;padding:11px 22px;border-radius:11px}
+.cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.ilink{color:var(--teal);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.ilink:hover{text-decoration-thickness:2px}
+.serieslink{max-width:720px;margin:26px auto 0;padding:0 8px;color:var(--muted);font-size:13.5px}
+.serieslink a{color:var(--teal)}
+@media(max-width:560px){.score{grid-template-columns:1fr}}
+/* ---- G1: follow-the-series email capture (Honest-Zero) ---- */
+.followseries{max-width:780px;margin:18px auto 0;padding:20px clamp(22px,4.5vw,34px);
+  display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;justify-content:space-between;
+  background:var(--card);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--card-shadow)}
+.followseries .fs-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:6px}
+.followseries .fs-line{font-size:15px;line-height:1.5;color:var(--ink);margin:0;max-width:60ch}
+.followseries .fs-cta{display:inline-block;white-space:nowrap;background:var(--card);color:var(--teal-deep);
+  border:1.5px solid var(--teal-deep);font-weight:600;font-size:14.5px;text-decoration:none;padding:10px 18px;border-radius:11px}
+.followseries .fs-cta:hover{background:var(--teal-deep);color:#EAF4F5}
+.followseries .fs-cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.posth3{font-family:var(--serif);font-weight:600;font-size:20px;line-height:1.25;margin:26px 0 8px;color:var(--ink)}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "What Should an AEO Tool Actually Do?", "description": "AI visibility is only the beginning.", "datePublished": "2026-09-21", "dateModified": "2026-09-21", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://aeoanalyzers.com/what-should-an-aeo-tool-do"}, "author": {"@id": "https://aeoanalyzers.com/#founder"}, "publisher": {"@id": "https://aeoanalyzers.com/#organization"}, "isAccessibleForFree": true}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does “AI visibility” actually mean?", "acceptedAnswer": {"@type": "Answer", "text": "A single number that blends those can hide a business that is perfectly findable by name and never recommended to a buyer. That is not a weaker version of the same problem. It is a different problem with a different cause and a different fix."}}, {"@type": "Question", "name": "Mention, citation, recommendation — what is the difference?", "acceptedAnswer": {"@type": "Answer", "text": "Most confusion in this category collapses into seven inequalities:"}}, {"@type": "Question", "name": "Why is one run not a measurement?", "acceptedAnswer": {"@type": "Answer", "text": "Generative answers are probabilistic. Ask the same engine the same question three times and the named companies and cited sources can differ. Any figure produced from a single run is an anecdote, and a percentage published without its question set, its repetition count and its date is not a measurement anyone can reproduce or dispute."}}, {"@type": "Question", "name": "What do we do with this ourselves?", "acceptedAnswer": {"@type": "Answer", "text": "We report three of those outcomes separately rather than blending them: whether an engine finds you when asked by name, whether what it says is accurate, and whether it recommends you to someone who did not ask for you. We publish our own numbers monthly, including the ones that are zero. On the unbranded category questions in our September 2026 measurement, engines recommended us in 0 of 200 recorded answers."}}]}</script>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="https://aeoanalyzers.com/"><span class="mk">A</span> AEO Analyzers</a>
+  <nav class="snav">
+    <a href="https://aeoanalyzers.com/">Home</a>
+    <a href="/blog/">Blog</a>
+    <a class="primary" href="https://aeoanalyzers.com/">Start free →</a>
+  </nav>
+</header>
+<div class="wrap">
+  <article class="post">
+    <div class="posteyebrow">AEO Analyzers · Category education · Last reviewed <span class="vdate">2026-09-21</span></div>
+    <h1 class="posttitle">What Should an AEO Tool Actually Do?</h1>
+    <p class="postlede">AI visibility is only the beginning. A useful AEO platform should help you observe the problem, diagnose the cause, make a change, and verify that the answer moved.</p>
+
+    <div class="callout">
+      <p>We make one of the tools in this category, so treat this as interested testimony and check it.
+      This piece names no vendor and compares nothing &mdash; it defines the terms. The comparison lives
+      in <a class="ilink" href="/best-aeo-tools">a separate article</a>, written against the standard in
+      <a class="ilink" href="/aeo-buyers-standard">the second</a>.</p>
+    </div>
+
+    <div class="postbody">
+      <p><b>&ldquo;What is our AI visibility score?&rdquo; is the wrong first question.</b> Not because
+      visibility does not matter, but because the phrase covers at least six different outcomes, and the
+      fixes for them have almost nothing in common.</p>
+
+      <h2 class="posth2">What does &ldquo;AI visibility&rdquo; actually mean?</h2>
+      <ul>
+        <li>The engine knows your company exists.</li>
+        <li>The engine mentions your company.</li>
+        <li>The engine links to your site.</li>
+        <li>The engine cites your page as a source.</li>
+        <li>The engine describes your company accurately.</li>
+        <li>The engine recommends you for an unbranded buying question.</li>
+      </ul>
+      <p>A single number that blends those can hide a business that is perfectly findable by name and
+      never recommended to a buyer. That is not a weaker version of the same problem. It is a different
+      problem with a different cause and a different fix.</p>
+
+      <h2 class="posth2">Mention, citation, recommendation &mdash; what is the difference?</h2>
+      <p>Most confusion in this category collapses into seven inequalities:</p>
+      <ul>
+        <li><b>A mention is not a citation.</b> Being named in prose and being used as a source are different events, and only one sends a reader to you.</li>
+        <li><b>A citation is not a recommendation.</b> An engine can cite your page while recommending somebody else.</li>
+        <li><b>Retrievability is not fidelity.</b> Being found is not being described correctly.</li>
+        <li><b>Fidelity is not competitive selection.</b> An accurate description does not win an unbranded question.</li>
+        <li><b>Measurement is not diagnosis.</b> Knowing the number fell does not tell you why.</li>
+        <li><b>Diagnosis is not remediation.</b> Knowing why does not produce the change.</li>
+        <li><b>Remediation is not proof.</b> Making the change does not mean the answer moved.</li>
+      </ul>
+
+      <h2 class="posth2">Where does an AEO tool sit in the workflow?</h2>
+      <p style="text-align:center"><b>OBSERVE &rarr; DIAGNOSE &rarr; FIX &rarr; PROVE &rarr; SCALE</b></p>
+      <p>Every platform in this category sits somewhere on that loop, and most are strongest at one or two
+      stages rather than all five. That is not a criticism of any of them; it is what a category looks like
+      before it consolidates. It does mean a buyer has to know which stage is broken for them before a
+      feature list can mean anything.</p>
+      <div class="callout">
+        <p><b>Four kinds of software, four different questions.</b></p>
+        <ul>
+          <li><b>Monitoring</b> asks: <i>what is happening?</i></li>
+          <li><b>Diagnostic</b> asks: <i>why is it happening?</i></li>
+          <li><b>Remediation</b> asks: <i>what should we change?</i></li>
+          <li><b>Verification</b> asks: <i>did the change alter the outcome?</i></li>
+        </ul>
+        <p>Before buying AEO software, work out which of those four answers you are actually paying for.
+        Most products in this category do more than one. Almost none do all four equally well, and the
+        price rarely tells you which.</p>
+      </div>
+
+      <h2 class="posth2">Why is one run not a measurement?</h2>
+      <p>Generative answers are probabilistic. Ask the same engine the same question three times and the
+      named companies and cited sources can differ. Any figure produced from a single run is an anecdote,
+      and a percentage published without its question set, its repetition count and its date is not a
+      measurement anyone can reproduce or dispute.</p>
+      <p>This is also why a search-grounded answer and one recalled from the model&rsquo;s training are
+      different measurements. Blending them moves a score invisibly in either direction.</p>
+
+      <h2 class="posth2">What do we do with this ourselves?</h2>
+      <p>We report three of those outcomes separately rather than blending them: whether an engine finds
+      you when asked by name, whether what it says is accurate, and whether it recommends you to someone
+      who did not ask for you. We publish our own numbers monthly, including the ones that are zero. On the
+      unbranded category questions in our September 2026 measurement, engines recommended us in
+      <b>0 of 200 recorded answers</b>.</p>
+      <p>We are telling you that because a company selling measurement honesty should be legible on its own
+      numbers first.</p>
+
+      <div class="callout">
+        <p><b>This is part of a three-part series on buying AEO software.</b></p>
+        <ul>
+          <li><b>New to the category?</b> <a class="ilink" href="/what-should-an-aeo-tool-do">What should an AEO tool actually do?</a></li>
+          <li><b>Evaluating vendors?</b> <a class="ilink" href="/aeo-buyers-standard">The AEO Buyer&rsquo;s Standard &mdash; 13 questions to ask before you buy</a></li>
+          <li><b>Ready to compare products?</b> <a class="ilink" href="/best-aeo-tools">Best AEO tools &amp; software in 2026</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="postoutro">
+      <p><b>Corrections.</b> If something here is wrong or out of date, tell us and we will correct it with
+      a dated note saying what changed.</p>
+    </div>
+</article>
+</div>
+<footer class="sitefoot">
+  <div class="fin">
+    <nav class="fnav">
+      <a href="https://aeoanalyzers.com/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://aeoanalyzers.com/privacy">Privacy</a>
+      <a href="https://aeoanalyzers.com/terms">Terms</a>
+      <a href="https://aeoanalyzers.com/#contact">Contact</a>
+    </nav>
+    <div class="fcop">© 2026 AEO Analyzers · PI GenAI LLC</div>
+  </div>
+</footer>
+</body>
+</html>

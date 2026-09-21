@@ -74,3 +74,49 @@ describe('comparison pages never ship indexable with unverified claims', () => {
     expect(html).toContain('0 of 200');
   });
 });
+
+/** The three-part series is an architecture, not a publishing order. Readers arrive
+ *  asynchronously and enter through any page, so each one must reach the other two.
+ *  A broken cross-link silently turns a cluster back into three orphans. */
+describe('the AEO buyer series stays interlinked', () => {
+  const PAGES = {
+    'public/what-should-an-aeo-tool-do/index.html': '/what-should-an-aeo-tool-do',
+    'public/aeo-buyers-standard/index.html': '/aeo-buyers-standard',
+    'public/best-aeo-tools/index.html': '/best-aeo-tools',
+  } as const;
+
+  it('all three pages exist and are indexable', () => {
+    for (const f of Object.keys(PAGES)) {
+      const html = readFileSync(resolve(ROOT, f), 'utf8');
+      expect(existsSync(resolve(ROOT, f)), f).toBe(true);
+      expect(html, `${f} must not be noindex`).not.toMatch(NOINDEX);
+      expect(html, `${f} needs a canonical`).toMatch(/rel="canonical"/);
+    }
+  });
+
+  it('each page links to the other two', () => {
+    for (const [f, self] of Object.entries(PAGES)) {
+      const html = readFileSync(resolve(ROOT, f), 'utf8');
+      for (const other of Object.values(PAGES)) {
+        if (other === self) continue;
+        expect(html, `${f} must link to ${other}`).toContain(`href="${other}"`);
+      }
+    }
+  });
+
+  it('each page is declared in the sitemap', () => {
+    const sm = readFileSync(resolve(ROOT, 'public/sitemap.xml'), 'utf8');
+    for (const slug of Object.values(PAGES)) {
+      expect(sm, `${slug} missing from sitemap`).toContain(`https://aeoanalyzers.com${slug}`);
+    }
+  });
+
+  it('each page carries Article schema pointing at the canonical entities', () => {
+    for (const f of Object.keys(PAGES)) {
+      const html = readFileSync(resolve(ROOT, f), 'utf8');
+      expect(html, `${f} needs JSON-LD`).toContain('application/ld+json');
+      expect(html).toContain('https://aeoanalyzers.com/#organization');
+      expect(html).toContain('https://aeoanalyzers.com/#founder');
+    }
+  });
+});
