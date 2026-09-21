@@ -48,8 +48,24 @@ describe('comparison pages never ship indexable with unverified claims', () => {
     const html = readFileSync(resolve(ROOT, 'public/best-aeo-tools/index.html'), 'utf8');
     // The disclosure is the thing that makes a vendor-written comparison usable.
     expect(html.toLowerCase()).toContain('we make one of these tools');
-    // No self-refereed win, no superlative about ourselves.
-    expect(html).not.toMatch(/\bwe are the best\b|\b#1 (aeo|tool)\b|\bbest aeo tool\b/i);
+    // No self-refereed win, no superlative about OURSELVES.
+    //
+    // This deliberately does NOT forbid the bare phrase "best AEO tools". That is the
+    // category question buyers ask and the page is titled for it; banning it would
+    // forbid the page from being findable for the thing it is about. What must never
+    // appear is the phrase pointed at US.
+    const SELF_SUPERLATIVE = [
+      /\bwe are the best\b/i,
+      /\b#1\s+(aeo|ai[- ]?visibility|tool)/i,
+      /AEO Analyzers\b[^.<]{0,60}\b(is|remains|stays)\b[^.<]{0,40}\bbest\b/i,
+      /\bbest\b[^.<]{0,40}\bis (AEO Analyzers|ours)\b/i,
+      /\bthe only (tool|platform|software)\b/i,
+    ];
+    for (const re of SELF_SUPERLATIVE) {
+      expect(html, `self-superlative matched ${re}`).not.toMatch(re);
+    }
+    // And the page must still say out loud that it is not refereeing its own category.
+    expect(html.toLowerCase()).toContain('we do not claim to be the best tool in this category');
   });
 
   it('every number about our own measurement carries its N', () => {
