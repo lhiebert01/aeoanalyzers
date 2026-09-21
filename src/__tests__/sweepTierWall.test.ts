@@ -156,3 +156,37 @@ describe('the one deliberate free-tier exception is recorded where it lives', ()
     expect(plan).toMatch(/gatedNote/);
   });
 });
+
+describe('report downloads are offered at the TOP as well as the bottom', () => {
+  const src = readFileSync(resolve(__dirname, '../components/SweepDashboard.tsx'), 'utf8');
+
+  /** Founder QA, iPhone, 2026-09-21: the download pair sat only at the very end of a
+   *  five-screen report, so a reader had to scroll past every section to reach it. The
+   *  top card is an ADDITION — both pairs must exist, and both must be paid-gated. */
+  it('ships two download pairs, not one moved', () => {
+    expect(src.match(/Download report \(Word\)/g) || []).toHaveLength(2);
+    expect(src.match(/>Markdown\b/g) || []).toHaveLength(2);
+  });
+
+  it('gates the top pair on paidViewer, exactly like the bottom pair', () => {
+    const i = src.indexOf('{paidViewer && scorecard && (');
+    expect(i, 'the top download card must be paid-gated').toBeGreaterThan(-1);
+    const card = src.slice(i, i + 1600);
+    expect(card).toContain('Download report (Word)');
+    expect(card).toContain('Markdown');
+  });
+
+  it('renders the top pair on the saved view too (shared render path, no savedView exclusion)', () => {
+    const i = src.indexOf('{paidViewer && scorecard && (');
+    const card = src.slice(i, i + 1600);
+    expect(card).not.toContain('!savedView');
+  });
+
+  it('lets the evidence toolbar wrap so Markdown cannot run off a phone screen', () => {
+    // The OUTER row wrapped; the button group did not, so the last button overflowed
+    // the card on iOS — worse once "Expand all" appeared.
+    const i = src.indexOf('Evidence — every answer, stored');
+    const block = src.slice(i, i + 900);
+    expect(block).toContain('flex flex-wrap items-center gap-2 min-w-0');
+  });
+});

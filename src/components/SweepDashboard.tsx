@@ -1135,6 +1135,34 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
             </div>
           )}
 
+          {/* The report downloads lived ONLY at the very end of a five-screen report, so a
+              reader had to scroll past every section to find them. Repeat the pair here,
+              directly under the headline scorecard. This render path serves BOTH the live
+              result and the saved view, so one card covers both. The pair at the bottom
+              stays — this is an addition, not a move. */}
+          {paidViewer && scorecard && (
+            <div className="bg-zinc-900 text-white rounded-3xl p-5 sm:p-6 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <h3 className="font-bold text-base sm:text-lg">Take the full report with you</h3>
+                  <p className="text-xs sm:text-sm text-zinc-400 mt-1 leading-relaxed">
+                    Every score, every cited source and all {result.runs.length} transcripts — the same detail as the page below.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button onClick={downloadDocx} disabled={docxBusy}
+                    className="inline-flex items-center gap-2 bg-white text-zinc-900 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-zinc-100 disabled:opacity-50">
+                    <Download className="w-4 h-4" />{docxBusy ? 'Preparing…' : 'Download report (Word)'}
+                  </button>
+                  <button onClick={downloadReport}
+                    className="inline-flex items-center gap-2 border border-white/40 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10">
+                    <Download className="w-4 h-4" />Markdown
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* WO-AEO-MOBILE-HISTORY-001: a saved sweep that predates the Sep-2 snapshot
               has no point-in-time layers — say so explicitly rather than render a blank. */}
           {savedView && savedSnapshotMissing && (
@@ -1410,7 +1438,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                 <h3 className="font-bold">Evidence — every answer, stored</h3>
                 <p className="text-xs text-zinc-500 mt-0.5">{result.runs.length} transcripts back the scores above — run any query yourself and you&apos;ll get what the report says.</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 min-w-0">
                 {isAdmin && <span className="text-sm font-semibold text-zinc-500 mr-1">Sweep cost ≈ ${result.summary.totalCostUsd.toFixed(3)}</span>}
                 <button onClick={() => setShowTranscripts((v) => !v)}
                   className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-700 px-3 py-1.5 rounded-xl text-sm font-semibold hover:bg-zinc-50">
