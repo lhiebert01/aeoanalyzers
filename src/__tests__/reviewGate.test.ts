@@ -120,3 +120,36 @@ describe('the AEO buyer series stays interlinked', () => {
     }
   });
 });
+
+/** Social cards and heroes. Every page in the series must ship a real OG image with
+ *  dimensions and alt text, and the file must actually exist at the declared path —
+ *  a card that 404s renders blank, which is the state these pages were in for a day. */
+describe('buyer series pages carry real social images', () => {
+  const SLUGS = ['what-should-an-aeo-tool-do','aeo-buyers-standard','best-aeo-tools','aeo-buyers-guide'];
+
+  it('declares og:image with width, height, type and alt', () => {
+    for (const s of SLUGS) {
+      const html = readFileSync(resolve(ROOT, `public/${s}/index.html`), 'utf8');
+      expect(html, `${s} og:image`).toMatch(/property="og:image" content="https:\/\/aeoanalyzers\.com\/img\/buyer-series\//);
+      for (const t of ['og:image:width','og:image:height','og:image:type','og:image:alt','twitter:card','twitter:image']) {
+        expect(html, `${s} missing ${t}`).toContain(t);
+      }
+    }
+  });
+
+  it('the declared image files exist on disk at the exact declared size', () => {
+    for (const s of SLUGS) {
+      expect(existsSync(resolve(ROOT, `public/img/buyer-series/${s}-og-1200x630.jpg`)), `${s} OG file`).toBe(true);
+      expect(existsSync(resolve(ROOT, `public/img/buyer-series/${s}-hero-1600x900.jpg`)), `${s} hero file`).toBe(true);
+    }
+  });
+
+  it('every hero carries non-trivial alt text', () => {
+    for (const s of SLUGS) {
+      const html = readFileSync(resolve(ROOT, `public/${s}/index.html`), 'utf8');
+      const m = html.match(/<img class="posthero"[\s\S]*?alt="([^"]+)"/);
+      expect(m, `${s} hero img`).not.toBeNull();
+      expect(m![1].length, `${s} alt text too short to be useful`).toBeGreaterThan(60);
+    }
+  });
+});
