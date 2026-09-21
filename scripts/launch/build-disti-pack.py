@@ -88,6 +88,7 @@ POSTS = [
   li=["Six minutes, three short reads, and you'll know how to buy AEO software.",
       "1. What an AEO tool should actually do — why \"AI visibility\" is six different outcomes.\n2. What to require before you buy — seven purchasing requirements and the questions that go with them.\n3. How to compare the market — why there's no single best tool until you define the job.",
       "Each one is about two minutes and links to the full guide behind it, so you can go as deep as you need and stop when you have what you came for.",
+      "The thread running through all three: monitoring is not diagnosis, and diagnosis is not proof.",
       "Written by a vendor in the category, which the page says at the top. The standard inside it works against us as readily as anyone else — that's the point of publishing it.",
       "Six minutes. If it saves you one bad vendor call it has paid for itself.",
       "https://aeoanalyzers.com/aeo-buyers-guide",

@@ -57,9 +57,11 @@ IMAGES = {
          og="public/img/buyer-series/aeo-buyers-guide-og-1200x630.jpg",
          note="Hero and OG both exist. The hero reads “AEO software explained — Monitoring is not "
               "diagnosis. Diagnosis is not proof.”, which is the series card rather than this page's "
-              "headline (“three short reads”). On-brand and safe to post; a matched replacement is "
-              "queued as FIX 3 in Downloads\\AEO-IMAGE-FIXES\\README-FIXES.md. If you would rather wait for "
-              "the matched one, post 6 and 7 first — nothing depends on the order."),
+              "headline. Rather than wait for new art, the post copy now carries that exact line — "
+              "“the thread running through all three: monitoring is not diagnosis, and diagnosis is "
+              "not proof” — so the image and the words agree and the card reads as deliberate. Post it "
+              "as is. The matched replacement stays queued as FIX 3 in "
+              "Downloads\\AEO-IMAGE-FIXES\\README-FIXES.md, but nothing is now waiting on it."),
  6: dict(attach="public/blog/how-it-works/visual-1-pipeline.png", size="1672 x 941",
          hero=None,
          og="public/og-blog-how-it-works.png",
@@ -97,6 +99,45 @@ WHY = {
  7: "The closer. One idea, no page of its own, built to be screenshotted and taken into a procurement "
     "meeting by people who will never read the rest of the series.",
 }
+
+# ------------------------------------------------------------------- BLUESKY
+# Bluesky's limit is 300 graphemes and it does NOT shorten links — the whole URL
+# counts, so a 54-character link is 18% of the post before a word is written.
+# That is why these are rewritten rather than trimmed from the X versions: one
+# idea, one link, no hashtags. Keyed by CAMPAIGN number.
+BLUESKY = {
+ 1: ["You did what the AEO guides said and nothing changed.",
+     "llms.txt goes unrequested on 97% of sites that have one. An AI sees roughly the first 200 characters after your h1.",
+     "The free self-checks, no tool required:",
+     "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you"],
+ 2: ["\"AI visibility\" is six different outcomes with almost nothing in common.",
+     "A mention is not a citation. A citation is not a recommendation. Measurement is not diagnosis.",
+     "https://aeoanalyzers.com/what-should-an-aeo-tool-do"],
+ 3: ["We published the standard we think buyers should use to judge AEO software, then scored ourselves against it — including where we come off worst.",
+     "7 requirements. 13 questions. Names no vendor.",
+     "https://aeoanalyzers.com/aeo-buyers-standard"],
+ 4: ["We wrote the comparison of our own category and named no winner.",
+     "8 tools, 7 requirements, every competitor fact dated and linked to that vendor's own page — including where we are the weaker choice.",
+     "https://aeoanalyzers.com/best-aeo-tools"],
+ 5: ["How to buy AEO software, in six minutes.",
+     "Three two-minute reads: what a tool should do, what to require before you buy, how to compare the market.",
+     "Monitoring is not diagnosis. Diagnosis is not proof.",
+     "https://aeoanalyzers.com/aeo-buyers-guide"],
+ 6: ["The whole pipeline, drawn. Six diagrams, no algorithms.",
+     "Four engines, your buyers' questions, several runs each. Three layers scored separately. Every number backed by a stored transcript you can re-run.",
+     "https://aeoanalyzers.com/blog/how-it-works"],
+ 7: ["A dashboard says your AI visibility is 42%.",
+     "42% of what? Which prompts, which engines, which dates, how many runs, and what did the model actually say?",
+     "A number you cannot reproduce is a number you cannot dispute.",
+     "https://aeoanalyzers.com/aeo-buyers-standard"],
+}
+
+def bsky_len(parts):
+    """Bluesky counts the FULL url — no t.co substitution — and 300 is the ceiling."""
+    return sum(len(b) for b in parts) + 2 * (len(parts) - 1)
+
+for _n, _p in BLUESKY.items():
+    assert bsky_len(_p) <= 300, f"Bluesky post {_n} is {bsky_len(_p)} chars — over the 300 limit"
 
 def x_len(parts):
     """X counts every URL as 23 characters, whatever its real length."""
@@ -197,6 +238,12 @@ def build(path):
     d.add_paragraph(
         'Post to LinkedIn first, then X about thirty minutes later. The LinkedIn post is canonical; '
         'the X post is a pointer to it.')
+    d.add_paragraph(
+        'ON YOUR X PREMIUM ACCOUNT you are not held to 280, so you have a choice. These short versions '
+        'travel further — they can be quoted and reposted whole, and they read as a pointer rather than a '
+        'duplicate of the LinkedIn post. If you would rather use the detail, paste the LinkedIn block from '
+        'this document instead and cut the hashtag line down to two; five tags read as reach-farming on X '
+        'in a way they do not on LinkedIn. Do not post the long and short version of the same piece.')
 
     for camp_n, title, src in ORDER:
         x = x_for(src)
@@ -211,9 +258,35 @@ def build(path):
             par.paragraph_format.space_after = Pt(8 if j < len(x) - 1 else 14)
             shade(par, 'F2F4F5')
 
+    # ---------------------------------------------------------- Bluesky
+    d.add_page_break()
+    d.add_heading('Bluesky posts — all seven', 1)
+    d.add_paragraph(
+        'Bluesky caps a post at 300 characters and, unlike X, it does not shorten links — the entire URL '
+        'counts against you. On the longest of these that is 54 characters, 18% of the post, before a single '
+        'word is written. So these are rewritten rather than trimmed: one idea, one link, no hashtags. '
+        'Counts below are the real ones, URL included.')
+    d.add_paragraph(
+        'Order and rhythm are the same as everywhere else — LinkedIn first, then X, then Bluesky. Bluesky '
+        'has the smallest audience of the three and the highest proportion of people who will actually read '
+        'the linked page, so it is worth the extra post.')
+
+    for camp_n, title, _src in ORDER:
+        b = BLUESKY[camp_n]
+        d.add_heading(f"{camp_n} · {title}  —  {bsky_len(b)}/300", 2)
+        if camp_n <= 4:
+            note = d.add_paragraph('LinkedIn already published — this is the Bluesky backfill.')
+            note.runs[0].italic = True
+        for j, block in enumerate(b):
+            par = d.add_paragraph(block)
+            par.paragraph_format.left_indent = Inches(0.12)
+            par.paragraph_format.right_indent = Inches(0.12)
+            par.paragraph_format.space_after = Pt(8 if j < len(b) - 1 else 14)
+            shade(par, 'F2F4F5')
+
     d.save(path)
 
 build('docs/launch/BLITZ-POSTS-5-6-7.docx')
 for camp_n, title, src in ORDER:
-    print(f"  X {camp_n} {x_len(x_for(src)):3}/280  {title}")
+    print(f"  {camp_n}  X {x_len(x_for(src)):3}/280   Bluesky {bsky_len(BLUESKY[camp_n]):3}/300   {title}")
 print('built docs/launch/BLITZ-POSTS-5-6-7.docx')

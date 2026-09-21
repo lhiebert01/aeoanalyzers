@@ -196,6 +196,8 @@ Six minutes, three short reads, and you'll know how to buy AEO software.
 
 Each one is about two minutes and links to the full guide behind it, so you can go as deep as you need and stop when you have what you came for.
 
+The thread running through all three: monitoring is not diagnosis, and diagnosis is not proof.
+
 Written by a vendor in the category, which the page says at the top. The standard inside it works against us as readily as anyone else — that's the point of publishing it.
 
 Six minutes. If it saves you one bad vendor call it has paid for itself.
