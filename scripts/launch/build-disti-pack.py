@@ -198,6 +198,9 @@ def docx(path):
                 shade(par,'F2F4F5')
     d.save(path)
 
-open('docs/launch/BLITZ-DISTI-PACK-aeo-buyer-series.md','w',encoding='utf-8').write(markdown())
-docx('docs/launch/BLITZ-DISTI-PACK-aeo-buyer-series.docx')
-print('rebuilt')
+# Guarded so the 5-6-7 pack can import POSTS and reuse the SAME post text rather than
+# retyping it — one source of truth for the copy, two documents built from it.
+if __name__ == '__main__':
+    open('docs/launch/BLITZ-DISTI-PACK-aeo-buyer-series.md','w',encoding='utf-8').write(markdown())
+    docx('docs/launch/BLITZ-DISTI-PACK-aeo-buyer-series.docx')
+    print('rebuilt')

@@ -31,3 +31,4 @@ private/outreach/
 
 # Autopost pack zips — rebuilt from autopost-packs/ by scripts, not source of record
 autopost-packs/*.zip
+__pycache__/
