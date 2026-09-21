@@ -153,3 +153,36 @@ describe('buyer series pages carry real social images', () => {
     }
   });
 });
+
+/** A hub card is a promise about the destination. When a page is retitled and its card
+ *  is not, the reader clicks "what they actually measure" and lands on "what to compare
+ *  before you buy" — a small break in exactly the kind of trust these pages trade on. */
+describe('blog hub cards match the pages they link to', () => {
+  it('no card title contradicts the H1 of the page it links to', () => {
+    const hub = readFileSync(resolve(ROOT, 'public/blog/index.html'), 'utf8');
+    const strip = (s: string) => s.replace(/<[^>]+>/g, '').replace(/&#8217;|&rsquo;/g, "'").replace(/&mdash;/g, '-');
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+    /** split on the FIRST colon, before normalising strips it */
+    const split = (raw: string): [string, string] => {
+      const t = strip(raw);
+      const i = t.indexOf(':');
+      return i < 0 ? [norm(t), ''] : [norm(t.slice(0, i)), norm(t.slice(i + 1))];
+    };
+    const cards = [...hub.matchAll(/<h2><a href="(\/[a-z0-9/-]+)">([\s\S]*?)<\/a><\/h2>/g)];
+    expect(cards.length).toBeGreaterThan(6);
+    for (const [, href, title] of cards) {
+      const file = resolve(ROOT, `public${href.replace(/\/$/, '')}/index.html`);
+      if (!existsSync(file)) continue;
+      const m = readFileSync(file, 'utf8').match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
+      if (!m) continue;
+      const [cardLead, cardSub] = split(title);
+      const [h1Lead, h1Sub] = split(m[1]);
+      // The leading phrase must always match — that is what catches a retitled page.
+      expect(h1Lead, `card "${cardLead}" leads differently from page H1 "${h1Lead}"`).toContain(cardLead);
+      // A card may ADD a subtitle where the page has none. It may not CONTRADICT one.
+      if (cardSub && h1Sub) {
+        expect(h1Sub, `card subtitle "${cardSub}" contradicts page subtitle "${h1Sub}"`).toContain(cardSub);
+      }
+    }
+  });
+});
