@@ -129,6 +129,19 @@ ol.layers .lose{color:var(--gap);font-weight:700}
 .tbl tr.ours td{background:var(--good-tint)}
 .tbl td.unv{color:var(--gap);background:var(--gap-tint);font-weight:600;white-space:nowrap}
 .vdate{font-variant-numeric:tabular-nums}
+
+/* --- Blog tables: visible grid. A borderless comparison table is unreadable the
+   moment a cell wraps onto three lines, which is most of them on a phone. --- */
+.postbody table,.tblwrap table{width:100%;border-collapse:collapse;font-size:15.5px;line-height:1.5;background:var(--card);border:1px solid var(--edge);border-radius:10px;overflow:hidden}
+.postbody thead th,.tblwrap thead th{background:var(--panel);color:var(--teal-deep);font-weight:700;text-align:left;font-size:13px;letter-spacing:.04em;text-transform:uppercase;padding:12px 14px;border:1px solid var(--edge);vertical-align:bottom}
+.postbody td,.tblwrap td{padding:12px 14px;border:1px solid var(--hair);vertical-align:top;text-align:left;color:var(--ink)}
+.postbody tbody tr:nth-child(even) td,.tblwrap tbody tr:nth-child(even) td{background:#F4F7F8}
+.postbody tbody tr:hover td,.tblwrap tbody tr:hover td{background:var(--teal-tint)}
+.postbody tr.ours td,.tblwrap tr.ours td{background:var(--good-tint);border-color:var(--good)}
+.postbody td b,.tblwrap td b{color:var(--teal-deep)}
+.tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:18px 0}
+.tblwrap table{min-width:640px}
+@media (max-width:640px){.postbody table,.tblwrap table{font-size:14.5px}.postbody td,.tblwrap td,.postbody thead th,.tblwrap thead th{padding:10px}}
 </style>
 
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Best AEO Tools in 2026: What They Actually Measure — and What Most Comparisons Miss", "description": "What AEO tools actually measure, the twelve capabilities to judge them on, and a dated comparison written by a vendor who says so and names no winner.", "datePublished": "2026-09-21", "dateModified": "2026-09-21", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://aeoanalyzers.com/best-aeo-tools"}, "author": {"@id": "https://aeoanalyzers.com/#founder"}, "publisher": {"@id": "https://aeoanalyzers.com/#organization"}, "isAccessibleForFree": true, "about": [{"@type": "Thing", "name": "Answer engine optimization"}, {"@type": "Thing", "name": "AI visibility tools"}, {"@type": "Thing", "name": "AI SEO tools"}]}</script>
@@ -311,6 +324,7 @@ ol.layers .lose{color:var(--gap);font-weight:700}
           <li><b>New to the category?</b> <a class="ilink" href="/what-should-an-aeo-tool-do">What should an AEO tool actually do?</a></li>
           <li><b>Evaluating vendors?</b> <a class="ilink" href="/aeo-buyers-standard">The AEO Buyer&rsquo;s Standard &mdash; 13 questions to ask before you buy</a></li>
           <li><b>Ready to compare products?</b> You are here.</li>
+          <li><b>Short on time?</b> <a class="ilink" href="/aeo-buyers-guide">All three in six minutes</a></li>
         </ul>
       </div>
 
@@ -320,7 +334,7 @@ ol.layers .lose{color:var(--gap);font-weight:700}
     </div>
 
     <div class="postoutro">
-      <p><b>Corrections.</b> Every claim about another company here is dated and sourced to that company's own material. If a fact is out of date or wrong, we will correct it and leave a dated note saying what changed.</p>
+      <p class="note">Vendor facts here were read from each vendor&rsquo;s own published pages. <b>As of date checked: 2026-09-21.</b> If something is out of date, tell us.</p>
     </div>
   </article>
 </div>
