@@ -22,7 +22,9 @@ POSTS = [
       "It names no vendor and ranks nothing. Then it scores us against all seven, in full, including the one where we come off worst: scale. We have narrower engine coverage than the big platforms and no multi-brand or SSO tooling, and a portfolio operator should look elsewhere. That's on the page.",
       "The line I'd keep if you keep one: AEO metrics should have receipts. If a dashboard says your visibility is 42%, you should be able to ask 42% of what — which prompts, which engines, which dates, how many runs — and read the answer behind the number.",
       "Take it into a procurement meeting. Use it on us. A standard that only works when it flatters the company that wrote it isn't a standard.",
-      "https://aeoanalyzers.com/aeo-buyers-standard"],
+      "If a requirement is missing from the seven, tell me — I'll add it and credit whoever suggested it.",
+      "https://aeoanalyzers.com/aeo-buyers-standard",
+      "#AEO #AISearch #GenerativeAI #B2BMarketing #Procurement"],
   x=["We published the standard we think buyers should use to judge AEO software — and scored ourselves against it, including where we come off worst.",
      "7 requirements. 13 questions. Names no vendor, ranks nothing.",
      "AEO metrics should have receipts.",
@@ -37,7 +39,9 @@ POSTS = [
       "→ llms.txt goes unrequested on 97% of the sites that have one\n→ six of seven AI platforms cannot read your schema\n→ the assistants read different indexes, so being in one doesn't put you in another\n→ an AI sees roughly the first 200 characters after your h1, and ignores your meta description entirely",
       "That last one is the cheapest fix in this whole field and almost nobody does it.",
       "The piece includes the free self-checks — no tool required — and two of our own failures, because a primer that only lists other people's mistakes isn't worth reading.",
-      "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you"],
+      "Run the free self-checks on your own site and tell me what you find. I'll answer anything in the comments.",
+      "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you",
+      "#AEO #AISearch #SEO #GenerativeEngineOptimization #ContentStrategy"],
   x=["You did what the AEO guides said. Nothing changed.",
      "llms.txt unrequested on 97% of sites that have one. 6 of 7 platforms can't read your schema. An AI sees ~200 characters after your h1.",
      "The free self-checks, and two of our own failures:",
@@ -53,10 +57,11 @@ POSTS = [
       "So before comparing tools, work out which of these four you're actually buying:",
       "Monitoring asks what happened. Diagnosis asks why. Remediation asks what to change. Verification asks whether the change worked.",
       "Most products do more than one. Almost none do all four equally well, and the price rarely tells you which.",
-      "https://aeoanalyzers.com/what-should-an-aeo-tool-do"],
+      "Which of those four are you actually paying for? Genuinely curious what people find they bought.",
+      "https://aeoanalyzers.com/what-should-an-aeo-tool-do",
+      "#AEO #GEO #AISearch #MarTech #SEO"],
   x=["\"AI visibility\" is six different outcomes with almost nothing in common.",
      "A mention is not a citation. A citation is not a recommendation. Measurement is not diagnosis.",
-     "Monitoring asks what happened. Diagnosis asks why. Remediation asks what to change. Verification asks if it worked.",
      "https://aeoanalyzers.com/what-should-an-aeo-tool-do"]),
 
  dict(n=4, title="Best AEO tools in 2026",
@@ -68,7 +73,9 @@ POSTS = [
       "Three things we made ourselves do:",
       "→ Every competitor fact carries the date it was verified and links to that vendor's own published page. Nothing from another comparison site, nothing from memory.\n→ We say plainly where each one is the better choice. Need breadth across many engines and regions? That's Rankscale. Want SEO and GEO in one suite? SE Ranking. Agent infrastructure? Scrunch.\n→ We say where we're the weaker fit, which is any portfolio-scale operation.",
       "We make one of these tools and the page says so in the first paragraph. Treat it as interested testimony and check it — every claim is dated and sourced so that you can.",
-      "https://aeoanalyzers.com/best-aeo-tools"],
+      "If you think we've got a competitor wrong, tell me. Every fact is dated and I'll correct it with a note saying what changed.",
+      "https://aeoanalyzers.com/best-aeo-tools",
+      "#AEO #AISearch #MarTech #B2BSaaS #SEO"],
   x=["We wrote the comparison of our own category and named no winner.",
      "8 tools, 7 purchasing requirements, every competitor fact dated and linked to that vendor's own page.",
      "Including where we're the weaker choice.",
@@ -82,7 +89,9 @@ POSTS = [
       "1. What an AEO tool should actually do — why \"AI visibility\" is six different outcomes.\n2. What to require before you buy — seven purchasing requirements and the questions that go with them.\n3. How to compare the market — why there's no single best tool until you define the job.",
       "Each one is about two minutes and links to the full guide behind it, so you can go as deep as you need and stop when you have what you came for.",
       "Written by a vendor in the category, which the page says at the top. The standard inside it works against us as readily as anyone else — that's the point of publishing it.",
-      "https://aeoanalyzers.com/aeo-buyers-guide"],
+      "Six minutes. If it saves you one bad vendor call it has paid for itself.",
+      "https://aeoanalyzers.com/aeo-buyers-guide",
+      "#AEO #AISearch #Procurement #B2BMarketing #GEO"],
   x=["How to buy AEO software, in six minutes.",
      "Three two-minute reads: what a tool should do, what to require before you buy, how to compare the market. Each links to the full guide behind it.",
      "https://aeoanalyzers.com/aeo-buyers-guide"]),
@@ -96,11 +105,28 @@ POSTS = [
       "Then we score three layers separately rather than blending them into one number: whether an engine finds you when asked by name, whether what it says about you is accurate, and whether it recommends you to a buyer who never said your name.",
       "Every number is backed by a stored transcript. Open any figure, read the answer behind it, and run the same question yourself to check we're telling you the truth.",
       "That last part is the whole design. A number you can't reproduce is a number you can't dispute.",
-      "https://aeoanalyzers.com/blog/how-it-works"],
+      "Run any of those queries yourself and tell me if you get something different. That is the whole promise.",
+      "https://aeoanalyzers.com/blog/how-it-works",
+      "#AEO #AISearch #Measurement #GenerativeAI #SEO"],
   x=["The whole pipeline, drawn. Six diagrams, no algorithms.",
      "Four engines, buyers' questions, several runs each. Search-grounded answers kept separate from memory. Three layers scored separately, every number backed by a stored transcript you can re-run.",
      "https://aeoanalyzers.com/blog/how-it-works"]),
 ]
+
+
+# --------------------------------------------------------------- LENGTH GUARD
+def x_length(parts):
+    """X counts every URL as 23 characters, whatever its real length."""
+    total = 0
+    for i, b in enumerate(parts):
+        total += 23 if b.startswith('http') else len(b)
+        if i < len(parts) - 1:
+            total += 2   # blank line between paragraphs
+    return total
+
+for _p in POSTS:
+    _n = x_length(_p['x'])
+    assert _n <= 280, f"X post {_p['n']} is {_n} chars — over the 280 limit"
 
 RULES = ("Every post carries its link in the body — the autoposter has no comment API, so there is no "
          "other placement, and the copy is written to carry the URL naturally. No cost or expense figure "

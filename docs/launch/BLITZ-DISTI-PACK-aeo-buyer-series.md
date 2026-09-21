@@ -41,7 +41,11 @@ The line I'd keep if you keep one: AEO metrics should have receipts. If a dashbo
 
 Take it into a procurement meeting. Use it on us. A standard that only works when it flatters the company that wrote it isn't a standard.
 
+If a requirement is missing from the seven, tell me — I'll add it and credit whoever suggested it.
+
 https://aeoanalyzers.com/aeo-buyers-standard
+
+#AEO #AISearch #GenerativeAI #B2BMarketing #Procurement
 
 ### X — copy from here
 
@@ -78,7 +82,11 @@ That last one is the cheapest fix in this whole field and almost nobody does it.
 
 The piece includes the free self-checks — no tool required — and two of our own failures, because a primer that only lists other people's mistakes isn't worth reading.
 
+Run the free self-checks on your own site and tell me what you find. I'll answer anything in the comments.
+
 https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you
+
+#AEO #AISearch #SEO #GenerativeEngineOptimization #ContentStrategy
 
 ### X — copy from here
 
@@ -114,15 +122,17 @@ Monitoring asks what happened. Diagnosis asks why. Remediation asks what to chan
 
 Most products do more than one. Almost none do all four equally well, and the price rarely tells you which.
 
+Which of those four are you actually paying for? Genuinely curious what people find they bought.
+
 https://aeoanalyzers.com/what-should-an-aeo-tool-do
+
+#AEO #GEO #AISearch #MarTech #SEO
 
 ### X — copy from here
 
 "AI visibility" is six different outcomes with almost nothing in common.
 
 A mention is not a citation. A citation is not a recommendation. Measurement is not diagnosis.
-
-Monitoring asks what happened. Diagnosis asks why. Remediation asks what to change. Verification asks if it worked.
 
 https://aeoanalyzers.com/what-should-an-aeo-tool-do
 
@@ -150,7 +160,11 @@ Three things we made ourselves do:
 
 We make one of these tools and the page says so in the first paragraph. Treat it as interested testimony and check it — every claim is dated and sourced so that you can.
 
+If you think we've got a competitor wrong, tell me. Every fact is dated and I'll correct it with a note saying what changed.
+
 https://aeoanalyzers.com/best-aeo-tools
+
+#AEO #AISearch #MarTech #B2BSaaS #SEO
 
 ### X — copy from here
 
@@ -184,7 +198,11 @@ Each one is about two minutes and links to the full guide behind it, so you can 
 
 Written by a vendor in the category, which the page says at the top. The standard inside it works against us as readily as anyone else — that's the point of publishing it.
 
+Six minutes. If it saves you one bad vendor call it has paid for itself.
+
 https://aeoanalyzers.com/aeo-buyers-guide
+
+#AEO #AISearch #Procurement #B2BMarketing #GEO
 
 ### X — copy from here
 
@@ -216,7 +234,11 @@ Every number is backed by a stored transcript. Open any figure, read the answer 
 
 That last part is the whole design. A number you can't reproduce is a number you can't dispute.
 
+Run any of those queries yourself and tell me if you get something different. That is the whole promise.
+
 https://aeoanalyzers.com/blog/how-it-works
+
+#AEO #AISearch #Measurement #GenerativeAI #SEO
 
 ### X — copy from here
 
