@@ -3,8 +3,9 @@
 Six posts, LinkedIn and X, each with the image to attach. **Copy-paste ready. Nothing to
 assemble.**
 
-**Standing rules applied throughout:** the link is always in the body, never "link in the
-comments". No cost or expense figure appears anywhere. Every number is one we can
+**Standing rules applied throughout:** every post carries its link in the body &mdash; the
+autoposter has no comment API, so there is no other placement, and the copy is written to
+carry the URL naturally. No cost or expense figure appears anywhere. Every number is one we can
 reproduce from a stored transcript or a published study — nothing is invented, not even
 as an example. No claim that other tools "only give you a score".
 

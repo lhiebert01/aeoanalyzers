@@ -100,7 +100,10 @@ to generate, subject to the linter and the standing bans below.
 
 These are not new; they are the ones this content trips most often.
 
-- **The link goes in the body.** Never "link in the comments".
+- **Every post carries its link in the body.** The autoposter has no comment API, so
+  this is a constraint of the system rather than a preference &mdash; there is no other
+  placement available to it. Generated copy must therefore be written to carry a URL in
+  the body naturally, not to defer it.
 - **No cost or expense figure**, ever, on any customer-facing surface.
 - **No invented numbers.** Only figures reproducible from a stored transcript or a
   published study. Not even as a labelled example.
