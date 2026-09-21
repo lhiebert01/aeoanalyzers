@@ -53,7 +53,7 @@ describe('the shared LLM proxy refuses sweep setup for a non-paying caller', () 
   it('leaves the analyzer path alone — a free score still works', () => {
     // The analyzer sends no purpose, so it never enters that branch, and its own
     // field-level redaction is untouched.
-    expect(src).toContain('if (!ent.paid && ent.determined) text = redactFixFields(text);');
+    expect(src).toContain('if (!ent.paid && ent.determined) text = markGated(redactFixFields(text));');
   });
 });
 

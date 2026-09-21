@@ -19,7 +19,7 @@ import { GoogleGenAI } from '@google/genai';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import { isPaidRequest } from './_lib/entitlement.js';
-import { redactFixFields } from '../src/lib/fixGating.js';
+import { redactFixFields, markGated } from '../src/lib/fixGating.js';
 
 // Gemini flash models in priority order (best quality first, stable fallbacks).
 const GEMINI_MODELS = [
@@ -202,7 +202,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // a control. Paid callers (verified Supabase JWT, same as run-sweep) get the
     // full object. Fail-open when entitlement is indeterminate so a paying
     // customer is never stripped during a transient Supabase outage.
-    if (!ent.paid && ent.determined) text = redactFixFields(text);
+    // markGated AFTER redaction, and unconditionally for a non-entitled caller:
+    // the client reads this marker to skip the LOCAL schema generator, which runs
+    // in the browser and would otherwise rebuild the paste-ready JSON-LD we just
+    // stripped. "Something was removed" is the wrong condition for that; "this
+    // caller is not entitled" is the right one.
+    if (!ent.paid && ent.determined) text = markGated(redactFixFields(text));
 
     return res.status(200).json({ text, provider });
   } catch (err: any) {

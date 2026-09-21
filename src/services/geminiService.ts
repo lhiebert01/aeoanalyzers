@@ -998,7 +998,17 @@ export function applyAccuracyGuards(
     const domain = (() => {
       try { return new URL(pageUrl || '').hostname.replace(/^www\./, ''); } catch { return ''; }
     })();
-    if (domain) {
+    // WO-AEO-TIER-LEAK-008. This generator runs in the BROWSER, so the server's
+    // paywall cannot reach it: it was rebuilding schemaSnippet / verifiedSchema /
+    // comprehensiveSchema locally, moments after `api/llm-generate` stripped them,
+    // and the rebuilt block was then written into the user's stored history. A QA
+    // run on 2026-09-21 read it back out of `analysis_history`.
+    //
+    // `gated` is the SERVER's marker for "this caller is not entitled" (set by
+    // markGated on every non-entitled response), so the client is obeying a server
+    // fact rather than deciding for itself what the user has paid for.
+    const gatedResponse = (result as unknown as Record<string, unknown>).gated === true;
+    if (domain && !gatedResponse) {
       const gen = generateSchema({
         domain,
         brand: truth.brandName || undefined,
@@ -1019,6 +1029,15 @@ export function applyAccuracyGuards(
         result.comprehensiveSchema = undefined;
         result.schemaSnippet = undefined;
       }
+    } else if (gatedResponse) {
+      // Belt and braces: the server already withheld these, but the model can put
+      // markup in a field the schema did not name, and nothing free renders them.
+      result.generatedSchema = undefined;
+      result.generatedSchemaRefusedBecause = undefined;
+      result.schemaFindings = undefined;
+      result.verifiedSchema = undefined;
+      result.comprehensiveSchema = undefined;
+      result.schemaSnippet = undefined;
     }
 
     // §2.7 — the first-person blank. A page asserting a Person with no third-person

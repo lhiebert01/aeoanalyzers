@@ -135,3 +135,24 @@ export function redactFixFields(text: string): string {
     return text; // unparseable (rare — Gemini enforces JSON schema); leave as-is
   }
 }
+
+/** Stamp `gated: true` on a response that was withheld from a non-entitled caller.
+ *
+ *  WHY SEPARATE FROM `redactFixFields`: that function stamps the marker only when
+ *  it actually deleted something, which is the honest signal for "content was
+ *  removed". But the CLIENT needs a different fact — "this caller is not entitled"
+ *  — because `applyAccuracyGuards` regenerates paste-ready JSON-LD locally, in the
+ *  browser, where no server gate can reach it. Tying that to "something happened to
+ *  be stripped" would leave a hole on any response the model returned bare. The
+ *  route applies this to every non-entitled response, stripped or not. */
+export function markGated(text: string): string {
+  try {
+    const obj = JSON.parse(text);
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return text;
+    if ((obj as Record<string, unknown>).gated === true) return text;
+    (obj as Record<string, unknown>).gated = true;
+    return JSON.stringify(obj);
+  } catch {
+    return text;
+  }
+}
