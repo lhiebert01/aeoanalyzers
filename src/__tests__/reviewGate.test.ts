@@ -186,3 +186,42 @@ describe('blog hub cards match the pages they link to', () => {
     }
   });
 });
+
+/** Schema drift. A page can be retitled while its Article headline and description keep
+ *  the old words — and schema is what an engine reads, so the stale copy is the copy that
+ *  travels. /best-aeo-tools shipped a day with a headline in its JSON-LD that no longer
+ *  existed on the page. */
+describe('Article schema matches the page it describes', () => {
+  const SLUGS = ['what-should-an-aeo-tool-do','aeo-buyers-standard','best-aeo-tools','aeo-buyers-guide'];
+  /** Normalise BOTH the entity and the literal character — schema lands as JSON with a
+   *  real curly apostrophe while the HTML carries &rsquo;, and they must compare equal. */
+  const text = (s: string) => s.replace(/<[^>]+>/g, '')
+    .replace(/&rsquo;|&#8217;|[\u2018\u2019]/g, "'")
+    .replace(/&mdash;|[\u2013\u2014]/g, '-')
+    .replace(/&ldquo;|&rdquo;|[\u201C\u201D]/g, '"')
+    .replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+
+  it('headline in JSON-LD equals the H1 on the page', () => {
+    for (const slug of SLUGS) {
+      const html = readFileSync(resolve(ROOT, `public/${slug}/index.html`), 'utf8');
+      const h1 = text(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)![1]);
+      const art = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)![1]);
+      // The schema headline may be the longer SEO title and ADD a subtitle the H1 omits.
+      // It may not CONTRADICT one. Neither containing the other is the drift we are after.
+      const a = text(art.headline), b = h1;
+      expect(a.includes(b) || b.includes(a),
+        `${slug}: schema headline "${a}" contradicts page H1 "${b}"`).toBe(true);
+    }
+  });
+
+  it('description in JSON-LD equals the meta description', () => {
+    for (const slug of SLUGS) {
+      const html = readFileSync(resolve(ROOT, `public/${slug}/index.html`), 'utf8');
+      const meta = text(html.match(/<meta name="description" content="([^"]*)"/)![1]);
+      const art = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)![1]);
+      const a = text(art.description), b = meta;
+      expect(a.includes(b) || b.includes(a),
+        `${slug}: schema description "${a.slice(0, 60)}..." contradicts meta "${b.slice(0, 60)}..."`).toBe(true);
+    }
+  });
+});
