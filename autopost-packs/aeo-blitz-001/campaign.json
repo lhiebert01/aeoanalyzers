@@ -1,0 +1,425 @@
+{
+ "campaign_id": "aeo-blitz-001",
+ "name": "AEO buyer series — category claim",
+ "objective": "Own the purchasing-criteria conversation for AEO software. Be the page cited when a buyer asks how to evaluate this category.",
+ "lane": "BLITZ",
+ "passes": 6,
+ "posts_per_day": 1,
+ "days": "Mon-Fri",
+ "image_base_url": "https://aeoanalyzers.com/",
+ "image_local_dir": "autopost-packs/aeo-blitz-001/images/",
+ "image_note": "Prefer the URL. Two of these are queued for replacement and a URL pull picks the corrected file up without a second commit.",
+ "hard_constraints": [
+  "Every post carries its URL in the BODY. The autoposter has no comment API, so there is no other placement. Write copy that carries a link naturally; never defer it with 'more below' or a trailing hook.",
+  "No cost or expense figure, ever. Prices belong on the pricing page; what anything costs us belongs nowhere a customer reads.",
+  "No invented numbers. Use ONLY the figures in verified_facts below. Not even as a labelled example.",
+  "Never claim other tools 'only give you a score' or that 'no other AEO tool measures whether AI is telling the truth about you'. Both retired as indefensible.",
+  "Never name an individual in connection with the entity-misattribution finding.",
+  "Never publish a prospect's measured numbers. Those are outreach material.",
+  "Disclose that we make one of these tools whenever a post touches the comparison."
+ ],
+ "verified_facts": {
+  "category_win_zero": "On unbranded category questions in our September 2026 measurement, engines recommended us in 0 of 200 recorded answers.",
+  "branded_retrievability": "Branded retrievability 100% across four engines, N=23, in the 21 September 2026 sweep.",
+  "llms_txt": "llms.txt went unrequested on 97% of the sites that have one.",
+  "schema_read": "Six of seven AI platforms could not read the page's schema in a controlled test.",
+  "extractor_window": "An AI sees roughly the first 200 characters after the h1; the meta description is ignored.",
+  "roundup_mechanism": "Every category answer in our 21 September sweep was assembled from 'best tools' roundup pages. Not one came from a vendor's own product page.",
+  "ahrefs": "Ahrefs found brand mentions correlated with AI mentions at rho 0.664, against 0.218 for backlinks.",
+  "princeton": "The Princeton GEO study (arXiv:2311.09735) associated adding statistics with roughly a 41% citation-visibility lift.",
+  "engines": "Four engines with web search on: ChatGPT, Claude, Perplexity, Gemini."
+ },
+ "stories": [
+  {
+   "slug": "buyers-standard",
+   "order": 1,
+   "url": "https://aeoanalyzers.com/aeo-buyers-standard",
+   "image": "buyers-standard-hero.jpg",
+   "positioning": "The asset, not the ad. This is the piece most likely to be forwarded, cited and taken into a meeting. Authority comes from publishing a standard that works against us, not from claiming one.",
+   "angles": [
+    {
+     "pass": 1,
+     "name": "The standard itself",
+     "hook": "We published the standard we think buyers should use to judge AEO software - including us.",
+     "use": [
+      "Seven requirements: observe, diagnose, remediate, verify, receipts, scale, economics",
+      "Thirteen questions for a vendor call",
+      "Names no vendor, ranks nothing"
+     ]
+    },
+    {
+     "pass": 2,
+     "name": "Receipts",
+     "hook": "AEO metrics should have receipts.",
+     "use": [
+      "If a dashboard says 42%, you should be able to ask 42% of what",
+      "Which prompts, which engines, which dates, how many runs",
+      "A number you cannot reproduce is a number you cannot dispute"
+     ]
+    },
+    {
+     "pass": 3,
+     "name": "The thirteen questions",
+     "hook": "Thirteen questions to put to any AEO vendor before you sign.",
+     "use": [
+      "Each answerable in a sentence",
+      "A vendor who cannot answer one is telling you something",
+      "Question 13: if the score changes tomorrow, can you show me why?"
+     ]
+    },
+    {
+     "pass": 4,
+     "name": "Where we score worst",
+     "hook": "We scored ourselves against our own standard and published where we come off worst.",
+     "use": [
+      "Scale is our weakest requirement",
+      "Narrower engine coverage, no multi-brand or SSO tooling",
+      "A portfolio operator should look at the enterprise platforms instead"
+     ]
+    },
+    {
+     "pass": 5,
+     "name": "Use it in procurement",
+     "hook": "Take this into your next vendor call.",
+     "use": [
+      "Written to be answerable in a sentence each",
+      "Use it freely, attribution welcome and not required",
+      "A standard only its author may apply is marketing"
+     ]
+    },
+    {
+     "pass": 6,
+     "name": "Apply it to us",
+     "hook": "Apply this standard to us as readily as to anyone else. That is the point of publishing it.",
+     "use": [
+      "It names no vendor and ranks nothing",
+      "We score ourselves against all seven in full",
+      "If it only works when it flatters the author, it is not a standard"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "primer",
+   "order": 2,
+   "url": "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you",
+   "image": "primer-og.jpg",
+   "alt_images": [
+    "primer-hero.jpg",
+    "primer-fig2.jpg",
+    "primer-fig3.jpg"
+   ],
+   "positioning": "The widest-audience piece and the least commercial. Pure measurement, free self-checks, and two of our own failures. Use figures from verified_facts only.",
+   "angles": [
+    {
+     "pass": 1,
+     "name": "You did the work and nothing changed",
+     "hook": "You did the work the guides told you to do. Nothing changed.",
+     "use": [
+      "llms_txt",
+      "schema_read",
+      "extractor_window"
+     ]
+    },
+    {
+     "pass": 2,
+     "name": "The 200-character window",
+     "hook": "An AI sees about the first 200 characters after your h1. Your meta description is ignored.",
+     "use": [
+      "extractor_window",
+      "Cheapest fix in the field and almost nobody does it"
+     ]
+    },
+    {
+     "pass": 3,
+     "name": "llms.txt",
+     "hook": "97% of the sites that publish an llms.txt never have it requested.",
+     "use": [
+      "llms_txt",
+      "Keep it if you like, but it is not a plan"
+     ]
+    },
+    {
+     "pass": 4,
+     "name": "Different indexes",
+     "hook": "The assistants read different indexes. Being in one does not put you in another.",
+     "use": [
+      "engines",
+      "Claude runs on Brave; ChatGPT has its own index"
+     ]
+    },
+    {
+     "pass": 5,
+     "name": "Schema is not how you get quoted",
+     "hook": "Six of seven AI platforms could not read the page's schema at all.",
+     "use": [
+      "schema_read",
+      "Anything a model must know has to exist in visible body text"
+     ]
+    },
+    {
+     "pass": 6,
+     "name": "Our own failures",
+     "hook": "Two of the failures in this primer are ours.",
+     "use": [
+      "Includes the free self-checks, no tool required",
+      "A primer that only lists other people's mistakes is not worth reading"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "what-a-tool-should-do",
+   "order": 3,
+   "url": "https://aeoanalyzers.com/what-should-an-aeo-tool-do",
+   "image": "what-a-tool-should-do-hero.jpg",
+   "positioning": "Defines the vocabulary the rest of the series uses. Teaching, not selling.",
+   "angles": [
+    {
+     "pass": 1,
+     "name": "Six outcomes",
+     "hook": "'AI visibility' is at least six different outcomes, and the fixes have almost nothing in common.",
+     "use": [
+      "Knows you exist / mentions / links / cites / describes accurately / recommends",
+      "A blended score hides which one is broken"
+     ]
+    },
+    {
+     "pass": 2,
+     "name": "Four kinds of software",
+     "hook": "Monitoring asks what happened. Diagnosis asks why. Remediation asks what to change. Verification asks whether it worked.",
+     "use": [
+      "Work out which of the four you are paying for",
+      "Most products do more than one; almost none do all four equally well"
+     ]
+    },
+    {
+     "pass": 3,
+     "name": "Mention is not citation",
+     "hook": "A mention is not a citation. A citation is not a recommendation.",
+     "use": [
+      "Being named in prose and being used as a source are different events",
+      "An engine can cite your page while recommending somebody else"
+     ]
+    },
+    {
+     "pass": 4,
+     "name": "Findable but never chosen",
+     "hook": "A business can be perfectly findable by name and never recommended to anyone.",
+     "use": [
+      "branded_retrievability",
+      "category_win_zero",
+      "Different problem, different fix"
+     ]
+    },
+    {
+     "pass": 5,
+     "name": "One run is not a measurement",
+     "hook": "Ask the same engine the same question three times and the answer changes.",
+     "use": [
+      "Generative answers are probabilistic",
+      "A percentage without its question set, repetition count and date is not checkable"
+     ]
+    },
+    {
+     "pass": 6,
+     "name": "Search vs memory",
+     "hook": "An answer from a live web search and one recalled from training are different measurements.",
+     "use": [
+      "Blending them moves a score invisibly",
+      "We report them separately"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "best-aeo-tools",
+   "order": 4,
+   "url": "https://aeoanalyzers.com/best-aeo-tools",
+   "image": "best-aeo-tools-hero.jpg",
+   "positioning": "The commercial page. Credibility comes from naming no winner and saying where we are the weaker fit. ALWAYS disclose that we make one of these tools.",
+   "angles": [
+    {
+     "pass": 1,
+     "name": "No winner",
+     "hook": "We wrote the comparison of our own category, and we do not name a winner.",
+     "use": [
+      "Profound, Peec AI, Otterly AI, Scrunch AI, AthenaHQ, Rankscale, SE Ranking and us",
+      "Compared on seven purchasing requirements rather than feature counts"
+     ]
+    },
+    {
+     "pass": 2,
+     "name": "Dated and sourced",
+     "hook": "Every competitor fact on that page carries the date it was verified and a link to that vendor's own page.",
+     "use": [
+      "Nothing from another comparison site",
+      "Nothing from memory",
+      "Nothing from an AI's summary of one"
+     ]
+    },
+    {
+     "pass": 3,
+     "name": "Where others are better",
+     "hook": "Need breadth across many engines and regions? That is not us.",
+     "use": [
+      "Rankscale for breadth, SE Ranking for SEO plus GEO in one suite, Scrunch for agent infrastructure",
+      "We say so on the page"
+     ]
+    },
+    {
+     "pass": 4,
+     "name": "Interested testimony",
+     "hook": "We make one of the tools in this comparison, and the page says so in its first paragraph.",
+     "use": [
+      "Treat it as interested testimony and check it",
+      "Every claim is dated and sourced so that you can"
+     ]
+    },
+    {
+     "pass": 5,
+     "name": "The mechanism",
+     "hook": "Every category answer in our September sweep was assembled from 'best tools' roundup pages.",
+     "use": [
+      "roundup_mechanism",
+      "Not one came from a vendor's own product page"
+     ]
+    },
+    {
+     "pass": 6,
+     "name": "Operating model, not features",
+     "hook": "Do not choose AEO software by counting features. Choose it by the decisions it can help you make.",
+     "use": [
+      "Which stage is broken for you decides the shortlist",
+      "Observe, diagnose, fix, prove, scale"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "buyers-guide",
+   "order": 5,
+   "url": "https://aeoanalyzers.com/aeo-buyers-guide",
+   "image": "buyers-guide-hero.jpg",
+   "positioning": "The catch-all for anyone who missed the others. Low commitment, high routing value.",
+   "angles": [
+    {
+     "pass": 1,
+     "name": "Six minutes",
+     "hook": "Six minutes, three short reads, and you will know how to buy AEO software.",
+     "use": [
+      "What a tool should do / what to require / how to compare",
+      "Each links to the full guide behind it"
+     ]
+    },
+    {
+     "pass": 2,
+     "name": "Start here",
+     "hook": "New to this category? Start here rather than with a vendor demo.",
+     "use": [
+      "Two minutes each",
+      "Go as deep as you need and stop when you have what you came for"
+     ]
+    },
+    {
+     "pass": 3,
+     "name": "Vendor-written, and says so",
+     "hook": "Written by a vendor in the category, which the page says at the top.",
+     "use": [
+      "The standard inside it works against us as readily as anyone else",
+      "That is the point of publishing it"
+     ]
+    },
+    {
+     "pass": 4,
+     "name": "For the person who has to justify it",
+     "hook": "If you have to defend this purchase to someone else, start here.",
+     "use": [
+      "Requirements, not features",
+      "Thirteen questions that make the decision defensible"
+     ]
+    },
+    {
+     "pass": 5,
+     "name": "The three questions",
+     "hook": "Three questions decide an AEO purchase. Six minutes to understand all three.",
+     "use": [
+      "What should a tool do / what to require / how to compare"
+     ]
+    },
+    {
+     "pass": 6,
+     "name": "The fast way in",
+     "hook": "The whole series in six minutes.",
+     "use": [
+      "Three two-minute reads",
+      "Each one links to the full guide behind it"
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "how-it-works",
+   "order": 6,
+   "url": "https://aeoanalyzers.com/blog/how-it-works",
+   "image": "how-it-works-og.png",
+   "positioning": "The only post that is about us. Last in the rotation for that reason. Mechanics and evidence, never a pitch.",
+   "angles": [
+    {
+     "pass": 1,
+     "name": "The pipeline, drawn",
+     "hook": "The whole pipeline, drawn. Six diagrams, no algorithms.",
+     "use": [
+      "engines",
+      "Search-grounded answers kept separate from memory",
+      "Three layers scored separately"
+     ]
+    },
+    {
+     "pass": 2,
+     "name": "Three layers",
+     "hook": "We score three things separately rather than blending them into one number.",
+     "use": [
+      "Found by name / described accurately / recommended to a buyer who never said your name",
+      "Each has its own fix path"
+     ]
+    },
+    {
+     "pass": 3,
+     "name": "Stored transcripts",
+     "hook": "Open any number, read the answer behind it, and run the question yourself.",
+     "use": [
+      "A number you cannot reproduce is a number you cannot dispute"
+     ]
+    },
+    {
+     "pass": 4,
+     "name": "Errored runs excluded",
+     "hook": "A rate-limited engine call is not a zero, and we do not score it as one.",
+     "use": [
+      "Errored runs excluded and flagged",
+      "Model-prior answers reported separately"
+     ]
+    },
+    {
+     "pass": 5,
+     "name": "N and confidence",
+     "hook": "Every number ships with its sample size printed next to it.",
+     "use": [
+      "Engines are not deterministic",
+      "Each question is asked more than once"
+     ]
+    },
+    {
+     "pass": 6,
+     "name": "Our own zero",
+     "hook": "We run this on ourselves monthly and publish the number, including when it is zero.",
+     "use": [
+      "category_win_zero",
+      "branded_retrievability"
+     ]
+    }
+   ]
+  }
+ ]
+}

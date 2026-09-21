@@ -28,3 +28,6 @@ exec-out/
 
 # Outreach copy references the private target slate — repo is public.
 private/outreach/
+
+# Autopost pack zips — rebuilt from autopost-packs/ by scripts, not source of record
+autopost-packs/*.zip

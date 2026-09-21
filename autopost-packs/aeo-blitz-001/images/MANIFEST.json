@@ -1,0 +1,98 @@
+{
+ "buyers-standard": {
+  "hero": {
+   "file": "buyers-standard-hero.jpg",
+   "url": "https://aeoanalyzers.com/img/buyer-series/aeo-buyers-standard-hero-1600x900.jpg",
+   "bytes": 325655,
+   "sha256": "5b7ac126c58b5275"
+  },
+  "og": {
+   "file": "buyers-standard-og.jpg",
+   "url": "https://aeoanalyzers.com/img/buyer-series/aeo-buyers-standard-og-1200x630.jpg",
+   "bytes": 232173,
+   "sha256": "b7d5bf7d88c6f073"
+  }
+ },
+ "primer": {
+  "hero": {
+   "file": "primer-hero.jpg",
+   "url": "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you/img/primer-hero-three-gates-1600x800.jpg",
+   "bytes": 208131,
+   "sha256": "89d6b3360f61331f"
+  },
+  "og": {
+   "file": "primer-og.jpg",
+   "url": "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you/img/primer-og-1200x630.jpg",
+   "bytes": 147111,
+   "sha256": "70430052321020d4"
+  },
+  "fig2": {
+   "file": "primer-fig2.jpg",
+   "url": "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you/img/primer-fig2-four-indexes-1600x840.jpg",
+   "bytes": 270212,
+   "sha256": "45e333e28d1fa810"
+  },
+  "fig3": {
+   "file": "primer-fig3.jpg",
+   "url": "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you/img/primer-fig3-what-the-model-sees-1600x840.jpg",
+   "bytes": 274796,
+   "sha256": "f7bc365963234cf8"
+  }
+ },
+ "what-a-tool-should-do": {
+  "hero": {
+   "file": "what-a-tool-should-do-hero.jpg",
+   "url": "https://aeoanalyzers.com/img/buyer-series/what-should-an-aeo-tool-do-hero-1600x900.jpg",
+   "bytes": 362909,
+   "sha256": "03c82a48ad11eae2"
+  },
+  "og": {
+   "file": "what-a-tool-should-do-og.jpg",
+   "url": "https://aeoanalyzers.com/img/buyer-series/what-should-an-aeo-tool-do-og-1200x630.jpg",
+   "bytes": 210415,
+   "sha256": "fd1470e49a0c82c8"
+  }
+ },
+ "best-aeo-tools": {
+  "hero": {
+   "file": "best-aeo-tools-hero.jpg",
+   "url": "https://aeoanalyzers.com/img/buyer-series/best-aeo-tools-hero-1600x900.jpg",
+   "bytes": 382186,
+   "sha256": "d983ef39c70099ab"
+  },
+  "og": {
+   "file": "best-aeo-tools-og.jpg",
+   "url": "https://aeoanalyzers.com/img/buyer-series/best-aeo-tools-og-1200x630.jpg",
+   "bytes": 213145,
+   "sha256": "8ade4925426abc95"
+  }
+ },
+ "buyers-guide": {
+  "hero": {
+   "file": "buyers-guide-hero.jpg",
+   "url": "https://aeoanalyzers.com/img/buyer-series/aeo-buyers-guide-hero-1600x900.jpg",
+   "bytes": 327360,
+   "sha256": "80c77d99e1b4b648"
+  },
+  "og": {
+   "file": "buyers-guide-og.jpg",
+   "url": "https://aeoanalyzers.com/img/buyer-series/aeo-buyers-guide-og-1200x630.jpg",
+   "bytes": 197670,
+   "sha256": "7df67309b91dc56c"
+  }
+ },
+ "how-it-works": {
+  "hero": {
+   "file": "how-it-works-hero.png",
+   "url": "https://aeoanalyzers.com/og-blog-how-it-works.png",
+   "bytes": 49901,
+   "sha256": "766a530ce437666c"
+  },
+  "og": {
+   "file": "how-it-works-og.png",
+   "url": "https://aeoanalyzers.com/og-blog-how-it-works.png",
+   "bytes": 49901,
+   "sha256": "766a530ce437666c"
+  }
+ }
+}
