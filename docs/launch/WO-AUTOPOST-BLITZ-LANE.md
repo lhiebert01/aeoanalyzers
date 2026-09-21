@@ -33,6 +33,44 @@ If it does not meet all three, it belongs in the normal grid.
 
 ---
 
+## Everything you need is in the pack
+
+`aeo-blitz-001-pack.zip`, delivered with this work order. Unzip it into the autopost repo
+or read it in place — nothing in it needs to be fetched from aeo-app1.
+
+```
+aeo-blitz-001/
+  campaign.json          the campaign: 6 stories x 6 passes = 36 scheduled posts,
+                         each with a hook, the points it must make, and its image
+  images/                14 files, one set per story, named by story slug
+  images/MANIFEST.json   filename, live URL, byte size and sha256 for each
+  README.md              how to run it, and why the order is that order
+```
+
+**Read `campaign.json` first.** It is the specification; this document is the rationale.
+Where the two disagree, the JSON wins &mdash; it is what the code consumes.
+
+Three fields in it decide whether this works:
+
+- **`verified_facts`** is the COMPLETE set of figures available to this campaign. If a
+  generated post wants a number that is not in there, it does not get a number. Not even
+  labelled as an example. This is the grounded-output rule expressed as data rather than
+  as an instruction someone has to remember at 08:30.
+- **`hard_constraints`** are not style preferences. Each one is there because it was
+  violated once and cost something.
+- **`angles[].use`** entries that match a key in `verified_facts` must be stated in that
+  fact's exact wording, not paraphrased into a stronger claim.
+
+**Images: prefer `url` over the local file.** Two are queued for replacement and a URL
+pull picks up the corrected version without another commit. `buyers-guide-hero.jpg` is a
+known mismatch &mdash; it carries the headline &ldquo;AEO software explained&rdquo; rather
+than &ldquo;The AEO Buyer&rsquo;s Guide&rdquo;. Use it and swap when the replacement lands.
+
+Pass-one copy is written out in full in `BLITZ-DISTI-PACK-aeo-buyer-series` &mdash; use it
+as the style exemplar for passes two to six rather than inventing a house voice.
+
+---
+
 ## The slot
 
 **Weekdays only, Monday to Friday. One post per lane-day.**
@@ -57,28 +95,25 @@ fall through to generated content, and it does not borrow from another lane's ba
 
 ## Campaign 001 — the AEO buyer series
 
-Six posts, cycled in this order. It is the blitz order and it is deliberate — the
-standard leads because it is the most linkable asset, and the product mechanics come last
-because that post is the only one about us.
+Six stories, cycled in the `order` field of `campaign.json`. That order is deliberate: the
+standard leads because it is the most linkable asset, the primer follows because it is the
+widest-audience and least commercial piece, and the product-mechanics post goes last
+because it is the only one that is about us.
 
-| # | URL | Image |
-|---|---|---|
-| 1 | `https://aeoanalyzers.com/aeo-buyers-standard` | `aeo-buyers-standard-hero-1600x900.jpg` |
-| 2 | `https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you` | `primer-og-1200x630.jpg` |
-| 3 | `https://aeoanalyzers.com/what-should-an-aeo-tool-do` | `what-should-an-aeo-tool-do-hero-1600x900.jpg` |
-| 4 | `https://aeoanalyzers.com/best-aeo-tools` | `best-aeo-tools-hero-1600x900.jpg` |
-| 5 | `https://aeoanalyzers.com/aeo-buyers-guide` | `aeo-buyers-guide-hero-1600x900.jpg` |
-| 6 | `https://aeoanalyzers.com/blog/how-it-works` | `og-blog-how-it-works.png` |
+| # | Story slug | URL | Image |
+|---|---|---|---|
+| 1 | `buyers-standard` | `/aeo-buyers-standard` | `buyers-standard-hero.jpg` |
+| 2 | `primer` | `/blog/why-ai-doesnt-mention-you` | `primer-og.jpg` (+3 alternates) |
+| 3 | `what-a-tool-should-do` | `/what-should-an-aeo-tool-do` | `what-a-tool-should-do-hero.jpg` |
+| 4 | `best-aeo-tools` | `/best-aeo-tools` | `best-aeo-tools-hero.jpg` |
+| 5 | `buyers-guide` | `/aeo-buyers-guide` | `buyers-guide-hero.jpg` |
+| 6 | `how-it-works` | `/blog/how-it-works` | `how-it-works-og.png` |
 
-Heroes live at `aeoanalyzers.com/img/buyer-series/` and the two older posts use their
-existing OG assets. **Pull them by URL rather than copying into `gbp-assets/`** so a
-corrected image propagates without a second commit — two of these are already queued for
-replacement.
+**Four to six passes** = 24 to 36 lane-days, roughly five to seven weeks of weekdays.
+Start at six; cut to four if engagement decays measurably rather than on a feeling.
 
-**Four to six passes** = 24 to 36 lane-days ≈ 5 to 7 weeks of weekdays. Start at six
-passes; cut to four if engagement decays measurably rather than on a feeling.
-
----
+The primer is the only story with three alternate images. Use a different one on later
+passes so a repeat reader sees a different card.
 
 ## Angle rotation — the part that decides whether this works
 
