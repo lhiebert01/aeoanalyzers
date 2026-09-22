@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { planSweep } from '../lib/sweepPlan';
 import { execFileSync } from 'node:child_process';
 
 /** Review gate for comparison content.
@@ -223,5 +224,30 @@ describe('Article schema matches the page it describes', () => {
       expect(a.includes(b) || b.includes(a),
         `${slug}: schema description "${a.slice(0, 60)}..." contradicts meta "${b.slice(0, 60)}..."`).toBe(true);
     }
+  });
+});
+
+/** WO-AEO-GUIDE-GAP-001 §5 C1 — the app was corrected under INTEGRITY-002 B1(b) and the
+ *  BLOG was not. "several times each" stayed served on three pages, in prose, in meta
+ *  descriptions and inside Article JSON-LD, which is the copy that travels to the engines.
+ *  It is not true at the panel size we sell: planSweep drops a 12-question panel to ONE
+ *  run per question per engine, because 12 x 4 x 3 overflows the non-admin query-run cap.
+ *  The product prints the per-cell N, so the honest phrasing is "one or more times each". */
+describe('published copy does not promise more runs than the product performs', () => {
+  const pages = ['public/blog/index.html', 'public/blog/how-it-works/index.html',
+                 'public/blog/why-ai-doesnt-mention-you/index.html'];
+
+  it('never says "several times each" anywhere it is served', () => {
+    for (const p of pages) {
+      expect(readFileSync(resolve(__dirname, '..', '..', p), 'utf8'),
+        `${p} promises more runs than a 12-question panel actually gets`)
+        .not.toContain('several times each');
+    }
+  });
+
+  it('planSweep really does drop a 12-question panel to one run — the reason for the copy', () => {
+    expect(planSweep(12, 4, { requestedReps: 3 }).reps).toBe(1);
+    // and fewer questions genuinely do buy more runs each, which is what the copy now says
+    expect(planSweep(5, 4, { requestedReps: 3 }).reps).toBeGreaterThan(1);
   });
 });

@@ -7,13 +7,13 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis | AEO Analyzers</title>
-<meta name="description" content="A behind-the-scenes look at the AEO Analyzers pipeline: how we read your site, ask four answer engines your buyers' questions several times each, separate search-grounded answers from memory, and score three layers — every number backed by a stored transcript.">
+<meta name="description" content="A behind-the-scenes look at the AEO Analyzers pipeline: how we read your site, ask four answer engines your buyers' questions one or more times each, separate search-grounded answers from memory, and score three layers — every number backed by a stored transcript.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://aeoanalyzers.com/blog/how-it-works">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AEO Analyzers">
 <meta property="og:title" content="How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis">
-<meta property="og:description" content="The pipeline, drawn: read your site, ask four engines your buyers' questions several times each, separate search-grounded from memory, score three layers — every number backed by a stored transcript.">
+<meta property="og:description" content="The pipeline, drawn: read your site, ask four engines your buyers' questions one or more times each, separate search-grounded from memory, score three layers — every number backed by a stored transcript.">
 <meta property="og:url" content="https://aeoanalyzers.com/blog/how-it-works">
 <meta property="og:image" content="https://aeoanalyzers.com/og-blog-how-it-works.png">
 <meta property="og:image:type" content="image/png">
@@ -22,7 +22,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis">
-<meta name="twitter:description" content="The pipeline, drawn. Read your site, ask four engines several times each, separate search-grounded from memory, score three layers — every number backed by a stored transcript.">
+<meta name="twitter:description" content="The pipeline, drawn. Read your site, ask four engines one or more times each, separate search-grounded from memory, score three layers — every number backed by a stored transcript.">
 <meta name="twitter:image" content="https://aeoanalyzers.com/og-blog-how-it-works.png">
 <meta name="theme-color" content="#08343B">
 <script type="application/ld+json">
@@ -30,7 +30,7 @@
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   "headline": "How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis",
-  "description": "A behind-the-scenes look at the AEO Analyzers pipeline: how we read your site, ask four answer engines your buyers' questions several times each, separate search-grounded answers from memory, and score three layers — every number backed by a stored transcript.",
+  "description": "A behind-the-scenes look at the AEO Analyzers pipeline: how we read your site, ask four answer engines your buyers' questions one or more times each, separate search-grounded answers from memory, and score three layers — every number backed by a stored transcript.",
   "datePublished": "2026-08-01",
   "dateModified": "2026-08-01",
   "author": { "@type": "Person", "name": "Lindsay Hiebert", "url": "https://aeoanalyzers.com" },
@@ -147,7 +147,7 @@ strong{color:var(--ink)}
       </figure>
 
       <h2>Stage 3 — the interrogation</h2>
-      <p>Every question goes to four answer engines — ChatGPT, Claude, Perplexity, and Gemini — with web search on, several times each. Why several? Because an AI answer changes from run to run: one answer is an anecdote; the pattern across runs is a measurement. And we separate answers the engine actually <em>searched the web</em> to produce from answers it gave <em>from memory</em> — they mean different things, so they are scored separately, never blended.</p>
+      <p>Every question goes to four answer engines — ChatGPT, Claude, Perplexity, and Gemini — with web search on, one or more times each &mdash; how many depends on how many questions you ask, and the per-cell N is printed on every number. Why repeat at all? Because an AI answer changes from run to run: one answer is an anecdote; the pattern across runs is a measurement. And we separate answers the engine actually <em>searched the web</em> to produce from answers it gave <em>from memory</em> — they mean different things, so they are scored separately, never blended.</p>
 
       <figure class="fig">
         <img src="/blog/how-it-works/visual-3-why-several-runs.png" width="2528" height="1686" loading="lazy"
