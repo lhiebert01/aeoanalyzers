@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-// @ts-expect-error — plain ESM script, imported for its pure helper
 import { KEY, HOST, urlsFromSitemap } from '../../scripts/indexnow-ping.mjs';
 
 const root = (p: string) => resolve(__dirname, '..', '..', p);
