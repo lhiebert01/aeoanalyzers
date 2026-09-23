@@ -90,3 +90,28 @@ describe('the ledger matches what the stored transcripts actually say', () => {
     expect(page).toContain('N=200');
   });
 });
+
+/** The crawler window. Part 1's corrections block retracts "thirty days to July 31" —
+ *  the telemetry did not exist before July 22, so the window was ten days and the crawl
+ *  RATE is about three times what we first published. Part 2's prose was corrected in
+ *  seven places; its stat tile was missed and still said "30 days", on the same page.
+ *  A retracted figure may appear only where a page is quoting its own retraction. */
+describe('the retracted crawler window does not survive anywhere as a live figure', () => {
+  const pages = ['public/blog/reading-isnt-citing/index.html',
+                 'public/blog/how-it-works/index.html'];
+
+  it('never states a thirty-day window on a page that is not retracting it', () => {
+    for (const p of pages) {
+      const src = readFileSync(root(p), 'utf8');
+      expect(src, `${p} still claims the retracted 30-day crawler window`)
+        .not.toMatch(/(30|thirty) days to July 31/i);
+    }
+  });
+
+  it('Part 1 keeps the phrase ONLY inside the corrections block', () => {
+    const src = readFileSync(root('public/blog/i-scored-zero/index.html'), 'utf8');
+    const corrections = src.slice(src.indexOf('id="corrections"'));
+    expect(src.match(/thirty days to July 31/g) || []).toHaveLength(1);
+    expect(corrections).toContain('thirty days to July 31');
+  });
+});

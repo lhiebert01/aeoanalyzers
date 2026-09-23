@@ -1,0 +1,248 @@
+# BLOG HEROES — image prompts
+
+Three published posts carry a working OG card and no body image at all: /blog/what-you-actually-get (872 words), /blog/reading-isnt-citing (1,218) and /blog/are-you-the-answer-ai-gives (1,291). Each is a wall of prose.
+
+EVERY PROMPT BELOW IS COMPLETE AND STANDALONE. Copy one block, paste it, generate.
+
+Sized 1672 x 941 to match the hero already shipped on /blog/i-scored-zero. Two constraints are specific to this set. Competitors are never named inside artwork, because a screenshotted card outlives the page that dated the claim. And the Meridian post is a WORKED SAMPLE, so its figures either carry the word SAMPLE in the image or do not appear — these prompts take the second option and render no numeral at all.
+
+---
+
+
+## Blog hero — What you actually get · 1672 x 941 landscape
+
+```text
+BRAND SYSTEM — AEO Analyzers. Follow exactly.
+
+PALETTE, exclusive. Background near-black #000603, with a subtle radial lift toward the
+centre no more than two stops lighter. Primary and dominant accent bright green #68E66D —
+the image must read as a green image at a glance. Supporting accents, used only where they
+carry meaning: amber #E8B23C for partial or tier-dependent states, clay #F2705C for absent
+or missing, neutral grey-teal #9DB2B7 for inert structure, grids and unlabelled shapes.
+All type pure white #FFFFFF, secondary type white at 70% opacity. NO BLUE AND NO TEAL
+ANYWHERE.
+
+TYPE. Headlines in a heavy geometric grotesque, tight tracking, sentence case. Never a
+serif. Labels and eyebrows in UPPERCASE with wide letter-spacing of about 0.18em, small,
+white.
+
+GRAPHIC LANGUAGE — use it, do not minimise it. Dimensional cards with soft shadow and a
+1px coloured edge. Outlined bars with partial fill and a visible numeric value. A circular
+score ring with a coloured arc and a large white numeral. Fragments of answer-transcript
+text set small and dim, suggesting the evidence behind a number. Thin connector lines.
+Crisp geometric grids. Detail and density are wanted; this is a reference graphic, not a
+minimal poster.
+
+DEPTH ALLOWED. Soft drop shadows, a gentle radial vignette, one plane sitting above
+another. NOT ALLOWED: neon glow, bevels, 3-D extrusion, lens flare, photography, stock
+imagery, gradients used as decoration.
+
+NEVER INCLUDE. Shields, padlocks, circuit boards, robot faces, brains, magnifying glasses,
+speedometers, podiums, trophies, stars, rating badges, medals, competitor logos, competitor
+names anywhere in the artwork, or any call-to-action button.
+
+REQUIRED FURNITURE. Eyebrow top-left in UPPERCASE letterspaced white. A thin green #68E66D
+hairline rule across the lower third. The words AEO ANALYZERS lower-left and
+AEOANALYZERS.COM lower-right, both UPPERCASE letterspaced white and small.
+
+TEXT DISCIPLINE. Every word rendered must be spelled exactly as written below. High
+contrast, readable at thumbnail size. Nothing decorative behind type.
+
+COMPOSITION — 1672 x 941 landscape
+
+Editorial infographic, edge to edge, built as a VERTICAL STACK of five deliverables — the
+thing a customer receives, not a process they follow.
+
+Right half: five full-width dimensional cards stacked with even gaps, each with a soft
+shadow and a 1px green #68E66D edge. Each card carries a large white numeral at the left
+(1, 2, 3, 4, 5), then an UPPERCASE letterspaced white label. Render all five cards at
+EQUAL weight, equal height and equal fill — this is a list of things delivered, not a
+ranking, not a maturity ladder and not a progress bar. Do not make later cards larger,
+brighter or more filled than earlier ones.
+
+Left half: the headline, and beneath it three or four lines of small dim transcript-style
+text suggesting the stored answers the plan is built from, with one short line highlighted
+in green to imply a passage being lifted as evidence.
+
+Eyebrow top-left: AEO ANALYZERS · WHAT YOU ACTUALLY GET
+
+NUMBERS. The only numerals in this image are the card numbers 1 to 5, which are labels.
+Do not render any percentage, score, count, price or rating anywhere, and do not invent a
+figure to fill a card.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · WHAT YOU ACTUALLY GET
+A sweep does not end at a score.
+CODE FIXES TO PASTE IN
+CORRECTIONS FOR WHAT AI GETS WRONG
+AN OFF-SITE PLAN FROM REAL CITATIONS
+A BATTLE-MAP OF THE QUESTIONS
+PROOF THE FIXES WORKED
+Every number backed by a stored transcript.
+AEO ANALYZERS
+AEOANALYZERS.COM
+```
+
+
+## Blog hero — Reading isn't citing · 1672 x 941 landscape
+
+```text
+BRAND SYSTEM — AEO Analyzers. Follow exactly.
+
+PALETTE, exclusive. Background near-black #000603, with a subtle radial lift toward the
+centre no more than two stops lighter. Primary and dominant accent bright green #68E66D —
+the image must read as a green image at a glance. Supporting accents, used only where they
+carry meaning: amber #E8B23C for partial or tier-dependent states, clay #F2705C for absent
+or missing, neutral grey-teal #9DB2B7 for inert structure, grids and unlabelled shapes.
+All type pure white #FFFFFF, secondary type white at 70% opacity. NO BLUE AND NO TEAL
+ANYWHERE.
+
+TYPE. Headlines in a heavy geometric grotesque, tight tracking, sentence case. Never a
+serif. Labels and eyebrows in UPPERCASE with wide letter-spacing of about 0.18em, small,
+white.
+
+GRAPHIC LANGUAGE — use it, do not minimise it. Dimensional cards with soft shadow and a
+1px coloured edge. Outlined bars with partial fill and a visible numeric value. A circular
+score ring with a coloured arc and a large white numeral. Fragments of answer-transcript
+text set small and dim, suggesting the evidence behind a number. Thin connector lines.
+Crisp geometric grids. Detail and density are wanted; this is a reference graphic, not a
+minimal poster.
+
+DEPTH ALLOWED. Soft drop shadows, a gentle radial vignette, one plane sitting above
+another. NOT ALLOWED: neon glow, bevels, 3-D extrusion, lens flare, photography, stock
+imagery, gradients used as decoration.
+
+NEVER INCLUDE. Shields, padlocks, circuit boards, robot faces, brains, magnifying glasses,
+speedometers, podiums, trophies, stars, rating badges, medals, competitor logos, competitor
+names anywhere in the artwork, or any call-to-action button.
+
+REQUIRED FURNITURE. Eyebrow top-left in UPPERCASE letterspaced white. A thin green #68E66D
+hairline rule across the lower third. The words AEO ANALYZERS lower-left and
+AEOANALYZERS.COM lower-right, both UPPERCASE letterspaced white and small.
+
+TEXT DISCIPLINE. Every word rendered must be spelled exactly as written below. High
+contrast, readable at thumbnail size. Nothing decorative behind type.
+
+COMPOSITION — 1672 x 941 landscape
+
+Editorial infographic, edge to edge, built as a CONTRAST between two unequal quantities.
+
+Left two-thirds: a dense field of many small neutral grey-teal #9DB2B7 page glyphs — plain
+rectangles with two or three lines of dim rule work, no icons — arranged in a loose grid to
+read as "everything was read". Above the field, one thin green connector leaves the mass
+and travels right.
+
+Right third: a single dimensional card, raised on its own plane with a soft shadow and a
+1px clay #F2705C edge, standing empty — outlined, unfilled — to read as "and none of it
+was cited". The connector arrives at it and stops short, not touching.
+
+The visual argument is the ratio: a crowd of grey on the left, one empty outline on the
+right. Do not fill the right-hand card.
+
+Eyebrow top-left: AEO ANALYZERS · HONEST-ZERO, PART 2
+
+NUMBERS. Render the numeral 265 once, large and white, over the grey field. Render no
+other numeral anywhere — no percentages, no counts, no axis values.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · HONEST-ZERO, PART 2
+265
+CRAWLER VISITS IN TEN DAYS
+CITED
+Reading is passive. Citing is active.
+Being read is an input. Being cited is an outcome.
+AEO ANALYZERS
+AEOANALYZERS.COM
+```
+
+
+## Blog hero — Is your brand the answer AI gives · 1672 x 941 landscape
+
+```text
+BRAND SYSTEM — AEO Analyzers. Follow exactly.
+
+PALETTE, exclusive. Background near-black #000603, with a subtle radial lift toward the
+centre no more than two stops lighter. Primary and dominant accent bright green #68E66D —
+the image must read as a green image at a glance. Supporting accents, used only where they
+carry meaning: amber #E8B23C for partial or tier-dependent states, clay #F2705C for absent
+or missing, neutral grey-teal #9DB2B7 for inert structure, grids and unlabelled shapes.
+All type pure white #FFFFFF, secondary type white at 70% opacity. NO BLUE AND NO TEAL
+ANYWHERE.
+
+TYPE. Headlines in a heavy geometric grotesque, tight tracking, sentence case. Never a
+serif. Labels and eyebrows in UPPERCASE with wide letter-spacing of about 0.18em, small,
+white.
+
+GRAPHIC LANGUAGE — use it, do not minimise it. Dimensional cards with soft shadow and a
+1px coloured edge. Outlined bars with partial fill and a visible numeric value. A circular
+score ring with a coloured arc and a large white numeral. Fragments of answer-transcript
+text set small and dim, suggesting the evidence behind a number. Thin connector lines.
+Crisp geometric grids. Detail and density are wanted; this is a reference graphic, not a
+minimal poster.
+
+DEPTH ALLOWED. Soft drop shadows, a gentle radial vignette, one plane sitting above
+another. NOT ALLOWED: neon glow, bevels, 3-D extrusion, lens flare, photography, stock
+imagery, gradients used as decoration.
+
+NEVER INCLUDE. Shields, padlocks, circuit boards, robot faces, brains, magnifying glasses,
+speedometers, podiums, trophies, stars, rating badges, medals, competitor logos, competitor
+names anywhere in the artwork, or any call-to-action button.
+
+REQUIRED FURNITURE. Eyebrow top-left in UPPERCASE letterspaced white. A thin green #68E66D
+hairline rule across the lower third. The words AEO ANALYZERS lower-left and
+AEOANALYZERS.COM lower-right, both UPPERCASE letterspaced white and small.
+
+TEXT DISCIPLINE. Every word rendered must be spelled exactly as written below. High
+contrast, readable at thumbnail size. Nothing decorative behind type.
+
+COMPOSITION — 1672 x 941 landscape
+
+Editorial infographic, edge to edge, built as ONE ANSWER with a shortlist inside it.
+
+Centre-right: a large dimensional answer panel, raised with a soft shadow and a 1px
+neutral #9DB2B7 edge, styled as an assistant's reply — a stack of dim white text lines.
+Inside it, three short source chips sit inline: two filled neutral grey-teal #9DB2B7 and
+UNLABELLED, and one outlined in clay #F2705C and empty. The empty outlined chip is the
+point: the buyer asked, the answer named somebody, and it was not you.
+
+Left: the headline, and beneath it one green #68E66D underline rule.
+
+The two filled chips must carry NO text of any kind. Do not invent competitor names, do
+not letter them A and B, do not add logos or initials. They are anonymous because naming
+a competitor inside a published image is a claim that cannot be dated or corrected once
+the card is screenshotted.
+
+Eyebrow top-left: AEO ANALYZERS · CATEGORY QUESTIONS
+
+NUMBERS. Render no numeral anywhere in this image. No percentages, no counts, no scores.
+The figures in this post describe a demonstration company, and a card outlives its caption.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · CATEGORY QUESTIONS
+Is your brand the answer AI gives?
+Or is a competitor?
+WHO GETS NAMED WHEN YOUR NAME IS NOT IN THE QUESTION
+AEO ANALYZERS
+AEOANALYZERS.COM
+```
+
+
+---
+
+## PRODUCTION NOTES
+
+Proof every rendered word. Generators mangle text. If a headline comes back with a typo,
+keep the illustration and set the type yourself — do not re-roll and hope.
+
+Export opaque RGB with no alpha channel. A PNG carrying transparency renders black-on-black
+in some feeds. Inspect the channel; do not judge by eye.
+
+Never upscale. Generate at or above final size and downscale only. JPEG quality 95 at 4:4:4
+chroma, or PNG-24 for flat vector work.
+
+Check every OG card at quarter size before publishing. If the sub-line is unreadable as a
+feed thumbnail, the card has failed however good it looks at full size.
+
+Do not tint any colour toward the background to soften it. Measured contrast on #000603:
+white 20.4:1, green #68E66D 12.8:1, amber #E8B23C 10.6:1, clay #F2705C 7.1:1, neutral
+#9DB2B7 9.2:1. Every one clears WCAG AAA and each is at its value for a reason.
