@@ -353,6 +353,88 @@ because it carries the caveat with it.
 ```
 
 
+## OG card — The Honest-Zero ledger (/evidence) · 1200 x 630 landscape
+
+```text
+BRAND SYSTEM — AEO Analyzers. Follow exactly.
+
+PALETTE, exclusive. Background near-black #000603, with a subtle radial lift toward the
+centre no more than two stops lighter. Primary and dominant accent bright green #68E66D —
+the image must read as a green image at a glance. Supporting accents, used only where they
+carry meaning: amber #E8B23C for partial or tier-dependent states, clay #F2705C for absent
+or missing, neutral grey-teal #9DB2B7 for inert structure, grids and unlabelled shapes.
+All type pure white #FFFFFF, secondary type white at 70% opacity. NO BLUE AND NO TEAL
+ANYWHERE.
+
+TYPE. Headlines in a heavy geometric grotesque, tight tracking, sentence case. Never a
+serif. Labels and eyebrows in UPPERCASE with wide letter-spacing of about 0.18em, small,
+white.
+
+GRAPHIC LANGUAGE — use it, do not minimise it. Dimensional cards with soft shadow and a
+1px coloured edge. Outlined bars with partial fill and a visible numeric value. A circular
+score ring with a coloured arc and a large white numeral. Fragments of answer-transcript
+text set small and dim, suggesting the evidence behind a number. Thin connector lines.
+Crisp geometric grids. Detail and density are wanted; this is a reference graphic, not a
+minimal poster.
+
+DEPTH ALLOWED. Soft drop shadows, a gentle radial vignette, one plane sitting above
+another. NOT ALLOWED: neon glow, bevels, 3-D extrusion, lens flare, photography, stock
+imagery, gradients used as decoration.
+
+NEVER INCLUDE. Shields, padlocks, circuit boards, robot faces, brains, magnifying glasses,
+speedometers, podiums, trophies, stars, rating badges, medals, competitor logos, competitor
+names anywhere in the artwork, or any call-to-action button.
+
+REQUIRED FURNITURE. Eyebrow top-left in UPPERCASE letterspaced white. A thin green #68E66D
+hairline rule across the lower third. The words AEO ANALYZERS lower-left and
+AEOANALYZERS.COM lower-right, both UPPERCASE letterspaced white and small.
+
+TEXT DISCIPLINE. Every word rendered must be spelled exactly as written below. High
+contrast, readable at thumbnail size. Nothing decorative behind type.
+
+COMPOSITION — 1200 x 630 landscape
+
+Social card for the running ledger page. This card is allowed to carry numbers, because the
+two it carries are published, recomputed from stored transcripts before every publish, and
+restated here in the same words the page uses. It carries exactly those two and nothing else.
+
+Left half: the eyebrow, then a two-line headline, then one sub-line in 70% white.
+
+Right half: two outlined horizontal bars stacked with a clear gap, each with a small
+UPPERCASE white label above it and a large white value at its right end.
+  Top bar: filled 80% of its length in green #68E66D, value 80%, label FOUND BY NAME,
+  and a tiny secondary line beneath in 70% white reading N=40.
+  Bottom bar: an EMPTY outline in clay #F2705C with no fill at all, value 0%, label
+  RECOMMENDED TO BUYERS, secondary line N=200.
+The empty bar is the point of the card. Do not add a sliver of fill to make it look better.
+
+NO TREND. Do not draw arrows, sparklines, month-over-month deltas, "up from" text, or any
+second set of bars. This is a snapshot of the latest month, not a chart of progress, and an
+arrow would promise a direction the next measurement may not deliver.
+
+NUMBERS. Exactly four appear: 80%, N=40, 0%, N=200. Render no other numeral — no dates,
+no month counts, no engine counts.
+
+SAFE AREA. Keep every word and both bars inside a margin of 72 pixels on all sides; feeds
+crop the edges of a 1200 x 630 card. Check the sub-line at quarter size; if it cannot be read
+as a thumbnail, enlarge it rather than shrinking the headline.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · THE HONEST-ZERO LEDGER
+Our own numbers,
+every month.
+Measured the same way each time. Published whatever it says.
+FOUND BY NAME
+80%
+N=40
+RECOMMENDED TO BUYERS
+0%
+N=200
+AEO ANALYZERS
+AEOANALYZERS.COM
+```
+
+
 ---
 
 ## PRODUCTION NOTES

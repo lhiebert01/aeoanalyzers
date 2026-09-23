@@ -481,6 +481,46 @@ Set the asterisk footnote line small, in neutral #9DB2B7, directly beneath the l
 It is not decoration and it must be legible: the image is allowed to carry that number only
 because it carries the caveat with it.
 """),
+("OG card — The Honest-Zero ledger (/evidence)", "1200 x 630 landscape", """
+Social card for the running ledger page. This card is allowed to carry numbers, because the
+two it carries are published, recomputed from stored transcripts before every publish, and
+restated here in the same words the page uses. It carries exactly those two and nothing else.
+
+Left half: the eyebrow, then a two-line headline, then one sub-line in 70% white.
+
+Right half: two outlined horizontal bars stacked with a clear gap, each with a small
+UPPERCASE white label above it and a large white value at its right end.
+  Top bar: filled 80% of its length in green #68E66D, value 80%, label FOUND BY NAME,
+  and a tiny secondary line beneath in 70% white reading N=40.
+  Bottom bar: an EMPTY outline in clay #F2705C with no fill at all, value 0%, label
+  RECOMMENDED TO BUYERS, secondary line N=200.
+The empty bar is the point of the card. Do not add a sliver of fill to make it look better.
+
+NO TREND. Do not draw arrows, sparklines, month-over-month deltas, "up from" text, or any
+second set of bars. This is a snapshot of the latest month, not a chart of progress, and an
+arrow would promise a direction the next measurement may not deliver.
+
+NUMBERS. Exactly four appear: 80%, N=40, 0%, N=200. Render no other numeral — no dates,
+no month counts, no engine counts.
+
+SAFE AREA. Keep every word and both bars inside a margin of 72 pixels on all sides; feeds
+crop the edges of a 1200 x 630 card. Check the sub-line at quarter size; if it cannot be read
+as a thumbnail, enlarge it rather than shrinking the headline.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · THE HONEST-ZERO LEDGER
+Our own numbers,
+every month.
+Measured the same way each time. Published whatever it says.
+FOUND BY NAME
+80%
+N=40
+RECOMMENDED TO BUYERS
+0%
+N=200
+AEO ANALYZERS
+AEOANALYZERS.COM
+"""),
 ]
 
 def write_md(key, items):
