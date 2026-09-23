@@ -89,7 +89,7 @@
   </url>
 <url>
 <loc>https://aeoanalyzers.com/best-aeo-tools</loc>
-<lastmod>2026-09-21</lastmod>
+<lastmod>2026-09-22</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.9</priority>
 </url>
@@ -101,7 +101,7 @@
 </url>
 <url>
 <loc>https://aeoanalyzers.com/aeo-buyers-standard</loc>
-<lastmod>2026-09-21</lastmod>
+<lastmod>2026-09-22</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.9</priority>
 </url>
@@ -111,4 +111,10 @@
 <changefreq>monthly</changefreq>
 <priority>0.8</priority>
 </url>
+  <url>
+    <loc>https://aeoanalyzers.com/evidence</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

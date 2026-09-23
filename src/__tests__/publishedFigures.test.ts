@@ -44,6 +44,10 @@ function categoryPct(file: string) {
 const AUG = 'aeoanalyzers-SERIES-ANCHOR-2026-08-01.json';
 const SEP = 'aeoanalyzers-2026-09-01.json';
 const page = readFileSync(root('public/blog/i-scored-zero/index.html'), 'utf8');
+/** The ledger table now lives on its own canonical page; Part 1 keeps the summary cards
+ *  and links to it. Both are generated from the same figures by scripts/build-evidence.py,
+ *  so both are checked. */
+const ledger = readFileSync(root('public/evidence/index.html'), 'utf8');
 
 describe('the ledger matches what the stored transcripts actually say', () => {
   it('recomputes September branded under the CORRECTED rule, not the stored flag', () => {
@@ -61,14 +65,36 @@ describe('the ledger matches what the stored transcripts actually say', () => {
     expect(categoryPct(SEP)).toEqual({ pct: 0, n: 200 });
   });
 
-  it('publishes the recomputed September figure, in the card AND in the table', () => {
+  it('publishes the recomputed September figure on BOTH surfaces', () => {
     const { pct } = brandedPct(SEP);
-    expect(page).toContain(`<div class="num">${pct}%</div>`);
-    expect(page).toContain(`<span class="fig up">${pct}%</span>`);
+    expect(page,   'Part 1 summary card').toContain(`<div class="num">${pct}%</div>`);
+    expect(ledger, '/evidence summary card').toContain(`<div class="num">${pct}%</div>`);
+    expect(ledger, '/evidence table row').toContain(`<span class="fig up">${pct}%</span>`);
   });
 
-  it('publishes the recomputed August figure in the table', () => {
-    expect(page).toContain(`<span class="fig flat">${brandedPct(AUG).pct}%</span>`);
+  it('publishes the recomputed August figure in the ledger table', () => {
+    expect(ledger).toContain(`<span class="fig flat">${brandedPct(AUG).pct}%</span>`);
+  });
+
+  /** One canonical page, many entry points. A surface that quotes a figure and offers no
+   *  way to the current one is how a stale number outlives its correction. */
+  it('every surface that quotes a figure links to the ledger', () => {
+    for (const p of ['public/blog/index.html', 'public/blog/i-scored-zero/index.html',
+                     'public/blog/reading-isnt-citing/index.html',
+                     'public/blog/how-it-works/index.html',
+                     'public/blog/what-you-actually-get/index.html',
+                     'public/best-aeo-tools/index.html',
+                     'public/aeo-buyers-standard/index.html']) {
+      expect(readFileSync(root(p), 'utf8'), `${p} does not link to /evidence`)
+        .toContain('href="/evidence"');
+    }
+  });
+
+  it('the ledger declares itself a Dataset with both measures and their N', () => {
+    expect(ledger).toContain('"@type": "Dataset"');
+    expect(ledger).toContain(`"value": ${brandedPct(SEP).pct}`);
+    expect(ledger).toContain(`N=${brandedPct(SEP).n}`);
+    expect(ledger).toContain(`N=${categoryPct(SEP).n}`);
   });
 
   it('states the month-over-month move as the arithmetic actually gives it', () => {
@@ -80,9 +106,10 @@ describe('the ledger matches what the stored transcripts actually say', () => {
   it('never states a branded figure the transcripts cannot produce', () => {
     // 82% was the pre-correction number. It may appear ONLY where the page is
     // explaining that it was corrected — never as a live figure in the ledger.
-    const ledger = page.slice(page.indexOf('id="the-ledger"'));
-    expect(ledger).not.toMatch(/<div class="num">82%<\/div>/);
-    expect(ledger).not.toMatch(/<span class="fig[^"]*">82%<\/span>/);
+    for (const src of [page, ledger]) {
+      expect(src).not.toMatch(/<div class="num">82%<\/div>/);
+      expect(src).not.toMatch(/<span class="fig[^"]*">82%<\/span>/);
+    }
   });
 
   it('prints N beside every published figure — a number without its N is uncheckable', () => {
