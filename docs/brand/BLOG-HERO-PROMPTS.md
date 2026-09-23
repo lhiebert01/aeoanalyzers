@@ -75,6 +75,13 @@ about evidence.
 
 Eyebrow top-left: AEO ANALYZERS · WHAT YOU ACTUALLY GET
 
+NO CHARTS. Do not put a bar chart, sparkline, trend line, rising curve, progress bar,
+gauge or any ascending sequence of shapes in any card — card 5 especially. "Proof the
+fixes worked" describes a re-measurement a customer has not run yet, so a rising chart
+there asserts a result that does not exist. Show it instead as a before-and-after pair of
+document shapes with a check mark. Icons may depict a THING (a document, a code window, a
+link, a node map); they may not depict a RESULT.
+
 NUMBERS. The only numerals in this image are the card numbers 1 to 5, which are labels.
 Do not render any percentage, score, count, price, rating, line number or date anywhere —
 including inside the transcript panel — and do not invent a figure to fill a card.
