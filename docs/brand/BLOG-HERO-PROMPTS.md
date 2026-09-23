@@ -236,6 +236,17 @@ point: the buyer asked, the answer named somebody, and it was not you.
 
 Left: the headline, and beneath it one green #68E66D underline rule.
 
+NO CHARTS AND NO STATUS DOTS. Do not add a bar chart, sparkline, trend line, progress bar,
+gauge, or any ascending sequence of shapes anywhere — including as background decoration. One
+draft put a rising bar chart in the corner; on this page it would assert a result for a
+demonstration company. Do not add green/amber/red status dots to side panels either; they read
+as verdicts.
+
+THE AVATAR IS A PLAIN CIRCLE. The assistant's avatar in the answer panel is a plain filled
+circle in green #68E66D with nothing inside it. Do not draw the OpenAI, Anthropic, Google,
+Gemini or Perplexity marks or anything resembling them — a draft rendered the OpenAI knot
+there. Flat panel, no perspective tilt, no light spill on a floor.
+
 The two filled chips must carry NO text of any kind. Do not invent competitor names, do
 not letter them A and B, do not add logos or initials. They are anonymous because naming
 a competitor inside a published image is a claim that cannot be dated or corrected once
