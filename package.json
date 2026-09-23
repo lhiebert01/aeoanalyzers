@@ -9,7 +9,9 @@
     "build:nopre": "vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "indexnow": "node scripts/indexnow-ping.mjs",
+    "indexnow:all": "node scripts/indexnow-ping.mjs --all"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.112.5",
