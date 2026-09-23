@@ -179,6 +179,28 @@ footer p{max-width:none}
   border:1.5px solid var(--teal-deep);font-weight:600;font-size:14.5px;text-decoration:none;padding:10px 18px;border-radius:11px}
 .followseries .fs-cta:hover{background:var(--teal-deep);color:#EAF4F5}
 .followseries .fs-cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+
+.ledger{overflow-x:auto;margin:18px 0 6px}
+.ledger table{border-collapse:collapse;width:100%;min-width:560px;background:var(--card);
+  box-shadow:var(--card-shadow);border-radius:10px;overflow:hidden}
+.ledger th{background:var(--panel);color:var(--muted);font-size:12px;letter-spacing:.09em;
+  text-transform:uppercase;text-align:left;padding:11px 14px;border-bottom:1px solid var(--hair)}
+.ledger td{padding:13px 14px;border-bottom:1px solid var(--hair);vertical-align:top;font-size:15px}
+.ledger tr:last-child td{border-bottom:0}
+.ledger .mo{font-weight:700;color:var(--ink);white-space:nowrap}
+.ledger .fig{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:17px}
+.ledger .fig.up{color:var(--good)} .ledger .fig.flat{color:var(--teal-deep)}
+.ledger .nn{display:block;font-weight:600;font-size:12px;color:var(--muted)}
+.ledger .when{color:var(--muted);white-space:nowrap;font-size:14px}
+.ledgernote{font-size:14.5px;color:var(--muted);margin:4px 0 0}
+.ledgernote .tag{display:inline-block;background:var(--teal-tint);color:var(--teal-deep);
+  font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  padding:2px 7px;border-radius:5px;margin-right:7px;vertical-align:1px}
+.lessons{margin:18px 0 0;padding:0;list-style:none}
+.lessons li{background:var(--card);box-shadow:var(--card-shadow);border-radius:10px;
+  padding:14px 16px;margin:0 0 10px}
+.lessons b{display:block;color:var(--ink);margin-bottom:3px}
+.lessons span{color:var(--muted);font-size:14.5px}
 </style>
 </head>
 <body>
@@ -231,6 +253,75 @@ footer p{max-width:none}
       <p>Here’s the commitment: I re-measure monthly, the same questions, the same way, and I will publish the number each time — <strong>whatever it is.</strong> If the fixes work, you’ll watch it move. If they don’t, you’ll watch me figure out why, in public. Every claim I ever make about this product will be backed by a transcript you can reproduce yourself.</p>
       <p>If you want to know what the engines say about your business — before a prospect finds out for you — the check is free and takes about ninety seconds: <a class="ilink" href="https://aeoanalyzers.com">aeoanalyzers.com</a>. Whatever your number is, at least you’ll know it.</p>
       <p><strong>Mine’s zero. For now.</strong></p>
+    </div>
+
+
+    <h2 class="posth2" id="the-ledger">The ledger &mdash; every month, whatever it says</h2>
+    <div class="postbody">
+      <p>This is the running record. One row a month: how often the engines find this site
+      when asked for it by name, how often they recommend it to someone who never said the
+      name, how many answers each figure came from, and what changed. It is updated whether
+      the news is good or not, which is the entire point of it.</p>
+    </div>
+
+    <div class="score" aria-label="September 2026 measurement: 240 stored answers across four answer engines, measured 2 September 2026">
+      <div class="tile good"><div class="lab">Found by name</div><div class="num">82%</div><div class="note">N=40 &middot; up from 55% in August</div></div>
+      <div class="tile gap"><div class="lab">Recommended to buyers</div><div class="num">0%</div><div class="note">N=200 &middot; unchanged since the first measurement</div></div>
+      <div class="tile"><div class="lab">Answers stored</div><div class="num">240</div><div class="note">four engines &middot; every one re-readable</div></div>
+    </div>
+
+    <div class="postbody">
+      <p style="margin:2px 0 18px;font-size:14px;color:var(--muted)"><strong style="color:var(--ink)">September 2026, measured 2 September.</strong> Found by name rose 27 points; recommended to buyers did not move at all. Those are two different problems, so they are never blended into one score. The word &ldquo;aeoanalyzers&rdquo; appears in none of the 200 category answers &mdash; absent, not ranked last.</p>
+      <div class="ledger">
+        <table>
+          <thead><tr>
+            <th scope="col">Month</th>
+            <th scope="col">Found by name</th>
+            <th scope="col">Recommended to buyers</th>
+            <th scope="col">Measured</th>
+            <th scope="col">What changed</th>
+          </tr></thead>
+          <tbody>
+        <tr>
+          <td class="mo">August 2026</td>
+          <td><span class="fig flat">55%</span><span class="nn">N=40</span></td>
+          <td><span class="fig flat">0%</span><span class="nn">N=200</span></td>
+          <td class="when">1 Aug</td>
+          <td><p class="ledgernote"> <span class="tag">restated</span>Series anchor. Two engines returned the site every time, two almost never. Published at the time as 100% under a looser rule that counted an answer describing us from our parent company&rsquo;s site rather than our own. Restated here so the column compares like with like.</p></td>
+        </tr>
+        <tr>
+          <td class="mo">September 2026</td>
+          <td><span class="fig up">82%</span><span class="nn">N=40</span></td>
+          <td><span class="fig flat">0%</span><span class="nn">N=200</span></td>
+          <td class="when">2 Sep</td>
+          <td><p class="ledgernote">Found by name far more often &mdash; ChatGPT went from 2 of 10 to 10 of 10. Still recommended to category buyers zero times: the word &ldquo;aeoanalyzers&rdquo; appears in none of the 200 answers. Absent, not ranked last. Meanwhile one engine now replies that it cannot find the domain at all and offers two similarly-named sites instead &mdash; the confusion the note at the foot of this post warns about, happening to a buyer who typed our name.</p></td>
+        </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="ledgernote">Same instrument every month: the same pinned twelve-question
+      panel, five runs of every question, across ChatGPT, Claude, Perplexity and Gemini with
+      web search on &mdash; 240 answers a month, each one stored. The month is the unit, not
+      the calendar day; the date each run was taken is in the table so an uneven gap is
+      visible rather than hidden. September&rsquo;s figure was measured on 2 September and
+      posted here on 23 September, while the same instrument was being run across four other
+      sites we operate.</p>
+
+      <h3 style="font-family:var(--serif);font-weight:600;font-size:19px;margin:30px 0 8px">What we have learned so far</h3>
+      <ul class="lessons">
+        <li><b>A number has to survive its own scorer.</b><span>Fixing how we score a &ldquo;search ran, site not found&rdquo; answer changed our own history. We would rather restate a published figure in public than keep a flattering one that no longer means what it did.</span></li>
+        <li><b>Being found and being recommended move independently.</b><span>Branded retrievability rose 27 points this month. Category recommendation did not move at all. They are different problems with different fixes, which is why we never blend them into one score.</span></li>
+        <li><b>The sources the engines draw on are consolidating.</b><span>Across the same 200 category questions, the set of distinct sites cited as sources fell from 296 in August to 215 in September. Fewer doors, and none of them ours yet.</span></li>
+      </ul>
+
+      <p style="margin-top:22px">Why any of this happens is spread across the rest of the
+      series: <a class="ilink" href="/blog/reading-isnt-citing">being read is not being
+      cited</a>, <a class="ilink" href="/blog/why-ai-doesnt-mention-you">why AI still
+      doesn&rsquo;t mention your business</a>, and <a class="ilink"
+      href="/blog/how-it-works">how these numbers are measured</a>, diagram by diagram.
+      The <a class="ilink" href="/blog/">full blog</a> has the rest. When a month produces
+      something genuinely new, it gets its own post and this row will link to it &mdash;
+      otherwise the comment above is the whole report.</p>
     </div>
 
     <p class="samplenote"><em>AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</em></p>
