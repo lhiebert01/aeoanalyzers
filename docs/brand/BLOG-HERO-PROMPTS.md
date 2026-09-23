@@ -227,6 +227,103 @@ AEOANALYZERS.COM
 ```
 
 
+## Blog hero — I scored zero (two-panel, corrected) · 1672 x 941 landscape
+
+```text
+BRAND SYSTEM — AEO Analyzers. Follow exactly.
+
+PALETTE, exclusive. Background near-black #000603, with a subtle radial lift toward the
+centre no more than two stops lighter. Primary and dominant accent bright green #68E66D —
+the image must read as a green image at a glance. Supporting accents, used only where they
+carry meaning: amber #E8B23C for partial or tier-dependent states, clay #F2705C for absent
+or missing, neutral grey-teal #9DB2B7 for inert structure, grids and unlabelled shapes.
+All type pure white #FFFFFF, secondary type white at 70% opacity. NO BLUE AND NO TEAL
+ANYWHERE.
+
+TYPE. Headlines in a heavy geometric grotesque, tight tracking, sentence case. Never a
+serif. Labels and eyebrows in UPPERCASE with wide letter-spacing of about 0.18em, small,
+white.
+
+GRAPHIC LANGUAGE — use it, do not minimise it. Dimensional cards with soft shadow and a
+1px coloured edge. Outlined bars with partial fill and a visible numeric value. A circular
+score ring with a coloured arc and a large white numeral. Fragments of answer-transcript
+text set small and dim, suggesting the evidence behind a number. Thin connector lines.
+Crisp geometric grids. Detail and density are wanted; this is a reference graphic, not a
+minimal poster.
+
+DEPTH ALLOWED. Soft drop shadows, a gentle radial vignette, one plane sitting above
+another. NOT ALLOWED: neon glow, bevels, 3-D extrusion, lens flare, photography, stock
+imagery, gradients used as decoration.
+
+NEVER INCLUDE. Shields, padlocks, circuit boards, robot faces, brains, magnifying glasses,
+speedometers, podiums, trophies, stars, rating badges, medals, competitor logos, competitor
+names anywhere in the artwork, or any call-to-action button.
+
+REQUIRED FURNITURE. Eyebrow top-left in UPPERCASE letterspaced white. A thin green #68E66D
+hairline rule across the lower third. The words AEO ANALYZERS lower-left and
+AEOANALYZERS.COM lower-right, both UPPERCASE letterspaced white and small.
+
+TEXT DISCIPLINE. Every word rendered must be spelled exactly as written below. High
+contrast, readable at thumbnail size. Nothing decorative behind type.
+
+COMPOSITION — 1672 x 941 landscape
+
+Editorial infographic, edge to edge, built as TWO PANELS SIDE BY SIDE showing the same four
+engines answering two different kinds of question. This replaces an earlier draft that used
+the engines' real logos and two invented bar charts; neither appears here.
+
+Lower half, two large dimensional panels of equal size, each raised on its own plane with a
+soft shadow. LEFT panel has a 1px green #68E66D edge. RIGHT panel has a 1px clay #F2705C
+edge. Inside each, a vertical list of four rows. Each row is the engine's NAME set in white
+sentence case — ChatGPT, Claude, Perplexity, Gemini — followed by a thin neutral #9DB2B7
+leader line and a status mark at the right. In the LEFT panel all four marks are green
+check marks. In the RIGHT panel all four marks are clay crosses. Same four names, same
+order, both sides.
+
+Above each panel, its own large numeral and label. Left: 98% in green, labelled BRANDED
+RETRIEVABILITY, with a small white asterisk immediately after the numeral. Right: 0% in
+clay, labelled CATEGORY CITATION WIN.
+
+Upper left: the eyebrow, the headline, and the sub-line.
+
+NO LOGOS. Do not draw the OpenAI, Anthropic, Google, Gemini or Perplexity marks, or any
+approximation of them. The engines appear as plain white text names only.
+
+NO CHARTS. Do not add bar charts, sparklines, trend lines, progress bars, gauges, arrows
+implying growth, or any ascending sequence of shapes. There is no time series behind this
+image and a chart would assert one. The four check marks and four crosses ARE the data.
+
+NUMBERS. Exactly two figures appear: 98% and 0%. Render no other numeral anywhere — no
+axis values, no counts, no sample sizes inside the artwork, no dates.
+
+NO NEON. Flat dimensional cards with soft shadows only. No glowing doorways, no light
+spill on a floor, no bevels, no 3-D extrusion, no lens flare, no reflections.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · HONEST-ZERO, PART 1
+I ran my own AI-visibility tool on my own site. It scored 0%.
+The engines had already read the site. They just did not cite it when buyer questions mattered.
+98%
+*
+BRANDED RETRIEVABILITY
+ASK BY NAME. THEY FIND YOU.
+0%
+CATEGORY CITATION WIN
+ASK WHAT BUYERS ASK. YOU ARE NOT THERE.
+ChatGPT
+Claude
+Perplexity
+Gemini
+*98% predates transcript retention and cannot be re-derived. See corrections.
+AEO ANALYZERS
+AEOANALYZERS.COM
+
+Set the asterisk footnote line small, in neutral #9DB2B7, directly beneath the left panel.
+It is not decoration and it must be legible: the image is allowed to carry that number only
+because it carries the caveat with it.
+```
+
+
 ---
 
 ## PRODUCTION NOTES

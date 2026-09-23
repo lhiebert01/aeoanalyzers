@@ -115,3 +115,57 @@ describe('the retracted crawler window does not survive anywhere as a live figur
     expect(corrections).toContain('thirty days to July 31');
   });
 });
+
+/** SITEMAP FRESHNESS.
+ *
+ *  lastmod is the only signal in a sitemap that asks a crawler to come back. A page that
+ *  is edited while its lastmod stays put is telling Google and Bing that nothing changed —
+ *  which suppresses the re-crawl of the very edit you just made. Five URLs carried no
+ *  lastmod at all, and four more kept a 7 September date through edits made on the 22nd.
+ *
+ *  A sitemap is a discovery hint, not an indexing instruction, and resubmitting it changes
+ *  nothing. Keeping lastmod honest is the part that actually does work. */
+describe('the sitemap does not tell crawlers a changed page is unchanged', () => {
+  const xml = readFileSync(root('public/sitemap.xml'), 'utf8');
+  const entries = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/g)].map(m => {
+    const block = m[1];
+    const path = /<loc>https:\/\/aeoanalyzers\.com(.*?)<\/loc>/.exec(block)![1] || '/';
+    const lastmod = /<lastmod>(.*?)<\/lastmod>/.exec(block)?.[1] ?? null;
+    return { path, lastmod };
+  });
+
+  it('declares at least one URL and gives every one of them a lastmod', () => {
+    expect(entries.length).toBeGreaterThan(0);
+    for (const e of entries) {
+      expect(e.lastmod, `${e.path} has no <lastmod> — crawlers get no reason to return`)
+        .toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+
+  it('lists every prerendered blog post that exists on disk', () => {
+    const { readdirSync, existsSync } = require('node:fs') as typeof import('node:fs');
+    for (const slug of readdirSync(root('public/blog'))) {
+      if (!existsSync(root(`public/blog/${slug}/index.html`))) continue;
+      expect(entries.some(e => e.path === `/blog/${slug}`),
+        `/blog/${slug} exists but is not in the sitemap`).toBe(true);
+    }
+  });
+
+  it('never dates a page EARLIER than its own last commit', () => {
+    const { execFileSync } = require('node:child_process') as typeof import('node:child_process');
+    for (const e of entries) {
+      const file = e.path === '/' ? null
+        : root(`public${e.path.replace(/\/$/, '')}/index.html`);
+      if (!file) continue;
+      let committed: string;
+      try {
+        committed = execFileSync('git', ['log', '-1', '--format=%cs', '--', file],
+          { encoding: 'utf8' }).trim();
+      } catch { continue; }
+      if (!committed) continue;
+      expect(e.lastmod! >= committed,
+        `${e.path}: sitemap says ${e.lastmod} but the page was last committed ${committed} — ` +
+        `a crawler is being told a changed page is unchanged`).toBe(true);
+    }
+  });
+});
