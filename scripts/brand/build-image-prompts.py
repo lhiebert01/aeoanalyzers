@@ -314,15 +314,24 @@ EQUAL weight, equal height and equal fill — this is a list of things delivered
 ranking, not a maturity ladder and not a progress bar. Do not make later cards larger,
 brighter or more filled than earlier ones.
 
-Left half: the headline, and beneath it three or four lines of small dim transcript-style
-text suggesting the stored answers the plan is built from, with one short line highlighted
-in green to imply a passage being lifted as evidence.
+Left half: the headline, and beneath it a small panel of dim transcript-style text
+suggesting the stored answers the plan is built from, with one short line highlighted in
+green to imply a passage being lifted as evidence.
+
+THE TRANSCRIPT PANEL IS ILLUSTRATIVE AND MUST SAY SO. Head it with the words
+TRANSCRIPT · ILLUSTRATIVE, not "stored response" and not "live". The lines inside are
+invented filler standing in for a real stored answer, so the panel must not present itself
+as a record of anything. Set the body lines dim enough to read as texture rather than as
+content — legible as shape, not as a quotable claim. Give them no line numbers, no
+timestamps and no figures of any kind; a crisp, numbered, fully legible transcript reads as
+real evidence, and inventing evidence is the one thing this company cannot do in a picture
+about evidence.
 
 Eyebrow top-left: AEO ANALYZERS · WHAT YOU ACTUALLY GET
 
 NUMBERS. The only numerals in this image are the card numbers 1 to 5, which are labels.
-Do not render any percentage, score, count, price or rating anywhere, and do not invent a
-figure to fill a card.
+Do not render any percentage, score, count, price, rating, line number or date anywhere —
+including inside the transcript panel — and do not invent a figure to fill a card.
 
 EXACT VISIBLE TEXT — render each item exactly once:
 AEO ANALYZERS · WHAT YOU ACTUALLY GET
@@ -354,13 +363,18 @@ right. Do not fill the right-hand card.
 
 Eyebrow top-left: AEO ANALYZERS · HONEST-ZERO, PART 2
 
-NUMBERS. Render the numeral 265 once, large and white, over the grey field. Render no
-other numeral anywhere — no percentages, no counts, no axis values.
+NUMBERS. Render the numeral 265 once, large and white, over the grey field, with the
+words AT LEAST set small directly above it — the telemetry behind this figure dropped
+writes, so it is a FLOOR and not an exact count, and a bare 265 would overstate what we
+can prove. A dropped write can only lose a crawl, never invent one. Render no other
+numeral anywhere — no percentages, no counts, no axis values.
 
 EXACT VISIBLE TEXT — render each item exactly once:
 AEO ANALYZERS · HONEST-ZERO, PART 2
+AT LEAST
 265
 CRAWLER VISITS IN TEN DAYS
+A floor, not an exact count — the telemetry dropped writes.
 CITED
 Reading is passive. Citing is active.
 Being read is an input. Being cited is an outcome.
