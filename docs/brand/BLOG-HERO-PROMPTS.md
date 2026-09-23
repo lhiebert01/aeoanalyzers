@@ -157,6 +157,14 @@ right. Do not fill the right-hand card.
 
 Eyebrow top-left: AEO ANALYZERS · HONEST-ZERO, PART 2
 
+NO LOG LINES, AND NO NAMED CRAWLER. Do not add server-log text, request lines, status
+codes, user-agent strings, file paths or a terminal panel anywhere in this image. An
+earlier draft captioned the field with "GET /blog/ 200 OK Googlebot/2.1" and invented
+paths this site does not serve. Googlebot is NOT an AI crawler: our own telemetry shows
+this count was dominated by GPTBot, an AI training crawler, and labelling the field with
+Google's classic crawler misattributes the entire finding the post rests on. The page
+glyphs carry no text at all.
+
 NUMBERS. Render the numeral 265 once, large and white, over the grey field, with the
 words AT LEAST set small directly above it — the telemetry behind this figure dropped
 writes, so it is a FLOOR and not an exact count, and a bare 265 would overstate what we
