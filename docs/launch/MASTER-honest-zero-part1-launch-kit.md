@@ -1,3 +1,6 @@
+> **Corrected 23 Sep 2026 — historical document, not rewritten.** Every "265" below is superseded: the honest
+> figure is 36 page fetches; the rest were scanners wearing crawler names. See correction 4 on /blog/i-scored-zero.
+
 # AEO Analyzers — Honest-Zero, Part 1: Launch Kit
 
 > **⚠ CORRECTION, Sep 7 2026 — window, not count.** The crawler telemetry began **Jul 22 2026**

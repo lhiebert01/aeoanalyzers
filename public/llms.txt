@@ -35,7 +35,7 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - AEO tools: an honest comparison, with dates on every claim: https://aeoanalyzers.com/best-aeo-tools
 - Privacy policy: https://aeoanalyzers.com/privacy
 - Terms of service: https://aeoanalyzers.com/terms
-- Blog — The engines read my site 265 times; reading isn't citing (Honest-Zero, Part 2): https://www.aeoanalyzers.com/blog/reading-isnt-citing
+- Blog — The engines read my site; reading isn't citing (Honest-Zero, Part 2): https://www.aeoanalyzers.com/blog/reading-isnt-citing
 
 ## Publisher
 AEO Analyzers is operated by PI GenAI LLC (https://pigenai.com), a portfolio of AI products.

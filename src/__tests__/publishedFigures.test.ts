@@ -196,3 +196,44 @@ describe('the sitemap does not tell crawlers a changed page is unchanged', () =>
     }
   });
 });
+
+/** THE CRAWLER COUNT. bot_hits classifies by User-Agent alone; scanners call themselves
+ *  GPTBot while asking for /.aws/credentials. "At least 265" recounted to 36 fetches of a
+ *  page that exists. The evidence is docs/baselines/aeoanalyzers-crawlers-2026-07-22to31.json
+ *  (no IPs, no PII). Every published crawler figure must recompute from it, and 265 may
+ *  survive only in a sentence that says it was wrong. */
+describe('the crawler count recomputes from the stored July snapshot', () => {
+  const snap = JSON.parse(readFileSync(root('docs/baselines/aeoanalyzers-crawlers-2026-07-22to31.json'), 'utf8'));
+  const rows: { bot: string; tier: string }[] = snap.pageFetchRows;
+  const N = rows.length, live = rows.filter(r => r.tier === 'live').length,
+        gpt = rows.filter(r => r.bot === 'GPTBot').length;
+
+  it('snapshot: 36 page fetches of 271 logged, 11 GPTBot, 10 live', () => {
+    expect([snap.pageFetches, snap.loggedHits, N, gpt, live]).toEqual([36, 271, 36, 11, 10]);
+  });
+
+  it('both posts publish the recomputed count in the tile, and the retitled Part 2 carries no 265 claim', () => {
+    for (const p of ['public/blog/reading-isnt-citing/index.html', 'public/blog/i-scored-zero/index.html']) {
+      expect(readFileSync(root(p), 'utf8')).toContain(`<div class="num">${N}</div>`);
+    }
+    const p2 = readFileSync(root('public/blog/reading-isnt-citing/index.html'), 'utf8');
+    for (const field of ['<title>', 'og:title', 'twitter:title', '"headline"', '<h1']) {
+      const line = p2.split('\n').find(l => l.includes(field)) ?? '';
+      expect(line, `${field} still carries 265`).not.toContain('265');
+    }
+    expect(p2).toContain(`GPTBot alone accounted for ${gpt} of them.`);
+    expect(p2).not.toMatch(/one visit in sixteen/);
+  });
+
+  it('265 appears on a live surface only in a sentence that retracts it', () => {
+    for (const p of ['public/blog/reading-isnt-citing/index.html', 'public/blog/i-scored-zero/index.html',
+                     'public/blog/how-it-works/index.html', 'public/blog/index.html', 'public/llms.txt',
+                     'public/evidence/index.html']) {
+      for (const line of readFileSync(root(p), 'utf8').split('\n')) {
+        if (!line.includes('265')) continue;
+        expect(line, `${p}: bare 265 → ${line.trim().slice(0, 120)}`)
+          .toMatch(/first (published|said)|correction|scanner|superseded|became 36|not 265|wrong/i);
+      }
+    }
+  });
+});

@@ -1,3 +1,6 @@
+> **Corrected 23 Sep 2026.** The crawler count in this document was restated from 265 to 36: the original
+> counted vulnerability scanners that call themselves GPTBot. See correction 4 on /blog/i-scored-zero.
+
 # AEO Analyzers — Honest-Zero Part 2: POSSE Pack (copy-paste ready)
 
 > **⚠ CORRECTION, Sep 7 2026 — window, not count.** The crawler telemetry began **Jul 22 2026**
@@ -19,13 +22,13 @@
 
 ## 1. LinkedIn
 
-The AI crawlers visited my site 265 times in ten days. They read everything. They recommended it to buyers zero times.
+The AI crawlers visited my site 36 times in ten days. They read everything. They recommended it to buyers zero times.
 
-I build AEO Analyzers — a tool that measures whether AI engines actually recommend a business when buyers ask. In Part 1 I published my own zero: known by name 98%, recommended to buyers 0%. The line that stopped more readers than anything else was this — the engines had crawled my site 265 times in the ten days to July 31, and cited it none.
+I build AEO Analyzers — a tool that measures whether AI engines actually recommend a business when buyers ask. In Part 1 I published my own zero: known by name 98%, recommended to buyers 0%. The line that stopped more readers than anything else was this — the engines had crawled my site 36 times in the ten days to July 31, and cited it none.
 
 So Part 2 is about that line: why being **read** is not being **cited**.
 
-Those 265 visits weren't 265 chances to be recommended. The majority were training-tier crawls — bots ingesting the web months before any buyer types a question. GPTBot alone accounted for 179. Only about **one visit in sixteen** was a live, answer-time fetch. The engines had absorbed everything I wrote, and when a real buyer asked, my site was almost never the thing they reached for.
+Those 36 page fetches weren't 265 chances to be recommended. The majority were training-tier crawls — bots ingesting the web months before any buyer types a question. GPTBot alone accounted for 11. Only about **about one in four** was a live, answer-time fetch. The engines had absorbed everything I wrote, and when a real buyer asked, my site was almost never the thing they reached for.
 
 Being read is passive — a crawler takes your bytes. Being cited is active — an engine names you, mid-answer, over a competitor. Two different events, two different levers. I'd spent years optimizing the first while believing I was improving the second.
 
@@ -39,9 +42,9 @@ If you want to know whether the engines *recommend* you — not just know your n
 
 ## 2. Facebook
 
-The AI crawlers read my site 265 times in ten days. They cited it zero times.
+The AI crawlers read my site 36 times in ten days. They cited it zero times.
 
-I build a tool that measures whether AI engines actually recommend a business when buyers ask. I ran it on my own site: known by name 98%, recommended to buyers 0%. The strangest part — the engines had crawled my site 265 times in ten days and never reached for it when it counted.
+I build a tool that measures whether AI engines actually recommend a business when buyers ask. I ran it on my own site: known by name 98%, recommended to buyers 0%. The strangest part — the engines had crawled my site 36 times in ten days and never reached for it when it counted.
 
 Being read isn't being cited. Most of those crawls were training-tier (ingesting the web months before any buyer asks); only about 1 in 16 was a live, answer-time fetch. The fix wasn't more content — it was a first-party record shaped like the questions buyers actually ask.
 
@@ -51,11 +54,11 @@ Full story (all numbers reproducible): https://aeoanalyzers.com/blog/reading-isn
 
 ## 3. X / Twitter thread
 
-1/ The AI crawlers read my site 265 times in ten days. They cited it 0 times. Being read isn't being cited. 🧵
+1/ The AI crawlers read my site 36 times in ten days. They cited it 0 times. Being read isn't being cited. 🧵
 
 2/ Part 1: I published my own zero — known by name 98%, recommended to buyers 0%. The line everyone stopped on: 265 crawls, cited none.
 
-3/ Those 265 visits weren't 265 chances. Most were training-tier crawls (GPTBot alone: 179), ingesting the web months before any buyer asks. Only ~1 in 16 was a live, answer-time fetch.
+3/ Those 36 page fetches weren't 265 chances. Most were training-tier crawls (GPTBot alone: 11), ingesting the web months before any buyer asks. Only ~1 in 16 was a live, answer-time fetch.
 
 4/ Being read is passive — a crawler takes your bytes. Being cited is active — an engine names you over a competitor, mid-answer. Different events, different levers.
 
@@ -79,15 +82,15 @@ Keep the FULL story on the blog (canonical). On Medium/Substack, paste this shor
 
 ### Short article to paste
 
-# The Engines Read My Site 265 Times. Reading Isn't Citing.
+# The Engines Read My Site. Reading Isn't Citing.
 
 *By Lindsay Hiebert*
 
 In Part 1 I published my own zero: ask ChatGPT, Claude, Perplexity, or Gemini about my product by name and they find it — 98% branded retrievability. Ask the questions buyers actually ask, and it was recommended exactly zero times.
 
-The line that stuck with people was this one: the AI crawlers had visited my site 265 times in ten days, and cited it none.
+The line that stuck with people was this one: the AI crawlers had visited my site 36 times in ten days, and cited it none.
 
-This is the post about that line. Those 265 visits weren't 265 chances to be recommended — most were training-tier crawls ingesting the web months before any buyer asks; only about one in sixteen was a live, answer-time fetch. The engines had read everything I wrote. They just never reached for it when it counted.
+This is the post about that line. Those 36 page fetches weren't 265 chances to be recommended — most were training-tier crawls ingesting the web months before any buyer asks; only about about one in four was a live, answer-time fetch. The engines had read everything I wrote. They just never reached for it when it counted.
 
 Being read is passive. Being cited is active — an engine naming you over a competitor at the moment of the answer. Two different events. The fix wasn't more content; it was a first-party record shaped like the questions buyers actually ask.
 

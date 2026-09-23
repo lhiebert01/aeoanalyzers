@@ -1,3 +1,6 @@
+> **Corrected 23 Sep 2026.** The crawler count in this document was restated from 265 to 36: the original
+> counted vulnerability scanners that call themselves GPTBot. See correction 4 on /blog/i-scored-zero.
+
 # AEO Analyzers — EIN Presswire release — FINAL 2026-10-14
 
 **Canonical source of record.** Everything else — the paste `.txt`, the `.docx`, the press kit,
@@ -10,7 +13,7 @@ that a factual competitor sentence belongs in the wire body** (§0.10).
 | Field | Value |
 |---|---|
 | **Headline** | AEO Analyzers Publishes Its Own Failing AI-Visibility Score |
-| **Meta description / subhead** | AI engines read the company's site 265 times in ten days and recommended it to buyers zero times. It published the number, and re-publishes it monthly. |
+| **Meta description / subhead** | AI engines read the company's site 36 times in ten days and recommended it to buyers zero times. It published the number, and re-publishes it monthly. |
 | **Dateline** | KANSAS CITY, MO, UNITED STATES — October 14, 2026 |
 | **Keywords** | answer engine optimization · AI search visibility · AI citation tracking |
 | **Categories** | Technology · IT Industry · Marketing · Software · Internet & Online Media |
@@ -42,7 +45,7 @@ and Gemini twelve questions about its own category, five times each across all f
 for 240 recorded answers. Asked for the company by name, the engines found it in 100% of 40
 runs. Asked the questions a buyer actually asks, such as which tools measure AI search
 visibility, the engines recommended the company in 0% of 200 runs. Competitors were named
-instead. Over the ten days to July 31 that its crawler telemetry covers, the company's own server logs recorded 265 visits
+instead. Over the ten days to July 31 that its crawler telemetry covers, the company's own server logs recorded 36 page fetches
 from AI crawlers, 211 of them training-tier and 179 from GPTBot. The engines had read the site.
 They had never cited it.
 

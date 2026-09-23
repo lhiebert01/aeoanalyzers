@@ -378,18 +378,18 @@ this count was dominated by GPTBot, an AI training crawler, and labelling the fi
 Google's classic crawler misattributes the entire finding the post rests on. The page
 glyphs carry no text at all.
 
-NUMBERS. Render the numeral 265 once, large and white, over the grey field, with the
-words AT LEAST set small directly above it — the telemetry behind this figure dropped
-writes, so it is a FLOOR and not an exact count, and a bare 265 would overstate what we
-can prove. A dropped write can only lose a crawl, never invent one. Render no other
+NUMBERS. Render the numeral 36 once, large and white, over the grey field, with the
+words AT MOST set small directly above it — the log recorded 271 hits under crawler names,
+but 235 of them were scanners asking for credentials, and the 36 that fetched real pages were
+never verified by IP. It is an UPPER BOUND. A bare number would overstate what we can prove. Render no other
 numeral anywhere — no percentages, no counts, no axis values.
 
 EXACT VISIBLE TEXT — render each item exactly once:
 AEO ANALYZERS · HONEST-ZERO, PART 2
-AT LEAST
-265
-CRAWLER VISITS IN TEN DAYS
-A floor, not an exact count — the telemetry dropped writes.
+AT MOST
+36
+PAGE FETCHES IN TEN DAYS
+An upper bound — the crawler names were never verified.
 CITED
 Reading is passive. Citing is active.
 Being read is an input. Being cited is an outcome.

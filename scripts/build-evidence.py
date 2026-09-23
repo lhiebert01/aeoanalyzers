@@ -63,6 +63,16 @@ MONTHS = [
 ]
 
 LESSONS = [
+ ("Most of our &ldquo;AI crawler traffic&rdquo; was not AI crawlers.",
+  "We logged bots by the name they gave us. Anyone can call themselves GPTBot, and vulnerability "
+  "scanners do while asking for credential files. Three-quarters of everything we had counted as "
+  "crawling was that. The published 265 became 36 once we counted only fetches of pages that "
+  "exist. Lesson: a count is only as honest as the thing it trusts &mdash; verify the bot, not the name."),
+ ("Ingestion is not indexing, and now we can show it.",
+  "Anthropic&rsquo;s training crawler has fetched our pages 75 times since July. Its search "
+  "crawler, the one that decides whether Claude can find you, has come twice. Claude is the one "
+  "engine that answers &ldquo;I couldn&rsquo;t find aeoanalyzers.com&rdquo;. Being read into a "
+  "model&rsquo;s memory does nothing for whether it can look you up."),
  ("A number has to survive its own scorer.",
   "Correcting how we score a &ldquo;the search ran, the site was not found&rdquo; answer changed our "
   "own history. We would rather restate a published figure in public than keep a flattering one that "

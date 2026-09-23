@@ -1,3 +1,6 @@
+> **Corrected 23 Sep 2026 — historical document, not rewritten.** Every "265" below is superseded: the honest
+> figure is 36 page fetches; the rest were scanners wearing crawler names. See correction 4 on /blog/i-scored-zero.
+
 # Evidence note — an engine inventing a source, twice, and elaborating the second time
 
 **Recorded:** Sep 7 2026 · **Status:** evidence, not yet published · **Destination:** Part 4, or an
