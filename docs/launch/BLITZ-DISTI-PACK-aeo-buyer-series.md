@@ -228,7 +228,7 @@ https://aeoanalyzers.com/aeo-buyers-guide
 
 The whole pipeline, drawn. Six diagrams, no algorithms.
 
-We read your site. We ask four answer engines your buyers' questions, several times each, with web search on. We keep search-grounded answers separate from ones the model produced from memory, because blending them moves a score invisibly.
+We read your site. We ask four answer engines your buyers' questions with web search on — one or more times each, depending on how many questions you ask, and the per-cell N is printed on every number. We keep search-grounded answers separate from ones the model produced from memory, because blending them moves a score invisibly.
 
 Then we score three layers separately rather than blending them into one number: whether an engine finds you when asked by name, whether what it says about you is accurate, and whether it recommends you to a buyer who never said your name.
 
@@ -246,7 +246,7 @@ https://aeoanalyzers.com/blog/how-it-works
 
 The whole pipeline, drawn. Six diagrams, no algorithms.
 
-Four engines, buyers' questions, several runs each. Search-grounded answers kept separate from memory. Three layers scored separately, every number backed by a stored transcript you can re-run.
+Four engines, buyers' questions, one or more runs each. Search-grounded answers kept separate from memory. Three layers scored separately, every number backed by a stored transcript you can re-run.
 
 https://aeoanalyzers.com/blog/how-it-works
 

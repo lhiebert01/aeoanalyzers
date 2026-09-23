@@ -124,7 +124,7 @@ BLUESKY = {
      "Monitoring is not diagnosis. Diagnosis is not proof.",
      "https://aeoanalyzers.com/aeo-buyers-guide"],
  6: ["The whole pipeline, drawn. Six diagrams, no algorithms.",
-     "Four engines, your buyers' questions, several runs each. Three layers scored separately. Every number backed by a stored transcript you can re-run.",
+     "Four engines, your buyers' questions, one or more runs each. Three layers scored separately. Every number backed by a stored transcript you can re-run.",
      "https://aeoanalyzers.com/blog/how-it-works"],
  7: ["A dashboard says your AI visibility is 42%.",
      "42% of what? Which prompts, which engines, which dates, how many runs, and what did the model actually say?",
