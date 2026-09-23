@@ -99,7 +99,28 @@ CARDS = f"""    <div class="score" aria-label="Latest measurement: {LATEST['mont
 # ------------------------------------------------------------------ the page
 SRC = 'public/blog/i-scored-zero/index.html'
 src = open(SRC, encoding='utf-8').read()
-CSS  = src[src.index('<style>'):src.index('</style>') + 8]
+CSS  = src[src.index('<style>'):src.index('</style>')]
+
+# /evidence is a TABLE page, not a blog post. The blog chassis caps .wrap at 960px, which
+# squeezed "What changed" into roughly a quarter of the width and made a four-line note run
+# to twenty lines — rows so tall the two months could not be compared on one screen. The
+# table also inherited horizontal rules only, so columns had no boundaries at all.
+CSS += """
+/* ---- /evidence: wider page, and a table you can actually read across ---- */
+.wrap{max-width:1180px}
+.ledger{margin:18px 0 6px}
+.ledger table{min-width:980px;table-layout:fixed}
+.ledger th,.ledger td{border-right:1px solid var(--hair)}
+.ledger th:last-child,.ledger td:last-child{border-right:0}
+.ledger thead th{border-bottom:2px solid var(--edge);font-size:11.5px;letter-spacing:.07em;
+  line-height:1.35;padding:12px 14px;vertical-align:bottom}
+.ledger td{padding:15px 14px}
+.ledger tbody tr:nth-child(even){background:var(--panel)}
+.ledger .ledgernote{font-size:14.5px;line-height:1.55;margin:0}
+.ledger .fig{font-size:19px}
+@media(max-width:1000px){.ledger table{min-width:820px}}
+</style>"""
+
 BAR  = src[src.index('<body>'):src.index('<div class="wrap">')]
 FOOT = src[src.index('<footer class="sitefoot">'):src.index('</footer>') + 9]
 
@@ -178,6 +199,10 @@ PAGE = f"""<!doctype html>
       <h2 class="posth2" id="the-ledger">Every month so far</h2>
       <div class="ledger">
         <table>
+          <colgroup>
+            <col style="width:12%"><col style="width:10%"><col style="width:12%">
+            <col style="width:11%"><col style="width:55%">
+          </colgroup>
           <thead><tr>
             <th scope="col">Month</th>
             <th scope="col">Found by name</th>
