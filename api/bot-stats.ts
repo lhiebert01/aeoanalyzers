@@ -4,6 +4,7 @@
 // the most-crawled pages. Aggregated server-side from the bot_hits table.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { isProbePath } from '../src/lib/probePath.js';
 import { TIER_DEFINITIONS } from '../src/lib/botClassify.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -28,7 +29,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` },
   });
   if (!r.ok) return res.status(502).json({ error: `bot_hits query failed: ${r.status}` });
-  const rows: any[] = await r.json();
+  const allRows: any[] = await r.json();
+  // Aggregate PAGE fetches only. Scanners send crawler user-agents at /.git/HEAD and
+  // /.aws/credentials all day; counting them as crawls put a 265 in a headline that
+  // recounted to 36. The raw rows are still the evidence; they are reported, not summed.
+  const rows = allRows.filter(row => !isProbePath(String(row.path || '')));
+  const probeHits = allRows.length - rows.length;
 
   const tierTotals: Record<string, number> = { live: 0, search: 0, training: 0 };
   const perDay = new Map<string, Record<string, number>>();
@@ -60,7 +66,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   return res.status(200).json({
     domain, days, configured: true,
     tierDefinitions: TIER_DEFINITIONS,
-    totalHits: rows.length,
+    totalHits: rows.length,          // page fetches only
+    probeHits,                        // scanner traffic wearing a crawler UA, excluded above
+    loggedHits: allRows.length,       // everything the middleware saw
     tierTotals, hitsPerDay, perBot: bots, topPages,
   });
 }
