@@ -228,6 +228,21 @@ footer p{max-width:none}
 .ledgerstrip .ls-go{display:inline-block;background:var(--teal-deep);color:#EAF4F5;text-decoration:none;
   font-weight:700;font-size:14px;padding:10px 16px;border-radius:10px;white-space:nowrap}
 .ledgerstrip .ls-go:hover{color:#fff}
+
+.corrections{background:#F9EDEA;border:1px solid #D9A9A1;border-left:5px solid #B23A2E;
+  border-radius:12px;margin:0 0 22px;color:#0E1216;overflow:hidden}
+.corrections>summary{list-style:none;cursor:pointer;padding:13px 18px;font-size:14.5px;
+  line-height:1.5;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.corrections>summary::-webkit-details-marker{display:none}
+.corrections>summary::after{content:"Show \002B";margin-left:auto;white-space:nowrap;
+  color:#8E2C22;font-weight:800;font-size:13px;letter-spacing:.03em}
+.corrections[open]>summary::after{content:"Hide \2212"}
+.corrections>summary:hover{background:#F5E2DE}
+.corrections .c-tag{display:inline-block;background:#B23A2E;color:#fff;font-size:11px;
+  font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:5px}
+.corrections .c-body{padding:2px 18px 10px;border-top:1px solid #D9A9A1}
+.corrections .c-body p{font-size:15px;line-height:1.55;margin:12px 0 4px;max-width:78ch}
+.corrections ol.fixes li::before{background:#B23A2E;color:#fff}
 </style>
 </head>
 <body>
@@ -243,18 +258,20 @@ footer p{max-width:none}
   <article class="post">
     <div class="posteyebrow">AEO Analyzers · Honest-Zero, Part 1</div>
     <h1 class="posttitle">I Ran My Own AI-Visibility Tool on My Own Site. It Scored 0%.</h1>
-    <p style="background:#F7E7E4;border-left:5px solid #B23A2E;border-radius:10px;padding:11px 16px;margin:0 0 20px;font-size:14.5px;line-height:1.5;color:#0E1216"><strong>Three corrections, September 8 2026</strong> &mdash; all found by our own checks before anyone outside saw a wrong number, and published here rather than edited in quietly. <a href="#corrections" style="color:#8E2C22;font-weight:700">Read them &darr;</a></p>
-    
-    <p style="background:var(--teal-tint);border:1px solid var(--edge);border-radius:12px;padding:14px 18px;margin:0 0 22px;font-size:15px;line-height:1.5;color:var(--ink)"><strong>What the 0% means:</strong> category citation win on unbranded buyer questions in July 2026 — the engines did not yet recommend AEO Analyzers over competitors. It is <strong>not</strong> a product-quality score. Branded retrievability in the same measurement: <strong>98%</strong>.</p>
-    <div id="corrections" style="background:#F7E7E4;border:1px solid #B23A2E;border-left:5px solid #B23A2E;border-radius:14px;padding:18px 22px 6px;margin:26px 0 8px;color:#0E1216">
-      <p style="margin:0 0 4px;font-size:15px;line-height:1.55"><strong>Corrections, September 8 2026.</strong> Three, all found by our own checks before anyone outside saw a wrong number. We publish them here rather than editing the post quietly, because a measurement company that silently rewrites a published measurement has spent the thing it sells.</p>
-      <ol class="fixes">
+    <details class="corrections" id="corrections">
+      <summary><span class="c-tag">Corrections</span> <b>September 8 2026</b> &mdash; three, all found by our own checks before anyone outside saw a wrong number. We publish them rather than editing the post quietly.</summary>
+      <div class="c-body">
+        <p><strong>Corrections, September 8 2026.</strong> Three, all found by our own checks before anyone outside saw a wrong number. We publish them here rather than editing the post quietly, because a measurement company that silently rewrites a published measurement has spent the thing it sells.</p>
+        <ol class="fixes">
         <li><b>The crawler window was wrong, and the corrected version reads better than what we published.</b><span>This post originally said 265 crawler visits &ldquo;in the thirty days to July 31&rdquo;. The telemetry that produced them did not exist before July 22, so the real observation window was <strong>ten days, not thirty</strong>. That is a crawl rate roughly three times higher than the one we published. The count and the tier split are unchanged. We got the window wrong, not the number.</span></li>
         <li><b>The same telemetry was later found to drop writes,</b><span>so 265 is a floor rather than an exact count. A dropped write can only lose a crawl, never invent one.</span></li>
         <li><b>The 98% branded figure is unverifiable, and we are leaving it visible rather than deleting it.</b><span>It was recorded before we retained transcripts, so the raw answers behind it no longer exist and it cannot be re-derived. In September we also fixed a scoring rule: an engine that runs a search, fails to find the site and says so had been counted as a mention. Under the corrected rule our September branded figure is <strong>80% of 40 runs</strong>, not 82% &mdash; the correction lowered our own number. Every figure published from August 1 onward has its transcripts stored, and a publication gate now blocks any measured figure that cannot be recomputed from them at publish time.</span></li>
       </ol>
-    </div>
+      </div>
+    </details>
 
+    
+    <p style="background:var(--teal-tint);border:1px solid var(--edge);border-radius:12px;padding:14px 18px;margin:0 0 22px;font-size:15px;line-height:1.5;color:var(--ink)"><strong>What the 0% means:</strong> category citation win on unbranded buyer questions in July 2026 — the engines did not yet recommend AEO Analyzers over competitors. It is <strong>not</strong> a product-quality score. Branded retrievability in the same measurement: <strong>98%</strong>.</p>
     <div class="postbody">
       <p class="postlead">I build AEO Analyzers — a tool that measures what ChatGPT, Claude, Perplexity, and Gemini actually say when buyers ask about a business. In late July I pointed it at the <strong>one site I know best: my own.</strong></p>
     <p class="postmeta">Lindsay Hiebert · July 2026 · 5-minute read</p>
