@@ -74,7 +74,7 @@ You did the work the guides told you to do. Nothing changed.
 Here's some of what we measured and what the published research says:
 
 → llms.txt goes unrequested on 97% of the sites that have one
-→ six of seven AI platforms cannot read your schema
+→ six of seven AI platforms show no sign of using your schema when choosing what to cite
 → the assistants read different indexes, so being in one doesn't put you in another
 → an AI sees roughly the first 200 characters after your h1, and ignores your meta description entirely
 
@@ -92,9 +92,9 @@ https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you
 
 You did what the AEO guides said. Nothing changed.
 
-llms.txt unrequested on 97% of sites that have one. 6 of 7 platforms can't read your schema. An AI sees ~200 characters after your h1.
+llms.txt unrequested on 97% of sites that have one. 6 of 7 platforms show no sign of using your schema to cite. An AI sees ~200 characters after your h1.
 
-The free self-checks, and two of our own failures:
+Free self-checks, and two of our own failures:
 
 https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you
 

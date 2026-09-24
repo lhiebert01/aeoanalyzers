@@ -40,7 +40,7 @@ const BANNED: { rx: RegExp; label: string }[] = [
   // EFFICACY SUPERLATIVES — added Sep 20 2026. The User Guide claimed schema was
   // "the single most effective way to improve your AEO score", which is both an
   // unqualified superlative AND contradicted by our own published primer: six of
-  // seven platforms cannot read schema and a schema-only fact was answered by none.
+  // seven platforms show no sign of using schema when citing, and a schema-only fact was answered by none.
   // The BANNED list had eleven entries and none of them covered a claim about how
   // well something works, which is the most consequential kind to get wrong.
   { rx: /\b(the\s+)?(single\s+)?most\s+(effective|powerful|important|impactful)\b/i, label: 'efficacy superlative' },
@@ -74,4 +74,27 @@ const BANNED: { rx: RegExp; label: string }[] = [
 export function bannedAbsolutes(text: string): string[] {
   const t = String(text || '');
   return BANNED.filter((b) => b.rx.test(t)).map((b) => b.label);
+}
+
+
+// ---------------------------------------------------------------------------------
+// WO-AEO-SCHEMA-CLAIM-PRECISION-001 (23 Sep 2026). The primer and a LinkedIn post said
+// "six of seven AI platforms cannot read your schema". A reader corrected it publicly and
+// was right: GPTBot, ClaudeBot and PerplexityBot fetch the raw HTML, and the JSON-LD is in
+// it. "Cannot read" is a claim about the crawler. What the testing supports is a claim
+// about citation behaviour: most platforms show no sign of USING the schema when choosing
+// what to cite. The precise wording is ratified; the imprecise verbs are banned whenever
+// they share a sentence with a schema noun. Text is tag-stripped and split on sentence
+// punctuation so the rule cannot fire across two unrelated sentences.
+
+const SCHEMA_NOUN = /\b(schema|structured data|json-?ld|ld\+json|markup)\b/i;
+const SCHEMA_BANNED_VERB = /\b(cannot read|can'?t read|can(?:&rsquo;|’)t read|do(?:es)? not read|don'?t read|doesn'?t read|unable to read|invisible to|ignores?)\b/i;
+
+/** Sentences that pair a banned read/ignore verb with a schema noun. Empty = clean. */
+export function schemaClaimViolations(text: string): string[] {
+  const t = String(text || '').replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ');
+  return t.split(/(?<=[.!?])\s+|\n+|\\n|→/)   // real newlines, escaped \n inside source strings, list arrows
+    .map(s => s.replace(/\s+/g, ' ').trim())
+    .filter(s => SCHEMA_NOUN.test(s) && SCHEMA_BANNED_VERB.test(s));
 }

@@ -1,7 +1,7 @@
 // Crawler-access audit — the foundational AEO gate.
 //
 // An AEO report is meaningless if the AI engines it optimizes for cannot read
-// the page. A site can have flawless schema and still be invisible to Gemini,
+// the page. A site can have flawless structured data and still be unreachable by Gemini,
 // ChatGPT, Claude, and Perplexity because its robots.txt disallows their bots.
 // No site should score 90 while blocking the exact crawlers it wants to be
 // cited by — so this module parses robots.txt for the major AI/answer-engine
@@ -36,8 +36,8 @@ export const AI_BOTS: AiBot[] = [
   // already-crawled content may be used for Gemini grounding and model training.
   //
   // It was marked critical, which meant a site choosing to opt out of AI training — a
-  // legitimate, deliberate decision — was told "these engines cannot read your page, so
-  // your schema and content are invisible to them" and had its score capped at 35. Both
+  // legitimate, deliberate decision — was told its page was unreachable and its structured
+  // data with it (wording since made precise) and had its score capped at 35. Both
   // halves were wrong: the sentence describes a fetcher, and the cap punished a policy
   // choice rather than a discoverability defect. Applebot-Extended, the same class of
   // directive, was already correctly non-critical, so this file disagreed with itself.
@@ -261,7 +261,7 @@ export function evaluateCrawlerAccess(input: {
       summaryParts.push('Your robots.txt blocks ALL crawlers from the site root — AI answer engines cannot read this page at all.');
     } else {
       recommendations.push(
-        `CRITICAL: robots.txt disallows citation-critical AI crawlers (${blockedCriticalNames.join(', ')}). These engines cannot read your page, so your schema and content are invisible to them. Remove the Disallow rules for these user-agents.`
+        `CRITICAL: robots.txt disallows citation-critical AI crawlers (${blockedCriticalNames.join(', ')}). These engines are blocked from fetching your page, so nothing on it — content or structured data — reaches them. Remove the Disallow rules for these user-agents.`
       );
       summaryParts.push(`Your robots.txt blocks citation-critical AI crawlers (${blockedCriticalNames.join(', ')}).`);
     }

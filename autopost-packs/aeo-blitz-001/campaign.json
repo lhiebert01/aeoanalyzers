@@ -16,13 +16,14 @@
   "Never claim other tools 'only give you a score' or that 'no other AEO tool measures whether AI is telling the truth about you'. Both retired as indefensible.",
   "Never name an individual in connection with the entity-misattribution finding.",
   "Never publish a prospect's measured numbers. Those are outreach material.",
-  "Disclose that we make one of these tools whenever a post touches the comparison."
+  "Disclose that we make one of these tools whenever a post touches the comparison.",
+  "On schema, structured data and JSON-LD: the crawlers fetch the HTML and the block is in it, so never claim otherwise. The only supported claim is that most platforms show no sign of USING it when choosing what to cite. Use that wording."
  ],
  "verified_facts": {
   "category_win_zero": "On unbranded category questions in our September 2026 measurement, engines recommended us in 0 of 200 recorded answers.",
   "branded_retrievability": "Branded retrievability 100% across four engines, N=23, in the 21 September 2026 sweep.",
   "llms_txt": "llms.txt went unrequested on 97% of the sites that have one.",
-  "schema_read": "Six of seven AI platforms could not read the page's schema in a controlled test.",
+  "schema_read": "In a controlled test, six of seven AI platforms showed no sign of using the page's schema when choosing what to cite; a fact placed only in schema was answered by none.",
   "extractor_window": "An AI sees roughly the first 200 characters after the h1; the meta description is ignored.",
   "roundup_mechanism": "Every category answer in our 21 September sweep was assembled from 'best tools' roundup pages. Not one came from a vendor's own product page.",
   "ahrefs": "Ahrefs found brand mentions correlated with AI mentions at rho 0.664, against 0.218 for backlinks.",
@@ -151,7 +152,7 @@
     {
      "pass": 5,
      "name": "Schema is not how you get quoted",
-     "hook": "Six of seven AI platforms could not read the page's schema at all.",
+     "hook": "Six of seven AI platforms show no sign of using your schema when choosing what to cite.",
      "use": [
       "schema_read",
       "Anything a model must know has to exist in visible body text"
