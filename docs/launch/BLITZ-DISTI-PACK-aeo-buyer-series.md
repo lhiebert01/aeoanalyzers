@@ -1,5 +1,7 @@
 # BLITZ DISTI PACK — AEO buyer series
 
+> **Status 2026-09-30:** all six posts are LIVE on LinkedIn, Facebook and X — links in `PUBLISHED-POSTS-LEDGER.md`. Remaining: Bluesky, Medium, Substack (Section F).
+
 Six posts. Each block below is ready to select and copy in one go — no prefixes, no hard wraps, nothing to strip.
 
 **Standing rules:** Every post carries its link in the body — the autoposter has no comment API, so there is no other placement, and the copy is written to carry the URL naturally. No cost or expense figure appears anywhere. Every number is reproducible from a stored transcript or a published study; nothing is invented, not even as an example. No claim that other tools "only give you a score".
