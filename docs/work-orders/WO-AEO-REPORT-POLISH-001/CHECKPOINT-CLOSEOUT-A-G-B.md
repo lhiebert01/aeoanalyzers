@@ -9,7 +9,7 @@ and stay gated on the founder's plain "go" (default NO before Nov 1).
 |---|---|---|---|
 | A — cited-instead counts every vendor | `1db165f` | `dpl_6aC1SLFB5kANLSyxz11kzwuDS6jy` | `/assets/index-SKLwPvyN.js` contains "Entered by you" |
 | G — Do-now receipts · owned domain | `5b25f15` | `dpl_9hBGpecNgfyG6se1VqR9ys1eeEsm` | `/assets/index-Ce9OiAPa.js` contains "This is ours" |
-| B — beliefs fact table | `209d9b8` | `dpl_9e94tMrDqrqjeUFwbFMRwMCKPpEq` | `/assets/index-V3a6_vOT.js` contains "What the engines believe about you" |
+| B — beliefs fact table | `209d9b8` | `dpl_9e94tMrDqrqjeUFwbFMRwMCKPpEq` | `/assets/index-1KKnTVxI.js` contains "What the engines believe about you" |
 
 Test count: 537 before → **552 after** (≥ 210 required). `npx tsc --noEmit` clean; `npm run build`
 passed the orphan check and the fail-closed prerender check on every lane.
