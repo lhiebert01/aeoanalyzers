@@ -65,3 +65,7 @@ observation** — only the founder can take these:
 > saved record (low compare value / belong elsewhere): entity-linking, content-depth,
 > truth-as-standalone, bot-stats. Nothing is fabricated or re-queried.
 > Migration status: **`20260902_wo_mobile_history_full_result.sql` — apply + probe.**
+
+## Next up (noted 2026-09-30, founder's request)
+
+- [ ] **AEO GTM email wave — Instantly.** Run the GTM-90 email campaign from the Instantly account against the AEO campaign leads. Inputs: the slate of record `private/GTM90-Master-Target-Slate-v4.2.xlsx` (gitignored, never committed), the outreach copy doc, and the warmed Instantly mailbox (warmup has been running since August). Plan of record: `docs/GTM90-STATUS-AND-PLAN-2026-08-05.md`. Ledger of record for sends lives in the `thesmartaiworker-site` repo (`OUTREACH-IDENTITY-STATUS.md`). Guardrails: no prospect data in this public repo; nothing auto-sends — every send is a founder action; log the date of each wave so the Oct 25 evidence row can be read against it.
