@@ -575,6 +575,7 @@ a measurement.
 12 QUESTIONS × 4 ENGINES
 AEO ANALYZERS
 AEOANALYZERS.COM
+"""),
 ("OG card — Buyer series roundup (the super post)", "1200 x 630 landscape", """
 Social card for the roundup post that collects the six-part buyer series in one place. The
 argument is the SET: six equal reads, laid side by side, none ranked above another.
