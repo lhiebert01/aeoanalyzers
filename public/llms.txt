@@ -31,6 +31,7 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - Blog — How AEO Analyzers works (a visual explainer of the pipeline): https://www.aeoanalyzers.com/blog/how-it-works
 - Blog — I ran my own AI-visibility tool on my own site; it scored 0% (Honest-Zero, Part 1): https://www.aeoanalyzers.com/blog/i-scored-zero
 - Blog — Reading isn't citing: why crawler traffic is not the same as being mentioned: https://aeoanalyzers.com/blog/reading-isnt-citing
+- Blog — One question is not a measurement (why twelve buyer questions on four engines are the smallest unit that produces a plan): https://aeoanalyzers.com/blog/one-question-is-not-a-measurement
 - Primer — Why AI still doesn't mention your business (what does not work, why, and the free self-checks): https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you
 - AEO tools: an honest comparison, with dates on every claim: https://aeoanalyzers.com/best-aeo-tools
 - Privacy policy: https://aeoanalyzers.com/privacy

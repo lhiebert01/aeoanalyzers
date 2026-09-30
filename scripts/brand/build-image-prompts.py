@@ -532,6 +532,50 @@ N=200
 AEO ANALYZERS
 AEOANALYZERS.COM
 """),
+("Blog hero — One question is not a measurement", "1600 x 900 landscape", """
+Editorial infographic, edge to edge, built as ONE CONTRAST: a single quantity on the left, a
+grid on the right.
+
+Left third: ONE tall outlined bar in clay #F2705C, empty, with the UPPERCASE label beneath it.
+It represents the minute-long test — one question asked twelve times — and it is drawn as one
+shape on purpose.
+
+Right two-thirds: a grid of TWELVE equal dimensional cards, three rows of four, each with a
+soft shadow and a 1px green #68E66D edge, with the UPPERCASE label beneath. Rows and columns
+at equal weight; no card highlighted, filled, checked or crossed — the grid is the argument
+that twelve questions on four engines show a shape one question cannot.
+
+Upper left across the top: the eyebrow and the two-line headline.
+
+NO CHARTS AND NO RESULTS. Do not fill any cell, add a check mark, a percentage, a trend, or a
+second bar. The image shows the SHAPE of a measurement, not an outcome.
+
+NUMBERS. Exactly the numerals inside the two labels below. Render no other numeral anywhere.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · CATEGORY EDUCATION
+One question is not
+a measurement.
+1 QUESTION × 12 RUNS
+12 QUESTIONS × 4 ENGINES
+AEO ANALYZERS
+AEOANALYZERS.COM
+"""),
+("OG card — One question is not a measurement", "1200 x 630 landscape", """
+The same contrast at social-card scale: left, ONE tall outlined clay #F2705C bar, empty; right, a
+grid of twelve equal green-edged #68E66D cards in three rows of four; the two UPPERCASE labels
+beneath each; the two-line headline top left. Keep every word inside a 72-pixel margin. No
+fills, checks, percentages or trends. Exactly the numerals in the two labels, no others.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · CATEGORY EDUCATION
+One question is not
+a measurement.
+1 QUESTION × 12 RUNS
+12 QUESTIONS × 4 ENGINES
+AEO ANALYZERS
+AEOANALYZERS.COM
+"""),
 ]
 
 def write_md(key, items):

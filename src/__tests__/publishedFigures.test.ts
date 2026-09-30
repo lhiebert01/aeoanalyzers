@@ -173,6 +173,9 @@ describe('the sitemap does not tell crawlers a changed page is unchanged', () =>
     const { readdirSync, existsSync } = require('node:fs') as typeof import('node:fs');
     for (const slug of readdirSync(root('public/blog'))) {
       if (!existsSync(root(`public/blog/${slug}/index.html`))) continue;
+      // A review-gated draft is noindex on purpose, and the sitemap guard FORBIDS listing a
+      // noindex page — so this rule applies only to indexable posts.
+      if (/<meta\s+name=["']robots["']\s+content=["'][^"']*noindex/i.test(readFileSync(root(`public/blog/${slug}/index.html`), 'utf8'))) continue;
       expect(entries.some(e => e.path === `/blog/${slug}`),
         `/blog/${slug} exists but is not in the sitemap`).toBe(true);
     }
