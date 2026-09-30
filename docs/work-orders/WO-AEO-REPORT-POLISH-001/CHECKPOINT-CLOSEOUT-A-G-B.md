@@ -43,10 +43,9 @@ passed the orphan check and the fail-closed prerender check on every lane.
 
 ## Founder actions
 
-1. Run `supabase/migrations/20260930_wo_report_polish_owned_domains.sql` in the Supabase SQL editor
-   (additive column + owner UPDATE policy + the nybsys-mwc.com fixture on your Nybsys rows).
-   Until then the "This is ours" ruling holds on screen and rides the next sweep's request, but
-   does not persist on the saved row.
+1. ~~Run the migration~~ **DONE 2026-09-30** — founder ran
+   `20260930_wo_report_polish_owned_domains.sql` in the SQL editor; verified by SELECT: the Nybsys
+   row `15ec76a6…` (created 2026-09-30 18:42 UTC) shows `owned_domains = ["nybsys-mwc.com"]`.
 2. Open the saved Nybsys sweep and confirm the three sections read as above.
 
 ## Housekeeping
