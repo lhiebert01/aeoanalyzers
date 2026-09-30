@@ -575,6 +575,41 @@ a measurement.
 12 QUESTIONS × 4 ENGINES
 AEO ANALYZERS
 AEOANALYZERS.COM
+("OG card — Buyer series roundup (the super post)", "1200 x 630 landscape", """
+Social card for the roundup post that collects the six-part buyer series in one place. The
+argument is the SET: six equal reads, laid side by side, none ranked above another.
+
+Left third: the eyebrow, then a two-line headline, then one sub-line in 70% white.
+
+Right two-thirds: a single row of six equal dimensional cards with a 1px grey-teal #9DB2B7
+edge, each carrying only its number top-left in green #68E66D and, beneath it, three or four
+short dim placeholder text lines in grey-teal that suggest a page of reading. A thin green
+connector line runs above the row and drops one short tick to the top of each card. All six
+cards are the same size, the same edge colour and the same fill — the reader must not be able
+to tell one card is preferred. Do NOT colour any card's contents green, amber or clay, do NOT
+add checkmarks, swatches, bars or scores inside the cards, and do NOT draw a play button or
+any video symbol anywhere: every item in the series is a written page.
+
+NUMBERS. Exactly the six numerals 1 2 3 4 5 6, one per card, and the word six in the
+sub-line. Render no other numeral — no minute counts, no question counts, no dates.
+
+SAFE AREA. Keep every word and all six cards inside a margin of 72 pixels on all sides.
+Check the sub-line at quarter size; if it cannot be read as a thumbnail, enlarge it rather
+than shrinking the headline.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · THE BUYER SERIES
+Missed the AEO buyer series?
+Here is all of it in one place.
+Six short reads, written for buyers.
+1
+2
+3
+4
+5
+6
+AEO ANALYZERS
+AEOANALYZERS.COM
 """),
 ]
 
