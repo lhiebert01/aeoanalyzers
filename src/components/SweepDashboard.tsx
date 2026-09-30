@@ -176,6 +176,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
   const [authority, setAuthority] = useState<AuthorityGapReport | null>(null);
   const [fidelity, setFidelity] = useState<FidelitySummary | null>(null);
   const [entityLinking, setEntityLinking] = useState<EntityLinkingReport | null>(null);
+  const [showAllComps, setShowAllComps] = useState(false);
   const [pageFactDensity, setPageFactDensity] = useState<FactDensityAudit | null>(null);
   const [truth, setTruth] = useState<TruthRecord | null>(null);
   const [bots, setBots] = useState<any | null>(null);
@@ -607,8 +608,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
     const reportCompetitors = sc.topCompetitors.length ? sc.topCompetitors : r.summary.topCompetitors;
     if (reportCompetitors.length) {
       out.push('## Cited instead of you (category queries)');
-      if (sc.competitorsAutoDetected) out.push('_Auto-detected from the answers (no competitors were entered)._');
-      for (const c of reportCompetitors) out.push(`- ${c.name} · ${c.count}×`);
+      out.push('_Every vendor the search-grounded category answers named — by name in the answer, or by domain in the answer or its sources. Counts are runs. A domain is shown only when the engine itself wrote or cited it; blank means the engine named the vendor without a URL._');
+      out.push('');
+      out.push('| Vendor | Runs | Domain | Entered by you |');
+      out.push('|---|---|---|---|');
+      for (const c of reportCompetitors.slice(0, 10)) out.push(`| ${c.name} | ${c.count} | ${(c as { domain?: string }).domain || ''} | ${(c as { seeded?: boolean }).seeded ? 'seeded' : ''} |`);
+      if (reportCompetitors.length > 10) out.push(`| _…and ${reportCompetitors.length - 10} more (full list on the saved view)_ | | | |`);
       out.push('');
     }
 
@@ -1325,10 +1330,17 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                   <p className="text-xs text-zinc-500 mb-3 flex items-center gap-1"><Sparkles className="w-3 h-3 text-indigo-400" />Auto-detected from the answers — add your real competitors in the setup to sharpen <b>your share of the category</b>.</p>
                 ) : <div className="mb-3" />}
                 <div className="flex flex-wrap gap-2">
-                  {comps.map((c) => (
-                    <span key={c.name} className="px-3 py-1.5 rounded-full text-sm font-semibold bg-red-50 text-red-700 border border-red-200">{c.name} · {c.count}×</span>
+                  {(showAllComps ? comps : comps.slice(0, 10)).map((c) => (
+                    <span key={c.name} title={(c as { domain?: string }).domain || 'named without a URL'} className="px-3 py-1.5 rounded-full text-sm font-semibold bg-red-50 text-red-700 border border-red-200">
+                      {c.name} · {c.count}×{(c as { seeded?: boolean }).seeded ? <span className="ml-1.5 text-[10px] uppercase tracking-wide text-red-500">seeded</span> : null}
+                    </span>
                   ))}
                 </div>
+                {comps.length > 10 && (
+                  <button type="button" onClick={() => setShowAllComps((v) => !v)} className="mt-3 text-xs font-semibold text-zinc-600 underline">
+                    {showAllComps ? 'Show top 10' : `Show all ${comps.length}`}
+                  </button>
+                )}
               </div>
             );
           })()}

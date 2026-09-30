@@ -224,7 +224,7 @@ describe('sweepScorecard — five buyer-facing scores + plain summary', () => {
     expect(sc.categoryRecommendationWinPct).toBe(50);     // 1/2 category cited
     expect(sc.ownedCitationRatePct).toBe(33);             // 1 of 3 surfaced runs cited the domain
     expect(sc.competitiveSharePct).toBe(33);              // 1 brand rec / (1 + 2 Profound)
-    expect(sc.topCompetitors[0]).toEqual({ name: 'Profound', count: 2 });
+    expect(sc.topCompetitors[0]).toMatchObject({ name: 'Profound', count: 2, domain: 'tryprofound.com', seeded: true }); // Lane A: row carries domain + seeded
   });
 
   it('writes a plain-English summary that names the numbers and the top competitor', () => {
@@ -478,5 +478,56 @@ describe('sample size & confidence (WO-QA-003 A3)', () => {
     expect(plainSummary).toContain('early signal, N=2');
     expect(plainSummary).toContain('appears to find');
     expect(plainSummary).not.toContain('reliably finds');
+  });
+});
+
+// ─── WO-AEO-REPORT-POLISH-001 Lane A — count every named vendor, not just seeds ───────
+import { effectiveCompetitorSet, resolveVendorsFromSources } from '../lib/citationSweep';
+describe('Lane A — cited-instead counts every vendor the answers name', () => {
+  const client = { domain: 'nybsys.com', brand: 'Nybsys' };
+  const runs: SweepRunResult[] = [
+    // seeded vendor by name only; an UNSEEDED vendor named in prose with its domain only in sources
+    run({ queryType: 'category', engine: 'claude', grounding: 'search-grounded',
+      transcript: 'Major vendors include Ericsson (Radio Dot), Nokia (AirScale portfolio), CommScope, and Cisco.',
+      sources: ['https://www.nokia.com/networks/small-cells/', 'https://www.commscope.com/solutions/', 'https://www.justdial.com/telecom-equipment'] }),
+    run({ queryType: 'category', engine: 'openai', grounding: 'search-grounded',
+      transcript: 'Consider Nokia or Ericsson; cisco.com also lists small cells.',
+      sources: ['https://www.nokia.com/x'] }),
+    run({ queryType: 'category', engine: 'gemini', grounding: 'search-grounded',
+      transcript: 'Cisco and cisco.com are common picks.', sources: [] }),
+    // model-prior run: named vendors must NOT count toward cited-instead
+    run({ queryType: 'category', engine: 'perplexity', grounding: 'model-prior', transcript: 'Nokia, Ericsson, Samsung.', sources: [] }),
+  ];
+  const seeds = [{ name: 'Ericsson' }, { name: 'Celona' }];
+
+  it('resolves a vendor named in prose to the domain the SAME answer cited — never a lookup', () => {
+    const v = resolveVendorsFromSources(runs, client);
+    expect(v).toEqual(expect.arrayContaining([{ name: 'Nokia', domain: 'nokia.com' }, { name: 'CommScope', domain: 'commscope.com' }]));
+    expect(v.map((x) => x.domain)).not.toContain('justdial.com'); // a directory is a source, not a rival
+  });
+
+  it('a supplied seed list no longer switches detection off (the Nybsys report bug)', () => {
+    const set = effectiveCompetitorSet(runs, client, seeds);
+    const names = set.map((c) => c.name);
+    expect(names).toEqual(expect.arrayContaining(['Ericsson', 'Celona', 'Nokia', 'CommScope', 'Cisco']));
+    expect(set.find((c) => c.name === 'Ericsson')!.seeded).toBe(true);
+    expect(set.find((c) => c.name === 'Nokia')!.seeded).toBe(false);
+  });
+
+  it('counts by NAME in the prose, not only by domain — and only on search-grounded runs', () => {
+    const sc = sweepScorecard(runs, client, seeds);
+    const by = Object.fromEntries(sc.topCompetitors.map((c) => [c.name, c]));
+    expect(by.Nokia.count).toBe(2);          // two grounded runs name Nokia; the model-prior run does not count
+    expect(by.Nokia.domain).toBe('nokia.com');
+    expect(by.Ericsson.count).toBe(2);
+    expect(by.Ericsson.seeded).toBe(true);
+    expect(by.Cisco.count).toBe(3);          // named in prose twice, domain in text once
+    expect(by.Celona).toBeUndefined();       // seeded but never cited — no row, no invented zero
+    expect(sc.competitorsAutoDetected).toBe(false);
+  });
+
+  it('PROVE BY BREAKING: an unseeded vendor named in one transcript must appear', () => {
+    const one = [run({ queryType: 'category', grounding: 'search-grounded', transcript: 'Mavenir is the open-RAN pick.', sources: ['https://www.mavenir.com/private-networks'] })];
+    expect(sweepScorecard(one, client, seeds).topCompetitors.map((c) => c.name)).toContain('Mavenir');
   });
 });

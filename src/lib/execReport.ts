@@ -310,7 +310,8 @@ export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, va
 
   if (sc.topCompetitors.length) {
     out.push('### Cited instead of you (category questions)');
-    for (const c of sc.topCompetitors) out.push(`- ${c.name} · ${c.count}×`);
+    out.push('| Vendor | Runs | Domain | Entered by you |'); out.push('|---|---|---|---|');
+    for (const c of sc.topCompetitors.slice(0, 10)) out.push(`| ${c.name} | ${c.count} | ${c.domain || ''} | ${c.seeded ? 'seeded' : ''} |`);
     out.push('');
   }
   if (d.entityLinking && d.entityLinking.collisions.length) {

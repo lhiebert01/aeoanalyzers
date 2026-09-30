@@ -57,7 +57,7 @@ describe('renderExecReport', () => {
   it('injects computed numbers with N + confidence', () => {
     const paid = renderExecReport(data, nar, 'paid');
     expect(paid).toContain('100% (N=2');   // branded retrievability + N
-    expect(paid).toMatch(/Profound · 2×/);  // cited-instead table
+    expect(paid).toMatch(/\| Profound \| 2 \|/);  // cited-instead table (Lane A: vendor | runs | domain | seeded)
     expect(paid).toContain('Engines are confusing you with');
   });
 

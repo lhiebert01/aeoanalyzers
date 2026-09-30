@@ -405,6 +405,21 @@ const NON_COMPETITOR_HOSTS = new Set([
   'claude.ai', 'anthropic.com', 'perplexity.ai', 'gemini.google.com', 'meta.com',
   // Gemini grounding-redirect host (collapses to google.com anyway, belt-and-braces)
   'cloud.google.com',
+  // WO-AEO-REPORT-POLISH-001 Lane A: parts brokers, directories, marketplaces and data
+  // aggregators are SOURCES the engines consulted, never products competing in the
+  // category. They stay in Authority Gap and out of Cited Instead.
+  'justdial.com', 'alibaba.com', 'thomasnet.com', 'tradeindia.com', 'sourceready.com',
+  'accio.com', 'indiamart.com', 'made-in-china.com', 'globalsources.com', 'amazon.com',
+  'ebay.com', 'marketbeat.com', 'cbinsights.com', 'zoominfo.com', 'similarweb.com',
+  'sourceforge.net', 'pr.com', 'brighttalk.com', 'prnewswire.com', 'businesswire.com',
+  'globenewswire.com', 'verifiedmarketresearch.com', 'marketsandmarkets.com',
+  'grandviewresearch.com', 'statista.com', 'rfp.wiki',
+  // publishers and market-research sellers named in prose WITH a source link — they write
+  // about the category; they do not compete in it
+  'techtarget.com', 'dataintelo.com', 'lightreading.com', 'fiercewireless.com', 'rcrwireless.com',
+  'telecoms.com', 'mordorintelligence.com', 'marketresearchfuture.com', 'alliedmarketresearch.com',
+  'gminsights.com', 'fortunebusinessinsights.com', 'imarcgroup.com', 'researchandmarkets.com',
+  'idc.com', 'forrester.com', 'techblog.comsoc.org', 'comsoc.org', 'ieee.org', 'wikipedia.org',
 ]);
 
 /** Collapse a host to its registrable-ish domain (last two labels): "blog.foo.com"
@@ -447,7 +462,66 @@ const COMPETITOR_DISPLAY_NAMES: Record<string, string> = {
   'brightedge.com': 'BrightEdge', 'yext.com': 'Yext',
 };
 function competitorDisplayName(domain: string): string {
-  return COMPETITOR_DISPLAY_NAMES[domain] || domain;
+  if (COMPETITOR_DISPLAY_NAMES[domain]) return COMPETITOR_DISPLAY_NAMES[domain];
+  const label = domain.split('.')[0] || domain;
+  return label.length >= 4 ? label.charAt(0).toUpperCase() + label.slice(1) : domain;
+}
+
+/** WO-AEO-REPORT-POLISH-001 Lane A — vendors named in the PROSE whose domain is only in the
+ *  run's SOURCES. The domain miner above reads the answer text, so "Nokia (AirScale)" with
+ *  nokia.com cited underneath was never a candidate. Resolve each grounded category run's
+ *  source hosts: a host whose registrable label appears in that same answer as a word is a
+ *  vendor the engine both named and retrieved — the name comes from the transcript, the
+ *  domain from the source, and nothing is looked up or guessed. */
+export function resolveVendorsFromSources(
+  runs: SweepRunResult[],
+  client: { domain: string; brand?: string },
+): Competitor[] {
+  const own = registrable(normalizeDomain(client.domain));
+  const found = new Map<string, string>(); // domain -> name as written in the answer
+  for (const r of runs) {
+    if (r.queryType !== 'category' || r.truncated || isModelPrior(r)) continue;
+    const text = String(r.transcript || '');
+    for (const u of r.sources || []) {
+      const host = registrable(normalizeDomain(u));
+      if (!host || host === own || NON_COMPETITOR_HOSTS.has(host) || found.has(host)) continue;
+      const label = host.split('.')[0];
+      if (label.length < 4) continue;
+      const m = new RegExp('\\b(' + escapeRegExp(label) + ')\\b', 'i').exec(text);
+      if (m) found.set(host, COMPETITOR_DISPLAY_NAMES[host] || m[1]);
+    }
+  }
+  return [...found.entries()].map(([domain, name]) => ({ name, domain }));
+}
+
+/** The set "cited instead" is counted against: the ENTERED competitors (tagged seeded), plus
+ *  every vendor the answers themselves name — by domain in the text, or by name in the text
+ *  with the domain in the sources. Before this, a supplied seed list switched detection off
+ *  entirely, so a report with two seeds showed two rivals while the transcripts named a dozen. */
+export function effectiveCompetitorSet(
+  runs: SweepRunResult[],
+  client: { domain: string; brand?: string },
+  provided: Competitor[],
+): (Competitor & { seeded: boolean })[] {
+  const key = (c: Competitor) => (c.domain ? registrable(normalizeDomain(c.domain)) : '') || c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const out: (Competitor & { seeded: boolean })[] = [];
+  const seen = new Set<string>();
+  for (const c of provided || []) {
+    if (!c || !c.name) continue;
+    const k = key(c); if (seen.has(k)) continue; seen.add(k);
+    out.push({ ...c, seeded: true });
+  }
+  // Source-resolved first: its name is the word as the engine wrote it ("CommScope"), which
+  // beats the capitalised label a bare domain yields ("Commscope").
+  for (const c of [...resolveVendorsFromSources(runs, client), ...detectCompetitors(runs, client)]) {
+    const k = key(c);
+    // a mined domain that names a seed (seed "Celona" ↔ celona.io) folds into the seed
+    const seedHit = out.find((o) => o.seeded && (o.domain ? registrable(normalizeDomain(o.domain)) === k : c.name.toLowerCase().includes(o.name.toLowerCase())));
+    if (seedHit) { if (!seedHit.domain && c.domain) seedHit.domain = c.domain; continue; }
+    if (seen.has(k)) continue; seen.add(k);
+    out.push({ ...c, seeded: false });
+  }
+  return out;
 }
 
 /** Mine likely competitor entities from the CATEGORY answers, for when the user
@@ -583,8 +657,9 @@ export interface SweepScorecard {
   ownedCitationN: number;
   /** Denominator N for Competitive Share (brand + competitor category recs). */
   competitiveShareN: number;
-  /** Who wins the category instead, most-frequent first. */
-  topCompetitors: { name: string; count: number }[];
+  /** Who wins the category instead, most-frequent first. `domain` only when it came from
+   *  the answer text or the run's own sources — never looked up. `seeded` = user-entered. */
+  topCompetitors: { name: string; count: number; domain?: string; seeded?: boolean }[];
   /** True when `topCompetitors`/Competitive Share came from auto-detection (the
    *  user supplied no competitor list). The UI labels these as detected + editable. */
   competitorsAutoDetected: boolean;
@@ -641,8 +716,10 @@ export function sweepScorecard(
   // hits against this effective set (the stored citedCompetitors were scored
   // against the user's — possibly empty — list at sweep time).
   const provided = (competitors || []).filter((c) => c && c.name);
-  const effectiveCompetitors = provided.length ? provided : detectCompetitors(scored, client);
+  // WO-AEO-REPORT-POLISH-001 Lane A: seeds no longer switch detection off.
+  const effectiveCompetitors = effectiveCompetitorSet(scored, client, provided);
   const competitorsAutoDetected = !provided.length && effectiveCompetitors.length > 0;
+  const meta = new Map(effectiveCompetitors.map((c) => [c.name, { domain: c.domain, seeded: c.seeded }]));
 
   let brandedRuns = 0, brandedCited = 0, categoryRuns = 0, categoryCited = 0;
   let surfaced = 0, domainCited = 0;          // for Owned Citation Rate (grounded only)
@@ -671,8 +748,8 @@ export function sweepScorecard(
   }
 
   const topCompetitors = Object.entries(competitorCounts)
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count);
+    .map(([name, count]) => ({ name, count, domain: meta.get(name)?.domain, seeded: !!meta.get(name)?.seeded }))
+    .sort((a, b) => b.count - a.count || Number(b.seeded) - Number(a.seeded) || a.name.localeCompare(b.name));
 
   const brandedRetrievabilityPct = pct(brandedCited, brandedRuns);
   const categoryRecommendationWinPct = pct(categoryCited, categoryRuns);
