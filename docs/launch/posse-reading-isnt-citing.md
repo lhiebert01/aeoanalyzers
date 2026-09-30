@@ -70,7 +70,7 @@ Full story (all numbers reproducible): https://aeoanalyzers.com/blog/reading-isn
 
 ## 4. Bluesky / Threads (≤300 chars)
 
-AI crawlers read my site 265× in ten days. Cited it 0×. Being read isn't being cited — most crawls were training-tier (months before any buyer asks); only ~1 in 16 was a live answer-time fetch. The fix wasn't more content: https://aeoanalyzers.com/blog/reading-isnt-citing
+AI crawlers fetched my pages 36× in ten days. Cited it 0×. Being read isn't being cited — most crawls were training-tier (months before any buyer asks); only ~1 in 16 was a live answer-time fetch. The fix wasn't more content: https://aeoanalyzers.com/blog/reading-isnt-citing
 
 ---
 

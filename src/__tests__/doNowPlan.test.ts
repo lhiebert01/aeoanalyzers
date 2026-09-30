@@ -208,8 +208,10 @@ describe('§3.3, §3.4 and Part C', () => {
     const { readFileSync } = require('node:fs') as typeof import('node:fs');
     const { resolve } = require('node:path') as typeof import('node:path');
     const src = readFileSync(resolve(__dirname, '../components/SweepDashboard.tsx'), 'utf8');
-    // Both the report builder and the on-screen block call buildDoNowPlan.
-    expect((src.match(/buildDoNowPlan\(/g) || []).length).toBeGreaterThanOrEqual(2);
+    const lib = readFileSync(resolve(__dirname, '../lib/sweepReport.ts'), 'utf8');
+    // The report builder (lib, Lane C) and the on-screen block each call buildDoNowPlan.
+    expect((lib.match(/buildDoNowPlan\(/g) || []).length).toBeGreaterThanOrEqual(1);
+    expect((src.match(/buildDoNowPlan\(/g) || []).length).toBeGreaterThanOrEqual(1);
     // and the screen renders the same five fields plus the explainer
     for (const field of ['step.explainer', 'step.why', 'step.link', 'step.time', 'step.changes', 'step.doesNotChange']) {
       expect(src).toContain(field);
@@ -473,18 +475,25 @@ describe('the pitch step is actually wired into both renderers', () => {
     return readFileSync(resolve(__dirname, '../components/SweepDashboard.tsx'), 'utf8');
   };
 
-  it('both buildDoNowPlan call sites pass pitchTargets', () => {
-    expect((src().match(/pitchTargets: pitchTargetsFrom\(authority\)/g) || []).length).toBe(2);
+  const lib = () => {
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { resolve } = require('node:path') as typeof import('node:path');
+    return readFileSync(resolve(__dirname, '../lib/sweepReport.ts'), 'utf8');
+  };
+
+  it('both buildDoNowPlan call sites pass pitchTargets (report builder + screen)', () => {
+    expect((lib().match(/pitchTargets: pitchTargetsFrom\(authority, inp\.competitors\)/g) || []).length).toBe(1);
+    expect((src().match(/pitchTargets: pitchTargetsFrom\(authority, parseCompetitors\(competitors\)\)/g) || []).length).toBe(1);
   });
 
   it('the targets come from one shared derivation, so the surfaces cannot diverge', () => {
-    expect((src().match(/const pitchTargetsFrom = /g) || []).length).toBe(1);
+    expect((lib().match(/export function pitchTargetsFrom\(/g) || []).length).toBe(1);
+    expect(src()).not.toMatch(/const pitchTargetsFrom = /);
   });
 
   it('both surfaces print which layer a step moves', () => {
-    const s = src();
-    expect(s).toContain("out.push(`- Moves: ${step.moves ===");
-    expect(s).toContain('<span className="text-zinc-400">Moves:</span>');
+    expect(lib()).toContain("out.push(`- Moves: ${step.moves ===");
+    expect(src()).toContain('<span className="text-zinc-400">Moves:</span>');
   });
 });
 

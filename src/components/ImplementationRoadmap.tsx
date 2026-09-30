@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { CoverCard } from './CoverCard';
+import { buildScoreCover } from '../lib/scoreCover';
 import { motion } from 'motion/react';
 import {
   FileText,
@@ -418,6 +420,8 @@ ${cleanDisplayName}`;
       <div className="p-8 md:p-12">
         {activeTab === 'summary' && (
           <div className="space-y-12">
+            {/* Lane C: the same executive summary the Word report opens with (page 1). */}
+            <CoverCard cover={buildScoreCover(analysisResult, analyzedUrl || 'Unknown URL', cleanDisplayName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))} />
             <div className="grid md:grid-cols-2 gap-12">
               <div className="space-y-6">
                 <h3 className="text-xl font-bold flex items-center gap-2">

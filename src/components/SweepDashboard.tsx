@@ -3,7 +3,7 @@ import { Type } from '@google/genai';
 import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, ArrowLeft, DollarSign, Search, Download, ChevronsUpDown, Sparkles, RotateCcw, Pencil, ShieldAlert, ShieldCheck, Lock } from 'lucide-react';
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
-import { segmentBreakdown, winnableSegment, largestLosingSegment, segmentSummaryNote, SEGMENT_LABEL } from '../lib/querySegment';
+import { segmentBreakdown, winnableSegment, largestLosingSegment, SEGMENT_LABEL } from '../lib/querySegment';
 import { sanitizeCompetitors, lintDefunctNames, stripNonQuestionLines } from '../lib/sweepConfig';
 import { buildSweepActionAgenda } from '../lib/sweepActions';
 import { buildDoNowPlan } from '../lib/doNowPlan';
@@ -18,7 +18,9 @@ import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType, C
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
 import { doNowChecklist } from '../lib/doNowChecklist';
-import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, ENGINE_LABEL as BELIEF_ENGINE } from '../lib/beliefs';
+import { buildSweepReport, buildSweepCover, pitchTargetsFrom, ALIAS, type SweepResponse, type SweepReportInputs } from '../lib/sweepReport';
+import { CoverCard } from './CoverCard';
+import { extractBeliefs, flaggedWrongValues, ENGINE_LABEL as BELIEF_ENGINE } from '../lib/beliefs';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
 import { getAccessToken, supabaseQuery, supabaseUpdate } from '../supabase';
 import { safeJsonParse } from '../services/geminiService';
@@ -150,16 +152,6 @@ type GeneratedQuery = { intent_type: string; query: string };
 // WO-1 (+WO-3/WO-7) client dashboard: run a tested citation sweep, then show
 // branded retrievability, category citation-rate, competitor displacement,
 // transcript drill-down, per-sweep cost, AI-bot hits, and the authority gap.
-
-interface SweepResponse {
-  domain: string; brand: string | null; runsPerQuery: number;
-  engines: string[]; skippedEngines: string[]; configured: string[];
-  summary: SweepSummary; runs: SweepRunResult[]; persisted: boolean;
-  generatedAt?: string; // ISO; used so a saved-view download matches the original run's report byte-for-byte
-  quickCheck?: boolean; tier?: string;
-  provisional?: { score: number; label: string; message: string } | null;
-  upgrade?: string | null;
-}
 
 const ENGINE_LABEL: Record<string, string> = {
   claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini',
@@ -384,24 +376,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
       return { name, domain: dom || undefined };
     });
 
-  /** Targets for the Do-Now pitch step: the earn-tier authorities from THIS sweep, with
-   *  their counts, so the highest-evidence action names the customer's own cited pages
-   *  rather than a category list. Competitors are dropped — they are not pitchable — and
-   *  the report builder and the on-screen block both call this, so the two cannot
-   *  diverge (Part C). */
-  const pitchTargetsFrom = (auth: AuthorityGapReport | null) => {
-    if (!auth) return [];
-    const rivals = parseCompetitors(competitors)
-      .map((c) => (c.domain || '').toLowerCase().replace(/^www\./, ''))
-      .filter(Boolean);
-    return auth.authorityDomains
-      .filter((d) => tierForDomain(d.domain).tier === 'earned' && d.citations >= 2)
-      .filter((d) => {
-        const dom = d.domain.toLowerCase();
-        return !rivals.some((rv) => dom === rv || dom.endsWith('.' + rv));
-      })
-      .map((d) => ({ domain: d.domain, citations: d.citations }));
-  };
+
 
   // Step 1: user enters only the domain → crawl it, infer the basics, draft the
   // buyer questions, then surface them for confirmation (nothing runs/costs a
@@ -528,217 +503,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
     }
   }
 
-  // Build a single human-readable report of the whole sweep — summary scores,
-  // competitors, authority gap, crawler hits, and every transcript — so it can
-  // be saved/shared/pasted in one shot instead of expanding runs one at a time.
-  function buildReport(r: SweepResponse): string {
-    const L = (eng: string) => ENGINE_LABEL[eng] || eng;
-    const out: string[] = [];
-    out.push(`# Citation Sweep — ${r.domain}`);
-    if (r.brand) out.push(`Brand: ${r.brand}`);
-    out.push(`Generated: ${new Date(r.generatedAt || Date.now()).toISOString().slice(0, 16).replace('T', ' ')} UTC`);
-    // WO-INTEGRITY-002 A1: a saved-view report is a faithful rebuild — stamp it beside the
-    // original Generated time so the two downloads are self-describing (and diff-clean).
-    if (savedView) out.push(`Rebuilt: ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC from stored transcripts`);
-    out.push(`Runs per query: ${r.runsPerQuery}`);
-    out.push(`Engines: ${r.configured.join(', ') || 'none'}`);
-    if (r.skippedEngines?.length) out.push(`Skipped (no API key): ${r.skippedEngines.join(', ')}`);
-    if (isAdmin) out.push(`Total sweep cost: ~$${r.summary.totalCostUsd.toFixed(3)}`);
-    out.push('');
-
-    // Lead the report with the plain-English summary + the buyer-facing scorecard,
-    // not raw scores (UX-PRINCIPLES §4).
-    const sc = sweepScorecard(r.runs, { domain: r.domain, brand: r.brand || undefined }, parseCompetitors(competitors));
-    out.push('## Summary — in plain English');
-    out.push(sc.plainSummary);
-    out.push('');
-    const scoreCell = (v: number | null, n: number) =>
-      v === null ? '—' : `${v}% (N=${n}, ${confidenceLevel(n)} confidence)`;
-    out.push('| What it measures | Score |');
-    out.push('| --- | --- |');
-    out.push(`| Found when asked by name (retrievability) | ${scoreCell(sc.brandedRetrievabilityPct, sc.brandedRuns)} |`);
-    out.push(`| Recommended to new buyers (category win) | ${scoreCell(sc.categoryRecommendationWinPct, sc.categoryRuns)} |`);
-    // State the basis in the report itself, in the same words as the History list and
-    // the opened view, so the three cannot be read as three different measurements.
-    out.push('');
-    out.push('_Category win is pooled across engines over **search-grounded runs only**. An answer given from the model\'s memory is reported as unmeasured, never as a zero, and is excluded from the denominator. N is the number of search-grounded runs._');
-    out.push(`| Your own site cited (owned citation rate) | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
-    out.push(`| Your share of the category | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
-    out.push('');
-    if (sc.modelPriorRuns > 0) {
-      out.push(`_Category win is measured on search-grounded answers only. ${sc.modelPriorRuns} answer${sc.modelPriorRuns > 1 ? 's' : ''} came from model memory (no web search)${sc.modelPriorVisibilityPct !== null ? `; the model named you ${sc.modelPriorVisibilityPct}% of those (model-prior visibility)` : ''}._`);
-      out.push('');
-    }
-
-    // C3: category win by buyer segment.
-    const segs = segmentBreakdown(r.runs);
-    if (segs.length > 1) {
-      out.push('### Category win by buyer segment');
-      out.push('| Segment | Win | N |');
-      out.push('| --- | --- | --- |');
-      for (const s of segs) out.push(`| ${SEGMENT_LABEL[s.segment]} | ${s.winPct}% | ${s.categoryRuns} |`);
-      out.push('');
-      out.push(segmentSummaryNote(segs, (s) => `**${s}**`));
-      out.push('');
-    }
-
-    // Fidelity (B1): of the branded answers that named the brand, which got facts wrong.
-    if (fidelity && (fidelity.citedAccurate > 0 || fidelity.citedDrifted > 0)) {
-      out.push('## Fidelity — is AI accurate about you?');
-      out.push(`Of the answers that named you, ${fidelity.citedAccurate} got your facts right${fidelity.citedDrifted > 0 ? ` and ${fidelity.citedDrifted} drifted (asserted something false)` : ' — no fabricated facts detected'}.`);
-      for (const iss of fidelity.issues) out.push(`- ${iss.wrong ? `"${iss.wrong}": ` : ''}${iss.detail}`);
-      out.push('');
-    }
-    // WO-AEO-REPORT-POLISH-001 Lane B: every factual claim the branded answers made, counted.
-    {
-      const brandedRuns = r.runs.filter((x) => x.queryType === 'branded');
-      out.push(...beliefsMarkdown(extractBeliefs(brandedRuns, r.brand || truth?.brandName || undefined, flaggedWrongValues(fidelity)), brandedRuns.length));
-    }
-    if (pageFactDensity && pageFactDensity.flags.length > 0) {
-      out.push('## Content depth — the levers that make a page citable');
-      out.push('_Effect sizes are findings from the Princeton GEO study (arXiv:2311.09735), not guarantees._');
-      for (const f of pageFactDensity.flags) out.push(`- ${f.consequence}`);
-      out.push('');
-    }
-    if (entityLinking && entityLinking.collisions.length > 0) {
-      out.push('## Entity-linking — who engines confuse you with');
-      out.push(`Engines are confusing you with: ${entityLinking.collisions.join(', ')}.`);
-      for (const f of entityLinking.flags) out.push(`- [${f.kind}] ${f.detail} (${f.source})`);
-      out.push('Fix: an explicit "not affiliated with…" disambiguation line + a connected @id entity graph.');
-      out.push('');
-    }
-
-    out.push('## Scores by engine');
-    for (const e of r.summary.engines) {
-      out.push(`### ${L(e.engine)}`);
-      if ((e as { errored?: boolean }).errored) {
-        out.push('- Service unavailable (engine failed to run — bad/expired key or config; NOT a real 0%)');
-      } else if ((e as { insufficientValid?: boolean }).insufficientValid) {
-        out.push(`- Insufficient valid runs — all ${(e as { erroredRuns?: number }).erroredRuns ?? 0} runs errored (rate-limit / timeout) and were excluded (NOT a real 0%).`);
-      } else if (e.truncatedBlocked) {
-        out.push(`- Column unreliable — ${e.truncatedRuns} answers were cut off by the token cap (not a real measurement; re-run at a higher cap).`);
-      } else {
-        out.push(`- Retrievability (branded): ${e.brandedCited}/${e.brandedRuns} (${e.retrievabilityPct}%)`);
-        // B6: a category cell with zero search-grounded runs is UNMEASURED, not a real 0%.
-        out.push(e.categoryRuns === 0
-          ? `- Citation win (category): Unmeasured — no search invoked${e.modelPriorRuns > 0 ? ` (${e.modelPriorRuns} model-prior answer${e.modelPriorRuns > 1 ? 's' : ''})` : ''}`
-          : `- Citation win (category, search-grounded): ${e.citationWinPct}% · N=${e.categoryRuns}`);
-        if ((e as { erroredRuns?: number }).erroredRuns) out.push(`- (${(e as { erroredRuns?: number }).erroredRuns} run(s) errored — excluded from the scores above)`);
-        if (e.modelPriorRuns > 0) out.push(`- (${e.modelPriorRuns} model-prior answer${e.modelPriorRuns > 1 ? 's' : ''} — answered without a live search — reported separately)`);
-        if (e.truncatedRuns > 0) out.push(`- (${e.truncatedRuns} truncated answer${e.truncatedRuns > 1 ? 's' : ''} excluded from the scores above)`);
-        if (isAdmin) out.push(`- Cost: $${e.costUsd.toFixed(3)}`);
-      }
-      out.push('');
-    }
-
-    const reportCompetitors = sc.topCompetitors.length ? sc.topCompetitors : r.summary.topCompetitors;
-    if (reportCompetitors.length) {
-      out.push('## Cited instead of you (category queries)');
-      out.push('_Every vendor the search-grounded category answers named — by name in the answer, or by domain in the answer or its sources. Counts are runs. A domain is shown only when the engine itself wrote or cited it; blank means the engine named the vendor without a URL._');
-      out.push('');
-      out.push('| Vendor | Runs | Domain | Entered by you |');
-      out.push('|---|---|---|---|');
-      for (const c of reportCompetitors.slice(0, 10)) out.push(`| ${c.name} | ${c.count} | ${(c as { domain?: string }).domain || ''} | ${(c as { seeded?: boolean }).seeded ? 'seeded' : ''} |`);
-      if (reportCompetitors.length > 10) out.push(`| _…and ${reportCompetitors.length - 10} more (full list on the saved view)_ | | | |`);
-      out.push('');
-    }
-
-    if (authority && authority.authorityDomains.length) {
-      out.push('## Authority gap — sources the engines trust (by attainability)');
-      const topA = authority.authorityDomains.slice(0, 12);
-      for (const tier of ['now', 'earned', 'aspirational'] as const) {
-        const inTier = topA.filter((d) => tierForDomain(d.domain).tier === tier);
-        if (!inTier.length) continue;
-        out.push(`### ${TIER_LABEL[tier]}`);
-        for (const d of inTier) out.push(`- ${d.domain} · ${d.citations} — ${tierForDomain(d.domain).rationale}`);
-      }
-      if (authority.recommendations.length) {
-        out.push('');
-        out.push('Recommendations:');
-        for (const rec of authority.recommendations) out.push(`- ${rec}`);
-      }
-      out.push('');
-    }
-
-    if (bots && bots.configured) {
-      if ((bots.totalHits || 0) === 0) {
-        // B4: no measured zero — telemetry simply isn't connected for this domain.
-        out.push('## AI crawler hits');
-        out.push('No telemetry connected for this domain — crawler-hit tracking needs a first-party pixel/log on the site.');
-      } else {
-        out.push(`## AI crawler hits (${bots.days}d) — ${bots.totalHits} total`);
-        for (const t of ['live', 'search', 'training']) out.push(`- ${t}: ${bots.tierTotals?.[t] || 0}`);
-      }
-      out.push('');
-    }
-
-    // WO-003 Rev B §3.1/§3.2 — name which problem they have, then give steps they can
-    // execute. Derived from their OWN per-engine branded retrieval, so a discovery
-    // problem is never handed a schema checklist.
-    {
-      const plan = buildDoNowPlan({
-        domain: r.domain,
-        perEngine: r.summary.engines.map((e) => ({ engine: ENGINE_LABEL[e.engine] || e.engine, found: e.brandedCited, total: e.brandedRuns })),
-        drifted: fidelity ? fidelity.citedDrifted : undefined,
-        collisions: entityLinking?.collisions ?? [],
-        authorityGap: authority ? authority.authorityDomains.map((d) => ({ domain: d.domain, citations: d.citations })) : [],
-        pitchTargets: pitchTargetsFrom(authority),
-        paid: !!isAdmin || r.tier !== 'free',
-      });
-      out.push('## What to do about these results');
-      out.push('');
-      for (const line of plan.situation) { out.push(line); out.push(''); }
-      if (plan.gatedNote) { out.push(plan.gatedNote); out.push(''); }
-      // §3.4 — already ranked by impact across sections, so render in order.
-      for (const step of plan.steps) {
-        out.push(`**${step.n}. ${step.what}**`);
-        out.push('');
-        out.push(step.explainer); // §3.3 — one plain sentence, never a bare directive
-        out.push('');
-        out.push(`- Moves: ${step.moves === 'citation' ? 'citation win — being the answer' : step.moves === 'discovery' ? 'discovery — being retrievable at all' : 'accuracy — what they say about you'}`);
-        out.push(`- Why it matters for AI answers: ${step.why}`);
-        if (step.link) out.push(`- Link: ${step.link}`);
-        out.push(`- Time: ${step.time}`);
-        out.push(`- What changes: ${step.changes}`);
-        out.push(`- What does NOT change: ${step.doesNotChange}`);
-        out.push('');
-      }
-      if (plan.noChannelNote) { out.push(plan.noChannelNote); out.push(''); }
-    }
-
-    // WO-UX-CLARITY-001: map each measured layer to its next action (closing agenda).
-    for (const line of buildSweepActionAgenda({
-      brandedRetrievabilityPct: sc.brandedRetrievabilityPct,
-      categoryWinPct: sc.categoryRecommendationWinPct,
-      hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
-      collisions: entityLinking?.collisions ?? [],
-      losingCategoryQuestions: [...new Set(r.runs.filter((x) => x.queryType === 'category' && !x.cited && !x.truncated && x.grounding !== 'model-prior').map((x) => x.query))],
-      doNowAuthorities: authority ? doNowChecklist(authority.authorityDomains) : [],
-      brand: r.brand || undefined,
-      domain: r.domain,
-      served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs, ownedDomains } : undefined,
-    }, { heading: false })) out.push(line);
-    out.push('');
-
-    out.push(`## Transcripts (${r.runs.length} runs)`);
-    out.push('');
-    for (const run of r.runs) {
-      // WO-INTEGRITY-002 A1/A2: never label a failed call or a "site not found" run "[not cited]".
-      const tag = /^\s*\[error:/i.test(run.transcript || '')
-        ? 'errored — excluded'
-        : run.truncated ? 'truncated — not scored'
-        : (run as { siteNotFound?: boolean }).siteNotFound ? 'search ran — site not found'
-        : run.cited ? 'cited' : 'not cited';
-      const prior = run.grounding === 'model-prior' && !run.truncated ? ' · model-prior' : '';
-      out.push(`### [${tag}${prior}] ${L(run.engine)} · ${run.queryType}: ${run.query}`);
-      out.push(run.transcript || '(no answer)');
-      if (run.sources?.length) out.push(`Sources: ${run.sources.join(' · ')}`);
-      out.push('');
-      out.push('---');
-      out.push('');
-    }
-    return out.join('\n');
+  // Lane C: the report is ONE pure function (lib/sweepReport.ts) shared by the .md, the .docx,
+  // the saved view and the PDF — a test regenerates the founder's Nybsys report from stored runs.
+  function reportInputs(r: SweepResponse): SweepReportInputs {
+    return { result: r, competitors: parseCompetitors(competitors), fidelity, entityLinking, authority, bots, truth, pageFactDensity, ownedDomains, isAdmin: !!isAdmin, savedView };
   }
+  function buildReport(r: SweepResponse): string { return buildSweepReport(reportInputs(r)); }
 
   function downloadReport() {
     if (!result) return;
@@ -769,6 +539,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
     } finally {
       setDocxBusy(false);
     }
+  }
+
+  // Lane E: print-to-PDF of the same report text (see services/sweepPdf.ts for the route).
+  async function downloadPdf() {
+    if (!result) return;
+    const stamp = new Date(result.generatedAt || Date.now()).toISOString().slice(0, 10);
+    const { openSweepPdf } = await import('../services/sweepPdf');
+    if (!openSweepPdf(buildReport(result), result.domain, stamp)) setError('PDF export needs a pop-up window — allow pop-ups for this site and try again.');
   }
 
   const scorecard: SweepScorecard | null =
@@ -1126,6 +904,9 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
             </div>
           )}
 
+          {/* Lane C: the executive summary — the same CoverInput the .md/.docx page 1 renders. */}
+          {scorecard && result && <CoverCard cover={buildSweepCover(reportInputs(result))} />}
+
           {/* Plain-English headline (UX-PRINCIPLES §4): lead with what it MEANS, not a data dump. */}
           {scorecard && (
             <div className="rounded-3xl overflow-hidden shadow-sm border border-zinc-200">
@@ -1137,8 +918,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                 {[
                   { label: 'Found when asked by name', hint: 'Branded retrievability', value: scorecard.brandedRetrievabilityPct, n: scorecard.brandedRuns },
                   { label: 'Recommended to new buyers', hint: 'Category win — the metric that drives sales', value: scorecard.categoryRecommendationWinPct, n: scorecard.categoryRuns, hero: true },
-                  { label: 'Your own site cited', hint: 'Owned citation rate', value: scorecard.ownedCitationRatePct, n: scorecard.ownedCitationN },
-                  { label: 'Your share of the category', hint: 'You vs. competitors', value: scorecard.competitiveSharePct, n: scorecard.competitiveShareN },
+                  { label: ALIAS.owned.plain, hint: ALIAS.owned.precise, value: scorecard.ownedCitationRatePct, n: scorecard.ownedCitationN },
+                  { label: ALIAS.share.plain, hint: `${ALIAS.share.precise} — you vs. competitors`, value: scorecard.competitiveSharePct, n: scorecard.competitiveShareN },
                 ].map((s) => (
                   <div key={s.label} className={`p-4 sm:p-5 ${s.hero ? 'bg-emerald-50/60' : ''}`}>
                     <div className={`text-3xl font-black ${tone(s.value)}`}>{s.value === null ? '—' : `${s.value}%`}</div>
@@ -1189,6 +970,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                   <button onClick={downloadReport}
                     className="inline-flex items-center gap-2 border border-white/40 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10">
                     <Download className="w-4 h-4" />Markdown
+                  </button>
+                  <button onClick={downloadPdf}
+                    className="inline-flex items-center gap-2 border border-white/40 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10">
+                    <Download className="w-4 h-4" />Download PDF
                   </button>
                 </div>
               </div>
@@ -1338,9 +1123,9 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                   </div>
                 ) : (
                   <>
-                    <div className="mt-3 text-sm text-zinc-500">Retrievability (branded)</div>
+                    <div className="mt-3 text-sm text-zinc-700 font-semibold">{ALIAS.retrievability.plain}</div><div className="text-[11px] text-zinc-400">{ALIAS.retrievability.precise}</div>
                     <div className="text-2xl font-black">{e.brandedCited}/{e.brandedRuns} <span className="text-base font-semibold text-zinc-400">({e.retrievabilityPct}%)</span></div>
-                    <div className="mt-2 text-sm text-zinc-500">Citation win (category)</div>
+                    <div className="mt-2 text-sm text-zinc-700 font-semibold">{ALIAS.categoryWin.plain}</div><div className="text-[11px] text-zinc-400">{ALIAS.categoryWin.precise} — search-grounded</div>
                     {/* WO-INTEGRITY-002 B6: a category cell with zero search-grounded runs is
                         UNMEASURED (the engine answered from memory), not a real 0%. */}
                     {e.categoryRuns === 0 ? (
@@ -1348,7 +1133,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                     ) : (
                       <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}% <span className="text-xs font-semibold text-zinc-400">· N={e.categoryRuns}</span></div>
                     )}
-                    {e.modelPriorRuns > 0 && <div className="mt-2 text-[11px] text-zinc-400">{e.modelPriorRuns} model-prior answer{e.modelPriorRuns > 1 ? 's' : ''} (no search) reported separately</div>}
+                    {e.modelPriorRuns > 0 && <div className="mt-2 text-[11px] text-zinc-400">{e.modelPriorRuns} answered from memory (no search) reported separately</div>}
                     {e.truncatedRuns > 0 && <div className="mt-2 text-[11px] text-amber-600">{e.truncatedRuns} truncated answer{e.truncatedRuns > 1 ? 's' : ''} excluded</div>}
                     {((e as { erroredRuns?: number }).erroredRuns ?? 0) > 0 && <div className="mt-2 text-[11px] text-amber-600">{(e as { erroredRuns?: number }).erroredRuns} of {e.brandedRuns + e.categoryRuns + e.truncatedRuns + e.modelPriorRuns + ((e as { erroredRuns?: number }).erroredRuns ?? 0)} runs errored — excluded</div>}
                     {isAdmin && <div className="mt-2 text-xs text-zinc-400 flex items-center gap-1"><DollarSign className="w-3 h-3" />${e.costUsd.toFixed(3)}</div>}
@@ -1467,7 +1252,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                   drifted: fidelity ? fidelity.citedDrifted : undefined,
                   collisions: entityLinking?.collisions ?? [],
                   authorityGap: authority ? authority.authorityDomains.map((d) => ({ domain: d.domain, citations: d.citations })) : [],
-                  pitchTargets: pitchTargetsFrom(authority),
+                  pitchTargets: pitchTargetsFrom(authority, parseCompetitors(competitors)),
                   paid: !!isAdmin || result.tier !== 'free',
                 });
                 return (
@@ -1545,6 +1330,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                     <button onClick={downloadReport}
                       className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-700 px-3 py-1.5 rounded-xl text-sm font-semibold hover:bg-zinc-50">
                       <Download className="w-4 h-4" />Markdown
+                    </button>
+                    <button onClick={downloadPdf}
+                      className="inline-flex items-center gap-1.5 border border-zinc-300 text-zinc-700 px-3 py-1.5 rounded-xl text-sm font-semibold hover:bg-zinc-50">
+                      <Download className="w-4 h-4" />Download PDF
                     </button>
                   </>
                 )}

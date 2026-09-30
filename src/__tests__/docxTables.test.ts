@@ -77,15 +77,17 @@ describe('docx tables render outside Microsoft Word', () => {
     const xml = await documentXml(captured);
     const gs = grids(xml);
     // Score-rating, score-breakdown, content-rewrite and knowledge-gap tables.
-    expect(gs.length).toBe(4);
+    // Lane C: + the cover's headline tiles and the four-dimension bar block (22 narrow
+    // shaded cells by design — shading, not text, so the >700 rule does not apply to it).
+    expect(gs.length).toBe(6);
     for (const grid of gs) {
       expect(grid).not.toContain('w:w="100"/>');
       const widths = [...grid.matchAll(/w:w="(\d+)"/g)].map((m) => Number(m[1]));
-      expect(Math.min(...widths)).toBeGreaterThan(700);
+      if (widths.length !== 22) expect(Math.min(...widths)).toBeGreaterThan(700);
       // A4 (11906) minus the 2×1440 default margins.
       expect(widths.reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(9026);
     }
-    expect((xml.match(/<w:tblLayout w:type="fixed"\/>/g) || []).length).toBe(4);
+    expect((xml.match(/<w:tblLayout w:type="fixed"\/>/g) || []).length).toBe(6);
   });
 });
 

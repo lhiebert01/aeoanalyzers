@@ -1,5 +1,8 @@
 import type { AnalysisResult } from './geminiService';
 import { categoryFromAnswerQuality, type GapCategory } from '../lib/queryGap';
+import { buildScoreCover } from '../lib/scoreCover';
+import { buildCover, DIRECTIVE } from '../lib/reportCover';
+import { mdToDocxChildren } from './mdToDocx';
 
 function docxGapAction(cat: GapCategory): string {
   if (cat === 'strong') return 'No action needed — maintain current content';
@@ -66,10 +69,12 @@ export async function generateDocxReport(
 
   const spacer = () => new Paragraph({ spacing: { after: 200 } });
 
-  const sectionHeading = (text: string) =>
+  const sectionHeading = (text: string, opts: { pageBreak?: boolean } = {}) =>
     new Paragraph({
       children: [new TextRun({ text, bold: true, size: 28, color: '1a1a2e' })],
       heading: HeadingLevel.HEADING_1,
+      keepNext: true,
+      pageBreakBefore: !!opts.pageBreak,
       spacing: { before: 400, after: 200 },
       border: {
         bottom: { style: BorderStyle.SINGLE, size: 1, color: 'e0e0e0' },
@@ -101,49 +106,14 @@ export async function generateDocxReport(
   // --- Build document sections ---
   const children: any[] = [];
 
-  // 1. Title Page
-  children.push(
-    new Paragraph({ spacing: { before: 1200 } }),
-    new Paragraph({
-      children: [new TextRun({ text: 'AEO Analysis Report', bold: true, size: 52, color: '1a1a2e' })],
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 200 },
-    }),
-    new Paragraph({
-      children: [new TextRun({ text: analyzedUrl, size: 24, color: '666666', italics: true })],
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 100 },
-    }),
-    new Paragraph({
-      children: [new TextRun({ text: date, size: 22, color: '999999' })],
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 400 },
-    }),
-    new Paragraph({
-      children: [new TextRun({ text: `Prepared by: ${displayName}`, size: 24, color: '333333' })],
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 200 },
-    }),
-    new Paragraph({
-      children: [
-        new TextRun({ text: `AEO Score: ${result.score}/100`, bold: true, size: 32, color: '1a1a2e' }),
-      ],
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 100 },
-    }),
-    new Paragraph({
-      children: [
-        new TextRun({
-          text: `Citation Readiness: ${result.citationProbability}% (technical-readiness estimate — not a measured citation rate)`,
-          bold: true,
-          size: 28,
-          color: result.citationProbability >= 60 ? '16a34a' : result.citationProbability >= 30 ? 'ca8a04' : 'dc2626',
-        }),
-      ],
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 600 },
-    })
-  );
+  // 1. Page 1 — the executive summary (Lane C), from the same cover component the Sweep
+  //    report uses. Title block, three headline numbers, the four dimension scores as a bar
+  //    block, "what this means" from a template and the stored numbers, first three actions.
+  {
+    const D = await import('docx');
+    const coverMd = buildCover(buildScoreCover(result, analyzedUrl, displayName, date)).join('\n') + '\n' + DIRECTIVE.pagebreak + '\n';
+    children.push(...mdToDocxChildren(D, coverMd, { contentWidth: CONTENT_W }));
+  }
 
   // Score Rating Table
   const scoreRatingTiers: [string, string, string][] = [
@@ -156,75 +126,9 @@ export async function generateDocxReport(
   const activeTierIdx = result.score <= 30 ? 0 : result.score <= 50 ? 1 : result.score <= 70 ? 2 : result.score <= 85 ? 3 : 4;
   const SCORE_COLS = [1300, 1900, 5820];
 
-  children.push(
-    sectionHeading('What Your Score Means'),
-    new Table({
-      rows: [
-        new TableRow({
-          children: ['Range', 'Rating', 'What it means'].map(
-            (text, ci) =>
-              new TableCell({
-                children: [new Paragraph({ children: [new TextRun({ text, bold: true, size: 20, color: 'ffffff' })] })],
-                shading: { type: ShadingType.SOLID, color: '1a1a2e' },
-                width: dxa(SCORE_COLS[ci]),
-              })
-          ),
-        }),
-        ...scoreRatingTiers.map(
-          ([range, rating, desc], i) =>
-            new TableRow({
-              children: [range, rating, desc].map(
-                (text, ci) =>
-                  new TableCell({
-                    children: [new Paragraph({ children: [new TextRun({ text, bold: i === activeTierIdx, size: 20, color: i === activeTierIdx ? '1a1a2e' : '333333' })] })],
-                    width: dxa(SCORE_COLS[ci]),
-                    ...(i === activeTierIdx ? { shading: { type: ShadingType.SOLID, color: 'e8e8ee' } } : {}),
-                  })
-              ),
-            })
-        ),
-      ],
-      ...fixed(SCORE_COLS),
-    }),
-    new Paragraph({
-      children: [
-        new TextRun({ text: `Your score of ${result.score}/100 with ${result.citationProbability}% citation readiness (a technical estimate, not a measured citation rate) places you in the `, size: 22, color: '333333' }),
-        new TextRun({ text: scoreRatingTiers[activeTierIdx][1], bold: true, size: 22, color: '1a1a2e' }),
-        new TextRun({ text: ' range.', size: 22, color: '333333' }),
-      ],
-      spacing: { before: 200, after: 200 },
-    }),
-    spacer()
-  );
-
-  // What is JSON-LD?
-  children.push(
-    sectionHeading('What is JSON-LD and Why Does It Matter?'),
-    bodyText(
-      'JSON-LD (JavaScript Object Notation for Linked Data) is a small block of structured code placed in your website\'s <head> section. It acts as a machine-readable "business card" — telling AI engines exactly what your business does, what products and services you offer, and how to cite you.'
-    ),
-    boldBodyText('How AI Answer Engines use JSON-LD: ', 'When an AI engine like Google Gemini, ChatGPT, or Perplexity answers a user\'s question, it scans websites for structured, trustworthy data it can quote. JSON-LD gives the AI a pre-organized summary of your business — no guessing required. Without it, AI has to infer your offerings from unstructured page content, which leads to incomplete or inaccurate citations.'),
-    bodyText(
-      'Sites with comprehensive JSON-LD improve their chances of being cited as an authoritative source, because the AI can extract exact service names, descriptions, and capabilities with high confidence.'
-    ),
-    spacer()
-  );
-
-  // 2. Why This Matters
-  children.push(
-    sectionHeading('Why This Matters'),
-    bodyText(
-      'AI-powered search engines like Google Gemini, ChatGPT, and Perplexity are replacing traditional search results with direct answers. When a potential customer asks an AI a question about your industry, the AI pulls its answer from websites it considers authoritative and well-structured.'
-    ),
-    bodyText(
-      'If your website is not optimized for these AI engines, your competitors get cited instead — and you lose the customer without ever knowing it. This is not about traditional SEO. This is about making your website readable, trustworthy, and citable by AI systems.'
-    ),
-    spacer()
-  );
-
   // 3. Executive Summary
   children.push(
-    sectionHeading('Executive Summary'),
+    sectionHeading('Executive Summary', { pageBreak: true }),
     bodyText(result.summary),
     spacer()
   );
@@ -331,7 +235,7 @@ export async function generateDocxReport(
 
   // 7. Implementation Instructions
   children.push(
-    sectionHeading('Implementation Instructions'),
+    sectionHeading('Implementation Instructions', { pageBreak: true }),
     new Paragraph({
       children: [new TextRun({ text: 'A. Structured Data Tasks (JSON-LD)', bold: true, size: 24, color: '1a1a2e' })],
       spacing: { before: 200, after: 100 },
@@ -453,7 +357,7 @@ export async function generateDocxReport(
   if (result.citationHookDensity) {
     const chd = result.citationHookDensity;
     children.push(
-      sectionHeading('Citation Hook Density'),
+      sectionHeading('Citation Hook Density', { pageBreak: true }),
       boldBodyText('Factual Density Score: ', `${chd.factualDensityScore}/100`),
       boldBodyText('Statistics Found: ', `${chd.statsCount}`),
       boldBodyText('Percentages Found: ', `${chd.percentagesCount}`),
@@ -557,12 +461,80 @@ export async function generateDocxReport(
 
   // 11. Recommendations
   if (result.recommendations && result.recommendations.length > 0) {
-    children.push(sectionHeading('Full Recommendations'));
+    children.push(sectionHeading('Full Recommendations', { pageBreak: true }));
     result.recommendations.forEach(rec => {
       children.push(bulletPoint(rec));
     });
     children.push(spacer());
   }
+
+  // Background — the educational sections, after the actionable ones (order §C.3: the
+  // reader's question first). Nothing removed; only moved.
+  children.push(
+    sectionHeading('What Your Score Means', { pageBreak: true }),
+    new Table({
+      rows: [
+        new TableRow({
+          children: ['Range', 'Rating', 'What it means'].map(
+            (text, ci) =>
+              new TableCell({
+                children: [new Paragraph({ children: [new TextRun({ text, bold: true, size: 20, color: 'ffffff' })] })],
+                shading: { type: ShadingType.SOLID, color: '1a1a2e' },
+                width: dxa(SCORE_COLS[ci]),
+              })
+          ),
+        }),
+        ...scoreRatingTiers.map(
+          ([range, rating, desc], i) =>
+            new TableRow({
+              children: [range, rating, desc].map(
+                (text, ci) =>
+                  new TableCell({
+                    children: [new Paragraph({ children: [new TextRun({ text, bold: i === activeTierIdx, size: 20, color: i === activeTierIdx ? '1a1a2e' : '333333' })] })],
+                    width: dxa(SCORE_COLS[ci]),
+                    ...(i === activeTierIdx ? { shading: { type: ShadingType.SOLID, color: 'e8e8ee' } } : {}),
+                  })
+              ),
+            })
+        ),
+      ],
+      ...fixed(SCORE_COLS),
+    }),
+    new Paragraph({
+      children: [
+        new TextRun({ text: `Your score of ${result.score}/100 with ${result.citationProbability}% citation readiness (a technical estimate, not a measured citation rate) places you in the `, size: 22, color: '333333' }),
+        new TextRun({ text: scoreRatingTiers[activeTierIdx][1], bold: true, size: 22, color: '1a1a2e' }),
+        new TextRun({ text: ' range.', size: 22, color: '333333' }),
+      ],
+      spacing: { before: 200, after: 200 },
+    }),
+    spacer()
+  );
+
+  // What is JSON-LD?
+  children.push(
+    sectionHeading('What is JSON-LD and Why Does It Matter?'),
+    bodyText(
+      'JSON-LD (JavaScript Object Notation for Linked Data) is a small block of structured code placed in your website\'s <head> section. It acts as a machine-readable "business card" — telling AI engines exactly what your business does, what products and services you offer, and how to cite you.'
+    ),
+    boldBodyText('How AI Answer Engines use JSON-LD: ', 'When an AI engine like Google Gemini, ChatGPT, or Perplexity answers a user\'s question, it scans websites for structured, trustworthy data it can quote. JSON-LD gives the AI a pre-organized summary of your business — no guessing required. Without it, AI has to infer your offerings from unstructured page content, which leads to incomplete or inaccurate citations.'),
+    bodyText(
+      'Sites with comprehensive JSON-LD improve their chances of being cited as an authoritative source, because the AI can extract exact service names, descriptions, and capabilities with high confidence.'
+    ),
+    spacer()
+  );
+
+  // 2. Why This Matters
+  children.push(
+    sectionHeading('Why This Matters'),
+    bodyText(
+      'AI-powered search engines like Google Gemini, ChatGPT, and Perplexity are replacing traditional search results with direct answers. When a potential customer asks an AI a question about your industry, the AI pulls its answer from websites it considers authoritative and well-structured.'
+    ),
+    bodyText(
+      'If your website is not optimized for these AI engines, your competitors get cited instead — and you lose the customer without ever knowing it. This is not about traditional SEO. This is about making your website readable, trustworthy, and citable by AI systems.'
+    ),
+    spacer()
+  );
 
   // --- Appendix Sections ---
 
@@ -572,7 +544,7 @@ export async function generateDocxReport(
     let formattedVerified = verified;
     try { formattedVerified = JSON.stringify(JSON.parse(verified), null, 2); } catch { /* use as-is */ }
     children.push(
-      sectionHeading('Appendix A: Verified Schema (Safe to Paste)'),
+      sectionHeading('Appendix A: Verified Schema (Safe to Paste)', { pageBreak: true }),
       bodyText(
         'The following JSON-LD contains ONLY values detected on your page, and only user-facing services (internal architecture modules excluded). Every value here is supported by content on your site, so it is safe to paste into your <head> section as-is.'
       ),

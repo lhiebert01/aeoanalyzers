@@ -139,7 +139,12 @@ describe('2.4 — cost is stripped from the DATA on every export path', () => {
   });
 
   it('both cost lines in the report builder remain admin-gated', () => {
-    expect(dash).toMatch(/if \(isAdmin\) out\.push\(`Total sweep cost/);
-    expect(dash).toMatch(/if \(isAdmin\) out\.push\(`- Cost:/);
+    // Lane C moved the report builder to lib/sweepReport.ts; the gate moved with it.
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const { resolve } = require('node:path') as typeof import('node:path');
+    const lib = readFileSync(resolve(__dirname, '../lib/sweepReport.ts'), 'utf8');
+    expect(lib).toMatch(/if \(isAdmin\) out\.push\(`Total sweep cost/);
+    expect(lib).toMatch(/if \(isAdmin\) out\.push\(`- Cost:/);
+    expect(dash).not.toMatch(/Total sweep cost/);
   });
 });
