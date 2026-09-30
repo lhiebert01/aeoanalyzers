@@ -13,10 +13,6 @@
 | Preview fix | `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (public client values) now scoped production+preview on Vercel, so branch previews mount and pass the prerender check |
 
 ## Open
-- **Hero + OG images are PIL placeholders** in the buyer-series palette. Two prompts delivered to
-  `Downloads/IMAGE-PROMPTS-one-question-2026-09-30.txt` (also `docs/brand/BLOG-HERO-PROMPTS.md`).
-  Founder renders → agent reviews against the prompt rules → installs at the same filenames
-  (`img/one-question-hero-1600x900.png`, `img/one-question-og-1200x630.png`; a new OG filename
-  busts the LinkedIn cache).
+- ~~Hero + OG placeholders~~ **DONE 2026-09-30** — five founder renders reviewed; three rejected (filled gauge rings + pale-blue lines in the grid cells), two compliant and installed: `img/hero-one-question-1600x840.webp` (in-page) and `img/og-one-question-1200x630.png` (OG/Twitter card). Commit `ec13269`.
 - Google Search Console: founder requests indexing of the post URL (IndexNow covers Bing only).
 - G7 propagation checklist: `G7-PROPAGATION-CHECKLIST.md` in this folder (POSSE packs, Medium/Substack).
