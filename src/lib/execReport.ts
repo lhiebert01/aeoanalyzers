@@ -23,6 +23,7 @@ import {
 } from './citationSweep';
 import { avgPawc } from './pawc';
 import { summarizeFidelity, type FidelitySummary } from './fidelity';
+import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, type BeliefRow } from './beliefs';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from './entityLinking';
 import { aggregateAuthorityGap, type AuthorityGapReport } from './authorityGap';
 import { tierForDomain, TIER_LABEL, type AttainabilityTier } from './authorityTiers';
@@ -45,6 +46,9 @@ export interface ExecReportData {
   scorecard: SweepScorecard;
   summary: SweepSummary;
   fidelity: FidelitySummary | null;
+  /** Lane B: every factual claim the branded answers made, counted (agreement, not truth). */
+  beliefs: BeliefRow[];
+  brandedAnswers: number;
   entityLinking: EntityLinkingReport | null;
   authority: AuthorityGapReport;
   /** Category win broken down by buyer segment (C3) — so an out-of-segment 0% reads
@@ -102,6 +106,7 @@ export function assembleReportData(input: {
   const summary = aggregateSweep(runs, client, competitors);
   const branded = runs.filter((r) => r.queryType === 'branded');
   const fidelity = truth ? summarizeFidelity(branded, truth) : null;
+  const beliefs = extractBeliefs(branded, brand || truth?.brandName || undefined, flaggedWrongValues(fidelity));
   const entityLinking = detectEntityLinkingFailures(branded, client, truth);
   const authority = aggregateAuthorityGap(runs, domain);
   const segments = segmentBreakdown(runs);
@@ -135,7 +140,7 @@ export function assembleReportData(input: {
     : [];
 
   return {
-    brand, domain, sweepDate, scorecard, summary, fidelity, entityLinking, authority, segments,
+    brand, domain, sweepDate, scorecard, summary, fidelity, beliefs, brandedAnswers: branded.length, entityLinking, authority, segments,
     losingCategoryQuestions: [...new Set(runs.filter((r) => r.queryType === 'category' && !r.cited && !r.truncated && r.grounding !== 'model-prior').map((r) => r.query))],
     pawc: { clientAvgShare: clientPawc.avgShare, clientAnswers: clientPawc.answers, competitors: compPawc },
     factDensity, competitiveGaps,
@@ -314,6 +319,7 @@ export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, va
     for (const c of sc.topCompetitors.slice(0, 10)) out.push(`| ${c.name} | ${c.count} | ${c.domain || ''} | ${c.seeded ? 'seeded' : ''} |`);
     out.push('');
   }
+  out.push(...beliefsMarkdown(d.beliefs || [], d.brandedAnswers || 0, '###'));
   if (d.entityLinking && d.entityLinking.collisions.length) {
     out.push('### Engines are confusing you with');
     for (const c of d.entityLinking.collisions) out.push(`- ${c}`);

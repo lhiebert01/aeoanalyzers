@@ -18,6 +18,7 @@ import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType, C
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
 import { doNowChecklist } from '../lib/doNowChecklist';
+import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, ENGINE_LABEL as BELIEF_ENGINE } from '../lib/beliefs';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
 import { getAccessToken, supabaseQuery, supabaseUpdate } from '../supabase';
 import { safeJsonParse } from '../services/geminiService';
@@ -587,6 +588,11 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
       out.push(`Of the answers that named you, ${fidelity.citedAccurate} got your facts right${fidelity.citedDrifted > 0 ? ` and ${fidelity.citedDrifted} drifted (asserted something false)` : ' — no fabricated facts detected'}.`);
       for (const iss of fidelity.issues) out.push(`- ${iss.wrong ? `"${iss.wrong}": ` : ''}${iss.detail}`);
       out.push('');
+    }
+    // WO-AEO-REPORT-POLISH-001 Lane B: every factual claim the branded answers made, counted.
+    {
+      const brandedRuns = r.runs.filter((x) => x.queryType === 'branded');
+      out.push(...beliefsMarkdown(extractBeliefs(brandedRuns, r.brand || truth?.brandName || undefined, flaggedWrongValues(fidelity)), brandedRuns.length));
     }
     if (pageFactDensity && pageFactDensity.flags.length > 0) {
       out.push('## Content depth — the levers that make a page citable');
@@ -1262,6 +1268,37 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                 </div>
               )}
             </div>
+            );
+          })()}
+
+          {/* WO-AEO-REPORT-POLISH-001 Lane B: what the engines BELIEVE about you — every factual
+              claim in the branded answers, counted. Agreement, not truth: "wrong" appears only
+              where the fidelity classifier already said so. */}
+          {result && (() => {
+            const brandedRuns = result.runs.filter((x) => x.queryType === 'branded');
+            const rows = extractBeliefs(brandedRuns, result.brand || truth?.brandName || undefined, flaggedWrongValues(fidelity));
+            if (!rows.length) return null;
+            const tone: Record<string, string> = { Consistent: 'bg-emerald-50 text-emerald-800 border-emerald-200', 'Single-source': 'bg-amber-50 text-amber-800 border-amber-200', Conflicts: 'bg-red-50 text-red-800 border-red-200', 'Contradicts your site': 'bg-red-100 text-red-900 border-red-300' };
+            return (
+              <div className="bg-white border border-zinc-200 rounded-2xl px-5 py-4">
+                <h3 className="text-sm font-bold text-zinc-900">What the engines believe about you</h3>
+                <p className="text-xs text-zinc-600 mt-1">Every factual claim the {brandedRuns.length} branded answers made, counted. <b>Consistent</b> = two or more engines said it. <b>Single-source</b> = one engine. <b>Conflicts</b> = different values for the same fact. This reports agreement, not truth &mdash; check a Conflicts or Single-source row against your own site.</p>
+                <div className="overflow-x-auto mt-3">
+                  <table className="w-full text-xs">
+                    <thead><tr className="text-left text-zinc-500 border-b border-zinc-200"><th className="py-1 pr-3">Claim</th><th className="py-1 pr-3">Said by</th><th className="py-1 pr-3">Times</th><th className="py-1">Status</th></tr></thead>
+                    <tbody>
+                      {rows.map((b) => (
+                        <tr key={`${b.field}:${b.claim}`} className="border-b border-zinc-100 align-top">
+                          <td className="py-1.5 pr-3 text-zinc-800"><span className="text-zinc-500">{b.field}:</span> {b.claim}</td>
+                          <td className="py-1.5 pr-3 text-zinc-700">{b.saidBy.map((e) => BELIEF_ENGINE[e] || e).join(', ')}</td>
+                          <td className="py-1.5 pr-3 text-zinc-700 tabular-nums">{b.times}</td>
+                          <td className="py-1.5"><span className={`inline-block px-2 py-0.5 rounded-full border font-semibold ${tone[b.status] || ''}`}>{b.status}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             );
           })()}
 
