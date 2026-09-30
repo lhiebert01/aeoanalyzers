@@ -50,7 +50,7 @@ assert '—' not in re.sub(r'&mdash;','',article) or '—' in rest, 'no em dashe
 
 # hero figure right after the meta line
 HERO='''      <figure class="postfig">
-        <img src="/blog/one-question-is-not-a-measurement/img/one-question-hero-1600x900.png" alt="One bar labelled 1 question times 12 runs beside a grid of twelve cells in three rows and four columns labelled 12 questions times 4 engines. Headline: One question is not a measurement." width="1600" height="900" loading="lazy" decoding="async">
+        <img src="/blog/one-question-is-not-a-measurement/img/hero-one-question-1600x840.webp" alt="One bar labelled 1 question times 12 runs beside a grid of twelve cells in three rows and four columns labelled 12 questions times 4 engines. Headline: One question is not a measurement." width="1600" height="840" loading="lazy" decoding="async">
         <figcaption>One question asked twelve times is one number. Twelve questions on four engines is a shape.</figcaption>
       </figure>'''
 article=article.replace('</p>\n      <p>','</p>\n'+HERO+'\n      <p>',1)
@@ -67,7 +67,7 @@ ld={"@context":"https://schema.org","@type":"Article","headline":h1,"description
     "publisher":{"@type":"Organization","@id":"https://pigenai.com/#org","name":"PIGENAI LLC","url":"https://pigenai.com",
                  "logo":{"@type":"ImageObject","url":"https://aeoanalyzers.com/aeo-og.png"}},
     "mainEntityOfPage":{"@type":"WebPage","@id":URL},
-    "image":"https://aeoanalyzers.com/blog/one-question-is-not-a-measurement/img/one-question-og-1200x630.png","url":URL}
+    "image":"https://aeoanalyzers.com/blog/one-question-is-not-a-measurement/img/og-one-question-1200x630.png","url":URL}
 robots='index,follow,max-image-preview:large' if GO else 'noindex,nofollow'
 d=html.escape(desc,quote=True)
 page=f'''<!doctype html>
@@ -87,7 +87,7 @@ page=f'''<!doctype html>
 <meta property="og:title" content="{html.escape(h1,quote=True)}">
 <meta property="og:description" content="{d}">
 <meta property="og:url" content="{URL}">
-<meta property="og:image" content="https://aeoanalyzers.com/blog/one-question-is-not-a-measurement/img/one-question-og-1200x630.png">
+<meta property="og:image" content="https://aeoanalyzers.com/blog/one-question-is-not-a-measurement/img/og-one-question-1200x630.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:alt" content="One bar labelled 1 question times 12 runs beside a three-by-four grid labelled 12 questions times 4 engines, under the headline One question is not a measurement.">
 <meta property="og:image:width" content="1200">
@@ -95,7 +95,7 @@ page=f'''<!doctype html>
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{html.escape(h1,quote=True)}">
 <meta name="twitter:description" content="{d}">
-<meta name="twitter:image" content="https://aeoanalyzers.com/blog/one-question-is-not-a-measurement/img/one-question-og-1200x630.png">
+<meta name="twitter:image" content="https://aeoanalyzers.com/blog/one-question-is-not-a-measurement/img/og-one-question-1200x630.png">
 <meta name="theme-color" content="#08343B">
 <script type="application/ld+json">
 {json.dumps(ld,indent=2,ensure_ascii=False)}
