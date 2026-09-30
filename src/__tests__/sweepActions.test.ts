@@ -63,3 +63,11 @@ describe('remediationSnippet (grounded — no fabricated values)', () => {
     expect(lines).not.toMatch(/aggregateRating|ratingValue|reviewCount/);
   });
 });
+
+describe('agenda heading is optional (the dashboard md/docx already opened the section)', () => {
+  const inp = { brandedRetrievabilityPct: 100, categoryWinPct: 0, hasFidelityOrCollision: false, collisions: [], losingCategoryQuestions: ['q'], doNowAuthorities: [], domain: 'x.com', brand: 'X' };
+  it('emits the heading by default and omits it on request', () => {
+    expect(buildSweepActionAgenda(inp)[0]).toBe('## What to do about these results');
+    expect(buildSweepActionAgenda(inp, { heading: false }).filter((l) => l.startsWith('## '))).toEqual([]);
+  });
+});

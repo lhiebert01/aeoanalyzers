@@ -679,6 +679,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
       const plan = buildDoNowPlan({
         domain: r.domain,
         perEngine: r.summary.engines.map((e) => ({ engine: ENGINE_LABEL[e.engine] || e.engine, found: e.brandedCited, total: e.brandedRuns })),
+        drifted: fidelity ? fidelity.citedDrifted : undefined,
         collisions: entityLinking?.collisions ?? [],
         authorityGap: authority ? authority.authorityDomains.map((d) => ({ domain: d.domain, citations: d.citations })) : [],
         pitchTargets: pitchTargetsFrom(authority),
@@ -716,7 +717,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
       brand: r.brand || undefined,
       domain: r.domain,
       served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs, ownedDomains } : undefined,
-    })) out.push(line);
+    }, { heading: false })) out.push(line);
     out.push('');
 
     out.push(`## Transcripts (${r.runs.length} runs)`);
@@ -1463,6 +1464,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                 const plan = buildDoNowPlan({
                   domain: result.domain,
                   perEngine: result.summary.engines.map((e) => ({ engine: ENGINE_LABEL[e.engine] || e.engine, found: e.brandedCited, total: e.brandedRuns })),
+                  drifted: fidelity ? fidelity.citedDrifted : undefined,
                   collisions: entityLinking?.collisions ?? [],
                   authorityGap: authority ? authority.authorityDomains.map((d) => ({ domain: d.domain, citations: d.citations })) : [],
                   pitchTargets: pitchTargetsFrom(authority),

@@ -21,8 +21,8 @@ describe('§3.1 — name the problem before prescribing', () => {
     expect(p.steps.map((s) => s.what).join(' ')).not.toMatch(/Validate the markup/);
   });
 
-  it('calls it an accuracy problem when every engine retrieved them', () => {
-    const p = buildDoNowPlan({ ...paid, perEngine: [
+  it('calls it an accuracy problem when every engine retrieved them AND something was misdescribed', () => {
+    const p = buildDoNowPlan({ ...paid, drifted: 2, perEngine: [
       { engine: 'claude', found: 6, total: 6 }, { engine: 'openai', found: 5, total: 6 },
     ]});
     expect(p.problem).toBe('found-but-misdescribed');
@@ -485,5 +485,28 @@ describe('the pitch step is actually wired into both renderers', () => {
     const s = src();
     expect(s).toContain("out.push(`- Moves: ${step.moves ===");
     expect(s).toContain('<span className="text-zinc-400">Moves:</span>');
+  });
+});
+
+/** Nybsys 2026-09-30: every engine found them, 8/8 branded answers accurate, no collision — and
+ *  the report still said "You have an accuracy problem". A claim about fidelity needs fidelity
+ *  evidence. */
+describe('found everywhere, nothing misdescribed', () => {
+  const found = [{ engine: 'claude', found: 2, total: 2 }, { engine: 'openai', found: 2, total: 2 }];
+  it('is a recommendation problem when fidelity measured zero drift and there is no collision', () => {
+    const p = buildDoNowPlan({ ...paid, perEngine: found, drifted: 0, collisions: [] });
+    expect(p.problem).toBe('found-and-accurate');
+    expect(p.situation.join(' ')).toMatch(/recommendation problem, not a discovery problem and not an accuracy problem/);
+    expect(p.situation.join(' ')).not.toMatch(/You have an accuracy problem/);
+  });
+  it('PROVE BY BREAKING: a single drifted answer restores the accuracy diagnosis; so does a collision', () => {
+    expect(buildDoNowPlan({ ...paid, perEngine: found, drifted: 1 }).problem).toBe('found-but-misdescribed');
+    expect(buildDoNowPlan({ ...paid, perEngine: found, drifted: 0, collisions: ['acme-mwc.com'] }).problem).toBe('found-but-misdescribed');
+  });
+  it('never claims an accuracy problem when fidelity was not measured', () => {
+    const p = buildDoNowPlan({ ...paid, perEngine: found });
+    expect(p.problem).toBe('found-accuracy-unmeasured');
+    expect(p.situation.join(' ')).toMatch(/was not measured/);
+    expect(p.situation.join(' ')).not.toMatch(/You have an accuracy problem/);
   });
 });

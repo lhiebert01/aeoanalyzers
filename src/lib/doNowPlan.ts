@@ -51,6 +51,9 @@ export interface DoNowInputs {
   perEngine: EngineRetrieval[];
   /** Third-party entities the engines confused them with. */
   collisions?: string[];
+  /** Branded answers that named them AND got a fact wrong (fidelity.citedDrifted). undefined =
+   *  fidelity was not measured in this sweep (no page snapshot), which is NOT the same as zero. */
+  drifted?: number;
   /** Domains the engines cite for THIS customer's category, with counts. */
   authorityGap?: { domain: string; citations: number }[];
   /** The "earn" tier of that same list — third-party pages that already answer the
@@ -62,7 +65,7 @@ export interface DoNowInputs {
   paid: boolean;
 }
 
-export type Problem = 'not-found' | 'found-but-misdescribed' | 'mixed' | 'unmeasured';
+export type Problem = 'not-found' | 'found-but-misdescribed' | 'found-and-accurate' | 'found-accuracy-unmeasured' | 'mixed' | 'unmeasured';
 
 export interface DoNowStep {
   n: number;
@@ -113,13 +116,17 @@ export const VALIDATE_MARKUP_NOTE =
 export const STRUCTURED_DATA_RULE =
   'Structured data improves accuracy for engines that already find you. It cannot improve discovery for engines that do not.';
 
-export function classifyProblem(perEngine: EngineRetrieval[]): Problem {
+export function classifyProblem(perEngine: EngineRetrieval[], drifted?: number, collisions: string[] = []): Problem {
   const scored = perEngine.filter((e) => e.total > 0);
   if (!scored.length) return 'unmeasured';
   const anyFound = scored.some((e) => e.found > 0);
   const anyMissing = scored.some((e) => e.found === 0);
   if (anyFound && anyMissing) return 'mixed';
-  return anyFound ? 'found-but-misdescribed' : 'not-found';
+  if (!anyFound) return 'not-found';
+  // Found everywhere. "Accuracy problem" is a claim about fidelity and needs fidelity evidence:
+  // the Nybsys 2026-09-30 report said it with 8/8 answers accurate and no collision.
+  if ((drifted ?? 0) > 0 || collisions.length) return 'found-but-misdescribed';
+  return drifted === undefined ? 'found-accuracy-unmeasured' : 'found-and-accurate';
 }
 
 /** How often a source was cited, in words. The Sep 18 report said "g2.com was cited
@@ -136,7 +143,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
   const scored = input.perEngine.filter((e) => e.total > 0);
   const foundBy = scored.filter((e) => e.found > 0).map((e) => e.engine);
   const notFoundBy = scored.filter((e) => e.found === 0).map((e) => e.engine);
-  const problem = classifyProblem(input.perEngine);
+  const problem = classifyProblem(input.perEngine, input.drifted, input.collisions || []);
   const verb = (list: string[]) => (list.length === 1 ? 'says' : 'say');
   const does = (list: string[]) => (list.length === 1 ? 'does' : 'do');
 
@@ -154,6 +161,12 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
   } else if (problem === 'found-but-misdescribed') {
     situation.push(`**You have an accuracy problem, not a discovery problem.** Every engine in this sweep retrieved ${input.domain} when asked for you by name.`);
     situation.push(`They can find you. What they say about you is the thing to fix, and that is what structured data is for. ${STRUCTURED_DATA_RULE}`);
+  } else if (problem === 'found-and-accurate') {
+    situation.push(`**You have a recommendation problem, not a discovery problem and not an accuracy problem.** Every engine in this sweep retrieved ${input.domain} when asked for you by name, and none of the answers that named you got a fact wrong.`);
+    situation.push(`Being found and described correctly does not put you on a buyer's shortlist. The work is on the category questions — the pages that already answer them, and the pages of your own that should. ${STRUCTURED_DATA_RULE}`);
+  } else if (problem === 'found-accuracy-unmeasured') {
+    situation.push(`**Discovery is not your problem.** Every engine in this sweep retrieved ${input.domain} when asked for you by name.`);
+    situation.push(`Whether they describe you accurately was not measured in this sweep (no page snapshot was captured), so we are not going to call it an accuracy problem. ${STRUCTURED_DATA_RULE}`);
   } else {
     situation.push(`**You have both problems, split by engine.** ${foundBy.join(', ')} retrieved ${input.domain} when asked for you by name. ${notFoundBy.join(', ')} did not.`);
     situation.push(`Those need different fixes and the difference matters: ${STRUCTURED_DATA_RULE}`);

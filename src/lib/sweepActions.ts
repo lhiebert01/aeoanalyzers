@@ -150,10 +150,11 @@ export function answerShape(question: string): 'recommendation' | 'advice' {
 }
 
 /** Build the closing "What to do" agenda as markdown lines (no trailing blank). */
-export function buildSweepActionAgenda(inp: SweepActionInputs): string[] {
+export function buildSweepActionAgenda(inp: SweepActionInputs, opts: { heading?: boolean } = {}): string[] {
   const out: string[] = [];
-  out.push('## What to do about these results');
-  out.push('');
+  // The dashboard's md/docx already opened this section with the Do-now plan, so it passes
+  // heading:false — the Nybsys 2026-09-30 docx carried the heading twice.
+  if (opts.heading !== false) { out.push('## What to do about these results'); out.push(''); }
 
   // Retrievability weak → the structural fix path (AEO Score).
   if (inp.brandedRetrievabilityPct !== null && inp.brandedRetrievabilityPct < WEAK_RETRIEVABILITY) {
