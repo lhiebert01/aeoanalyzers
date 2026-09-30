@@ -26,6 +26,16 @@ LinkedIn resolved URLs (slug carries the hashtags used to match):
 - 5 → …/aeo-procurement-b2bmarketing-share-7511182489999126528
 - 6 → …/aeo-aisearch-measurement-share-7511182644014034945
 
+## Buyer series roundup (the super post) — LIVE 2026-09-30
+
+| Channel | Link |
+|---|---|
+| LinkedIn | https://lnkd.in/p/gnRrrD2g (activity 7511190256294109184) |
+| Facebook | https://www.facebook.com/share/p/1CCYZDmGJK/ |
+| X | https://x.com/Lindsay_Hiebert/status/2105427293334274290 |
+
+Copy: `Downloads/SUPERPOST-aeo-buyer-series-roundup-2026-09-30.txt` (six numbered reads, AEO defined on first use). Image: `public/img/buyer-series/buyer-series-roundup-superpost-v3-1731x909.png`.
+
 ## Still to post
 
 | Post | Bluesky | Medium | Substack |
