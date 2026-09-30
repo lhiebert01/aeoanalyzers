@@ -10,7 +10,7 @@ const GO = !/content="noindex/.test(page);
 describe('One question is not a measurement — rendered and wired', () => {
   it('renders the H1 and the required header line', () => {
     expect(page).toContain('<h1 class="posttitle">One Question Is Not a Measurement</h1>');
-    expect(page).toContain('AEO Analyzers · Category education · Last reviewed 2026-09-30');
+    expect(page).toContain('AEO Analyzers · Category education · Last reviewed 2026-10-01');
   });
   it('carries Article JSON-LD with the canonical Person and Org ids', () => {
     expect(page).toContain('"@type": "Article"');

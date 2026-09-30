@@ -61,7 +61,7 @@ bar=ch[ch.index('<body>'):ch.index('<div class="wrap">')]
 tail=ch[ch.index('    <p class="samplenote">'):]   # samplenote → followseries → footer → </html>
 
 ld={"@context":"https://schema.org","@type":"Article","headline":h1,"description":desc,
-    "datePublished":"2026-09-30","dateModified":"2026-09-30",
+    "datePublished":"2026-10-01","dateModified":"2026-10-01",
     "author":{"@type":"Person","@id":"https://pigenai.com/#lindsay","name":"Lindsay Hiebert",
               "sameAs":["https://www.linkedin.com/in/lindsayhiebert/","https://www.credly.com/badges/c0bbd19c-c33d-4f32-94d9-36a622fe853f/public_url"]},
     "publisher":{"@type":"Organization","@id":"https://pigenai.com/#org","name":"PIGENAI LLC","url":"https://pigenai.com",

@@ -2,14 +2,14 @@
 title: One Question Is Not a Measurement
 slug: /blog/one-question-is-not-a-measurement
 category: Category education
-date: September 2026
-last_reviewed: 2026-09-30
+date: October 2026
+last_reviewed: 2026-10-01
 read_time: 5-minute read
 author: Lindsay Hiebert
 description: The one-minute AI visibility test tells you whether you win one question, not which questions you could win. Why buyer questions across three segments and four engines are the smallest unit that produces a plan.
 ---
 
-AEO Analyzers · Category education · Last reviewed 2026-09-30
+AEO Analyzers · Category education · Last reviewed 2026-10-01
 
 # One Question Is Not a Measurement
 

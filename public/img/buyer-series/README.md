@@ -19,6 +19,6 @@ break a page. When an image is replaced, replace it here too.
 | What you actually get | `what-you-actually-get-hero-1672x941.webp` | `what-you-actually-get-og-1200x630.png` | `/blog/what-you-actually-get/`, `/og-blog-…png` |
 | Are you the answer AI gives? | `are-you-the-answer-ai-gives-hero-1672x941.webp` | `are-you-the-answer-ai-gives-og-1200x630.png` | `/blog/are-you-the-answer-ai-gives/`, `/og-blog-are-you-the-answer.png` |
 | The Honest-Zero ledger (/evidence) | — | `evidence-og-1200x630.png` | `/og-evidence-ledger.png` |
-| **Buyer series roundup (super post)** | — | `buyer-series-roundup-superpost-1731x909.png` (founder render, Sep 30) | not on any page; post attachment only |
+| **Buyer series roundup (super post)** | — | `buyer-series-roundup-superpost-v2-1731x909.png` (USE THIS — six equal cards, no ranking, no play button) · `buyer-series-roundup-superpost-1731x909.png` (first render, kept) | not on any page; post attachment only |
 
 Prompts for every image: `docs/brand/BLOG-HERO-PROMPTS.md` and `BUYER-GUIDE-PROMPTS.md`.
