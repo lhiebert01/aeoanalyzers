@@ -446,6 +446,134 @@ AEOANALYZERS.COM
 ```
 
 
+## Blog hero — One question is not a measurement · 1600 x 900 landscape
+
+```text
+BRAND SYSTEM — AEO Analyzers. Follow exactly.
+
+PALETTE, exclusive. Background near-black #000603, with a subtle radial lift toward the
+centre no more than two stops lighter. Primary and dominant accent bright green #68E66D —
+the image must read as a green image at a glance. Supporting accents, used only where they
+carry meaning: amber #E8B23C for partial or tier-dependent states, clay #F2705C for absent
+or missing, neutral grey-teal #9DB2B7 for inert structure, grids and unlabelled shapes.
+All type pure white #FFFFFF, secondary type white at 70% opacity. NO BLUE AND NO TEAL
+ANYWHERE.
+
+TYPE. Headlines in a heavy geometric grotesque, tight tracking, sentence case. Never a
+serif. Labels and eyebrows in UPPERCASE with wide letter-spacing of about 0.18em, small,
+white.
+
+GRAPHIC LANGUAGE — use it, do not minimise it. Dimensional cards with soft shadow and a
+1px coloured edge. Outlined bars with partial fill and a visible numeric value. A circular
+score ring with a coloured arc and a large white numeral. Fragments of answer-transcript
+text set small and dim, suggesting the evidence behind a number. Thin connector lines.
+Crisp geometric grids. Detail and density are wanted; this is a reference graphic, not a
+minimal poster.
+
+DEPTH ALLOWED. Soft drop shadows, a gentle radial vignette, one plane sitting above
+another. NOT ALLOWED: neon glow, bevels, 3-D extrusion, lens flare, photography, stock
+imagery, gradients used as decoration.
+
+NEVER INCLUDE. Shields, padlocks, circuit boards, robot faces, brains, magnifying glasses,
+speedometers, podiums, trophies, stars, rating badges, medals, competitor logos, competitor
+names anywhere in the artwork, or any call-to-action button.
+
+REQUIRED FURNITURE. Eyebrow top-left in UPPERCASE letterspaced white. A thin green #68E66D
+hairline rule across the lower third. The words AEO ANALYZERS lower-left and
+AEOANALYZERS.COM lower-right, both UPPERCASE letterspaced white and small.
+
+TEXT DISCIPLINE. Every word rendered must be spelled exactly as written below. High
+contrast, readable at thumbnail size. Nothing decorative behind type.
+
+COMPOSITION — 1600 x 900 landscape
+
+Editorial infographic, edge to edge, built as ONE CONTRAST: a single quantity on the left, a
+grid on the right.
+
+Left third: ONE tall outlined bar in clay #F2705C, empty, with the UPPERCASE label beneath it.
+It represents the minute-long test — one question asked twelve times — and it is drawn as one
+shape on purpose.
+
+Right two-thirds: a grid of TWELVE equal dimensional cards, three rows of four, each with a
+soft shadow and a 1px green #68E66D edge, with the UPPERCASE label beneath. Rows and columns
+at equal weight; no card highlighted, filled, checked or crossed — the grid is the argument
+that twelve questions on four engines show a shape one question cannot.
+
+Upper left across the top: the eyebrow and the two-line headline.
+
+NO CHARTS AND NO RESULTS. Do not fill any cell, add a check mark, a percentage, a trend, or a
+second bar. The image shows the SHAPE of a measurement, not an outcome.
+
+NUMBERS. Exactly the numerals inside the two labels below. Render no other numeral anywhere.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · CATEGORY EDUCATION
+One question is not
+a measurement.
+1 QUESTION × 12 RUNS
+12 QUESTIONS × 4 ENGINES
+AEO ANALYZERS
+AEOANALYZERS.COM
+```
+
+
+## OG card — One question is not a measurement · 1200 x 630 landscape
+
+```text
+BRAND SYSTEM — AEO Analyzers. Follow exactly.
+
+PALETTE, exclusive. Background near-black #000603, with a subtle radial lift toward the
+centre no more than two stops lighter. Primary and dominant accent bright green #68E66D —
+the image must read as a green image at a glance. Supporting accents, used only where they
+carry meaning: amber #E8B23C for partial or tier-dependent states, clay #F2705C for absent
+or missing, neutral grey-teal #9DB2B7 for inert structure, grids and unlabelled shapes.
+All type pure white #FFFFFF, secondary type white at 70% opacity. NO BLUE AND NO TEAL
+ANYWHERE.
+
+TYPE. Headlines in a heavy geometric grotesque, tight tracking, sentence case. Never a
+serif. Labels and eyebrows in UPPERCASE with wide letter-spacing of about 0.18em, small,
+white.
+
+GRAPHIC LANGUAGE — use it, do not minimise it. Dimensional cards with soft shadow and a
+1px coloured edge. Outlined bars with partial fill and a visible numeric value. A circular
+score ring with a coloured arc and a large white numeral. Fragments of answer-transcript
+text set small and dim, suggesting the evidence behind a number. Thin connector lines.
+Crisp geometric grids. Detail and density are wanted; this is a reference graphic, not a
+minimal poster.
+
+DEPTH ALLOWED. Soft drop shadows, a gentle radial vignette, one plane sitting above
+another. NOT ALLOWED: neon glow, bevels, 3-D extrusion, lens flare, photography, stock
+imagery, gradients used as decoration.
+
+NEVER INCLUDE. Shields, padlocks, circuit boards, robot faces, brains, magnifying glasses,
+speedometers, podiums, trophies, stars, rating badges, medals, competitor logos, competitor
+names anywhere in the artwork, or any call-to-action button.
+
+REQUIRED FURNITURE. Eyebrow top-left in UPPERCASE letterspaced white. A thin green #68E66D
+hairline rule across the lower third. The words AEO ANALYZERS lower-left and
+AEOANALYZERS.COM lower-right, both UPPERCASE letterspaced white and small.
+
+TEXT DISCIPLINE. Every word rendered must be spelled exactly as written below. High
+contrast, readable at thumbnail size. Nothing decorative behind type.
+
+COMPOSITION — 1200 x 630 landscape
+
+The same contrast at social-card scale: left, ONE tall outlined clay #F2705C bar, empty; right, a
+grid of twelve equal green-edged #68E66D cards in three rows of four; the two UPPERCASE labels
+beneath each; the two-line headline top left. Keep every word inside a 72-pixel margin. No
+fills, checks, percentages or trends. Exactly the numerals in the two labels, no others.
+
+EXACT VISIBLE TEXT — render each item exactly once:
+AEO ANALYZERS · CATEGORY EDUCATION
+One question is not
+a measurement.
+1 QUESTION × 12 RUNS
+12 QUESTIONS × 4 ENGINES
+AEO ANALYZERS
+AEOANALYZERS.COM
+```
+
+
 ---
 
 ## PRODUCTION NOTES
