@@ -580,7 +580,7 @@ AEOANALYZERS.COM
 Social card for the roundup post that collects the six-part buyer series in one place. The
 argument is the SET: six equal reads, laid side by side, none ranked above another.
 
-Left third: the eyebrow, then a two-line headline, then one sub-line in 70% white.
+Left third: the eyebrow (it spells the term out for readers who have never met the acronym), then a two-line headline, then one sub-line in 70% white that may wrap to two lines.
 
 Right two-thirds: a single row of six equal dimensional cards with a 1px grey-teal #9DB2B7
 edge, each carrying only its number top-left in green #68E66D and, beneath it, three or four
@@ -599,10 +599,10 @@ Check the sub-line at quarter size; if it cannot be read as a thumbnail, enlarge
 than shrinking the headline.
 
 EXACT VISIBLE TEXT — render each item exactly once:
-AEO ANALYZERS · THE BUYER SERIES
+ANSWER ENGINE OPTIMIZATION · THE BUYER SERIES
 Missed the AEO buyer series?
 Here is all of it in one place.
-Six short reads, written for buyers.
+Six short reads on getting AI assistants to recommend your business.
 1
 2
 3
