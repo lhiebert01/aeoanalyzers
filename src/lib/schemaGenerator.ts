@@ -220,6 +220,9 @@ export function generateSchema(facts: SchemaFacts): SchemaResult {
     '@graph': [
       node,
       { '@type': 'WebSite', '@id': `${url}/#website`, url, publisher: { '@id': `${url}/#org` } },
+      // WO-AEO-REPORT-POLISH-001 G2: an owned near-name domain is linked INTO the graph as a
+      // property of the same organization — the opposite of disclaiming it.
+      ...(owned || []).filter((d) => d && d !== domain).map((d) => ({ '@type': 'WebSite', '@id': `https://${d}/#website`, url: `https://${d}`, publisher: { '@id': `${url}/#org` } })),
     ],
   };
 

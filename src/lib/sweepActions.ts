@@ -30,7 +30,7 @@ export interface SweepActionInputs {
   /** WO-INTEGRITY-002 B5: what schema the page ALREADY serves, so the fix prescribes
    *  only the delta (missing @id / sameAs / disambiguatingDescription) rather than a
    *  fresh Organization the page already has. */
-  served?: { hasOrg?: boolean; hasOrgId?: boolean; hasDisambiguation?: boolean; sameAs?: string[] };
+  served?: { hasOrg?: boolean; hasOrgId?: boolean; hasDisambiguation?: boolean; sameAs?: string[]; declaredName?: string; ownedDomains?: string[] };
 }
 
 /** Threshold below which branded retrievability is "weak" enough to send the user
@@ -59,6 +59,8 @@ export function remediationSnippet(
 
   // §3.2 — never disclaim a domain the user owns. Fails closed.
   const owned = served?.ownedDomains;
+  // WO-AEO-REPORT-POLISH-001 G2: say what to DO with an owned near-name domain instead.
+  const ownedLines = (owned || []).map((d) => `**Owned property: ${d}.** If it is a retired prototype, 301 it to your primary domain or add noindex; if it is live, link it into your @id graph as an owned property (the schema block below does this).`);
   // Findings keep every collision (see the diagnosis/publishable split in
   // schemaGenerator). Only the line the customer PASTES is narrowed to real domains.
   const safeCollisions = publishableCollisions(collisions, owned);
@@ -95,6 +97,7 @@ export function remediationSnippet(
     else out.push(`- your Organization schema looks complete; focus on the visible unaffiliation line below`);
     const named = safeCollisions.slice(0, 3).join(', ');
     out.push('');
+    for (const l of ownedLines) { out.push(l); out.push(''); }
     out.push(named
       ? `And one visible line on your homepage/footer: "${name} (${domain}) is not affiliated with similarly named entities such as ${named}."`
       : `And one visible line on your homepage/footer stating ${name} (${domain}) is not affiliated with any similarly named entity.`);
@@ -115,7 +118,7 @@ export function remediationSnippet(
   const line = named
     ? `And one visible line on your homepage/footer: "${name} (${domain}) is not affiliated with similarly named entities such as ${named}."`
     : `And one visible line on your homepage/footer stating ${name} (${domain}) is not affiliated with any similarly named entity.`;
-  return [...graph, '', line];
+  return [...ownedLines, ...(ownedLines.length ? [''] : []), ...graph, '', line];
 }
 
 /** ANSWER SHAPE — added Sep 18 2026, from reading a real report as a customer.
@@ -186,9 +189,12 @@ export function buildSweepActionAgenda(inp: SweepActionInputs): string[] {
     }
     out.push('');
     if (inp.doNowAuthorities.length) {
-      out.push(`**This month's authority checklist (Do-now tier):** get an accurate, current listing/profile on ${inp.doNowAuthorities.slice(0, 6).join(', ')} — the sources engines already trust in your category.`);
-      out.push('');
+      out.push(`**This month's authority checklist (Do-now tier):** get an accurate, current listing/profile on ${inp.doNowAuthorities.slice(0, 6).join(', ')} — each cited in your own category answers this month, shown with its count and the engines that cited it, so you can judge whether it fits your business.`);
+    } else {
+      // WO-AEO-REPORT-POLISH-001 G1: never a generic roster.
+      out.push('**This month\'s authority checklist (Do-now tier):** No self-serve listings appeared in your sources this month.');
     }
+    out.push('');
   }
 
   // Always: the monthly loop as product behavior.

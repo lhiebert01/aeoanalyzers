@@ -154,10 +154,13 @@ function extractUrlsFromText(text: string): string[] {
 export function detectEntityLinkingFailures(
   brandedRuns: { sources?: string[]; transcript?: string }[],
   client: { domain: string; brand?: string },
-  truth?: { sameAs?: string[] } | null
+  truth?: { sameAs?: string[] } | null,
+  /** WO-AEO-REPORT-POLISH-001 G2: near-name domains the OWNER confirmed are theirs. Never a collision. */
+  owned?: string[]
 ): EntityLinkingReport {
   const keys = brandKeys(client);
   const declared = new Set((truth?.sameAs || []).map((u) => registrable(parseUrl(u).host)));
+  for (const d of owned || []) declared.add(registrable(String(d || '').toLowerCase().replace(/^www\./, '')));
   const flags: EntityLinkingFlag[] = [];
   const seen = new Set<string>();
 

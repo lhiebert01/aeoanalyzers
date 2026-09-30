@@ -17,8 +17,9 @@ import { sweepScorecard, confidenceLevel, aggregateSweep, scoreRun } from '../li
 import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType, Competitor } from '../lib/citationSweep';
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
+import { doNowChecklist } from '../lib/doNowChecklist';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
-import { getAccessToken, supabaseQuery } from '../supabase';
+import { getAccessToken, supabaseQuery, supabaseUpdate } from '../supabase';
 import { safeJsonParse } from '../services/geminiService';
 
 // --- URL-first auto-extract (UX-PRINCIPLES §1–2 / SWEEP-UX-REDESIGN commit a) ---
@@ -177,6 +178,21 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
   const [fidelity, setFidelity] = useState<FidelitySummary | null>(null);
   const [entityLinking, setEntityLinking] = useState<EntityLinkingReport | null>(null);
   const [showAllComps, setShowAllComps] = useState(false);
+  // WO-AEO-REPORT-POLISH-001 G2: near-name domains the OWNER confirmed are theirs.
+  const [ownedDomains, setOwnedDomains] = useState<string[]>([]);
+  async function markOwned(domain: string) {
+    const d = domain.toLowerCase().replace(/^www\./, '');
+    const next = ownedDomains.includes(d) ? ownedDomains : [...ownedDomains, d];
+    setOwnedDomains(next);
+    // Re-derive the finding with the owner's ruling applied — no re-run, no engine spend.
+    if (result && truth) {
+      const brandedRuns = result.runs.filter((r) => r.queryType === 'branded');
+      setEntityLinking(detectEntityLinkingFailures(brandedRuns, { domain: result.domain, brand: result.brand || truth.brandName || undefined }, truth, next));
+    }
+    // Persist on the saved sweep row (P1-B config memory). Best-effort: a failed write keeps
+    // the on-screen ruling, and the next sweep re-sends ownedDomains in its request body.
+    if (savedSweepId) { try { await supabaseUpdate('citation_sweeps', `id=eq.${savedSweepId}`, { owned_domains: next }); } catch { /* keep the on-screen ruling */ } }
+  }
   const [pageFactDensity, setPageFactDensity] = useState<FactDensityAudit | null>(null);
   const [truth, setTruth] = useState<TruthRecord | null>(null);
   const [bots, setBots] = useState<any | null>(null);
@@ -245,6 +261,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
         // recovered from the transcript by the re-score.
         const brandArg = sweep.brand || undefined;
         const savedCompetitors: Competitor[] = Array.isArray(sweep.competitors) ? sweep.competitors : [];
+        const savedOwned: string[] = Array.isArray(sweep.owned_domains) ? sweep.owned_domains : [];
+        setOwnedDomains(savedOwned);
         const scored = raw.map((r) => scoreRun(r, { domain: sweep.domain, brand: brandArg }, savedCompetitors));
 
         // Deterministic order: engine (canonical), then question index (panel order if
@@ -311,7 +329,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           const brandedRuns = runs.filter((r) => r.queryType === 'branded');
           setTruth(savedTruth);
           setFidelity(summarizeFidelity(brandedRuns, savedTruth));
-          setEntityLinking(detectEntityLinkingFailures(brandedRuns, { domain: sweep.domain, brand: sweep.brand || savedTruth.brandName || undefined }, savedTruth));
+          setEntityLinking(detectEntityLinkingFailures(brandedRuns, { domain: sweep.domain, brand: sweep.brand || savedTruth.brandName || undefined }, savedTruth, savedOwned));
         }
         if (savedFactDensity) setPageFactDensity(savedFactDensity);
         // A sweep run before the snapshot column existed carries no point-in-time layers.
@@ -399,7 +417,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
     if (!forceGuess) {
       try {
         const { data } = await supabaseQuery('citation_sweeps',
-          `domain=eq.${encodeURIComponent(d)}&competitors=not.is.null&select=brand,category,competitors,branded_queries,category_queries,created_at&order=created_at.desc&limit=1`);
+          `domain=eq.${encodeURIComponent(d)}&competitors=not.is.null&select=brand,category,competitors,branded_queries,category_queries,owned_domains,created_at&order=created_at.desc&limit=1`);
         const prior = data?.[0];
         if (prior && (prior.category || (prior.competitors || []).length || (prior.category_queries || []).length)) {
           setBrand(prior.brand || '');
@@ -408,6 +426,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           const cq: string[] = prior.category_queries || [];
           setCategoryQueries(cq.join('\n'));
           setGeneratedQueries(cq.map((query) => ({ intent_type: '', query })));
+          setOwnedDomains(Array.isArray(prior.owned_domains) ? prior.owned_domains : []);
           setConfigSource('prior'); setPriorSweepDate(prior.created_at);
           setPhase('confirm'); setAnalyzing(false);
           return;
@@ -477,6 +496,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           brandedQueries: parseQuestions(branded).map(expand),
           categoryQueries: parseQuestions(categoryQueries).map(expand),
           competitors: parseCompetitors(competitors),
+          ownedDomains, // G2 config memory
         }),
       });
       const json = await res.json();
@@ -497,7 +517,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           const brandedRuns = (json.runs || []).filter((r: SweepRunResult) => r.queryType === 'branded');
           setFidelity(summarizeFidelity(brandedRuns, tr));
           // B2: which wrong entities the engines confused you with (from cited sources).
-          setEntityLinking(detectEntityLinkingFailures(brandedRuns, { domain: d, brand: json.brand || tr.brandName || undefined }, tr));
+          setEntityLinking(detectEntityLinkingFailures(brandedRuns, { domain: d, brand: json.brand || tr.brandName || undefined }, tr, ownedDomains));
         })
         .catch(() => {});
     } catch (e: any) {
@@ -686,10 +706,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
       hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
       collisions: entityLinking?.collisions ?? [],
       losingCategoryQuestions: [...new Set(r.runs.filter((x) => x.queryType === 'category' && !x.cited && !x.truncated && x.grounding !== 'model-prior').map((x) => x.query))],
-      doNowAuthorities: authority ? [...new Set(authority.authorityDomains.filter((d) => d.citations >= 2 && tierForDomain(d.domain).tier === 'now').map((d) => d.domain))] : [],
+      doNowAuthorities: authority ? doNowChecklist(authority.authorityDomains) : [],
       brand: r.brand || undefined,
       domain: r.domain,
-      served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs } : undefined,
+      served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs, ownedDomains } : undefined,
     })) out.push(line);
     out.push('');
 
@@ -1214,10 +1234,22 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                 <div className="mt-4 border-t border-red-200 pt-3">
                   <p className="text-sm font-bold text-zinc-800">Engines are confusing you with:</p>
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {entityLinking.collisions.map((c) => (
-                      <span key={c} className="px-3 py-1 rounded-full text-xs font-semibold bg-white text-red-700 border border-red-300">{c}</span>
-                    ))}
+                    {entityLinking.collisions.map((c) => {
+                      const isDomain = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(c);
+                      return (
+                        <span key={c} className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white text-red-700 border border-red-300">
+                          {c}
+                          {isDomain && (
+                            // WO-AEO-REPORT-POLISH-001 G2: the OWNER decides; the product never auto-decides.
+                            <button type="button" onClick={() => markOwned(c)} className="text-[10px] uppercase tracking-wide text-zinc-600 underline">This is ours</button>
+                          )}
+                        </span>
+                      );
+                    })}
                   </div>
+                  {ownedDomains.length > 0 && (
+                    <p className="text-xs text-zinc-600 mt-2"><b>Owned properties:</b> {ownedDomains.join(', ')} &mdash; excluded from collisions; the remediation below says what to do with each.</p>
+                  )}
                   {/* WO-INTEGRITY-002 B2: name the collision TYPES actually detected — never
                       assert a stock-ticker or acronym collision that isn't in this sweep. */}
                   {(() => {
@@ -1429,10 +1461,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                 hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
                 collisions: entityLinking?.collisions ?? [],
                 losingCategoryQuestions: [...new Set(result.runs.filter((x) => x.queryType === 'category' && !x.cited && !x.truncated && x.grounding !== 'model-prior').map((x) => x.query))],
-                doNowAuthorities: authority ? [...new Set(authority.authorityDomains.filter((d) => d.citations >= 2 && tierForDomain(d.domain).tier === 'now').map((d) => d.domain))] : [],
+                doNowAuthorities: authority ? doNowChecklist(authority.authorityDomains) : [],
                 brand: result.brand || undefined,
                 domain: result.domain,
-                served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs } : undefined,
+                served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs, ownedDomains } : undefined,
               })} />
               <div className="mt-4 pt-4 border-t border-zinc-100">
                 <CrossLink to="score" onClick={onOpenAnalyzer} />

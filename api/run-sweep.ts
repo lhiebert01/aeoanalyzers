@@ -269,6 +269,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let brandedQueries: string[] = (body.brandedQueries || []).filter(Boolean);
     let categoryQueries: string[] = (body.categoryQueries || []).filter(Boolean);
     const competitors: Competitor[] = (body.competitors || []).filter((c: any) => c?.name);
+    // WO-AEO-REPORT-POLISH-001 G2: domains the owner confirmed are theirs (config memory).
+    const ownedDomains: string[] = Array.isArray(body.ownedDomains) ? body.ownedDomains.map((d: unknown) => String(d || '').toLowerCase().replace(/^www\./, '').trim()).filter(Boolean) : [];
     const category: string = (body.category || '').trim(); // WO-INTEGRITY-002 A1: persisted for the pin/rebuild
     let runsPerQuery: number = Math.max(1, Math.min(5, body.runsPerQuery || 3));
     let persist: boolean = body.persist !== false;
@@ -424,7 +426,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         persisted = await persistSweep({
           domain, brand, userId, summary, runs, fullResult: snapshot,
           // WO-INTEGRITY-002 A1: persist the entered config so the rebuild re-scores against it.
-          category, competitors, brandedQueries, categoryQueries,
+          category, competitors, brandedQueries, categoryQueries, ownedDomains,
         });
       } catch {
         persisted = false; // never fail the sweep on a persistence error
@@ -491,6 +493,7 @@ async function persistSweep(input: {
   summary: any;
   runs: SweepRunResult[];
   fullResult?: Record<string, unknown> | null;
+  ownedDomains?: string[];
   category?: string;
   competitors?: Competitor[];
   brandedQueries?: string[];
@@ -526,6 +529,7 @@ async function persistSweep(input: {
     competitors: input.competitors ?? null,
     branded_queries: input.brandedQueries ?? null,
     category_queries: input.categoryQueries ?? null,
+    owned_domains: input.ownedDomains?.length ? input.ownedDomains : null,
   };
   let sweepRes = await insertSweep({ ...baseRow, full_result: input.fullResult ?? null, ...configCols });
   if (!sweepRes.ok) {
