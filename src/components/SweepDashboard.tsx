@@ -1041,9 +1041,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
               has no point-in-time layers — say so explicitly rather than render a blank. */}
           {savedView && savedSnapshotMissing && (
             <div className="bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-sm text-zinc-600">
-              <b className="text-zinc-800">Fidelity, entity-linking and content-depth not captured</b> — this
-              sweep predates the Sep 2, 2026 snapshot, so its point-in-time page layers weren&apos;t stored.
-              Scores, per-engine results, cited-instead, source citations and every transcript above are complete.
+              <b className="text-zinc-800">Fidelity, entity-linking and content-depth not captured</b> — {savedDate && new Date(savedDate) < new Date('2026-09-02')
+                ? <>this sweep predates the Sep 2, 2026 snapshot, so its point-in-time page layers weren&apos;t stored.</>
+                : <>no point-in-time page snapshot was stored with this sweep (it was run outside the app and imported), so those layers are not shown rather than fabricated.</>}
+              {' '}Scores, per-engine results, cited-instead, source citations and every transcript above are complete.
             </div>
           )}
 
@@ -1186,7 +1187,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                     {/* WO-INTEGRITY-002 B6: a category cell with zero search-grounded runs is
                         UNMEASURED (the engine answered from memory), not a real 0%. */}
                     {e.categoryRuns === 0 ? (
-                      <div className="text-base font-bold text-sky-700">Unmeasured — no search invoked{e.modelPriorRuns > 0 ? ` (${e.modelPriorRuns} model-prior answer${e.modelPriorRuns > 1 ? 's' : ''})` : ''}</div>
+                      <div className="text-base font-bold text-sky-700">Unmeasured — no search invoked{e.modelPriorRuns > 0 ? ` (${e.modelPriorRuns} answered from memory)` : ''}</div>
                     ) : (
                       <div className={`text-2xl font-black ${e.citationWinPct >= 50 ? 'text-emerald-600' : e.citationWinPct > 0 ? 'text-amber-600' : 'text-red-600'}`}>{e.citationWinPct}% <span className="text-xs font-semibold text-zinc-400">· N={e.categoryRuns}</span></div>
                     )}

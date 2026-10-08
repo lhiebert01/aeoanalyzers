@@ -75,3 +75,18 @@ describe.skipIf(!existsSync(EXPORT))('Lane B acceptance — Nybsys 2026-09-30', 
     expect(rows.filter((r) => r.field === 'Product line' && r.status === 'Consistent').map((r) => r.claim)).toEqual(expect.arrayContaining(['private 5G', 'IoT', 'security gateways']));
   });
 });
+
+/** Nimble, Oct 8 2026: a founder name ran past its sentence and clauses posed as product lines. */
+describe('names stop at the sentence; product lines are noun phrases', () => {
+  const run = (engine: string, transcript: string) => ({ engine, queryType: 'branded', transcript });
+  it('"led by founder Jon Ferrara. Its CRM…" yields "Jon Ferrara", not "Jon Ferrara. Its"', () => {
+    const rows = extractBeliefs([run('perplexity', 'Nimble is led by founder Jon Ferrara. Its CRM is popular.')], 'Nimble');
+    expect(rows.find((r) => r.field === 'Founder / CEO')?.claim).toBe('Jon Ferrara');
+  });
+  it('drops clauses, adverbs, dashes and bare generic nouns from product lines', () => {
+    const rows = extractBeliefs([run('claude', 'Nimble provides contact management, pipeline automation—all in one simple tool, and helps teams manage their contacts effectively, with a focus on relationships.')], 'Nimble');
+    const products = rows.filter((r) => r.field === 'Product line').map((r) => r.claim);
+    expect(products).toContain('contact management');
+    expect(products).not.toEqual(expect.arrayContaining(['manage their contacts effectively', 'pipeline automation—all in one simple', 'relationships']));
+  });
+});

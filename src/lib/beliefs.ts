@@ -51,8 +51,9 @@ const SCALAR: Record<string, RegExp[]> = {
     /\b([A-Z][A-Za-z]+(?:\s[A-Z][A-Za-z]+)?)-based\b/,
   ],
   'Founder / CEO': [
-    /\b(?:CEO(?: and| &)? founder|founder(?: and| &)? CEO|founded by|founder|CEO|chief executive(?: officer)?)\s*(?:,|is|:)?\s*([A-Z][a-z]+(?:\s[A-Z][a-z.]+){1,2})\b/,
-    /\b([A-Z][a-z]+(?:\s[A-Z][a-z.]+){1,2})\s+(?:as|is|,)?\s*(?:its\s+|the\s+)?(?:founder(?: and| &)? CEO|CEO(?: and| &)? founder|CEO|founder)\b/,
+    // Name tokens carry no period, so "Jon Ferrara. Its" stops at the surname (Nimble, Oct 8 2026).
+    /\b(?:CEO(?: and| &)? founder|founder(?: and| &)? CEO|founded by|founder|CEO|chief executive(?: officer)?)\s*(?:,|is|:)?\s*([A-Z][a-z]+(?:\s[A-Z][a-z]+){1,2})\b/,
+    /\b([A-Z][a-z]+(?:\s[A-Z][a-z]+){1,2})\s+(?:as|is|,)?\s*(?:its\s+|the\s+)?(?:founder(?: and| &)? CEO|CEO(?: and| &)? founder|CEO|founder)\b/,
   ],
   Founded: [/\b(?:founded|established|incorporated)\s+in\s+((?:19|20)\d\d)\b/i, /\bsince\s+((?:19|20)\d\d)\b/i],
   'Parent company': [/\b(?:a\s+)?(?:subsidiary|division|unit)\s+of\s+([A-Z][\w&.-]*(?:\s[A-Z][\w&.-]*){0,3})/, /\b(?:owned|acquired)\s+by\s+([A-Z][\w&.-]*(?:\s[A-Z][\w&.-]*){0,3})/],
@@ -68,6 +69,11 @@ const LIST: Record<string, RegExp[]> = {
 
 const LIST_STOP = /^(?:a|an|the|its|their|and|solutions?|services?|products?|technolog(?:y|ies)|companies|company|core|wireless|networking|telecommunications|connectivity|hardware|software|infrastructure|networks?)$/i;
 const LIST_LEAD = /^(?:with|spanning|including|across|from|through|via|by|on|at|of|in|to|for|as)\b/i;
+/** A product line is a noun phrase. A fragment with a pronoun, a verb of use, an adverb or a
+ *  dash is a clause the splitter cut out of a sentence ("manage their contacts effectively",
+ *  "pipeline automation—all in one simple"; Nimble, Oct 8 2026). */
+const CLAUSE = /\b(?:their|your|its|our|they|you|we|manage|manages|helps?|lets?|allows?|makes?|keeps?|track|effectively|easily|simply|seamlessly|all in one|all-in-one)\b|[—–]|\b\w+ly\b/i;
+const GENERIC_ITEM = /^(?:relationships?|contacts?|data|features?|insights?|workflows?|integrations?|automation|management|intelligence)$/i;
 /** Merge key for list items: "private 5G networks", "private-5G" and "private 5G" are one product line. */
 function itemKey(s: string): string {
   return norm(s).replace(/\b(?:networks?|infrastructure|solutions?|platforms?|systems?|connectivity|technolog(?:y|ies)|services?|products?|offerings?|hardware|software)\b/g, ' ')
@@ -80,7 +86,7 @@ function splitItems(phrase: string): string[] {
     .split(/,|\band\b|&|\bplus\b|\//)
     .map((x) => cap(x.replace(/^\s*(?:a|an|the|its|their|advanced|comprehensive|end-to-end|full)\s+/i, '')).replace(/\s+(?:solutions?|services?|platforms?|systems?|technolog(?:y|ies)|products?|offerings?)$/i, ''))
     .map((x) => x.trim())
-    .filter((x) => x.length >= 3 && x.length <= 48 && !LIST_STOP.test(x) && !LIST_LEAD.test(x) && /[a-z]/i.test(x));
+    .filter((x) => x.length >= 3 && x.length <= 48 && !LIST_STOP.test(x) && !LIST_LEAD.test(x) && !CLAUSE.test(x) && !GENERIC_ITEM.test(x) && /[a-z]/i.test(x));
 }
 
 function nameVariants(brand: string | undefined, text: string): string[] {
