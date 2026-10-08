@@ -138,13 +138,25 @@ describe('2.4 — cost is stripped from the DATA on every export path', () => {
     expect(api).toMatch(/totalCostUsd: 0/);
   });
 
-  it('both cost lines in the report builder remain admin-gated', () => {
-    // Lane C moved the report builder to lib/sweepReport.ts; the gate moved with it.
+  it('no export carries a sweep cost for anyone — admin included (founder ruling, Oct 8 2026)', () => {
     const { readFileSync } = require('node:fs') as typeof import('node:fs');
     const { resolve } = require('node:path') as typeof import('node:path');
     const lib = readFileSync(resolve(__dirname, '../lib/sweepReport.ts'), 'utf8');
-    expect(lib).toMatch(/if \(isAdmin\) out\.push\(`Total sweep cost/);
-    expect(lib).toMatch(/if \(isAdmin\) out\.push\(`- Cost:/);
+    expect(lib).not.toMatch(/Total sweep cost: ~\$/);
+    expect(lib).not.toMatch(/out\.push\(`- Cost: \$/);
     expect(dash).not.toMatch(/Total sweep cost/);
+  });
+});
+
+describe('exports carry no sweep cost even when built by an admin', () => {
+  it('the Markdown (and so the Word and PDF built from it) has no cost line with isAdmin: true', async () => {
+    const { buildSweepReport } = await import('../lib/sweepReport');
+    const runs = [
+      { engine: 'claude', query: 'who is acme.com', queryType: 'branded', runIndex: 0, transcript: 'Acme (acme.com).', sources: ['https://acme.com/'], costUsd: 0.42, grounding: 'search-grounded', cited: true, domainCited: true, citedCompetitors: [] },
+      { engine: 'claude', query: 'best crm', queryType: 'category', runIndex: 0, transcript: 'HubSpot.', sources: [], costUsd: 0.37, grounding: 'search-grounded', cited: false, domainCited: false, citedCompetitors: ['HubSpot'] },
+    ] as any;
+    const result: any = { domain: 'acme.com', brand: 'Acme', runsPerQuery: 1, engines: ['claude'], skippedEngines: [], configured: ['claude'], summary: { engines: [{ engine: 'claude', brandedRuns: 1, brandedCited: 1, categoryRuns: 1, categoryCited: 0, retrievabilityPct: 100, citationWinPct: 0, modelPriorRuns: 0, truncatedRuns: 0, costUsd: 0.79 }], totalRuns: 2, totalCostUsd: 0.79, topCompetitors: [] }, runs, persisted: true, generatedAt: '2026-10-08T00:00:00Z', tier: 'paid' };
+    const md = buildSweepReport({ result, competitors: [{ name: 'HubSpot' }], fidelity: null, entityLinking: null, authority: null, bots: null, truth: null, pageFactDensity: null, ownedDomains: [], isAdmin: true, savedView: false });
+    expect(md).not.toMatch(/\$0\.79|\$0\.42|\$0\.37|sweep cost|- Cost:/i);
   });
 });

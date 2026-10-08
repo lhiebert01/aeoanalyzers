@@ -168,7 +168,8 @@ export function buildSweepReport(inp: SweepReportInputs): string {
   out.push(`Generated: ${new Date(r.generatedAt || now).toISOString().slice(0, 16).replace('T', ' ')} UTC`);
   if (savedView) out.push(`Rebuilt: ${now.toISOString().slice(0, 16).replace('T', ' ')} UTC from stored transcripts`);
   out.push(`Runs per query: ${r.runsPerQuery} · Engines: ${r.configured.join(', ') || 'none'}${r.skippedEngines?.length ? ` · Skipped (no API key): ${r.skippedEngines.join(', ')}` : ''}`);
-  if (isAdmin) out.push(`Total sweep cost: ~$${r.summary.totalCostUsd.toFixed(3)}`);
+  // Founder ruling, Oct 8 2026: no export carries a sweep cost for ANYONE — an admin's download
+  // is a file that can be forwarded. Cost stays on the admin screen only (History, results page).
   out.push('');
 
   // ── What AI believes about you ──
@@ -340,7 +341,6 @@ export function buildSweepReport(inp: SweepReportInputs): string {
       if ((e as { erroredRuns?: number }).erroredRuns) out.push(`- (${(e as { erroredRuns?: number }).erroredRuns} run(s) errored — excluded from the scores above)`);
       if (e.modelPriorRuns > 0) out.push(`- (${e.modelPriorRuns} ${ALIAS.modelPrior.plain.toLowerCase()} — reported separately, not scored)`);
       if (e.truncatedRuns > 0) out.push(`- (${e.truncatedRuns} truncated answer${e.truncatedRuns > 1 ? 's' : ''} excluded from the scores above)`);
-      if (isAdmin) out.push(`- Cost: $${e.costUsd.toFixed(3)}`);
     }
     out.push('');
   }

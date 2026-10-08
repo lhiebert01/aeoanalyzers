@@ -45,3 +45,6 @@ coexist (Next.js route + static file + plugin), flag which one actually wins.
 - `npm run build` = vite build + prerender (fail-open). `npm run build:nopre` skips prerender.
 - Models: pin FAMILY aliases (`claude-opus-4-8`, Gemini flash chain) — never dated snapshots.
 - Secrets: env only (Vercel/Supabase dashboards + gitignored `.env`); never hardcode; `$ENV_VAR` in allow-rules.
+
+## Cost is never exported (founder ruling, Oct 8 2026)
+Engine/sweep cost shows on screen only, and only to the admin emails. **No export carries a cost for anyone** — Markdown, Word, PDF, executive report, page. Any report change must keep `src/__tests__/reportIntegrity003.test.ts` "exports carry no sweep cost even when built by an admin" green; it builds a real report as admin and fails on any dollar figure.
