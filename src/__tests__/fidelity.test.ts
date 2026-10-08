@@ -103,3 +103,14 @@ describe('classifyRunFidelity + summarizeFidelity (B1 — sweep integration)', (
     expect(s.issues.length).toBeGreaterThanOrEqual(1);
   });
 });
+
+describe('a founder name stops at the sentence (WO-004)', () => {
+  it('"co-founder Vincenzo Barbagallo. It offers" yields the name alone', async () => {
+    const { extractFounderMentions } = await import('../lib/fidelity');
+    expect(extractFounderMentions('The co-founder Vincenzo Barbagallo. It offers AEO tools.')).toEqual(['Vincenzo Barbagallo']);
+  });
+  it('PROVE BY BREAKING: a middle initial is not a sentence end', async () => {
+    const { extractFounderMentions } = await import('../lib/fidelity');
+    expect(extractFounderMentions('Nimble was founded by Jon V. Ferrara in 2008.')).toEqual(['Jon V. Ferrara']);
+  });
+});

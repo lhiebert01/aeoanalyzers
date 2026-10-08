@@ -7,7 +7,7 @@ Aug-1 validation run; NOT the Jul-31 launch baseline (which used a different
 auto-generated set — it stays the launch-narrative number, not the series comparator).
 
 - **Domain:** aeoanalyzers.com · **Brand:** AEO Analyzers
-- **Reps:** 5 · **Runs:** 240 (2 branded + 10 category × 5 × 4 engines) · **Engine cost:** ≈ $2.81
+- **Reps:** 5 · **Runs:** 240 (2 branded + 10 category × 5 × 4 engines)
 - **Competitor seed:** Profound (tryprofound.com), Otterly AI (otterly.ai)
 - **Raw JSON (all 240 transcripts):** `aeoanalyzers-SERIES-ANCHOR-2026-08-01.json`
 

@@ -54,7 +54,9 @@ export function extractFounderMentions(text: string): string[] {
   );
   for (const rx of [after, before]) {
     let m: RegExpExecArray | null;
-    while ((m = rx.exec(t))) found.add(m[1].trim());
+    // A name never carries a sentence end: "Vincenzo Barbagallo. It" is "Vincenzo Barbagallo"
+    // (aeoanalyzers.com, Sep 2026 sweep — the wrong value printed with the next word attached).
+    while ((m = rx.exec(t))) found.add(m[1].replace(/(?<!\b[A-Z])[.!?;:](?:\s.*)?$/s, '').trim()); // a middle initial ("Jon V. Ferrara") survives
   }
   return [...found];
 }
@@ -212,4 +214,27 @@ export function summarizeFidelity(
     }
   }
   return { citedAccurate, citedDrifted, issues, hallucinatedFounders: [...hallucinated] };
+}
+
+/** WO-AEO-BRANDED-ACCURACY-004 Part A — "described accurately when asked by name".
+ *  Accurate answers ÷ answers that named the company, from the existing classifier — no new scoring
+ *  path. `checked` lists exactly which facts were checkable, because the classifier compares only what
+ *  the company's own site publishes: its brand name, and its founder names when the site declares them.
+ *  A site that declares no founder can only fail an answer on the brand name, and the definition line
+ *  must say so. null when no truth record exists (the site could not be read): unmeasured, never 100%. */
+export interface AccuracyWhenNamed { accurate: number; named: number; pct: number | null; checked: string[]; definition: string }
+
+export function accuracyWhenNamed(brandedRuns: { cited?: boolean; transcript: string }[], truth: TruthRecord | null | undefined): AccuracyWhenNamed | null {
+  if (!truth) return null;
+  const f = summarizeFidelity(brandedRuns, truth);
+  const named = f.citedAccurate + f.citedDrifted;
+  const checked = [
+    ...(truth.brandName ? [`the brand name "${truth.brandName}"`] : []),
+    ...((truth.founders || []).length ? [`the founder${truth.founders.length > 1 ? 's' : ''} ${truth.founders.join(' and ')}`] : []),
+  ];
+  const pct = named ? Math.round((100 * f.citedAccurate) / named) : null;
+  const definition = named
+    ? `${f.citedAccurate} of the ${named} answers that named you stated no fact your site contradicts. Checked: ${checked.length ? checked.join(' and ') : 'nothing — your site publishes neither a brand name nor a founder in a form we can read'}, as your own site publishes them.`
+    : 'No answer named you, so there was nothing to check.';
+  return { accurate: f.citedAccurate, named, pct, checked, definition };
 }

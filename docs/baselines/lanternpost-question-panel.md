@@ -13,7 +13,7 @@ first two times), which breaks month-over-month comparability. This is the froze
 ## Baseline sweep of record
 - **Sweep id:** `c9d75643-936f-4dec-974a-0b7dcff3f334`
 - **Run:** 2026-09-03 04:16 UTC (Sep 2 evening, America/Chicago) · **pre-launch** (Lantern Post wire Sep 8)
-- **Reps per query:** 1 · **Total runs:** 48 · **Cost:** $0.4395
+- **Reps per query:** 1 · **Total runs:** 48
 - **Engines:** Claude, ChatGPT (OpenAI), Perplexity, Gemini
 - **Headline (CORRECTED, WO-AEO-SWEEP-INTEGRITY-002):** branded retrievability **6/8 = 75%** (N=8) · category citation win **0%** (N=24) · owned-citation **100%** (N=6) · category share **0%** (N=11).
   - Branded is **6/8, not 8/8**: Claude's two branded runs said *"the search results don't show a specific website … at lanternpost.app"* and cited only near-name collisions — scored "search ran, site not found" (a miss), not a false citation.

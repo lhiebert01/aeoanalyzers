@@ -22,9 +22,10 @@ import {
   type SweepRunResult, type Competitor, type SweepScorecard, type SweepSummary,
 } from './citationSweep';
 import { avgPawc } from './pawc';
-import { summarizeFidelity, type FidelitySummary } from './fidelity';
+import { summarizeFidelity, accuracyWhenNamed, type FidelitySummary, type AccuracyWhenNamed } from './fidelity';
 import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, type BeliefRow } from './beliefs';
 import { describeDenominator, type Denominator } from './sweepDisclosure';
+import { stripCost, sanitizeCustomerExport } from './customerSafe';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from './entityLinking';
 import { aggregateAuthorityGap, type AuthorityGapReport } from './authorityGap';
 import { tierForDomain, TIER_LABEL, type AttainabilityTier } from './authorityTiers';
@@ -49,6 +50,8 @@ export interface ExecReportData {
   fidelity: FidelitySummary | null;
   /** WO-AEO-PRODUCT-FIXES-003 §4.3: what each N is counted out of. */
   denominator: Denominator;
+  /** WO-004: described accurately when named — beneath retrievability. null = no site snapshot. */
+  accuracy: AccuracyWhenNamed | null;
   /** Lane B: every factual claim the branded answers made, counted (agreement, not truth). */
   beliefs: BeliefRow[];
   brandedAnswers: number;
@@ -73,7 +76,6 @@ export interface ExecReportData {
   /** Study-backed "why the cited pages win" gaps vs competitor pages (E2). */
   competitiveGaps: string[];
   runCount: number;
-  costUsd: number;
   /** The worst defensible gap — drives the subject line + Finding 3 (WO 1.2). */
   headline: {
     brandedPct: number;
@@ -94,13 +96,14 @@ export function assembleReportData(input: {
   runs: SweepRunResult[];
   competitors: Competitor[];
   truth?: TruthRecord | null;
-  costUsd?: number;
   /** The client's own page HTML (for the E2 fact-density audit). */
   pageHtml?: string;
   /** Competitor pages the engines cite, for the competitive fact-density gap (E2). */
   competitorPages?: { label: string; html: string }[];
 }): ExecReportData {
   const { brand, domain, sweepDate, competitors, truth } = input;
+  // WO-004 Part B: never receive a cost figure.
+  input = { ...input, runs: stripCost({ runs: input.runs }).runs };
   const client = { domain, brand: brand || undefined };
   // Ensure runs are scored (cited/domainCited/citedCompetitors set) before the
   // fidelity pass reads r.cited — production runs arrive scored, but be robust.
@@ -144,12 +147,12 @@ export function assembleReportData(input: {
 
   return {
     brand, domain, sweepDate, scorecard, summary, fidelity, beliefs, brandedAnswers: branded.length, entityLinking, authority, segments,
+    accuracy: accuracyWhenNamed(branded, truth),
     denominator: describeDenominator(runs, summary.engines.length, runs.length ? Math.max(...runs.map((r) => r.runIndex ?? 0)) + 1 : 0, scorecard),
     losingCategoryQuestions: [...new Set(runs.filter((r) => r.queryType === 'category' && !r.cited && !r.truncated && r.grounding !== 'model-prior').map((r) => r.query))],
     pawc: { clientAvgShare: clientPawc.avgShare, clientAnswers: clientPawc.answers, competitors: compPawc },
     factDensity, competitiveGaps,
     runCount: runs.length,
-    costUsd: input.costUsd ?? summary.totalCostUsd,
     headline: {
       brandedPct: scorecard.brandedRetrievabilityPct,
       categoryWinPct: scorecard.categoryRecommendationWinPct,
@@ -272,6 +275,10 @@ function scoreCell(v: number | null, n: number): string {
 /** Render the executive report as Markdown. COURTESY adds a watermark on every
  *  section and summarizes rather than links transcripts. */
 export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, variant: ReportVariant): string {
+  return sanitizeCustomerExport(renderExecReportRaw(d, narrative, variant)).text;
+}
+
+function renderExecReportRaw(d: ExecReportData, narrative: ExecNarrative, variant: ReportVariant): string {
   const mark = variant === 'courtesy' ? '> **SAMPLE — Courtesy Assessment · aeoanalyzers.com**\n\n' : '';
   const sc = d.scorecard;
   const out: string[] = [];
@@ -288,11 +295,12 @@ export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, va
   out.push('| What we measured | Result |');
   out.push('| --- | --- |');
   out.push(`| Found when asked by name | ${scoreCell(sc.brandedRetrievabilityPct, sc.brandedRuns)} |`);
+  if (d.accuracy) out.push(`| Described accurately when named | ${d.accuracy.pct === null ? '—' : `${d.accuracy.pct}% (${d.accuracy.accurate} of ${d.accuracy.named})`} |`);
   out.push(`| Recommended to new buyers (category win) | ${scoreCell(sc.categoryRecommendationWinPct, sc.categoryRuns)} |`);
   out.push(`| Your own site cited | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
   out.push(`| Your share of the category | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
   out.push('');
-  if (d.denominator) { out.push(`_Recommended to new buyers: ${d.denominator.category}_`); out.push(`_Found when asked by name: ${d.denominator.branded}_`); out.push(''); }
+  if (d.denominator) { out.push(`_Recommended to new buyers: ${d.denominator.category}_`); out.push(`_Found when asked by name: ${d.denominator.branded}_`); if (d.accuracy) out.push(`_Described accurately when named: ${d.accuracy.definition}_`); out.push(''); }
 
   // E1: PAWC answer-share companion — prominence when cited, not just yes/no.
   if (d.pawc.clientAnswers > 0 || d.pawc.competitors.length) {

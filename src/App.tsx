@@ -1191,6 +1191,7 @@ export default function App() {
                           retrievabilityPct?: number; citationWinPct?: number;
                           brandedRuns?: number; brandedCited?: number;
                           categoryRuns?: number; categoryCited?: number;
+                          // WO-004: accuracy-when-named counts, stored with the summary when a site snapshot existed
                         }>;
                         const pooled = (citedKey: 'brandedCited' | 'categoryCited', runsKey: 'brandedRuns' | 'categoryRuns') => {
                           const runs = engines.reduce((a, e) => a + (e[runsKey] || 0), 0);
@@ -1214,7 +1215,7 @@ export default function App() {
                               {s.domain}
                               <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all text-zinc-400" />
                             </td>
-                            <td className="px-6 py-4"><span className="text-sm font-bold">{branded === null ? '—' : `${branded}%`}</span></td>
+                            <td className="px-6 py-4"><span className="text-sm font-bold">{branded === null ? '—' : `${branded}%`}</span>{(() => { const a = (s.summary as { accuracyWhenNamed?: { accurate: number; named: number } } | undefined)?.accuracyWhenNamed; return a && a.named ? <span className="block text-[11px] text-zinc-500" title="Described accurately when named">accurate {a.accurate}/{a.named}</span> : null; })()}</td>
                             <td className="px-6 py-4"><span className={`text-sm font-bold ${category && category >= 50 ? 'text-emerald-600' : category ? 'text-amber-600' : 'text-zinc-500'}`}>{category === null ? '—' : `${category}%`}</span></td>
                             {isAdmin && <td className="px-6 py-4 text-xs text-zinc-500">${Number(s.total_cost_usd || 0).toFixed(2)}</td>}
                             <td className="px-6 py-4 text-xs text-zinc-500">{new Date(s.created_at).toLocaleDateString()}</td>

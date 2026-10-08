@@ -112,6 +112,8 @@ export interface SweepMeaningInput {
   modelPriorRuns: number;
   /** undefined = fidelity not measured in this sweep. */
   drifted?: number;
+  /** WO-004: accuracy-when-named, with the facts it was checked against. */
+  accuracy?: { accurate: number; named: number; checked: string[] } | null;
   collisions: string[];
   bestSegment?: { label: string; winPct: number; n: number } | null;
 }
@@ -158,7 +160,9 @@ export function sweepMeaning(m: SweepMeaningInput): string {
   // Fidelity clause — one sentence, only from measured facts.
   if (m.collisions.length) s.push(`Engines also confused you with ${m.collisions.slice(0, 2).join(' and ')}, which the action plan addresses.`);
   else if ((m.drifted ?? 0) > 0) s.push(`${m.drifted} of the answers that named you got a fact wrong; see “What AI believes about you”.`);
-  else if (m.drifted === 0 && m.brandedPct !== null && m.brandedPct > 0) s.push('None of the answers that named you got a fact wrong.');
+  // WO-004: say exactly what was checked. "None got a fact wrong" overclaimed — only the brand name
+  // and declared founders are compared with the site.
+  else if (m.accuracy && m.accuracy.named) s.push(`${m.accuracy.accurate} of the ${m.accuracy.named} answers that named you stated nothing your site contradicts on ${m.accuracy.checked.length ? m.accuracy.checked.join(' or ') : 'the facts we could read'}.`);
   if (s.length < 5 && m.modelPriorRuns > 0) s.push(`${m.modelPriorRuns} category answer${m.modelPriorRuns > 1 ? 's were' : ' was'} given from memory without a search and ${m.modelPriorRuns > 1 ? 'are' : 'is'} not counted.`);
   return s.slice(0, 5).join(' ');
 }

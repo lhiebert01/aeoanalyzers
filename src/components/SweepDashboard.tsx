@@ -20,6 +20,7 @@ import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '..
 import { doNowChecklist } from '../lib/doNowChecklist';
 import { buildSweepReport, buildSweepCover, pitchTargetsFrom, ALIAS, type SweepResponse, type SweepReportInputs } from '../lib/sweepReport';
 import { CoverCard } from './CoverCard';
+import { accuracyWhenNamed } from '../lib/fidelity';
 import { describeDenominator, buildSeries, pooledFromSummary, rescoreNote, SCORING_VERSION, type SeriesPoint } from '../lib/sweepDisclosure';
 import { extractBeliefs, flaggedWrongValues, ENGINE_LABEL as BELIEF_ENGINE } from '../lib/beliefs';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
@@ -317,9 +318,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           const now = pooledFromSummary(reconstructed.summary);
           const note = rescoreNote(sweep.scoring_version, stored, now);
           setRescoreNoteText(note);
-          if (note || sweep.scoring_version !== SCORING_VERSION) {
-            supabaseUpdate('citation_sweeps', `id=eq.${savedSweepId}`, { summary: reconstructed.summary, scoring_version: SCORING_VERSION, rescored_at: new Date().toISOString(), rescore_note: note })
-              .then((r) => { if (r.error) return supabaseUpdate('citation_sweeps', `id=eq.${savedSweepId}`, { summary: reconstructed.summary }); })
+          // WO-004: History shows accuracy-when-named from the stored summary; add it when the row has a snapshot.
+          const awnSaved = accuracyWhenNamed(scored.filter((r) => r.queryType === 'branded'), sweep.full_result?.truth);
+          const summaryOut = awnSaved ? { ...reconstructed.summary, accuracyWhenNamed: { accurate: awnSaved.accurate, named: awnSaved.named } } : reconstructed.summary;
+          if (note || sweep.scoring_version !== SCORING_VERSION || (awnSaved && !sweep.summary?.accuracyWhenNamed)) {
+            supabaseUpdate('citation_sweeps', `id=eq.${savedSweepId}`, { summary: summaryOut, scoring_version: SCORING_VERSION, rescored_at: new Date().toISOString(), rescore_note: note })
+              .then((r) => { if (r.error) return supabaseUpdate('citation_sweeps', `id=eq.${savedSweepId}`, { summary: summaryOut }); })
               .catch(() => { /* best effort; the screen already shows the re-scored figure and the note */ });
           }
         }
@@ -581,6 +585,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
       ? sweepScorecard(result.runs, { domain: result.domain, brand: result.brand || undefined }, parseCompetitors(competitors))
       : null;
   // WO-AEO-PRODUCT-FIXES-003 §4.3: what each N is counted out of.
+  // WO-004: described accurately when named — beneath retrievability, never instead of it.
+  const accuracy = result && truth ? accuracyWhenNamed(result.runs.filter((r) => r.queryType === 'branded'), truth) : null;
   const denominator = result && scorecard ? describeDenominator(result.runs, (result.configured?.length || result.engines?.length || 0), result.runsPerQuery, scorecard) : null;
 
   // C3: category win by buyer segment (an out-of-segment 0% isn't failure).
@@ -971,7 +977,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
               </div>
               <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-zinc-100 bg-white">
                 {[
-                  { label: 'Found when asked by name', hint: 'Branded retrievability', value: scorecard.brandedRetrievabilityPct, n: scorecard.brandedRuns, note: denominator?.branded },
+                  { label: 'Found when asked by name', hint: 'Branded retrievability', value: scorecard.brandedRetrievabilityPct, n: scorecard.brandedRuns, note: denominator?.branded, accuracy },
                   { label: 'Recommended to new buyers', hint: 'Category win — the metric that drives sales', value: scorecard.categoryRecommendationWinPct, note: denominator?.category, n: scorecard.categoryRuns, hero: true },
                   { label: ALIAS.owned.plain, hint: ALIAS.owned.precise, value: scorecard.ownedCitationRatePct, n: scorecard.ownedCitationN },
                   { label: ALIAS.share.plain, hint: `${ALIAS.share.precise} — you vs. competitors`, value: scorecard.competitiveSharePct, n: scorecard.competitiveShareN },
@@ -988,6 +994,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                     )}
                     {/* WO-AEO-PRODUCT-FIXES-003 §4.3: what N is counted out of, in one line. */}
                     {(s as { note?: string }).note && <div className="text-[11px] text-zinc-600 mt-1 leading-snug">{(s as { note?: string }).note}</div>}
+                    {(s as { accuracy?: typeof accuracy }).accuracy && (() => { const a = (s as { accuracy: NonNullable<typeof accuracy> }).accuracy; return (
+                      <div className="mt-2 pt-2 border-t border-zinc-100">
+                        <div className="text-sm font-bold text-zinc-800">{a.pct === null ? '—' : `${a.pct}%`} <span className="text-xs font-semibold text-zinc-600">{ALIAS.accuracy.plain}</span></div>
+                        <div className="text-[11px] text-zinc-600 leading-snug">{a.definition}</div>
+                      </div>); })()}
+                    {s.label === 'Found when asked by name' && result && !truth && <div className="mt-2 text-[11px] text-zinc-500">{ALIAS.accuracy.plain}: unmeasured — no snapshot of your site&apos;s own facts was stored with this sweep.</div>}
                   </div>
                 ))}
               </div>
@@ -1183,6 +1195,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                   <>
                     <div className="mt-3 text-sm text-zinc-700 font-semibold">{ALIAS.retrievability.plain}</div><div className="text-[11px] text-zinc-400">{ALIAS.retrievability.precise}</div>
                     <div className="text-2xl font-black">{e.brandedCited}/{e.brandedRuns} <span className="text-base font-semibold text-zinc-400">({e.retrievabilityPct}%)</span></div>
+                    {truth && (() => { const a = accuracyWhenNamed(result.runs.filter((r) => r.queryType === 'branded' && r.engine === e.engine), truth); return a && a.named ? <div className="text-[11px] text-zinc-600">{ALIAS.accuracy.plain}: <b>{a.accurate}/{a.named}</b></div> : null; })()}
                     <div className="mt-2 text-sm text-zinc-700 font-semibold">{ALIAS.categoryWin.plain}</div><div className="text-[11px] text-zinc-400">{ALIAS.categoryWin.precise} — search-grounded</div>
                     {/* WO-INTEGRITY-002 B6: a category cell with zero search-grounded runs is
                         UNMEASURED (the engine answered from memory), not a real 0%. */}

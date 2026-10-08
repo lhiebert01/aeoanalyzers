@@ -22,6 +22,7 @@ import {
   type QueryType,
 } from '../src/lib/citationSweep.js';
 import { SCORING_VERSION } from '../src/lib/sweepDisclosure.js';
+import { accuracyWhenNamed } from '../src/lib/fidelity.js';
 import { extractTruthRecord, type TruthRecord } from '../src/lib/truthRecord.js';
 import { COST_SCALE } from '../src/lib/costEstimate.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
@@ -424,8 +425,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // entity-linking collisions, content depth — with NO raw HTML stored. Best-effort:
         // a failed/slow fetch must never affect the sweep — it just omits the snapshot.
         const snapshot = await fetchSiteSnapshot(domain);
+        // WO-004: accuracy-when-named counts travel with the stored summary so History can show them.
+        const awn = snapshot ? accuracyWhenNamed(runs.filter((r) => r.queryType === 'branded'), snapshot.truth) : null;
+        const storedSummary = awn ? { ...summary, accuracyWhenNamed: { accurate: awn.accurate, named: awn.named } } : summary;
         persisted = await persistSweep({
-          domain, brand, userId, summary, runs, fullResult: snapshot,
+          domain, brand, userId, summary: storedSummary, runs, fullResult: snapshot,
           // WO-INTEGRITY-002 A1: persist the entered config so the rebuild re-scores against it.
           category, competitors, brandedQueries, categoryQueries, ownedDomains,
         });

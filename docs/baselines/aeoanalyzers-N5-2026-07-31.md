@@ -2,7 +2,7 @@
 
 **Post-A/B/C1 baseline of record.** Gates the honest-zero series + all public claims.
 Reproduce: `EXEC_DOMAIN=aeoanalyzers.com EXEC_REPS=5 … npx tsx scripts/exec-report.ts`
-(10 category + 2 branded queries × 5 reps × 4 engines = 240 runs, ~$2.71).
+(10 category + 2 branded queries × 5 reps × 4 engines = 240 runs).
 Metrics of record: `aeoanalyzers-N5-2026-07-31.json` (full transcripts kept locally in `exec-out/`, gitignored).
 
 ## Headline scorecard (grounded, search-grounded runs only)

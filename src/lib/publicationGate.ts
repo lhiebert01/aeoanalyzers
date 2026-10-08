@@ -16,6 +16,8 @@
 // This module is pure: it takes a resolver so it can be tested without a network.
 
 import { sweepScorecard, scoreRun, type SweepRunResult, type Competitor } from './citationSweep';
+import { accuracyWhenNamed } from './fidelity';
+import type { TruthRecord } from './truthRecord';
 
 /** A measured figure appearing in public content, and where it came from. */
 export interface PublishedClaim {
@@ -26,7 +28,7 @@ export interface PublishedClaim {
   /** Which stored sweep it was measured from. */
   sweepId: string;
   /** Which metric of that sweep. */
-  metric: 'brandedRetrievabilityPct' | 'categoryRecommendationWinPct' | 'ownedCitationRatePct';
+  metric: 'brandedRetrievabilityPct' | 'categoryRecommendationWinPct' | 'ownedCitationRatePct' | 'accuracyWhenNamedPct';
   /** The N the content states alongside it. Checked too — a figure without its N is half a claim. */
   statedN: number;
 }
@@ -38,6 +40,8 @@ export interface ResolvedSweep {
   competitors: Competitor[];
   /** The stored transcripts. An EMPTY array is a failure, not an empty result. */
   runs: SweepRunResult[];
+  /** WO-004: the site's own facts the accuracy figure is checked against. Absent → that metric is unavailable. */
+  truth?: TruthRecord | null;
 }
 
 export type SweepResolver = (sweepId: string) => Promise<ResolvedSweep | null>;
@@ -74,6 +78,11 @@ function recompute(sweep: ResolvedSweep, metric: PublishedClaim['metric']) {
       return { value: sc.categoryRecommendationWinPct, n: sc.categoryRuns };
     case 'ownedCitationRatePct':
       return { value: sc.ownedCitationRatePct, n: sc.ownedCitationN };
+    case 'accuracyWhenNamedPct': {
+      // N is the answers that NAMED the company — the denominator the page must state beside the figure.
+      const a = accuracyWhenNamed(scored.filter((r) => r.queryType === 'branded'), sweep.truth);
+      return a ? { value: a.pct, n: a.named } : { value: null, n: 0 };
+    }
   }
 }
 

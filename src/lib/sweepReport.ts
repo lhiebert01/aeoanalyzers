@@ -26,6 +26,8 @@ import { doNowChecklist } from './doNowChecklist';
 import { buildCover, sweepMeaning, DIRECTIVE, type CoverInput } from './reportCover';
 import { pawcSplit, mentionsClient, PROMINENT_FOOTNOTE } from './pawcSplit';
 import { describeDenominator } from './sweepDisclosure';
+import { accuracyWhenNamed } from './fidelity';
+import { stripCost, sanitizeCustomerExport } from './customerSafe';
 
 export interface SweepResponse {
   domain: string; brand: string | null; runsPerQuery: number;
@@ -65,6 +67,8 @@ export const ALIAS = {
   owned: { plain: 'Your own site cited as the source', precise: 'Owned citation rate' },
   share: { plain: 'Your share of the recommendations', precise: 'Share of category' },
   modelPrior: { plain: 'Answered from memory (no search)', precise: 'Model-prior' },
+  // WO-AEO-BRANDED-ACCURACY-004: shown beneath retrievability, which stays the headline and the gate.
+  accuracy: { plain: 'Described accurately when named', precise: 'Accuracy when named' },
 } as const;
 
 /** The earned-tier pages that already answer the customer's category questions, minus rivals.
@@ -118,7 +122,9 @@ export function buildSweepCover(inp: SweepReportInputs): CoverInput {
   const named = (sc.topCompetitors.length ? sc.topCompetitors : r.summary.topCompetitors).slice(0, 5)
     .map((c) => ({ name: c.name, count: c.count, seeded: (c as { seeded?: boolean }).seeded }));
   const best = winnableSegment(segs);
+  const awn = accuracyWhenNamed(r.runs.filter((x) => x.queryType === 'branded'), inp.truth);
   const meaning = sweepMeaning({
+    accuracy: awn && { accurate: awn.accurate, named: awn.named, checked: awn.checked },
     brand,
     brandedPct: sc.brandedRetrievabilityPct, brandedN: sc.brandedRuns,
     categoryPct: sc.categoryRecommendationWinPct, categoryN: sc.categoryRuns,
@@ -140,7 +146,7 @@ export function buildSweepCover(inp: SweepReportInputs): CoverInput {
     date: fmtDate(r.generatedAt),
     preparedBy: inp.preparedBy || 'AEO Analyzers',
     headlines: [
-      { plain: ALIAS.retrievability.plain, precise: ALIAS.retrievability.precise, value: val(sc.brandedRetrievabilityPct), note: sc.brandedRuns ? conf(sc.brandedRuns) : undefined },
+      { plain: ALIAS.retrievability.plain, precise: ALIAS.retrievability.precise, value: val(sc.brandedRetrievabilityPct), note: sc.brandedRuns ? `${conf(sc.brandedRuns)}${awn && awn.named ? ` · ${ALIAS.accuracy.plain.toLowerCase()} in ${awn.accurate} of ${awn.named}` : ''}` : undefined },
       { plain: ALIAS.categoryWin.plain, precise: `${ALIAS.categoryWin.precise} — search-grounded answers only`, value: val(sc.categoryRecommendationWinPct), note: sc.categoryRuns ? `${conf(sc.categoryRuns)} · ${(() => { const p = splitFor(r, groundedCategory(r)); return `${p.prominent} prominent / ${p.mentioned} mentioned`; })()}` : undefined },
       { plain: ALIAS.owned.plain, precise: ALIAS.owned.precise, value: val(sc.ownedCitationRatePct), note: sc.ownedCitationN ? conf(sc.ownedCitationN) : undefined },
     ],
@@ -153,7 +159,13 @@ export function buildSweepCover(inp: SweepReportInputs): CoverInput {
   };
 }
 
-export function buildSweepReport(inp: SweepReportInputs): string {
+export function buildSweepReport(input: SweepReportInputs): string {
+  // WO-004 Part B: the builder never receives a cost figure, and its output passes the one sanitizer.
+  const inp: SweepReportInputs = { ...input, result: stripCost(input.result) };
+  return sanitizeCustomerExport(buildSweepReportRaw(inp)).text;
+}
+
+function buildSweepReportRaw(inp: SweepReportInputs): string {
   const { result: r, fidelity, entityLinking, authority, bots, truth, pageFactDensity, ownedDomains, isAdmin, savedView } = inp;
   const L = (eng: string) => ENGINE_LABEL[eng] || eng;
   const out: string[] = [];
@@ -212,6 +224,10 @@ export function buildSweepReport(inp: SweepReportInputs): string {
   out.push('| --- | --- |');
   out.push(`| **${ALIAS.retrievability.plain}** — ${ALIAS.retrievability.precise.toLowerCase()} | ${scoreCell(sc.brandedRetrievabilityPct, sc.brandedRuns)} |`);
   out.push(`| **${ALIAS.categoryWin.plain}** — ${ALIAS.categoryWin.precise.toLowerCase()} | ${scoreCell(sc.categoryRecommendationWinPct, sc.categoryRuns)} |`);
+  {
+    const awn = accuracyWhenNamed(r.runs.filter((x) => x.queryType === 'branded'), truth);
+    if (awn) out.push(`| **${ALIAS.accuracy.plain}** — ${ALIAS.accuracy.precise.toLowerCase()} | ${awn.pct === null ? '—' : `**${awn.pct}%** (${awn.accurate} of ${awn.named})`} |`);
+  }
   out.push(`| **${ALIAS.owned.plain}** — ${ALIAS.owned.precise.toLowerCase()} | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
   out.push(`| **${ALIAS.share.plain}** — ${ALIAS.share.precise.toLowerCase()} | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
   out.push('');
@@ -222,6 +238,8 @@ export function buildSweepReport(inp: SweepReportInputs): string {
     const d = describeDenominator(r.runs, r.configured.length || r.engines.length, r.runsPerQuery, sc);
     out.push(`_Recommended to new buyers: ${d.category}_`);
     out.push(`_Found when asked by name: ${d.branded}_`);
+    const awn = accuracyWhenNamed(r.runs.filter((x) => x.queryType === 'branded'), truth);
+    out.push(awn ? `_${ALIAS.accuracy.plain}: ${awn.definition}_` : `_${ALIAS.accuracy.plain}: unmeasured — no snapshot of your site's own facts was stored with this sweep._`);
     out.push('');
   }
   if (sc.modelPriorRuns > 0) {
@@ -335,6 +353,7 @@ export function buildSweepReport(inp: SweepReportInputs): string {
       out.push(`- Column unreliable — ${e.truncatedRuns} answers were cut off by the token cap (not a real measurement; re-run at a higher cap).`);
     } else {
       out.push(`- ${ALIAS.retrievability.plain} (${ALIAS.retrievability.precise.toLowerCase()}): **${e.brandedCited}/${e.brandedRuns}** (${e.retrievabilityPct}%)`);
+      { const a = accuracyWhenNamed(r.runs.filter((x) => x.queryType === 'branded' && x.engine === e.engine), truth); if (a && a.named) out.push(`- ${ALIAS.accuracy.plain}: **${a.accurate}/${a.named}** (${a.pct}%)`); }
       out.push(e.categoryRuns === 0
         ? `- ${ALIAS.categoryWin.plain} (${ALIAS.categoryWin.precise.toLowerCase()}): Unmeasured — no search invoked${e.modelPriorRuns > 0 ? ` (${e.modelPriorRuns} answered from memory)` : ''}`
         : `- ${ALIAS.categoryWin.plain} (${ALIAS.categoryWin.precise.toLowerCase()}, search-grounded): **${e.citationWinPct}%** · N=${e.categoryRuns}`);
