@@ -26,8 +26,11 @@ for (const line of readFileSync('.env', 'utf8').split('\n')) {
 
 const CFG = JSON.parse(readFileSync('private/baselines/sweep-configs.json', 'utf8'));
 const REPS: number = CFG.reps ?? 3;
-const BUDGET: number = CFG.budget_usd_max ?? 6;
-const OUT = 'private/baselines';
+// WO-AEO-SWEEP-RERUN-002: a re-run of the SAME configs on a later date writes to its own
+// directory (resume-safety is per directory, so the September files never mask an October
+// target) and carries its own authorisation. Neither changes the config file.
+const BUDGET: number = process.env.BUDGET_USD ? Number(process.env.BUDGET_USD) : (CFG.budget_usd_max ?? 6);
+const OUT = process.env.OUT_DIR || 'private/baselines';
 mkdirSync(OUT, { recursive: true });
 
 /** Buyer questions instantiated from the RATIFIED category noun. The noun is never
@@ -154,7 +157,7 @@ async function sweepOne(t: any) {
       if (String(e?.message || e).includes('BUDGET STOP')) break;
     }
   }
-  writeFileSync(`${OUT}/_wo-sweep-configs-001-results.json`, JSON.stringify({ spentUsd: Number(spent.toFixed(4)), reps: REPS, results }, null, 1));
+  writeFileSync(`${OUT}/_results.json`, JSON.stringify({ spentUsd: Number(spent.toFixed(4)), reps: REPS, results }, null, 1));
   console.log(`\n\nDONE — ${results.length} targets · total engine spend $${spent.toFixed(2)} of $${BUDGET} budget`);
   console.log(`artifacts in ${OUT}/ (gitignored)`);
 })();
