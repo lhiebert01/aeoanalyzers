@@ -39,27 +39,46 @@ def category(f):
             if m: hosts.add(m.group(1).lower())
     return round(100 * len(hits) / len(rs)), len(rs), named, len(hosts)
 
-AUG_F, SEP_F = 'aeoanalyzers-SERIES-ANCHOR-2026-08-01.json', 'aeoanalyzers-2026-09-01.json'
+AUG_F, SEP_F, OCT_F = 'aeoanalyzers-SERIES-ANCHOR-2026-08-01.json', 'aeoanalyzers-2026-09-01.json', 'aeoanalyzers-2026-10-08.json'
 ab, an = branded(AUG_F); ac, acn, anamed, ahosts = category(AUG_F)
 sb, sn = branded(SEP_F); sc, scn, snamed, shosts = category(SEP_F)
-total = len(json.load(open(f'{BASE}/{SEP_F}'))['runs'])
+ob, on = branded(OCT_F); oc, ocn, onamed, ohosts = category(OCT_F)
+total = len(json.load(open(f'{BASE}/{OCT_F}'))['runs'])
 
-assert (ab, sb) == (55, 80), (ab, sb)
-assert (ac, sc) == (0, 0) and (anamed, snamed) == (0, 0)
-assert (ahosts, shosts) == (296, 215)
+def accuracy(f):
+    # WO-AEO-BRANDED-ACCURACY-004: counts are computed in TypeScript from the transcripts and the
+    # stored site facts (scripts/finalize-selfsweep.ts) and RE-computed by the publication gate
+    # (publishedFigures.test.ts); this page only renders the stored, gate-verified counts.
+    a = json.load(open(f'{BASE}/{f}'))['accuracyWhenNamed']
+    return a['accurate'], a['named']
+aa, aan = accuracy(AUG_F); sa, san = accuracy(SEP_F); oa, oan = accuracy(OCT_F)
+assert (oa, oan, sa, san, aa, aan) == (40, 40, 31, 32, 40, 40), (oa, oan, sa, san, aa, aan)
+
+# The latest month, everywhere the page or a summary card quotes "now".
+lb, ln, lc, lcn, lhosts = ob, on, oc, ocn, ohosts
+
+assert (ab, sb, ob) == (55, 80, 88), (ab, sb, ob)
+assert (ac, sc, oc) == (0, 0, 0) and (anamed, snamed, onamed) == (0, 0, 0)
+assert (ahosts, shosts, ohosts) == (296, 215, 264)
 
 MONTHS = [
- dict(month='August 2026', measured='1 Aug 2026', b=ab, bn=an, c=ac, cn=acn, restated=True,
+ dict(month='August 2026', measured='1 Aug 2026', b=ab, bn=an, c=ac, cn=acn, acc=(aa, aan), file=AUG_F, restated=True,
       note=("Series anchor. Two engines returned the site every time, two almost never. Published "
             "at the time as 100% under a looser rule that counted an answer describing us from our "
             "parent company&rsquo;s site rather than our own. Restated here so the column compares "
             "like with like.")),
- dict(month='September 2026', measured='2 Sep 2026', b=sb, bn=sn, c=sc, cn=scn, restated=False,
+ dict(month='September 2026', measured='2 Sep 2026', b=sb, bn=sn, c=sc, cn=scn, acc=(sa, san), file=SEP_F, restated=False,
       note=("Found by name far more often &mdash; ChatGPT went from 2 of 10 to 10 of 10. Recommended "
             "to category buyers still zero times: the word &ldquo;aeoanalyzers&rdquo; appears in none "
             f"of the {scn} answers. Absent, not ranked last. Meanwhile one engine now replies that it "
             "cannot find the domain at all and offers two similarly-named sites instead &mdash; a "
             "buyer typing our name, sent elsewhere.")),
+ dict(month='October 2026', measured='8 Oct 2026', b=ob, bn=on, c=oc, cn=ocn, acc=(oa, oan), file=OCT_F, restated=False,
+      note=(f"Found by name rose to {ob}%. Claude, which returned the site 2 times in 10 in September, "
+            "returned it 10 times in 10. ChatGPT went the other way, from 10 of 10 to 5 of 10. Recommended "
+            f"to category buyers: still zero &mdash; &ldquo;aeoanalyzers&rdquo; appears in none of the {ocn} "
+            f"answers. None of the {oan} answers that named us gave a wrong brand name or invented a founder; "
+            "September&rsquo;s invented co-founder did not recur.")),
 ]
 
 LESSONS = [
@@ -78,12 +97,14 @@ LESSONS = [
   "own history. We would rather restate a published figure in public than keep a flattering one that "
   "no longer means what it did."),
  ("Being found and being recommended move independently.",
-  f"Found by name rose {sb - ab} points this month. Recommended to buyers did not move at all. Two "
+  f"Found by name has moved every month: {ab}% in August, {sb}% in September, {ob}% in October. Recommended to buyers has not moved at all. Two "
   "different problems with two different fixes, which is why they are never blended into one score."),
- ("The sources the engines draw on are consolidating.",
-  f"Across the same {scn} category questions, the set of distinct sites cited as sources fell from "
-  f"{ahosts} in August to {shosts} in September. Fewer doors, and none of them ours yet."),
+ ("The sources the engines draw on keep changing.",
+  f"Across the same {scn} category questions, the number of distinct sites cited as sources was "
+  f"{ahosts} in August, {shosts} in September and {ohosts} in October. The doors move; none of them is ours yet."),
 ]
+
+GH = 'https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/baselines'
 
 def rows():
     out = []
@@ -93,16 +114,17 @@ def rows():
         out.append(f"""        <tr>
           <td class="mo">{m['month']}</td>
           <td><span class="fig {tone}">{m['b']}%</span><span class="nn">N={m['bn']}</span></td>
+          <td><span class="fig flat">{round(100 * m['acc'][0] / m['acc'][1])}%</span><span class="nn">{m['acc'][0]} of {m['acc'][1]} named</span></td>
           <td><span class="fig flat">{m['c']}%</span><span class="nn">N={m['cn']}</span></td>
-          <td class="when">{m['measured']}</td>
+          <td class="when">{m['measured']}<br><a class="ilink" href="{GH}/{m['file']}">transcripts</a></td>
           <td><p class="ledgernote">{tag}{m['note']}</p></td>
         </tr>""")
     return '\n'.join(out)
 
 LATEST = MONTHS[-1]
 CARDS = f"""    <div class="score" aria-label="Latest measurement: {LATEST['month']}, {total} stored answers across four answer engines">
-      <div class="tile good"><div class="lab">Found by name</div><div class="num">{sb}%</div><div class="note">N={sn} &middot; up from {ab}% in August</div></div>
-      <div class="tile gap"><div class="lab">Recommended to buyers</div><div class="num">{sc}%</div><div class="note">N={scn} &middot; unchanged since the first measurement</div></div>
+      <div class="tile good"><div class="lab">Found by name</div><div class="num">{lb}%</div><div class="note">N={ln} &middot; {sb}% in September, {ab}% in August</div></div>
+      <div class="tile gap"><div class="lab">Recommended to buyers</div><div class="num">{lc}%</div><div class="note">N={lcn} &middot; unchanged since the first measurement</div></div>
       <div class="tile"><div class="lab">Answers stored</div><div class="num">{total}</div><div class="note">four engines &middot; every one re-readable</div></div>
     </div>"""
 
@@ -135,8 +157,15 @@ BAR  = src[src.index('<body>'):src.index('<div class="wrap">')]
 FOOT = src[src.index('<footer class="sitefoot">'):src.index('</footer>') + 9]
 
 DESC = (f"Our own answer-engine visibility, re-measured every month and published whatever it "
-        f"says. {LATEST['month']}: found by name {sb}% of {sn} runs, recommended to category buyers "
-        f"{sc}% of {scn}. Same twelve-question panel, five runs each, four engines, every answer stored.")
+        f"says. {LATEST['month']}: found by name {lb}% of {ln} runs, recommended to category buyers "
+        f"{lc}% of {lcn}. Same twelve-question panel, five runs each, four engines, every answer stored.")
+
+# SERP-fit head (≤65-char title, 50–160-char description — serpMeta.test.ts). These were trimmed by
+# hand on 30 Sep 2026 and lost when the page was rebuilt on 8 Oct; they now live in the builder.
+TITLE = 'The Honest-Zero Ledger: Our Own Numbers, Monthly'
+META_DESC = ('Our answer-engine visibility, re-measured every month the same way and published whatever it '
+             'says: found by name, recommended to buyers, N on every figure.')
+assert len(TITLE) <= 65 and 50 <= len(META_DESC) <= 160
 
 PAGE = f"""<!doctype html>
 <html lang="en">
@@ -146,14 +175,14 @@ PAGE = f"""<!doctype html>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<title>The Honest-Zero ledger: our own numbers, every month | AEO Analyzers</title>
-<meta name="description" content="{DESC}">
+<title>{TITLE}</title>
+<meta name="description" content="{META_DESC}">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://aeoanalyzers.com/evidence">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AEO Analyzers">
 <meta property="og:title" content="The Honest-Zero ledger: our own numbers, every month">
-<meta property="og:description" content="{DESC}">
+<meta property="og:description" content="{META_DESC}">
 <meta property="og:url" content="https://aeoanalyzers.com/evidence">
 <meta property="og:image" content="https://aeoanalyzers.com/og-evidence-ledger.png">
 <meta property="og:image:type" content="image/png">
@@ -162,7 +191,7 @@ PAGE = f"""<!doctype html>
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The Honest-Zero ledger: our own numbers, every month">
-<meta name="twitter:description" content="{DESC}">
+<meta name="twitter:description" content="{META_DESC}">
 <meta name="twitter:image" content="https://aeoanalyzers.com/og-evidence-ledger.png">
 <meta name="theme-color" content="#08343B">
 <script type="application/ld+json">
@@ -179,12 +208,14 @@ PAGE = f"""<!doctype html>
     "@type": "Organization", "name": "PI GenAI LLC", "url": "https://pigenai.com",
     "logo": {{ "@type": "ImageObject", "url": "https://aeoanalyzers.com/aeo-og.png" }}
   }},
-  "temporalCoverage": "2026-08-01/{MONTHS[-1]['measured'].split()[2]}-09-02",
+  "temporalCoverage": "2026-08-01/2026-10-08",
   "variableMeasured": [
-    {{ "@type": "PropertyValue", "name": "Branded retrievability", "value": {sb}, "unitText": "PERCENT",
-      "description": "Share of branded runs in which the engine reached aeoanalyzers.com. N={sn}." }},
-    {{ "@type": "PropertyValue", "name": "Category citation win", "value": {sc}, "unitText": "PERCENT",
-      "description": "Share of unbranded category runs in which the engine recommended aeoanalyzers.com. N={scn}." }}
+    {{ "@type": "PropertyValue", "name": "Branded retrievability", "value": {lb}, "unitText": "PERCENT",
+      "description": "Share of branded runs in which the engine reached aeoanalyzers.com. N={ln}." }},
+    {{ "@type": "PropertyValue", "name": "Described accurately when named", "value": {round(100 * oa / oan)}, "unitText": "PERCENT",
+      "description": "Of the answers that named AEO Analyzers, the share that stated nothing its own site contradicts on its brand name and founder. N={oan}." }},
+    {{ "@type": "PropertyValue", "name": "Category citation win", "value": {lc}, "unitText": "PERCENT",
+      "description": "Share of unbranded category runs in which the engine recommended aeoanalyzers.com. N={lcn}." }}
   ],
   "mainEntityOfPage": {{ "@type": "WebPage", "@id": "https://aeoanalyzers.com/evidence" }}
 }}
@@ -210,12 +241,13 @@ PAGE = f"""<!doctype html>
       <div class="ledger">
         <table>
           <colgroup>
-            <col style="width:12%"><col style="width:10%"><col style="width:12%">
-            <col style="width:11%"><col style="width:55%">
+            <col style="width:11%"><col style="width:10%"><col style="width:11%"><col style="width:11%">
+            <col style="width:11%"><col style="width:46%">
           </colgroup>
           <thead><tr>
             <th scope="col">Month</th>
             <th scope="col">Found by name</th>
+            <th scope="col">Described accurately when named</th>
             <th scope="col">Recommended to buyers</th>
             <th scope="col">Measured</th>
             <th scope="col">What changed</th>
@@ -230,6 +262,12 @@ PAGE = f"""<!doctype html>
       on &mdash; {total} answers a month, each one stored. <strong>The month is the unit, not the
       calendar day</strong>; the date each run was taken is in the table, so an uneven gap is
       visible rather than hidden.</p>
+      <p class="ledgernote"><strong>Described accurately when named</strong> was added in October 2026. Of
+      the answers that named us, it is the share that stated nothing our own site contradicts &mdash; and
+      it checks exactly two things, our brand name and our founder, as our site publishes them. It sits
+      beside &ldquo;found by name&rdquo; and replaces nothing. For August and September the site&rsquo;s
+      facts were not captured at the time, so those months are checked against the site as read on
+      8 October 2026; the brand name and founder it checks have not changed.</p>
 
       <h2 class="posth2">What we have learned so far</h2>
       <ul class="lessons">
@@ -271,7 +309,7 @@ PAGE = f"""<!doctype html>
 os.makedirs('public/evidence', exist_ok=True)
 open('public/evidence/index.html', 'w', encoding='utf-8').write(PAGE)
 print(f'  wrote public/evidence/index.html ({len(PAGE)} bytes)')
-print(f'  latest: branded {sb}% N={sn} | category {sc}% N={scn} | {total} answers')
+print(f'  latest: branded {lb}% N={ln} | accurate {oa}/{oan} | category {lc}% N={lcn} | {total} answers')
 
 # ------------------------------------------------- every entry point, one source
 # The ledger is one page. Everywhere else shows the current number and links here, so
@@ -298,8 +336,8 @@ STRIP = f"""  <div class="ledgerstrip">
     <div>
       <p class="ls-lab">The Honest-Zero ledger &middot; {LATEST['month']}</p>
       <div class="ls-figs">
-        <span class="ls-fig"><span class="ls-n good">{sb}%</span><span class="ls-k">found by name &middot; N={sn}</span></span>
-        <span class="ls-fig"><span class="ls-n gap">{sc}%</span><span class="ls-k">recommended to buyers &middot; N={scn}</span></span>
+        <span class="ls-fig"><span class="ls-n good">{lb}%</span><span class="ls-k">found by name &middot; N={ln}</span></span>
+        <span class="ls-fig"><span class="ls-n gap">{lc}%</span><span class="ls-k">recommended to buyers &middot; N={lcn}</span></span>
       </div>
     </div>
     <p class="ls-txt">We re-measure our own answer-engine visibility every month, the same way,
@@ -322,6 +360,13 @@ def patch(path, jobs, css=None, once_marker=None):
     print(f'  patched {path}')
 
 # 1. Blog index — the number goes at the TOP, where a reader lands, not in the footer aside.
+#    Monthly refresh: the strip is REGENERATED every run (it was write-once, so October would
+#    have left September's figures on the blog index).
+_bi = open('public/blog/index.html', encoding='utf-8').read()
+if 'class="ledgerstrip"' in _bi:
+    _a = _bi.index('  <div class="ledgerstrip">'); _b = _bi.index('  <div class="posts">')
+    open('public/blog/index.html', 'w', encoding='utf-8').write(_bi[:_a] + STRIP + _bi[_b:])
+    print('  refreshed public/blog/index.html strip')
 patch('public/blog/index.html',
       [('  <div class="posts">', STRIP + '  <div class="posts">'),
        ('<a href="/blog/i-scored-zero#the-ledger">the running ledger</a>',
@@ -331,7 +376,8 @@ patch('public/blog/index.html',
 # 2. Part 1 — keep the cards and the month's note, hand the table to /evidence.
 p1 = 'public/blog/i-scored-zero/index.html'
 h1 = open(p1, encoding='utf-8').read()
-if 'class="ledgerstrip"' not in h1:
+if True:  # regenerated every run (monthly refresh); the first run also handed the table to /evidence
+    first = 'class="ledgerstrip"' not in h1
     start = h1.index('    <h2 class="posth2" id="the-ledger">')
     end = h1.index('<p class="samplenote"')
     REPLACEMENT = f"""    <h2 class="posth2" id="the-ledger">Where the number stands now</h2>
@@ -345,18 +391,18 @@ if 'class="ledgerstrip"' not in h1:
 
     <div class="postbody">
       <p style="margin:2px 0 18px;font-size:14px;color:var(--muted)"><strong style="color:var(--ink)">{LATEST['month']}, measured {LATEST['measured']}.</strong>
-      Found by name rose {sb - ab} points since August; recommended to buyers did not move at all.
-      Those are two different problems, so they are never blended into one score. The word
-      &ldquo;aeoanalyzers&rdquo; appears in none of the {scn} category answers &mdash; absent,
-      not ranked last.</p>
+      Found by name: {lb}% in October, {sb}% in September, {ab}% in August. Recommended to buyers
+      did not move at all. Those are two different problems, so they are never blended into one
+      score. The word &ldquo;aeoanalyzers&rdquo; appears in none of the {lcn} category answers
+      &mdash; absent, not ranked last.</p>
     </div>
 
     <div class="ledgerstrip">
       <div>
         <p class="ls-lab">Every month, whatever it says</p>
         <div class="ls-figs">
-          <span class="ls-fig"><span class="ls-n good">{sb}%</span><span class="ls-k">found by name &middot; N={sn}</span></span>
-          <span class="ls-fig"><span class="ls-n gap">{sc}%</span><span class="ls-k">recommended to buyers &middot; N={scn}</span></span>
+          <span class="ls-fig"><span class="ls-n good">{lb}%</span><span class="ls-k">found by name &middot; N={ln}</span></span>
+          <span class="ls-fig"><span class="ls-n gap">{lc}%</span><span class="ls-k">recommended to buyers &middot; N={lcn}</span></span>
         </div>
       </div>
       <p class="ls-txt">Every month so far, each with its own note on what changed and what we
@@ -366,11 +412,9 @@ if 'class="ledgerstrip"' not in h1:
 
 """
     h1 = h1[:start] + REPLACEMENT + h1[end:]
-    h1 = h1.replace('</style>', STRIP_CSS + '</style>', 1)
+    if first: h1 = h1.replace('</style>', STRIP_CSS + '</style>', 1)
     open(p1, 'w', encoding='utf-8').write(h1)
-    print(f'  patched {p1} (table handed to /evidence)')
-else:
-    print(f'  {p1}: already patched, skipped')
+    print(f'  {"patched" if first else "refreshed"} {p1}')
 
 # 3. The Buyer's Standard sells "receipts" as requirement five and had nowhere to point.
 patch('public/aeo-buyers-standard/index.html',
