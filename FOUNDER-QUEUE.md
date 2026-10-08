@@ -74,3 +74,9 @@ observation** — only the founder can take these:
 
 - [x] Eight re-sweeps on the approved configs, one date, four engines, three reps, $6.64 of $8.00, zero errored. Report (md + docx), findings CSV and address-verification CSV are in `private/baselines/rerun-2026-10-08/` and the founder's Downloads (`WO-AEO-SWEEP-RERUN-002-REPORT-2026-10-08.docx`). Nothing sent. Prospect data stays out of the repo.
 - [ ] **Founder decisions from the report:** the sendable set is now four, not six (two targets win their category in October); three of the four addresses are unverified and need a route (open one page by hand; two go via the published support inbox or are dropped).
+
+## 2026-10-08 — WO-AEO-PRODUCT-FIXES-003 (one change set, shipped)
+
+- [ ] **Run migration `supabase/migrations/20261008_wo_product_fixes_003_scoring_version.sql`** in the Supabase SQL editor (additive: `scoring_version`, `rescored_at`, `rescore_note` on `citation_sweeps`). Until it runs, every write falls back cleanly and History shows "older rules · re-scored on open" on every row; after it runs, opening a sweep stamps the row and the chip turns to "current rules".
+- [ ] QA on production in one pass: History → any sweep → the Scoring column; open a sweep that has two dates on the same questions → the "Measured over time" card with the delta and a link per date; the tile under "Recommended to new buyers" reads "N=… scored answers = … questions × … engines × … runs = … category answers; … answered from memory (no search, not scored)"; the Word/Markdown/PDF carry the same two lines under the scorecard table.
+- Report + filled verification checklist: `private/work-orders/WO-AEO-PRODUCT-FIXES-003/` and Downloads.
