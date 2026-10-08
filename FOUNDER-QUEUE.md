@@ -68,7 +68,7 @@ observation** — only the founder can take these:
 
 ## Next up (noted 2026-09-30, founder's request)
 
-- [ ] **AEO GTM email wave — Instantly.** Run the GTM-90 email campaign from the Instantly account against the AEO campaign leads. Inputs: the slate of record `private/GTM90-Master-Target-Slate-v4.2.xlsx` (gitignored, never committed), the outreach copy doc, and the warmed Instantly mailbox (warmup has been running since August). Plan of record: `docs/GTM90-STATUS-AND-PLAN-2026-08-05.md`. Ledger of record for sends lives in the `thesmartaiworker-site` repo (`OUTREACH-IDENTITY-STATUS.md`). Guardrails: no prospect data in this public repo; nothing auto-sends — every send is a founder action; log the date of each wave so the Oct 25 evidence row can be read against it.
+- [ ] **AEO GTM email wave — by hand from lindsay.d.hiebert@thesmartaiworker.com** (Instantly was cancelled 8 Oct per WO-AEO-SWEEP-RERUN-002). Inputs: the four sendable SaaS targets and their address verdicts in the private re-sweep report; the outreach copy doc; plan of record `docs/GTM90-STATUS-AND-PLAN-2026-08-05.md`. Sends ledger lives in `thesmartaiworker-site`. Nothing auto-sends; log each send's date.
 
 ## Done 2026-10-08 — WO-AEO-SWEEP-RERUN-002 revB
 
