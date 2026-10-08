@@ -69,3 +69,8 @@ observation** — only the founder can take these:
 ## Next up (noted 2026-09-30, founder's request)
 
 - [ ] **AEO GTM email wave — Instantly.** Run the GTM-90 email campaign from the Instantly account against the AEO campaign leads. Inputs: the slate of record `private/GTM90-Master-Target-Slate-v4.2.xlsx` (gitignored, never committed), the outreach copy doc, and the warmed Instantly mailbox (warmup has been running since August). Plan of record: `docs/GTM90-STATUS-AND-PLAN-2026-08-05.md`. Ledger of record for sends lives in the `thesmartaiworker-site` repo (`OUTREACH-IDENTITY-STATUS.md`). Guardrails: no prospect data in this public repo; nothing auto-sends — every send is a founder action; log the date of each wave so the Oct 25 evidence row can be read against it.
+
+## Done 2026-10-08 — WO-AEO-SWEEP-RERUN-002 revB
+
+- [x] Eight re-sweeps on the approved configs, one date, four engines, three reps, $6.64 of $8.00, zero errored. Report (md + docx), findings CSV and address-verification CSV are in `private/baselines/rerun-2026-10-08/` and the founder's Downloads (`WO-AEO-SWEEP-RERUN-002-REPORT-2026-10-08.docx`). Nothing sent. Prospect data stays out of the repo.
+- [ ] **Founder decisions from the report:** the sendable set is now four, not six (two targets win their category in October); three of the four addresses are unverified and need a route (open one page by hand; two go via the published support inbox or are dropped).

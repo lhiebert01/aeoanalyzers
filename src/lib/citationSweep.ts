@@ -399,6 +399,7 @@ const NON_COMPETITOR_HOSTS = new Set([
   // reference / directories / reviews / news
   'wikipedia.org', 'g2.com', 'gartner.com', 'capterra.com', 'getapp.com', 'trustpilot.com',
   'crunchbase.com', 'producthunt.com', 'betalist.com', 'techradar.com', 'forbes.com',
+  'toolradar.com', 'thetoolbus.com', 'saasworthy.com', 'softwareadvice.com', 'trustradius.com', 'sourceforge.net', 'alternativeto.net',
   'businessinsider.com', 'techcrunch.com', 'zapier.com',
   // search engines / model providers (named as engines, not as category rivals)
   'google.com', 'bing.com', 'microsoft.com', 'apple.com', 'openai.com', 'chatgpt.com',
@@ -473,6 +474,18 @@ function competitorDisplayName(domain: string): string {
  *  source hosts: a host whose registrable label appears in that same answer as a word is a
  *  vendor the engine both named and retrieved — the name comes from the transcript, the
  *  domain from the source, and nothing is looked up or guessed. */
+/** A source host whose label is an ordinary English word ("calendar", "customer") matches
+ *  ordinary prose, not a vendor — the Oct 8 2026 re-sweep surfaced "Calendar 23×" and
+ *  "Customer 22×" (customer.io's label) in the product view. A known vendor host is exempt
+ *  (monday.com is a word and a company). */
+const COMMON_WORD_LABELS = new Set([
+  'calendar', 'customer', 'customers', 'support', 'help', 'email', 'mail', 'software', 'tool', 'tools',
+  'free', 'best', 'guide', 'review', 'reviews', 'blog', 'learn', 'docs', 'compare', 'pricing', 'apps',
+  'cloud', 'online', 'business', 'marketing', 'sales', 'invoice', 'invoicing', 'schedule', 'scheduling',
+  'proposal', 'proposals', 'meeting', 'meetings', 'book', 'booking', 'contact', 'contacts', 'team', 'teams',
+  'project', 'projects', 'simple', 'small', 'data', 'network', 'networks', 'wireless', 'mobile', 'home',
+]);
+
 export function resolveVendorsFromSources(
   runs: SweepRunResult[],
   client: { domain: string; brand?: string },
@@ -487,6 +500,7 @@ export function resolveVendorsFromSources(
       if (!host || host === own || NON_COMPETITOR_HOSTS.has(host) || found.has(host)) continue;
       const label = host.split('.')[0];
       if (label.length < 4) continue;
+      if (COMMON_WORD_LABELS.has(label) && !COMPETITOR_DISPLAY_NAMES[host]) continue;
       const m = new RegExp('\\b(' + escapeRegExp(label) + ')\\b', 'i').exec(text);
       if (m) found.set(host, COMPETITOR_DISPLAY_NAMES[host] || m[1]);
     }
@@ -503,7 +517,10 @@ export function effectiveCompetitorSet(
   client: { domain: string; brand?: string },
   provided: Competitor[],
 ): (Competitor & { seeded: boolean })[] {
-  const key = (c: Competitor) => (c.domain ? registrable(normalizeDomain(c.domain)) : '') || c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  // A seed typed as its domain ("Customer.io", "Cal.com") keys by that domain, so the mined
+  // host folds into it instead of appearing twice ("Customer.io" seeded + "Customer" mined).
+  const seedDomain = (c: Competitor) => c.domain || (/^[a-z0-9-]+\.[a-z]{2,}$/i.test(c.name.trim()) ? c.name.trim() : '');
+  const key = (c: Competitor) => (seedDomain(c) ? registrable(normalizeDomain(seedDomain(c))) : '') || c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
   const out: (Competitor & { seeded: boolean })[] = [];
   const seen = new Set<string>();
   for (const c of provided || []) {
@@ -516,7 +533,7 @@ export function effectiveCompetitorSet(
   for (const c of [...resolveVendorsFromSources(runs, client), ...detectCompetitors(runs, client)]) {
     const k = key(c);
     // a mined domain that names a seed (seed "Celona" ↔ celona.io) folds into the seed
-    const seedHit = out.find((o) => o.seeded && (o.domain ? registrable(normalizeDomain(o.domain)) === k : c.name.toLowerCase().includes(o.name.toLowerCase())));
+    const seedHit = out.find((o) => o.seeded && (seedDomain(o) ? registrable(normalizeDomain(seedDomain(o))) === k : c.name.toLowerCase().includes(o.name.toLowerCase())));
     if (seedHit) { if (!seedHit.domain && c.domain) seedHit.domain = c.domain; continue; }
     if (seen.has(k)) continue; seen.add(k);
     out.push({ ...c, seeded: false });

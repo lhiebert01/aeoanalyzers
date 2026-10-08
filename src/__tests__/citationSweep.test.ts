@@ -531,3 +531,26 @@ describe('Lane A — cited-instead counts every vendor the answers name', () => 
     expect(sweepScorecard(one, client, seeds).topCompetitors.map((c) => c.name)).toContain('Mavenir');
   });
 });
+
+/** Oct 8 2026 re-sweep: the product's mined "cited instead" view surfaced common words. */
+describe('source-mined vendors are specific, and a domain-shaped seed folds with its host', () => {
+  const client = { domain: 'acme.com', brand: 'Acme' };
+  const run = (transcript: string, sources: string[]) => ({ engine: 'claude', query: 'best x', queryType: 'category', runIndex: 0, transcript, sources, costUsd: 0, grounding: 'search-grounded' } as any);
+  it('a common-word label matching ordinary prose is not a vendor', () => {
+    const runs = [run('Put it on your calendar and ask a customer. Monday is a real option here.', ['https://calendar.com/x', 'https://customer.io/blog', 'https://monday.com/crm'])];
+    const names = resolveVendorsFromSources(runs, client).map((c) => c.name.toLowerCase());
+    expect(names).not.toContain('calendar');
+    expect(names).not.toContain('customer');
+    expect(names).toContain('monday'); // known vendor host, word or not
+  });
+  it('tool directories are not competitors', () => {
+    const runs = [run('See toolradar for a list.', ['https://toolradar.com/best'])];
+    expect(resolveVendorsFromSources(runs, client)).toEqual([]);
+  });
+  it('a seed typed as "Customer.io" absorbs the mined customer.io host instead of a second row', () => {
+    const runs = [run('Customer.io leads this space.', ['https://customer.io/'])];
+    const set = effectiveCompetitorSet(runs, client, [{ name: 'Customer.io' }]);
+    expect(set.filter((c) => /customer/i.test(c.name))).toHaveLength(1);
+    expect(set[0]).toMatchObject({ name: 'Customer.io', seeded: true });
+  });
+});
