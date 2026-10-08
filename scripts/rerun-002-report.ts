@@ -21,9 +21,18 @@ function rescore(t: any, runs: SweepRunResult[]) {
   const comps: Competitor[] = (t.competitors || []).map((n: string) => ({ name: n }));
   const scored = runs.filter((r: any) => !r.errored && !/^\s*\[error:/i.test(r.transcript || '')).map((r) => scoreRun(r, client, comps));
   const sc = sweepScorecard(scored, client, comps);
-  const winner = sc.topCompetitors[0];
+  // The order's method (and September's): the named winner is counted over SEARCH-GROUNDED
+  // category answers only, against the APPROVED seed competitors — not the product's wider
+  // "cited instead" (which also mines vendors from sources and counts branded answers).
+  const grounded = scored.filter((r) => r.queryType === 'category' && !r.truncated && r.grounding !== 'model-prior');
+  const seedCounts = new Map<string, number>();
+  for (const r of grounded) for (const n of r.citedCompetitors || []) seedCounts.set(n, (seedCounts.get(n) || 0) + 1);
+  const seedRank = [...seedCounts.entries()].sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ name, count }));
+  const winner = seedRank[0];
+  const clientCited = grounded.filter((r) => r.cited).length;
+  const mined = sc.topCompetitors.filter((c) => !(c as any).seeded).slice(0, 4).map((c) => `${c.name} ${c.count}×`);
   const errored = runs.length - scored.length;
-  return { sc, winner, errored, scored };
+  return { sc, winner, seedRank, clientCited, mined, errored, scored, groundedN: grounded.length };
 }
 const rows: string[] = ['id,target,domain,category_rate_pct_rescored,N,named_winner,transcript_ref,sep_rate_pct,delta_points,honest_finding_yn,one_sentence'];
 const md: string[] = [`# WO-AEO-SWEEP-RERUN-002 — findings (re-scored by the current code). GITIGNORED.`, '', `Measured ${new Date().toISOString().slice(0, 10)} · four engines · three reps · one date. September comparator: the 7–8 Sep stored runs, re-scored by the SAME code today (the work order's table figures are shown beside them where they differ).`, ''];
@@ -42,11 +51,12 @@ for (const t of CFG.targets) {
   const honest = !winning && octPct !== null && o.winner ? 'Y' : 'N';
   const sentence = octPct === null ? 'Category unmeasured this month (no search-grounded answers); nothing to write.'
     : winning ? `They win their category (${octPct}%); no email is written for a winner.`
-    : `On ${t.category} questions, the engines named ${o.winner?.name} in ${o.winner?.count} of ${nOct} search-grounded answers and ${t.product} in ${o.sc.categoryRuns ? Math.round((octPct / 100) * nOct) : 0}.`;
+    : `On ${t.category} questions, the engines named ${o.winner?.name} in ${o.winner?.count} of ${nOct} search-grounded answers and ${t.product} in ${o.clientCited}.`;
   rows.push([t.id, t.product, t.domain, octPct ?? '', nOct, winner, ref, sepPct ?? '', delta ?? '', honest, `"${sentence.replace(/"/g, "'")}"`].join(','));
   md.push(`## ${t.id} — ${t.product} (${t.domain})`, `Category noun, verbatim: *${t.category}*`, '',
     `- October: branded **${o.sc.brandedRetrievabilityPct}%** (N=${o.sc.brandedRuns}) · category **${octPct === null ? 'unmeasured' : octPct + '%'}** (N=${nOct} search-grounded) · model-prior ${o.sc.modelPriorRuns} · errored ${o.errored} · spend $${oct.spent.toFixed(4)}`,
-    `- Named instead (October): ${o.sc.topCompetitors.slice(0, 3).map((c) => `**${c.name}** ${c.count}×`).join(', ') || '—'}`,
+    `- Named instead (October, approved seeds, search-grounded category answers): ${o.seedRank.slice(0, 3).map((c) => `**${c.name}** ${c.count}×`).join(', ') || '—'}${o.mined.length ? ` · also named, mined from sources (product view, all runs): ${o.mined.join(', ')}` : ''}`,
+    `- Named instead (September, same method): ${s ? s.seedRank.slice(0, 3).map((c) => `${c.name} ${c.count}×`).join(', ') || '—' : '—'}`,
     `- September re-scored: category **${sepPct === null ? 'unmeasured' : sepPct + '%'}** (N=${s?.sc.categoryRuns ?? '—'})${sepPct !== null && sepPct !== WO_SEP[t.id] ? ` — the order's table says ${WO_SEP[t.id]}% (first-stored); the re-scored value is the one to quote` : ''}`,
     `- Delta: **${delta === null ? '—' : (delta > 0 ? '+' : '') + delta} points**`,
     `- Transcripts: \`${ref}\``, '', `**${honest === 'Y' ? 'FINDING' : 'NO FINDING'}** — ${sentence}`, '');
