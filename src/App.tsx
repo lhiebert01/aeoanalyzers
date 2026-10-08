@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { SCORING_VERSION } from './lib/sweepDisclosure';
 import ImplementationRoadmap from './components/ImplementationRoadmap';
 import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRight, Loader2, Globe, Cpu, Swords, Copy, Check, User as UserIcon, LogOut, History, CreditCard, LayoutDashboard, Settings, BookOpen, ShieldAlert, BarChart, Lock, Mail, FileText, Layout, ShoppingBag, Code, Info, ExternalLink, ChevronRight, ChevronDown, Share2, Linkedin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -1155,7 +1156,7 @@ export default function App() {
                   {/* WO-INTEGRITY-002 B7: these figures are the AS-STORED summary; opening a
                       sweep re-scores from stored transcripts (errored runs excluded, branded
                       false-positives corrected), so a row and its opened view can differ. */}
-                  <p className="px-6 pt-4 text-xs text-zinc-500">Figures below are as first stored, pooled across engines over <b>search-grounded runs only</b> — the same basis as the opened view and the downloaded report. Answers given from the model's memory are unmeasured, not zero, and are excluded. <b>Open a sweep to see the re-scored numbers</b> — errored runs are excluded and branded false-positives corrected on open, so an older row may read higher than its opened view.</p>
+                  <p className="px-6 pt-4 text-xs text-zinc-500">Figures below are pooled across engines over <b>search-grounded runs only</b> — the same basis as the opened view and the downloaded report. Answers given from the model's memory are unmeasured, not zero, and are excluded. <b>Open a sweep to see the re-scored numbers</b> — errored runs are excluded and branded false-positives corrected on open, so an older row may read higher than its opened view.</p>
                   <div className="overflow-x-auto">
                   <table className="w-full min-w-[900px] text-left">
                     <thead className="bg-zinc-50 border-b border-zinc-100">
@@ -1165,6 +1166,7 @@ export default function App() {
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Category</th>
                         {isAdmin && <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Cost</th>}
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Date</th>
+                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Scoring</th>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest"></th>
                       </tr>
                     </thead>
@@ -1216,6 +1218,8 @@ export default function App() {
                             <td className="px-6 py-4"><span className={`text-sm font-bold ${category && category >= 50 ? 'text-emerald-600' : category ? 'text-amber-600' : 'text-zinc-500'}`}>{category === null ? '—' : `${category}%`}</span></td>
                             {isAdmin && <td className="px-6 py-4 text-xs text-zinc-500">${Number(s.total_cost_usd || 0).toFixed(2)}</td>}
                             <td className="px-6 py-4 text-xs text-zinc-500">{new Date(s.created_at).toLocaleDateString()}</td>
+                            {/* WO-AEO-PRODUCT-FIXES-003 §4.2: which rules this row was scored under. */}
+                            <td className="px-6 py-4 text-[11px]" title={s.rescore_note || undefined}>{s.scoring_version === SCORING_VERSION ? <span className="text-emerald-700 font-semibold">current rules</span> : <span className="text-amber-700 font-semibold">older rules · re-scored on open</span>}{s.rescore_note && <span className="block text-zinc-500">updated on open</span>}</td>
                             <td className="px-6 py-4">
                               <span className="text-xs font-bold text-zinc-400 group-hover:text-zinc-900 transition-all flex items-center gap-1">
                                 View <ChevronRight className="w-3 h-3" />

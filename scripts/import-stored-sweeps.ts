@@ -21,6 +21,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { aggregateSweep, scoreRun, type SweepRunResult, type Competitor } from '../src/lib/citationSweep.js';
+import { SCORING_VERSION } from '../src/lib/sweepDisclosure.js';
 
 for (const line of readFileSync('.env', 'utf8').split('\n')) {
   const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
@@ -82,11 +83,21 @@ async function post(path: string, body: unknown, prefer = 'return=representation
       competitors,
       branded_queries: [...new Set(scored.filter((r) => r.queryType === 'branded').map((r) => r.query))],
       category_queries: [...new Set(scored.filter((r) => r.queryType === 'category').map((r) => r.query))],
+      scoring_version: SCORING_VERSION, // WO-AEO-PRODUCT-FIXES-003 §4.2
     };
 
     if (dryRun) { console.log(`  would import ${t.id} ${domain} — ${scored.length} runs, $${summary.totalCostUsd.toFixed(4)}`); imported++; continue; }
 
-    const [sweep] = await post('citation_sweeps', row);
+    // The scoring_version column arrives with migration 20261008; until the founder runs it,
+    // the insert falls back to the row without it (same fail-safe as api/run-sweep).
+    let sweep: any;
+    try { [sweep] = await post('citation_sweeps', row); }
+    catch (e: any) {
+      if (!/scoring_version/.test(String(e?.message || e))) throw e;
+      const { scoring_version: _sv, ...withoutVersion } = row as any;
+      [sweep] = await post('citation_sweeps', withoutVersion);
+      console.log(`  (scoring_version column not present yet — ${t.id} stored without it; the saved view will re-score and label it on open)`);
+    }
     await post(
       'sweep_results',
       scored.map((r) => ({

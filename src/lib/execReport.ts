@@ -24,6 +24,7 @@ import {
 import { avgPawc } from './pawc';
 import { summarizeFidelity, type FidelitySummary } from './fidelity';
 import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, type BeliefRow } from './beliefs';
+import { describeDenominator, type Denominator } from './sweepDisclosure';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from './entityLinking';
 import { aggregateAuthorityGap, type AuthorityGapReport } from './authorityGap';
 import { tierForDomain, TIER_LABEL, type AttainabilityTier } from './authorityTiers';
@@ -46,6 +47,8 @@ export interface ExecReportData {
   scorecard: SweepScorecard;
   summary: SweepSummary;
   fidelity: FidelitySummary | null;
+  /** WO-AEO-PRODUCT-FIXES-003 §4.3: what each N is counted out of. */
+  denominator: Denominator;
   /** Lane B: every factual claim the branded answers made, counted (agreement, not truth). */
   beliefs: BeliefRow[];
   brandedAnswers: number;
@@ -141,6 +144,7 @@ export function assembleReportData(input: {
 
   return {
     brand, domain, sweepDate, scorecard, summary, fidelity, beliefs, brandedAnswers: branded.length, entityLinking, authority, segments,
+    denominator: describeDenominator(runs, summary.engines.length, runs.length ? Math.max(...runs.map((r) => r.runIndex ?? 0)) + 1 : 0, scorecard),
     losingCategoryQuestions: [...new Set(runs.filter((r) => r.queryType === 'category' && !r.cited && !r.truncated && r.grounding !== 'model-prior').map((r) => r.query))],
     pawc: { clientAvgShare: clientPawc.avgShare, clientAnswers: clientPawc.answers, competitors: compPawc },
     factDensity, competitiveGaps,
@@ -288,6 +292,7 @@ export function renderExecReport(d: ExecReportData, narrative: ExecNarrative, va
   out.push(`| Your own site cited | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
   out.push(`| Your share of the category | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
   out.push('');
+  if (d.denominator) { out.push(`_Recommended to new buyers: ${d.denominator.category}_`); out.push(`_Found when asked by name: ${d.denominator.branded}_`); out.push(''); }
 
   // E1: PAWC answer-share companion — prominence when cited, not just yes/no.
   if (d.pawc.clientAnswers > 0 || d.pawc.competitors.length) {

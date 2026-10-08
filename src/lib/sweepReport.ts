@@ -25,6 +25,7 @@ import { buildSweepActionAgenda } from './sweepActions';
 import { doNowChecklist } from './doNowChecklist';
 import { buildCover, sweepMeaning, DIRECTIVE, type CoverInput } from './reportCover';
 import { pawcSplit, mentionsClient, PROMINENT_FOOTNOTE } from './pawcSplit';
+import { describeDenominator } from './sweepDisclosure';
 
 export interface SweepResponse {
   domain: string; brand: string | null; runsPerQuery: number;
@@ -215,6 +216,13 @@ export function buildSweepReport(inp: SweepReportInputs): string {
   out.push('');
   out.push('_Category win is pooled across engines over **search-grounded runs only**. An answer given from the model\'s memory is reported as unmeasured, never as a zero._');
   out.push('');
+  // WO-AEO-PRODUCT-FIXES-003 §4.3: what each N is counted out of.
+  {
+    const d = describeDenominator(r.runs, r.configured.length || r.engines.length, r.runsPerQuery, sc);
+    out.push(`_Recommended to new buyers: ${d.category}_`);
+    out.push(`_Found when asked by name: ${d.branded}_`);
+    out.push('');
+  }
   if (sc.modelPriorRuns > 0) {
     out.push(`_${ALIAS.modelPrior.plain}: ${sc.modelPriorRuns} category answer${sc.modelPriorRuns > 1 ? 's' : ''} came from model memory (no web search) and ${sc.modelPriorRuns > 1 ? 'are' : 'is'} not counted in the score above.${sc.modelPriorVisibilityPct !== null ? ` Of those, the model named you ${sc.modelPriorVisibilityPct}% of the time (model-prior visibility).` : ''}_`);
     out.push('');

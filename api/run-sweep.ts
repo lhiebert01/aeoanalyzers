@@ -21,6 +21,7 @@ import {
   type Competitor,
   type QueryType,
 } from '../src/lib/citationSweep.js';
+import { SCORING_VERSION } from '../src/lib/sweepDisclosure.js';
 import { extractTruthRecord, type TruthRecord } from '../src/lib/truthRecord.js';
 import { COST_SCALE } from '../src/lib/costEstimate.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
@@ -530,6 +531,8 @@ async function persistSweep(input: {
     branded_queries: input.brandedQueries ?? null,
     category_queries: input.categoryQueries ?? null,
     owned_domains: input.ownedDomains?.length ? input.ownedDomains : null,
+    // WO-AEO-PRODUCT-FIXES-003 §4.2: the rules this summary was scored under.
+    scoring_version: SCORING_VERSION,
   };
   let sweepRes = await insertSweep({ ...baseRow, full_result: input.fullResult ?? null, ...configCols });
   if (!sweepRes.ok) {

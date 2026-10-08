@@ -20,6 +20,7 @@ import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '..
 import { doNowChecklist } from '../lib/doNowChecklist';
 import { buildSweepReport, buildSweepCover, pitchTargetsFrom, ALIAS, type SweepResponse, type SweepReportInputs } from '../lib/sweepReport';
 import { CoverCard } from './CoverCard';
+import { describeDenominator, buildSeries, pooledFromSummary, rescoreNote, SCORING_VERSION, type SeriesPoint } from '../lib/sweepDisclosure';
 import { extractBeliefs, flaggedWrongValues, ENGINE_LABEL as BELIEF_ENGINE } from '../lib/beliefs';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
 import { getAccessToken, supabaseQuery, supabaseUpdate } from '../supabase';
@@ -173,6 +174,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
   const [showAllComps, setShowAllComps] = useState(false);
   // WO-AEO-REPORT-POLISH-001 G2: near-name domains the OWNER confirmed are theirs.
   const [ownedDomains, setOwnedDomains] = useState<string[]>([]);
+  // WO-AEO-PRODUCT-FIXES-003: 4.2 what moved on re-score (shown, and written back); 4.4 the dated series.
+  const [rescoreNoteText, setRescoreNoteText] = useState<string | null>(null);
+  const [series, setSeries] = useState<SeriesPoint[]>([]);
+  const fetchSeries = (dom: string, current: { id: string; domain: string; created_at: string; category?: string | null; category_queries?: string[] | null }) => {
+    supabaseQuery('citation_sweeps', `domain=ilike.${encodeURIComponent(dom)}&select=id,domain,created_at,summary,category,category_queries,branded_queries,scoring_version&order=created_at.asc`)
+      .then(({ data }) => setSeries(buildSeries((data || []) as any, current as any)))
+      .catch(() => setSeries([]));
+  };
   async function markOwned(domain: string) {
     const d = domain.toLowerCase().replace(/^www\./, '');
     const next = ownedDomains.includes(d) ? ownedDomains : [...ownedDomains, d];
@@ -300,6 +309,22 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
         };
         if (cancelled) return;
         setResult(reconstructed);
+        // WO-AEO-PRODUCT-FIXES-003 §4.2: the stored figure and the opened figure are the same
+        // number, or the row says why they differ. Re-scoring here under newer rules than the
+        // row was stored with writes the opened summary back with the version and a note.
+        {
+          const stored = pooledFromSummary(sweep.summary);
+          const now = pooledFromSummary(reconstructed.summary);
+          const note = rescoreNote(sweep.scoring_version, stored, now);
+          setRescoreNoteText(note);
+          if (note || sweep.scoring_version !== SCORING_VERSION) {
+            supabaseUpdate('citation_sweeps', `id=eq.${savedSweepId}`, { summary: reconstructed.summary, scoring_version: SCORING_VERSION, rescored_at: new Date().toISOString(), rescore_note: note })
+              .then((r) => { if (r.error) return supabaseUpdate('citation_sweeps', `id=eq.${savedSweepId}`, { summary: reconstructed.summary }); })
+              .catch(() => { /* best effort; the screen already shows the re-scored figure and the note */ });
+          }
+        }
+        // §4.4: every sweep of this domain on the same configs, oldest first.
+        fetchSeries(sweep.domain, sweep);
         setAuthority(aggregateAuthorityGap(scored, sweep.domain));
         setSavedDate(sweep.created_at);
         setDomain(sweep.domain);
@@ -478,6 +503,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || `sweep failed (${res.status})`);
       setResult(json);
+      setRescoreNoteText(null);
+      fetchSeries(d, { id: 'live', domain: d, created_at: new Date().toISOString(), category: coreCategory.trim() || null, category_queries: parseQuestions(categoryQueries).map(expand) });
       setAuthority(aggregateAuthorityGap(json.runs || [], d));
       fetch(`/api/bot-stats?domain=${encodeURIComponent(d)}`).then((r) => r.json()).then(setBots).catch(() => {});
       // B1: build the client's truth record from their own live site, then check
@@ -553,6 +580,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
     result && !result.quickCheck
       ? sweepScorecard(result.runs, { domain: result.domain, brand: result.brand || undefined }, parseCompetitors(competitors))
       : null;
+  // WO-AEO-PRODUCT-FIXES-003 §4.3: what each N is counted out of.
+  const denominator = result && scorecard ? describeDenominator(result.runs, (result.configured?.length || result.engines?.length || 0), result.runsPerQuery, scorecard) : null;
 
   // C3: category win by buyer segment (an out-of-segment 0% isn't failure).
   const segments = result && !result.quickCheck ? segmentBreakdown(result.runs) : [];
@@ -621,6 +650,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           <div className="text-sm text-indigo-900">
             <span className="font-bold">Viewing Saved Sweep</span>
             {savedDate && <span className="text-indigo-700"> · {new Date(savedDate).toLocaleDateString()}</span>}
+            {rescoreNoteText && <span className="block text-xs text-indigo-900 mt-1"><b>Re-scored on open:</b> {rescoreNoteText}</span>}
             <span className="block text-xs text-indigo-600 mt-0.5">Rebuilt from stored transcripts — no new engine calls, $0. Scores recomputed from the stored answers; errored runs (rate-limit / timeout) are excluded, so a sweep run before Sep 2, 2026 is corrected here.</span>
           </div>
           <button onClick={onBackToHistory} className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-700 hover:text-indigo-900 whitespace-nowrap">
@@ -907,6 +937,31 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           {/* Lane C: the executive summary — the same CoverInput the .md/.docx page 1 renders. */}
           {scorecard && result && <CoverCard cover={buildSweepCover(reportInputs(result))} />}
 
+          {/* WO-AEO-PRODUCT-FIXES-003 §4.4: two dates on the same configs are a series. */}
+          {series.length > 1 && (
+            <div className="rounded-3xl border border-zinc-200 bg-white px-6 py-5">
+              <div className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400">Measured over time · same questions, same engines</div>
+              <p className="text-xs text-zinc-600 mt-1">One figure is a snapshot. The same questions asked again on the same panel, with every transcript stored, is a measurement.</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm mt-3">
+                  <thead><tr className="text-left text-zinc-500 border-b border-zinc-200"><th className="py-1 pr-3">Date</th><th className="py-1 pr-3">Found when asked by name</th><th className="py-1 pr-3">Recommended to new buyers</th><th className="py-1 pr-3">Change</th><th className="py-1">Transcripts</th></tr></thead>
+                  <tbody>
+                    {series.map((p) => (
+                      <tr key={p.id} className={`border-b border-zinc-100 ${p.id === savedSweepId ? 'bg-emerald-50/60' : ''}`}>
+                        <td className="py-1.5 pr-3 tabular-nums">{p.date}</td>
+                        <td className="py-1.5 pr-3 font-bold tabular-nums">{p.branded === null ? '—' : `${p.branded}%`}</td>
+                        <td className="py-1.5 pr-3 font-bold tabular-nums">{p.category === null ? '—' : `${p.category}%`}</td>
+                        <td className={`py-1.5 pr-3 tabular-nums ${p.deltaCategory === null ? 'text-zinc-400' : p.deltaCategory > 0 ? 'text-emerald-700' : p.deltaCategory < 0 ? 'text-red-700' : ''}`}>{p.deltaCategory === null ? '—' : `${p.deltaCategory > 0 ? '+' : ''}${p.deltaCategory} pts`}</td>
+                        <td className="py-1.5">{p.id === savedSweepId ? <span className="text-zinc-500">this sweep</span> : <a className="text-indigo-700 underline" href={`/sweeps?saved=${p.id}`}>open</a>}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-[11px] text-zinc-500 mt-2">Recommended = search-grounded category answers only; answers given from memory are reported beside the tile below, never pooled in. Each date links to its own stored transcripts.</p>
+            </div>
+          )}
+
           {/* Plain-English headline (UX-PRINCIPLES §4): lead with what it MEANS, not a data dump. */}
           {scorecard && (
             <div className="rounded-3xl overflow-hidden shadow-sm border border-zinc-200">
@@ -916,8 +971,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
               </div>
               <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-zinc-100 bg-white">
                 {[
-                  { label: 'Found when asked by name', hint: 'Branded retrievability', value: scorecard.brandedRetrievabilityPct, n: scorecard.brandedRuns },
-                  { label: 'Recommended to new buyers', hint: 'Category win — the metric that drives sales', value: scorecard.categoryRecommendationWinPct, n: scorecard.categoryRuns, hero: true },
+                  { label: 'Found when asked by name', hint: 'Branded retrievability', value: scorecard.brandedRetrievabilityPct, n: scorecard.brandedRuns, note: denominator?.branded },
+                  { label: 'Recommended to new buyers', hint: 'Category win — the metric that drives sales', value: scorecard.categoryRecommendationWinPct, note: denominator?.category, n: scorecard.categoryRuns, hero: true },
                   { label: ALIAS.owned.plain, hint: ALIAS.owned.precise, value: scorecard.ownedCitationRatePct, n: scorecard.ownedCitationN },
                   { label: ALIAS.share.plain, hint: `${ALIAS.share.precise} — you vs. competitors`, value: scorecard.competitiveSharePct, n: scorecard.competitiveShareN },
                 ].map((s) => (
@@ -931,6 +986,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                         <span className={`ml-1.5 font-semibold ${confChip(s.n).cls}`}>· {confChip(s.n).label}</span>
                       </div>
                     )}
+                    {/* WO-AEO-PRODUCT-FIXES-003 §4.3: what N is counted out of, in one line. */}
+                    {(s as { note?: string }).note && <div className="text-[11px] text-zinc-600 mt-1 leading-snug">{(s as { note?: string }).note}</div>}
                   </div>
                 ))}
               </div>

@@ -3,6 +3,7 @@
 //   npx tsx scripts/rerun-002-report.ts
 import { readFileSync, readdirSync, writeFileSync, existsSync } from 'node:fs';
 import { scoreRun, sweepScorecard, type SweepRunResult, type Competitor } from '../src/lib/citationSweep.js';
+import { describeDenominator } from '../src/lib/sweepDisclosure.js';
 
 const SEP = 'private/baselines';
 const OCT = 'private/baselines/rerun-2026-10-08';
@@ -34,7 +35,7 @@ function rescore(t: any, runs: SweepRunResult[]) {
   const errored = runs.length - scored.length;
   return { sc, winner, seedRank, clientCited, mined, errored, scored, groundedN: grounded.length };
 }
-const rows: string[] = ['id,target,domain,category_rate_pct_rescored,N,named_winner,transcript_ref,sep_rate_pct,delta_points,honest_finding_yn,one_sentence'];
+const rows: string[] = ['id,target,domain,category_rate_pct_rescored,N,named_winner,transcript_ref,sep_rate_pct,delta_points,honest_finding_yn,one_sentence,questions,engines,runs_per_question,category_answers_total,answered_from_memory,errored,cut_off,denominator'];
 const md: string[] = [`# WO-AEO-SWEEP-RERUN-002 — findings (re-scored by the current code). GITIGNORED.`, '', `Measured ${new Date().toISOString().slice(0, 10)} · four engines · three reps · one date. September comparator: the 7–8 Sep stored runs, re-scored by the SAME code today (the work order's table figures are shown beside them where they differ).`, ''];
 let spentTotal = 0; const stories: string[] = []; const failed: string[] = [];
 for (const t of CFG.targets) {
@@ -52,7 +53,9 @@ for (const t of CFG.targets) {
   const sentence = octPct === null ? 'Category unmeasured this month (no search-grounded answers); nothing to write.'
     : winning ? `They win their category (${octPct}%); no email is written for a winner.`
     : `On ${t.category} questions, the engines named ${o.winner?.name} in ${o.winner?.count} of ${nOct} search-grounded answers and ${t.product} in ${o.clientCited}.`;
-  rows.push([t.id, t.product, t.domain, octPct ?? '', nOct, winner, ref, sepPct ?? '', delta ?? '', honest, `"${sentence.replace(/"/g, "'")}"`].join(','));
+  const dn = describeDenominator(oct.runs, CFG.engines.length, CFG.reps, o.sc);
+  const catAll = oct.runs.filter((x) => x.queryType === 'category');
+  rows.push([t.id, t.product, t.domain, octPct ?? '', nOct, winner, ref, sepPct ?? '', delta ?? '', honest, `"${sentence.replace(/"/g, "'")}"`, new Set(catAll.map((x) => x.query)).size, CFG.engines.length, CFG.reps, catAll.length, o.sc.modelPriorRuns, o.errored, catAll.filter((x) => x.truncated).length, `"${dn.category}"`].join(','));
   md.push(`## ${t.id} — ${t.product} (${t.domain})`, `Category noun, verbatim: *${t.category}*`, '',
     `- October: branded **${o.sc.brandedRetrievabilityPct}%** (N=${o.sc.brandedRuns}) · category **${octPct === null ? 'unmeasured' : octPct + '%'}** (N=${nOct} search-grounded) · model-prior ${o.sc.modelPriorRuns} · errored ${o.errored} · spend $${oct.spent.toFixed(4)}`,
     `- Named instead (October, approved seeds, search-grounded category answers): ${o.seedRank.slice(0, 3).map((c) => `**${c.name}** ${c.count}×`).join(', ') || '—'}${o.mined.length ? ` · also named, mined from sources (product view, all runs): ${o.mined.join(', ')}` : ''}`,
