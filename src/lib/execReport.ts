@@ -26,6 +26,7 @@ import { summarizeFidelity, accuracyWhenNamed, type FidelitySummary, type Accura
 import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, type BeliefRow } from './beliefs';
 import { describeDenominator, type Denominator } from './sweepDisclosure';
 import { stripCost, sanitizeCustomerExport } from './customerSafe';
+import { panelOf, panelDisclosure, testConditionsLines } from './panel';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from './entityLinking';
 import { aggregateAuthorityGap, type AuthorityGapReport } from './authorityGap';
 import { tierForDomain, TIER_LABEL, type AttainabilityTier } from './authorityTiers';
@@ -37,7 +38,7 @@ import type { TruthRecord } from './truthRecord';
 export type ReportVariant = 'paid' | 'courtesy';
 
 const ENGINE_LABEL: Record<string, string> = {
-  claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini',
+  claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', grok: 'Grok',
 };
 
 /** Everything a report needs, computed from the sweep — the model sees this, never invents it. */
@@ -300,7 +301,7 @@ function renderExecReportRaw(d: ExecReportData, narrative: ExecNarrative, varian
   out.push(`| Your own site cited | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
   out.push(`| Your share of the category | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
   out.push('');
-  if (d.denominator) { out.push(`_Recommended to new buyers: ${d.denominator.category}_`); out.push(`_Found when asked by name: ${d.denominator.branded}_`); if (d.accuracy) out.push(`_Described accurately when named: ${d.accuracy.definition}_`); out.push(''); }
+  if (d.denominator) { out.push(`_Recommended to new buyers: ${d.denominator.category}_`); out.push(`_Found when asked by name: ${d.denominator.branded}_`); if (d.accuracy) out.push(`_Described accurately when named: ${d.accuracy.definition}_`); out.push(`_${panelDisclosure(panelOf(d.summary as any), d.summary.engines.map((e) => e.engine))}_`); for (const l of testConditionsLines({ location: ((d.summary as any)?.panel?.location ?? null) as string | null })) out.push(`_${l}_`); out.push(''); }
 
   // E1: PAWC answer-share companion — prominence when cited, not just yes/no.
   if (d.pawc.clientAnswers > 0 || d.pawc.competitors.length) {

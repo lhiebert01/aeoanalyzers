@@ -28,6 +28,8 @@ import { pawcSplit, mentionsClient, PROMINENT_FOOTNOTE } from './pawcSplit';
 import { describeDenominator } from './sweepDisclosure';
 import { accuracyWhenNamed } from './fidelity';
 import { stripCost, sanitizeCustomerExport } from './customerSafe';
+import { panelOf, panelDisclosure, testConditionsLines } from './panel';
+import { classifyIntent, intentMixLine, INTENT_LABEL } from './queryIntent';
 
 export interface SweepResponse {
   domain: string; brand: string | null; runsPerQuery: number;
@@ -54,11 +56,13 @@ export interface SweepReportInputs {
   isAdmin: boolean;
   savedView: boolean;
   preparedBy?: string | null;
+  /** WO-006: the category noun, so intent tags ignore requirements that are part of the category itself. */
+  category?: string | null;
   /** Injected so a rebuilt report is reproducible in a test. */
   now?: Date;
 }
 
-export const ENGINE_LABEL: Record<string, string> = { claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini' };
+export const ENGINE_LABEL: Record<string, string> = { claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', grok: 'Grok' };
 
 /** Lane F aliases — plain label first, precise label second. "Pick Rate" is never used. */
 export const ALIAS = {
@@ -180,6 +184,8 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
   out.push(`Generated: ${new Date(r.generatedAt || now).toISOString().slice(0, 16).replace('T', ' ')} UTC`);
   if (savedView) out.push(`Rebuilt: ${now.toISOString().slice(0, 16).replace('T', ' ')} UTC from stored transcripts`);
   out.push(`Runs per query: ${r.runsPerQuery} · Engines: ${r.configured.join(', ') || 'none'}${r.skippedEngines?.length ? ` · Skipped (no API key): ${r.skippedEngines.join(', ')}` : ''}`);
+  // WO-006: which engines, and a different panel gives a different number — on page 1.
+  out.push(`_${panelDisclosure(panelOf(r.summary as any), r.configured)}_`);
   // Founder ruling, Oct 8 2026: no export carries a sweep cost for ANYONE — an admin's download
   // is a file that can be forwarded. Cost stays on the admin screen only (History, results page).
   out.push('');
@@ -335,12 +341,19 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
   // ── Methodology ──
   out.push(DIRECTIVE.pagebreak);
   out.push('## Methodology — how this was measured');
+  out.push('**Test conditions.**');
+  for (const l of testConditionsLines({ location: ((r.summary as any)?.panel?.location ?? null) as string | null })) out.push(`- ${l}`);
+  {
+    const catQs = [...new Set(r.runs.filter((x) => x.queryType === 'category').map((x) => x.query))];
+    if (catQs.length) out.push(`- ${intentMixLine(catQs, inp.category ?? null)}`);
+  }
+  out.push('');
   out.push(`We asked ${r.configured.length} answer engine${r.configured.length === 1 ? '' : 's'} (${r.configured.map(L).join(', ')}) your questions with web search on, ${r.runsPerQuery} time${r.runsPerQuery === 1 ? '' : 's'} each, and stored every answer verbatim. Three things are measured separately: whether you are found when asked by name, whether you are recommended when buyers ask the category question, and who gets cited instead.`);
   out.push('');
   out.push('- **Search-grounded only.** An answer given from the model\'s memory with no live search is reported as "answered from memory" and never counted as a zero.');
   out.push('- **Strict branded rule.** A branded answer counts as found only when your domain appears in its sources or text; "search ran, site not found" is a miss.');
   out.push('- **Errors excluded.** A run that hit a rate limit or timed out is excluded, not scored zero. Answers cut off by the token cap are not scored.');
-  out.push('- **N and confidence.** Every score carries its N; confidence is low under 5, medium to 19, high from 20.');
+  out.push('- **N and confidence.** Every score carries its N; confidence is low under 3 answers, medium at 3 or 4, and high from 5.');
   out.push('');
   out.push('### Scores by engine');
   for (const e of r.summary.engines) {
@@ -391,7 +404,7 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
       : (run as { siteNotFound?: boolean }).siteNotFound ? 'search ran — site not found'
       : run.cited ? 'cited' : 'not cited';
     const prior = run.grounding === 'model-prior' && !run.truncated ? ' · answered from memory' : '';
-    out.push(`### [${tag}${prior}] ${L(run.engine)} · ${run.queryType}: ${run.query}`);
+    out.push(`### [${tag}${prior}] ${L(run.engine)} · ${run.queryType === 'category' ? INTENT_LABEL[classifyIntent(run.query, inp.category ?? null).intent].toLowerCase() : 'about you'}: ${run.query}`);
     out.push(run.transcript || '(no answer)');
     if (run.sources?.length) out.push(`Sources: ${run.sources.join(' · ')}`);
     out.push('');

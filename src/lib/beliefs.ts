@@ -36,8 +36,8 @@ export interface BeliefRow {
 
 interface RunLike { engine: string; queryType?: string; transcript?: string | null; cited?: boolean; domainCited?: boolean; error?: string | null }
 
-const ENGINE_ORDER = ['claude', 'openai', 'perplexity', 'gemini'];
-export const ENGINE_LABEL: Record<string, string> = { claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini' };
+const ENGINE_ORDER = ['claude', 'openai', 'perplexity', 'gemini', 'grok'];
+export const ENGINE_LABEL: Record<string, string> = { claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', grok: 'Grok' };
 
 const clean = (s: string) => s.replace(/\*\*|__|\[\d+\]|\(\d+\)/g, '').replace(/\s+/g, ' ').trim();
 const norm = (s: string) => clean(s).toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();

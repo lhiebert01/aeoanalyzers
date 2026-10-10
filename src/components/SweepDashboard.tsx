@@ -20,8 +20,11 @@ import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '..
 import { doNowChecklist } from '../lib/doNowChecklist';
 import { buildSweepReport, buildSweepCover, pitchTargetsFrom, ALIAS, type SweepResponse, type SweepReportInputs } from '../lib/sweepReport';
 import { CoverCard } from './CoverCard';
+import { SearchConsolePanel } from './SearchConsolePanel';
 import { accuracyWhenNamed } from '../lib/fidelity';
-import { describeDenominator, buildSeries, pooledFromSummary, rescoreNote, SCORING_VERSION, type SeriesPoint } from '../lib/sweepDisclosure';
+import { panelOf, panelDisclosure, testConditionsLines, type PanelVersion } from '../lib/panel';
+import { classifyIntent, intentMix, INTENTS, INTENT_LABEL } from '../lib/queryIntent';
+import { otherPanels, describeDenominator, buildSeries, pooledFromSummary, rescoreNote, SCORING_VERSION, type SeriesPoint } from '../lib/sweepDisclosure';
 import { extractBeliefs, flaggedWrongValues, ENGINE_LABEL as BELIEF_ENGINE } from '../lib/beliefs';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
 import { getAccessToken, supabaseQuery, supabaseUpdate } from '../supabase';
@@ -156,7 +159,7 @@ type GeneratedQuery = { intent_type: string; query: string };
 // transcript drill-down, per-sweep cost, AI-bot hits, and the authority gap.
 
 const ENGINE_LABEL: Record<string, string> = {
-  claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini',
+  claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', grok: 'Grok',
 };
 
 export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenAnalyzer, savedSweepId, onBackToHistory }: { onUpgrade?: () => void; isAdmin?: boolean; isPaidUser?: boolean; onOpenAnalyzer?: () => void; savedSweepId?: string | null; onBackToHistory?: () => void }) {
@@ -177,10 +180,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
   const [ownedDomains, setOwnedDomains] = useState<string[]>([]);
   // WO-AEO-PRODUCT-FIXES-003: 4.2 what moved on re-score (shown, and written back); 4.4 the dated series.
   const [rescoreNoteText, setRescoreNoteText] = useState<string | null>(null);
+  // WO-006: panel (admin choice; v1.1 is the series of record) and the country named inside each category question.
+  const [panel, setPanel] = useState<PanelVersion>('v1.1');
+  const [location, setLocation] = useState('United States');
+  const [seriesOtherPanels, setSeriesOtherPanels] = useState<PanelVersion[]>([]);
   const [series, setSeries] = useState<SeriesPoint[]>([]);
-  const fetchSeries = (dom: string, current: { id: string; domain: string; created_at: string; category?: string | null; category_queries?: string[] | null }) => {
+  const fetchSeries = (dom: string, current: { panel?: PanelVersion; id: string; domain: string; created_at: string; category?: string | null; category_queries?: string[] | null }) => {
     supabaseQuery('citation_sweeps', `domain=ilike.${encodeURIComponent(dom)}&select=id,domain,created_at,summary,category,category_queries,branded_queries,scoring_version&order=created_at.asc`)
-      .then(({ data }) => setSeries(buildSeries((data || []) as any, current as any)))
+      .then(({ data }) => { setSeries(buildSeries((data || []) as any, current as any)); setSeriesOtherPanels(otherPanels((data || []) as any, current as any)); })
       .catch(() => setSeries([]));
   };
   async function markOwned(domain: string) {
@@ -270,7 +277,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
 
         // Deterministic order: engine (canonical), then question index (panel order if
         // persisted, else first-seen), then rep — so the rebuild matches the live run.
-        const ENGINE_ORDER: Engine[] = ['claude', 'openai', 'perplexity', 'gemini'];
+        const ENGINE_ORDER: Engine[] = ['claude', 'openai', 'perplexity', 'gemini', 'grok'];
         const panelOrder: string[] = [...(sweep.branded_queries || []), ...(sweep.category_queries || [])];
         const firstSeen: string[] = [];
         const qIndex = (q: string) => {
@@ -294,7 +301,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           engines,
           skippedEngines: [],
           configured: engines,
-          summary: aggregateSweep(scored, { domain: sweep.domain, brand: brandArg }, savedCompetitors),
+          // WO-006: keep the stored panel + location — the rebuild must not erase them (nor its write-back).
+          summary: { ...aggregateSweep(scored, { domain: sweep.domain, brand: brandArg }, savedCompetitors), ...(sweep.summary?.panel ? { panel: sweep.summary.panel } : {}) } as SweepSummary,
           runs: scored,
           persisted: true,
           generatedAt: sweep.created_at,
@@ -502,13 +510,14 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           categoryQueries: parseQuestions(categoryQueries).map(expand),
           competitors: parseCompetitors(competitors),
           ownedDomains, // G2 config memory
+          panel, location: location.trim() || null, // WO-006
         }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || `sweep failed (${res.status})`);
       setResult(json);
       setRescoreNoteText(null);
-      fetchSeries(d, { id: 'live', domain: d, created_at: new Date().toISOString(), category: coreCategory.trim() || null, category_queries: parseQuestions(categoryQueries).map(expand) });
+      fetchSeries(d, { id: 'live', panel, domain: d, created_at: new Date().toISOString(), category: coreCategory.trim() || null, category_queries: (json.runs || []).filter((x: any) => x.queryType === 'category').map((x: any) => x.query).filter((q: string, i: number, a: string[]) => a.indexOf(q) === i) });
       setAuthority(aggregateAuthorityGap(json.runs || [], d));
       fetch(`/api/bot-stats?domain=${encodeURIComponent(d)}`).then((r) => r.json()).then(setBots).catch(() => {});
       // B1: build the client's truth record from their own live site, then check
@@ -537,7 +546,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
   // Lane C: the report is ONE pure function (lib/sweepReport.ts) shared by the .md, the .docx,
   // the saved view and the PDF — a test regenerates the founder's Nybsys report from stored runs.
   function reportInputs(r: SweepResponse): SweepReportInputs {
-    return { result: r, competitors: parseCompetitors(competitors), fidelity, entityLinking, authority, bots, truth, pageFactDensity, ownedDomains, isAdmin: !!isAdmin, savedView };
+    return { result: r, competitors: parseCompetitors(competitors), fidelity, entityLinking, authority, bots, truth, pageFactDensity, ownedDomains, isAdmin: !!isAdmin, savedView, category: coreCategory || null };
   }
   function buildReport(r: SweepResponse): string { return buildSweepReport(reportInputs(r)); }
 
@@ -631,14 +640,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
   };
   // Group the ACTUAL category queries (source of truth for the run), looking up
   // each one's intent from the generated set so an edited list still displays.
-  const intentOf = (q: string): string => {
-    const g = generatedQueries.find((x) => x.query === q);
-    return g ? intentBucket(g.intent_type) : 'Other';
-  };
-  const orderedBuckets = ['Discovery', 'Problem', 'Comparative', 'Other'];
-  const intentLabel: Record<string, string> = {
-    Discovery: 'Category discovery', Problem: 'Problem-first', Comparative: 'Head-to-head', Other: 'More buyer questions',
-  };
+  // WO-006 Item D: five buyer intents, deterministic and category-aware, so an edited question is
+  // tagged the same way as a generated one (the old grouping fell to "Other" on any edit).
+  const intentOf = (q: string): string => classifyIntent(q, coreCategory).intent;
+  const orderedBuckets: string[] = INTENTS;
+  const intentLabel: Record<string, string> = INTENT_LABEL;
+  void intentBucket; void generatedQueries;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
@@ -836,6 +843,22 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
               placeholder="Knostic, knostic.ai" className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
           </label>
 
+          {/* WO-006 Item C: the country is named INSIDE each buyer question, not left to account settings. */}
+          <div className="grid sm:grid-cols-2 gap-3">
+            <label className="text-xs font-semibold block text-zinc-700">Market — named inside each buyer question
+              <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. United States (blank = not named)"
+                className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
+            </label>
+            {isAdmin && (
+              <label className="text-xs font-semibold block text-zinc-700">Engine panel (admin)
+                <select value={panel} onChange={(e) => setPanel(e.target.value as PanelVersion)} className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm">
+                  <option value="v1.1">v1.1 — ChatGPT, Claude, Perplexity, Gemini (series of record)</option>
+                  <option value="v1.2">v1.2 — v1.1 + Grok (its own series)</option>
+                </select>
+              </label>
+            )}
+          </div>
+
           {/* The questions — collapsed by default; evidence of what we'll ask, not a field to fill. */}
           <div className="rounded-xl border border-zinc-200 overflow-hidden">
             <button onClick={() => setEditQueries((v) => !v)} className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left hover:bg-zinc-50">
@@ -866,6 +889,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                 </div>
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">From prospective customers</div>
+                  {categoryList.length > 0 && (() => { const m = intentMix(categoryList, coreCategory); return (
+                    <div className="flex flex-wrap gap-1.5 mb-2" aria-label="Question mix by buyer intent">
+                      {INTENTS.filter((i) => m[i]).map((i) => <span key={i} className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-zinc-100 text-zinc-700 border border-zinc-200">{INTENT_LABEL[i]} · {m[i]}</span>)}
+                    </div>); })()}
                   {categoryList.length > 0 ? (
                     <div className="space-y-2">
                       {orderedBuckets.filter((b) => categoryList.some((q) => intentOf(q) === b)).map((b) => (
@@ -873,7 +900,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                           <div className="text-xs font-semibold text-zinc-500">{intentLabel[b]}</div>
                           <ul className="space-y-0.5 text-zinc-700">
                             {categoryList.filter((q) => intentOf(q) === b).map((q, i) => (
-                              <li key={i} className="flex gap-2"><span className="text-zinc-300">•</span>{q}</li>
+                              <li key={i} className="flex gap-2" title={classifyIntent(q, coreCategory).rule}><span className="text-zinc-300">•</span>{q}<span className="ml-auto shrink-0 text-[10px] uppercase tracking-wide text-zinc-500">{INTENT_LABEL[classifyIntent(q, coreCategory).intent as keyof typeof INTENT_LABEL]}</span></li>
                             ))}
                           </ul>
                         </div>
@@ -943,6 +970,20 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           {/* Lane C: the executive summary — the same CoverInput the .md/.docx page 1 renders. */}
           {scorecard && result && <CoverCard cover={buildSweepCover(reportInputs(result))} />}
 
+          {/* WO-006 Items B + C: which engines produced these numbers, and under what conditions — on the
+              face of every result, not in a footnote. */}
+          {scorecard && result && (() => {
+            const pv = panelOf(result.summary as any);
+            const loc = ((result.summary as any)?.panel?.location ?? null) as string | null;
+            return (
+              <div className="rounded-2xl border border-zinc-200 bg-white px-5 py-4 text-xs text-zinc-700 space-y-1.5">
+                <div className="text-[11px] font-black uppercase tracking-[0.18em] text-zinc-500">How these numbers were produced</div>
+                <p>{panelDisclosure(pv, result.engines)}</p>
+                {testConditionsLines({ location: loc }).map((l) => <p key={l}>{l}</p>)}
+              </div>
+            );
+          })()}
+
           {/* WO-AEO-PRODUCT-FIXES-003 §4.4: two dates on the same configs are a series. */}
           {series.length > 1 && (
             <div className="rounded-3xl border border-zinc-200 bg-white px-6 py-5">
@@ -964,6 +1005,9 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                   </tbody>
                 </table>
               </div>
+              {seriesOtherPanels.length > 0 && (
+                <p className="text-[11px] text-amber-800 mt-2">This domain also has sweeps on panel {seriesOtherPanels.join(' and ')}. A different set of engines is a different measurement, so those dates are a separate series and no change is computed across panels.</p>
+              )}
               <p className="text-[11px] text-zinc-500 mt-2">Recommended = search-grounded category answers only; answers given from memory are reported beside the tile below, never pooled in. Each date links to its own stored transcripts.</p>
             </div>
           )}
@@ -1433,7 +1477,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
                     )}
                     <span className="font-semibold">{ENGINE_LABEL[r.engine] || r.engine}</span>
                     <span className="text-zinc-400">·</span>
-                    <span className="text-zinc-500 truncate">{r.queryType}: {r.query}</span>
+                    <span className="text-zinc-500 truncate">{r.queryType === 'category' ? INTENT_LABEL[classifyIntent(r.query, coreCategory).intent] : 'About you'}: {r.query}</span>
                   </button>
                   {(openRun === i || expandAll) && (
                     <div className="px-4 pb-3 text-sm text-zinc-700 whitespace-pre-wrap break-words border-t border-zinc-100 pt-2">
@@ -1485,6 +1529,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           </>)}
         </div>
       )}
+      {/* WO-006 Item E — dark: renders nothing unless the server allows this account. */}
+      {!savedView && <SearchConsolePanel />}
     </div>
   );
 }

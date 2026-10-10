@@ -15,7 +15,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import { GoogleGenAI } from '@google/genai';
 
-export type Engine = 'claude' | 'openai' | 'perplexity' | 'gemini';
+export type Engine = 'claude' | 'openai' | 'perplexity' | 'gemini' | 'grok';
 
 export interface EngineAnswer {
   transcript: string;
@@ -175,6 +175,35 @@ async function askOpenAI(query: string): Promise<EngineAnswer> {
   return { transcript, sources: uniq(sources), costUsd, model, truncated, searchInvoked };
 }
 
+// --- Grok (xAI) — panel v1.2 only (WO-AEO-POSITION-AND-PANEL-006) -------------
+// xAI's Responses API with its `web_search` tool, through the OpenAI SDK pointed at api.x.ai. Same
+// parsing as ChatGPT: url annotations on the output, plus xAI's top-level `citations`. The model is an
+// env-pinned FAMILY name, never a dated snapshot. Cost is an upper-bound estimate (env-overridable) so
+// the reserve-before-spend guard errs toward stopping early.
+async function askGrok(query: string): Promise<EngineAnswer> {
+  const key = process.env.XAI_API_KEY;
+  if (!key) throw new MissingKeyError('XAI_API_KEY');
+  const client = new OpenAI({ apiKey: key, baseURL: 'https://api.x.ai/v1' });
+  const model = process.env.SWEEP_GROK_MODEL || 'grok-4.7';
+  const resp: any = await client.responses.create({
+    model,
+    tools: [{ type: 'web_search' }] as any,
+    instructions: CONCISE_SYS,
+    max_output_tokens: MAX_OUT.openai,
+    input: query,
+  });
+  const truncated = resp.status === 'incomplete' && resp.incomplete_details?.reason === 'max_output_tokens';
+  const transcript = (resp.output_text || '').trim();
+  const sources: string[] = [];
+  for (const item of resp.output || []) for (const c of item.content || []) for (const a of c.annotations || []) if (a?.url) sources.push(a.url);
+  for (const c of resp.citations || []) { const u = typeof c === 'string' ? c : c?.url; if (u) sources.push(u); }
+  const searchInvoked = sources.length > 0 || (resp.output || []).some((i: any) => /search/.test(String(i?.type || '')));
+  const u = resp.usage || {};
+  const inRate = Number(process.env.SWEEP_GROK_IN_PER_M || 3), outRate = Number(process.env.SWEEP_GROK_OUT_PER_M || 15);
+  const costUsd = (u.input_tokens || 0) / 1e6 * inRate + (u.output_tokens || 0) / 1e6 * outRate + Number(process.env.SWEEP_GROK_SEARCH_FEE || 0.025);
+  return { transcript, sources: uniq(sources), costUsd, model, truncated, searchInvoked };
+}
+
 // --- Perplexity (stable OpenAI-compatible REST; returns citations) ---------
 async function askPerplexity(query: string): Promise<EngineAnswer> {
   const key = process.env.PERPLEXITY_API_KEY;
@@ -254,6 +283,7 @@ export const ENGINE_ADAPTERS: Record<Engine, (q: string) => Promise<EngineAnswer
   openai: askOpenAI,
   perplexity: askPerplexity,
   gemini: askGemini,
+  grok: askGrok,
 };
 
 /** Which engines have their API key configured in this environment. */
@@ -264,5 +294,13 @@ export function configuredEngines(): Engine[] {
   if (has('OPENAI_API_KEY')) out.push('openai');
   if (has('PERPLEXITY_API_KEY')) out.push('perplexity');
   if (has('GEMINI_API_KEY') || has('VITE_DEV_GEMINI_KEY')) out.push('gemini');
+  // Grok is NOT part of the default panel (v1.1 is the series of record). Panel v1.2 asks for it
+  // explicitly through panelEngines(); a key alone never adds it to a v1.1 sweep.
   return out;
+}
+
+/** The engines a panel runs, among those configured here. v1.2 = v1.1 + Grok when XAI_API_KEY is set. */
+export function panelEngines(version: 'v1.1' | 'v1.2'): Engine[] {
+  const base = configuredEngines();
+  return version === 'v1.2' && process.env.XAI_API_KEY ? [...base, 'grok'] : base;
 }

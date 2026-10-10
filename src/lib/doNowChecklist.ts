@@ -16,7 +16,7 @@ export interface AuthorityLike { domain: string; citations: number; engines?: st
 
 export const NO_DO_NOW = 'No self-serve listings appeared in your sources this month.';
 
-const ENGINE_LABEL: Record<string, string> = { claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini' };
+const ENGINE_LABEL: Record<string, string> = { claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', grok: 'Grok' };
 
 export function doNowChecklist(authorityDomains: AuthorityLike[]): string[] {
   return (authorityDomains || [])

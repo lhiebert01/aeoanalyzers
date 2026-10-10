@@ -24,7 +24,7 @@
 // The rule keeps the headline numbers reproducible and defensible ("run the query
 // yourself — you'll get what our report says").
 
-export type Engine = 'claude' | 'openai' | 'perplexity' | 'gemini';
+export type Engine = 'claude' | 'openai' | 'perplexity' | 'gemini' | 'grok';
 export type QueryType = 'branded' | 'category';
 
 /** A competitor to watch for in "cited instead" lists. */

@@ -9,6 +9,7 @@
 // 4.4 Two dates on the same configs are a series: the product shows both, the delta and a
 //     link to each date's transcripts — the pairing that was assembled by hand on Oct 8.
 import type { SweepRunResult, SweepScorecard, SweepSummary } from './citationSweep';
+import { panelOf, type PanelVersion } from './panel';
 
 /** Bump when a scoring rule changes (strict branded rule, errored exclusion, grounding). */
 export const SCORING_VERSION = '2026-10-08';
@@ -53,6 +54,8 @@ export function pooledFromSummary(summary: SweepSummary | null | undefined): { b
 }
 
 export interface SweepRowLike {
+  /** WO-006: set on a live (not yet stored) sweep; stored rows carry it in summary.panel. */
+  panel?: PanelVersion;
   id: string; domain: string; created_at: string; summary?: SweepSummary | null;
   category?: string | null; category_queries?: string[] | null; branded_queries?: string[] | null; scoring_version?: string | null;
 }
@@ -61,11 +64,22 @@ export interface SweepRowLike {
  *  category questions. A row that predates the config columns compares on domain + category. */
 export function sameConfig(a: SweepRowLike, b: SweepRowLike): boolean {
   if (String(a.domain).toLowerCase() !== String(b.domain).toLowerCase()) return false;
+  // WO-006: never across panels — a delta between panels is ambiguous between the engines and the day.
+  if (rowPanel(a) !== rowPanel(b)) return false;
   if ((a.category || '') !== (b.category || '')) return false;
   const qa = a.category_queries, qb = b.category_queries;
   if (!qa?.length || !qb?.length) return true;
   const key = (q: string[]) => [...q].map((x) => x.trim().toLowerCase()).sort().join('\n');
   return key(qa) === key(qb);
+}
+
+export const rowPanel = (r: SweepRowLike & { panel?: PanelVersion }): PanelVersion => r.panel || panelOf(r.summary as any);
+
+/** Sweeps of the same domain and category on ANOTHER panel — shown as a separate series, never differenced. */
+export function otherPanels(rows: SweepRowLike[], current: SweepRowLike): PanelVersion[] {
+  const mine = rowPanel(current);
+  const cur = { ...current, panel: undefined } as SweepRowLike;
+  return [...new Set(rows.filter((r) => String(r.domain).toLowerCase() === String(cur.domain).toLowerCase() && (r.category || '') === (cur.category || '')).map(rowPanel).filter((p) => p !== mine))];
 }
 
 export interface SeriesPoint { id: string; date: string; branded: number | null; category: number | null; deltaCategory: number | null; deltaBranded: number | null; scoringVersion: string | null }

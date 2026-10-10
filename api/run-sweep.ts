@@ -12,7 +12,8 @@
 // transcript (returned, and persisted when a Supabase service key is present).
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { ENGINE_ADAPTERS, MissingKeyError, configuredEngines, type Engine } from './_lib/engines.js';
+import { ENGINE_ADAPTERS, MissingKeyError, configuredEngines, panelEngines, type Engine } from './_lib/engines.js';
+import { withLocation, type PanelVersion } from '../src/lib/panel.js';
 import {
   scoreRun,
   aggregateSweep,
@@ -31,7 +32,7 @@ import { planSweep } from '../src/lib/sweepPlan.js';
 // Vercel Fluid Compute allows long runs; a full sweep is many sequential calls.
 export const config = { maxDuration: 300 };
 
-const ALL_ENGINES: Engine[] = ['claude', 'openai', 'perplexity', 'gemini'];
+const ALL_ENGINES: Engine[] = ['claude', 'openai', 'perplexity', 'gemini', 'grok'];
 
 // Throttled sweep-engine-down alert: ONE loud, greppable line at most once per
 // ~72h per running instance, so a dead/expired engine key is visible without
@@ -274,6 +275,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // WO-AEO-REPORT-POLISH-001 G2: domains the owner confirmed are theirs (config memory).
     const ownedDomains: string[] = Array.isArray(body.ownedDomains) ? body.ownedDomains.map((d: unknown) => String(d || '').toLowerCase().replace(/^www\./, '').trim()).filter(Boolean) : [];
     const category: string = (body.category || '').trim(); // WO-INTEGRITY-002 A1: persisted for the pin/rebuild
+    // WO-AEO-POSITION-AND-PANEL-006: which panel (v1.1 = series of record; v1.2 = + Grok) and which
+    // country is named INSIDE each category question. Both are recorded on the stored summary.
+    const panelVersion: PanelVersion = body.panel === 'v1.2' ? 'v1.2' : 'v1.1';
+    const location: string | null = typeof body.location === 'string' && body.location.trim() ? body.location.trim().slice(0, 60) : null;
+    categoryQueries = categoryQueries.map((q: string) => withLocation(q, location));
     let runsPerQuery: number = Math.max(1, Math.min(5, body.runsPerQuery || 3));
     let persist: boolean = body.persist !== false;
     // Attribute persistence to the authenticated user (not a client-supplied id).
@@ -292,7 +298,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       persist = false;
     }
 
-    const configured = configuredEngines();
+    // A v1.2 sweep without Grok would be a v1.1 sweep wearing the wrong label. Refuse it.
+    if (panelVersion === 'v1.2' && !process.env.XAI_API_KEY) return res.status(400).json({ error: 'Panel v1.2 needs the Grok engine, which is not configured. Run panel v1.1.' });
+    const configured = access.quickCheck ? configuredEngines() : panelEngines(panelVersion);
     const requested: Engine[] = access.quickCheck
       ? (['gemini'] as Engine[])
       : (body.engines?.length ? body.engines : configured).filter((e: Engine) => ALL_ENGINES.includes(e));
@@ -384,6 +392,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const summary = aggregateSweep(runs, { domain, brand }, competitors);
+    (summary as any).panel = { version: panelVersion, engines, location };
 
     // Flag engines whose runs ALL errored (dead/expired key, 401, missing config)
     // so a BROKEN engine is never reported as a real "0% retrievability". A run is
