@@ -11,6 +11,30 @@ not fully accepted until its boxes are checked.
 
 ---
 
+## PRICING 13 Oct 2026 — live test checkout per tier (100% coupon), then refund/cancel
+
+**Shipped:** `main` @ `02d4c08` + `d7d15bf` (`dpl_gSxxkcmcT7nmkw9ygXZ4iJ2VCUS9`). Each tier's checkout
+resolves to the new price (Day Pass `price_1UQIC3…`, Pro `price_1UQHoc…`, Business `price_1UQI7m…`).
+Checkout now accepts promotion codes. The agent has no working Stripe secret key locally
+(the `.env` value is empty), so the coupon and the purchases are browser steps.
+
+- [ ] Stripe dashboard (live) → Product catalogue → Coupons → **+ New**: 100% off, Duration **Once**,
+      add a **customer-facing code** (e.g. `AEOTEST100`), max redemptions 3.
+- [ ] Private window → sign in to aeoanalyzers.com with a **test account** (not an admin email;
+      admin bypasses the paywall) → /pricing → **Get Day Pass** → "Add promotion code" → `AEOTEST100`
+      → total $0.00 → complete. Expect: back on the app with Day Pass access; sweeps panel shows 4 engines.
+- [ ] Same account → **Upgrade to Pro** → code → $0.00 → complete. Expect status Pro; a sweep runs 5 engines.
+- [ ] Stripe → Subscriptions → that Pro subscription → **Cancel immediately**. Expect the account back to Free.
+- [ ] Repeat Pro steps for **Upgrade to Business**, then cancel immediately.
+- [ ] Nothing to refund: a 100% coupon charges $0. Then archive the coupon.
+
+## Item E proof — still gated on the migration
+- [ ] Supabase SQL editor: run all of `supabase/migrations/20261011_wo006_gsc_connections.sql`.
+- [ ] Then the second-account click steps (private window → sign in as the second account →
+      /sweeps → "Search Console · preview" → Connect → Allow → checkride107.com → Pull → screenshot).
+
+---
+
 ## WO-AEO-MOBILE-HISTORY-001 — iPhone roadmap clip + Citation Sweep history parity
 
 **Shipped to production:** Part A + Part B `main` @ `91cfa7e`
