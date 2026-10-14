@@ -6,15 +6,16 @@ const PLANS = [
   {
     id: 'pro',
     name: 'Pro Optimizer',
-    price: '$49',
+    price: '$149',
     period: '/mo',
-    description: 'Perfect for freelance developers and small marketing teams.',
+    description: 'For freelance developers and small marketing teams.',
     features: [
-      '8 Citation Sweeps / mo — all 4 AI engines, with transcripts',
-      'Unlimited AEO analyses & fixes',
-      'Answer-fidelity + competitor “cited instead” list',
-      'Historical score & citation tracking',
-      'DOCX / PDF report exports'
+      '8 Citation Sweeps / mo, with every transcript',
+      'Intent tags on every question',
+      'Grounded vs. memory split (searched answers kept apart from recalled ones)',
+      'Historical series: the same questions re-run and compared over time',
+      'All exports: Word, PDF and data',
+      'Up to 200 AEO analyses & fixes / mo'
     ],
     buttonText: 'Upgrade to Pro',
     popular: true
@@ -22,12 +23,13 @@ const PLANS = [
   {
     id: 'business',
     name: 'Business Authority',
-    price: '$199',
+    price: '$599',
     period: '/mo',
     description: 'For mid-sized agencies and growing SaaS companies.',
     features: [
-      '20 Citation Sweeps / mo — all 4 AI engines, with transcripts',
-      'Unlimited AEO analyses & fixes',
+      '20 Citation Sweeps / mo, with every transcript',
+      'Everything in Pro',
+      'Up to 200 AEO analyses & fixes / mo',
       // Removed Sep 7 2026: "AI-crawler telemetry" was undeliverable on this tier.
       // The ingest (api/bot-hit) and readback (api/bot-stats) exist and our own
       // middleware.ts feeds them, but there is NO customer-facing way to connect a
@@ -37,6 +39,7 @@ const PLANS = [
       // customer can actually connect a domain.
       'Answer-drift monitoring across re-runs',
       'Competitor benchmarking & authority-gap report',
+      '3 monitored domains',
       'Priority processing & team tools'
     ],
     buttonText: 'Upgrade to Business',
@@ -130,7 +133,7 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
 
       {/* One-time Day Pass — perfect for users with a single site who won't
           subscribe. Only shown once the one-time price is configured in env. */}
-      {import.meta.env.VITE_STRIPE_PRICE_ID_REPORT && (
+      {import.meta.env.VITE_STRIPE_PRICE_ID_DAYPASS && (
         <div className="max-w-4xl mx-auto mb-8">
           <div className="relative bg-zinc-900 text-white rounded-3xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 overflow-hidden">
             <div className="flex items-start gap-5">
@@ -147,12 +150,12 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                   {[
-                    '3 Citation Sweeps (all 4 AI engines)',
+                    '3 Citation Sweeps on the four-engine panel, with transcripts',
                     'Full implementation roadmap',
                     'Paste-ready JSON-LD (verified)',
                     'Before/after content rewrites',
                     'Word (.docx) report + handoff',
-                    'Unlimited analyses for 24 hours',
+                    'AEO analyses for 24 hours (within the 200 / month account limit)',
                   ].map((f, i) => (
                     <div key={i} className="flex items-start gap-2 text-sm text-zinc-200">
                       <Check className="w-4 h-4 text-amber-300 mt-0.5 shrink-0" />
@@ -164,7 +167,7 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
             </div>
             <div className="flex flex-col items-center gap-2 shrink-0">
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold">$24</span>
+                <span className="text-4xl font-bold">$29</span>
                 <span className="text-zinc-400 text-sm">/ 24h</span>
               </div>
               <button
@@ -231,25 +234,27 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
           </motion.div>
         ))}
       </div>
+      {/* Pricing decision 13 Oct 2026: this line appears ONCE on the page. */}
+      <p className="text-center text-zinc-700 text-sm font-semibold mt-6">Five-engine panel on Pro and Business: ChatGPT, Claude, Perplexity, Gemini and Grok.</p>
 
       {/* Entitlements & add-ons — make caps and extras explicit */}
       <div className="mt-16 max-w-4xl mx-auto">
         <h3 className="text-2xl font-bold tracking-tight text-center mb-2">What's included — and what counts as a Sweep</h3>
-        <p className="text-zinc-500 text-center mb-8 max-w-2xl mx-auto">The AEO diagnostic (score + fixes) is unlimited on every paid plan. <strong className="text-zinc-700">Citation Sweeps</strong> — the live multi-engine measurement — are the metered entitlement.</p>
+        <p className="text-zinc-500 text-center mb-8 max-w-2xl mx-auto">The AEO diagnostic (score + fixes) is included on every paid plan, up to 200 analyses a month per account. <strong className="text-zinc-700">Citation Sweeps</strong> — the live multi-engine measurement — are the metered entitlement.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm">
             <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Included Citation Sweeps</div>
             <ul className="space-y-2 text-sm text-zinc-700">
               <li className="flex justify-between"><span>Free</span><span className="font-bold text-zinc-700">None &mdash; the AEO analysis is free</span></li>
-              <li className="flex justify-between"><span>Day Pass ($24)</span><span className="font-bold">3 full sweeps</span></li>
-              <li className="flex justify-between"><span>Pro ($49/mo)</span><span className="font-bold">8 full sweeps / month</span></li>
-              <li className="flex justify-between"><span>Business ($199/mo)</span><span className="font-bold">20 full sweeps / month</span></li>
+              <li className="flex justify-between"><span>Day Pass ($29)</span><span className="font-bold">3 full sweeps</span></li>
+              <li className="flex justify-between"><span>Pro ($149/mo)</span><span className="font-bold">8 full sweeps / month</span></li>
+              <li className="flex justify-between"><span>Business ($599/mo)</span><span className="font-bold">20 full sweeps / month</span></li>
             </ul>
           </div>
           <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm">
             <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">What one Sweep covers</div>
             <ul className="space-y-2 text-sm text-zinc-700">
-              <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>One domain, all 4 engines (ChatGPT, Claude, Perplexity, Gemini)</span></li>
+              <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>One domain, asked on every engine in your plan's panel: ChatGPT, Claude, Perplexity and Gemini, plus Grok where the plan includes it</span></li>
               <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>Up to 15 query-runs (e.g., 5 questions × 3 runs), with stored transcripts</span></li>
               <li className="flex items-start gap-2"><Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" /><span>Same price for a 1-page site or a 100,000-page site — a sweep asks the engines, it doesn't crawl your pages</span></li>
             </ul>

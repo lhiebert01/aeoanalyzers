@@ -136,7 +136,7 @@ describe('the sweep interface runs nothing for a free viewer', () => {
     expect(wall).not.toMatch(/\d+\s?%\s?(worse|better|more accurate|less accurate)/i);
     // and no bare percentage or dollar figure at all except the Day Pass price
     const money = wall.match(/\$\d[\d,.]*/g) || [];
-    expect(new Set(money)).toEqual(new Set(['$24']));
+    expect(new Set(money)).toEqual(new Set(['$29']));
   });
 });
 

@@ -59,7 +59,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     },
     {
       q: "How much does AEO Analyzers cost, and what are Citation Sweeps limited to?",
-      a: "Start free — a full AEO analysis: your score, the four sub-scores and the formula, crawler access, index coverage, and every gap named. Citation Sweeps and the fixes are paid. Day Pass is $24 for 24 hours (includes 3 sweeps), Pro is $49/month (unlimited analysis + 8 sweeps/month), and Business is $199/month (20 sweeps/month). A sweep runs across all four engines with stored transcripts."
+      a: "Start free — a full AEO analysis: your score, the four sub-scores and the formula, crawler access, index coverage, and every gap named. Citation Sweeps and the fixes are paid. Day Pass is $29 for 24 hours (includes 3 sweeps), Pro is $149/month (8 sweeps/month), and Business is $599/month (20 sweeps/month). Every sweep stores its transcripts."
     },
     {
       q: "How is this different from other AEO tools?",
@@ -148,7 +148,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           transition={{ delay: 0.3 }}
           className="text-zinc-400 text-sm mt-6 max-w-2xl mx-auto"
         >
-          Your AEO score and gaps are <strong>free</strong>. Unlock every fix — paste-ready schema, content rewrites, and the full Word report — with a <strong>$24 Day Pass</strong> (24 hours, no subscription) or a plan.
+          Your AEO score and gaps are <strong>free</strong>. Unlock every fix — paste-ready schema, content rewrites, and the full Word report — with a <strong>$29 Day Pass</strong> (24 hours, no subscription) or a plan.
         </motion.p>
         {/* Founder-approved 13 Oct 2026 (WO-006 positioning + independence lines). Verbatim. */}
         <p className="text-zinc-800 text-lg md:text-xl font-semibold mt-10 max-w-2xl mx-auto">A URL, a few minutes, and every transcript behind every number. You decide what to fix, and who fixes it.</p>
@@ -185,7 +185,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
                   </div>
                   <div>
                     <h4 className="font-bold text-lg mb-1">The Solution</h4>
-                    <p className="text-zinc-500">AEO Analyzers doesn't stop at a number. Your free audit pinpoints <em>why</em> AI overlooks you; a $24 Day Pass (or a plan) unlocks the cure — paste-ready JSON-LD (verified vs. guessed), content rewrites, a prioritized checklist, and a Word report your developer can ship today.</p>
+                    <p className="text-zinc-500">AEO Analyzers doesn't stop at a number. Your free audit pinpoints <em>why</em> AI overlooks you; a $29 Day Pass (or a plan) unlocks the cure — paste-ready JSON-LD (verified vs. guessed), content rewrites, a prioritized checklist, and a Word report your developer can ship today.</p>
                   </div>
                 </div>
               </div>
@@ -365,7 +365,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     "@type": "AggregateOffer",
     "priceCurrency": "USD",
     "lowPrice": "0",
-    "highPrice": "199",
+    "highPrice": "599",
     "offerCount": "4"
   }
 }`}

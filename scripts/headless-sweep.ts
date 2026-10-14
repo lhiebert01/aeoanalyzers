@@ -13,6 +13,7 @@ import { readFileSync } from "node:fs";
 import { ENGINE_ADAPTERS, configuredEngines, panelEngines } from "../api/_lib/engines.js";
 import { scoreRun, aggregateSweep, type SweepRunResult, type Competitor } from "../src/lib/citationSweep.js";
 import { extractTruthRecord } from "../src/lib/truthRecord.js";
+import { sweepCapUsd } from "../src/lib/sweepCaps.js";
 
 // Load .env into process.env (so the adapters find the provider keys).
 try {
@@ -48,7 +49,11 @@ console.error(`engines=${engines.join(",")} | ${tasks.length} runs (${brandedQue
 // BUDGET GUARD (WO-AEO-BRANDED-ACCURACY-004 §5). Reserve the cost of the next call — the most
 // expensive call seen so far, with a floor — BEFORE making it; stop before spending, never after.
 // Only meaningful sequentially, so BUDGET_USD forces concurrency 1.
-const BUDGET = process.env.BUDGET_USD ? Number(process.env.BUDGET_USD) : Infinity;
+// Pricing decision 13 Oct 2026: with no explicit BUDGET_USD a sweep gets the customer ceiling
+// for its panel ($1.50 v1.1, $4.00 v1.2). An internal research panel larger than a customer
+// sweep must pass BUDGET_USD explicitly, which is the founder-authorised override.
+const BUDGET = process.env.BUDGET_USD ? Number(process.env.BUDGET_USD) : sweepCapUsd(PANEL);
+if (!process.env.BUDGET_USD) console.error(`spend ceiling: $${BUDGET.toFixed(2)} (panel ${PANEL} customer cap)`);
 let spent = 0, maxCallUsd = 0.03, budgetStopped = false;
 async function runOne(t: Task): Promise<SweepRunResult> {
   const base: SweepRunResult = { engine: t.engine, query: t.query, queryType: t.queryType, runIndex: t.runIndex, transcript: "", sources: [], costUsd: 0 };

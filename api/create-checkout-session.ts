@@ -56,7 +56,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const isDayPass = planId === 'report';
 
     const priceId = isDayPass
-      ? process.env.VITE_STRIPE_PRICE_ID_REPORT
+      ? process.env.VITE_STRIPE_PRICE_ID_DAYPASS
       : planId === 'business'
         ? process.env.VITE_STRIPE_PRICE_ID_BUSINESS
         : process.env.VITE_STRIPE_PRICE_ID_PRO;
@@ -74,6 +74,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
+      // Lets a code created in the Stripe dashboard (e.g. the 100% test coupon) be entered at checkout.
+      allow_promotion_codes: true,
       mode: isDayPass ? 'payment' : 'subscription',
       success_url: `${appUrl}/?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/payments`,

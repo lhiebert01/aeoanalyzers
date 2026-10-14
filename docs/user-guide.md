@@ -69,7 +69,7 @@ The **Handoff** tab provides a copy-paste email template you can send directly t
 
 ### 8. Managing Your Account
 - **Sign Up / Log In**: Create an account using email or Google OAuth via our secure authentication system powered by Supabase.
-- **Subscription Tiers**: Upgrade from Free to Pro ($49/mo) or Business ($199/mo) to unlock the Implementation Roadmap, DOCX reports, and unlimited analyses.
+- **Subscription Tiers**: Upgrade from Free to Pro ($149/mo) or Business ($599/mo) to unlock the Implementation Roadmap, DOCX reports, and up to 200 analyses a month.
 - **Analysis History**: All your past analyses are saved and accessible from your dashboard, so you can track AEO score improvements over time.
 - **Billing Management**: Access the Stripe billing portal from your account settings to manage your subscription, update payment methods, or view invoices.
 

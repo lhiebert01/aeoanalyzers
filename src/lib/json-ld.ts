@@ -178,12 +178,12 @@ function softwareApplicationNode() {
     creator: { '@id': FOUNDER_ID },
     description: APP_DESCRIPTION,
     disambiguatingDescription: DISAMBIGUATION,
-    // Real, public pricing (Free / $24 Day Pass / $49 Pro / $199 Business).
+    // Real, public pricing (Free / $29 Day Pass / $149 Pro / $599 Business), 13 Oct 2026.
     offers: {
       '@type': 'AggregateOffer',
       priceCurrency: 'USD',
       lowPrice: '0',
-      highPrice: '199',
+      highPrice: '599',
       offerCount: '4',
     },
     featureList: [

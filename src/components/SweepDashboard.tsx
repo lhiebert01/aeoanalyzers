@@ -510,14 +510,15 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
           categoryQueries: parseQuestions(categoryQueries).map(expand),
           competitors: parseCompetitors(competitors),
           ownedDomains, // G2 config memory
-          panel, location: location.trim() || null, // WO-006
+          // Only admin picks the panel; for customers the plan decides it server-side.
+          panel: isAdmin ? panel : undefined, location: location.trim() || null, // WO-006
         }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || `sweep failed (${res.status})`);
       setResult(json);
       setRescoreNoteText(null);
-      fetchSeries(d, { id: 'live', panel, domain: d, created_at: new Date().toISOString(), category: coreCategory.trim() || null, category_queries: (json.runs || []).filter((x: any) => x.queryType === 'category').map((x: any) => x.query).filter((q: string, i: number, a: string[]) => a.indexOf(q) === i) });
+      fetchSeries(d, { id: 'live', panel: (json.summary?.panel?.version as PanelVersion) || panel, domain: d, created_at: new Date().toISOString(), category: coreCategory.trim() || null, category_queries: (json.runs || []).filter((x: any) => x.queryType === 'category').map((x: any) => x.query).filter((q: string, i: number, a: string[]) => a.indexOf(q) === i) });
       setAuthority(aggregateAuthorityGap(json.runs || [], d));
       fetch(`/api/bot-stats?domain=${encodeURIComponent(d)}`).then((r) => r.json()).then(setBots).catch(() => {});
       // B1: build the client's truth record from their own live site, then check
@@ -759,7 +760,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
               Get a Day Pass or subscribe <ArrowLeft className="w-5 h-5 rotate-180" />
             </button>
             <p className="text-sm text-zinc-600 mt-4 max-w-xl mx-auto">
-              <b>The Day Pass is the trial</b> — $24 for twenty-four hours, no subscription, and a real
+              <b>The Day Pass is the trial</b> — $29 for twenty-four hours, no subscription, and a real
               full sweep. There is no sample run and no cut-down version, because one engine asked once is
               not a measurement, and a number we would not stand behind is the opposite of what this tool
               is for.

@@ -18,7 +18,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI } from '@google/genai';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
-import { isPaidRequest } from './_lib/entitlement.js';
+import { isPaidRequest, analysesUsedIfCapped } from './_lib/entitlement.js';
+import { ANALYSES_PER_MONTH } from '../src/lib/sweepCaps.js';
 import { redactFixFields, markGated } from '../src/lib/fixGating.js';
 
 // Gemini flash models in priority order (best quality first, stable fallbacks).
@@ -164,13 +165,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const gate = await isPaidRequest(req);
       if (!gate.paid) {
         return res.status(402).json({
-          error: 'A Citation Sweep is a paid feature. Start a $24 Day Pass or a plan to run one.',
+          error: 'A Citation Sweep is a paid feature. Start a Day Pass or a plan to run one.',
         });
       }
     }
 
     // Resolve entitlement in parallel with generation (no added latency).
     const entP = isPaidRequest(req);
+
+    // Analyses are capped at 200 per account per month (pricing decision 13 Oct 2026).
+    // Checked BEFORE generating so a capped account costs nothing. Admin is exempt.
+    if (purpose !== 'sweep-config') {
+      const ent0 = await entP;
+      if (ent0.userId && !ent0.admin) {
+        const used = await analysesUsedIfCapped(ent0.userId, ANALYSES_PER_MONTH);
+        if (used !== null) {
+          return res.status(429).json({ error: `You have used this month's ${ANALYSES_PER_MONTH} analyses. The allowance resets on the 1st.` });
+        }
+      }
+    }
 
     // Provider order: Gemini (cheapest, resumes automatically when GCP is
     // restored) → OpenAI → Anthropic. Each returns null when its key is missing

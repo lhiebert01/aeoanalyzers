@@ -17,7 +17,7 @@
 | **Free Tier** | **$0.02** | 3 Analyses | Gemini API (free tier), Supabase storage |
 | **Paid Tier** | **$0.25** | 50 Analyses | Increased AI tokens, Historical tracking |
 
-**Key Takeaway**: The marginal cost of supporting a user is extremely low, allowing for high gross margins (>95%) even at the $49/mo price point.
+**Key Takeaway**: The marginal cost of supporting a user is extremely low, allowing for high gross margins (>95%) even at the $149/mo price point.
 
 ---
 
@@ -55,7 +55,7 @@
 | **Auth & Database** | Supabase (PostgreSQL + Auth + RLS) | User accounts, profiles, analysis history |
 | **AI Analysis** | Google Gemini API (gemini-3-flash-preview) | Website AEO scoring, advanced analysis & recommendations |
 | **Reports** | docx (in-browser generation) | Professional DOCX report download with code-splitting |
-| **Payments** | Stripe | Subscription billing (Free, Pro $49/mo, Business $199/mo) |
+| **Payments** | Stripe | Subscription billing (Free, Day Pass $29, Pro $149/mo, Business $599/mo) |
 | **Analytics** | Google Analytics 4 (GA4) | User tracking & conversion metrics |
 | **Hosting** | Vercel | Static site + serverless API routes |
 | **DNS** | Network Solutions | Domain management for aeoanalyzers.com |
@@ -113,7 +113,7 @@ The latest release transforms reports from diagnostic to prescriptive:
 - **Analysis History** — Track AEO score improvements over time with full detail view
 - **Google OAuth + Email Auth** — Secure authentication via Supabase
 - **Admin Dashboard** — User management, growth metrics, GA4 analytics link
-- **Stripe Subscriptions** — Free (1 analysis), Pro ($49/mo), Business ($199/mo)
+- **Stripe Subscriptions** — Free (1 analysis), Day Pass ($29), Pro ($149/mo), Business ($599/mo)
 
 ---
 

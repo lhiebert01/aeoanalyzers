@@ -26,7 +26,8 @@ describe('the "what this means" paragraph is a template with the numbers injecte
     expect(sentenceCount(m)).toBeGreaterThanOrEqual(3); expect(sentenceCount(m)).toBeLessThanOrEqual(5);
     expect(m).toMatch(/recommendation gap, not a discovery gap/);
     expect(m).toContain('100% of 8'); expect(m).toContain('none of the 28'); expect(m).toContain('Ericsson was named most often (14 answers)');
-    expect(m).toContain('None of the answers that named you got a fact wrong.');
+    // WO-004: the blanket "none got a fact wrong" overclaimed; with no accuracy check supplied, no accuracy sentence is written.
+    expect(m).not.toMatch(/got a fact wrong/);
     for (const n of m.match(/\d+/g) || []) expect([100, 8, 28, 14, 11].map(String)).toContain(n);
   });
   it('branded low reads as discovery first; category > 0 names the best segment; collisions and drift each get their sentence', () => {
@@ -88,7 +89,8 @@ describe('the cover renders as markdown with directives a markdown viewer ignore
 const FX = '/tmp/claude-1000/-mnt-c-src-aeo-app1/037f8049-e28c-4e87-b501-2be704094e78/scratchpad/nybsys-sweep.json';
 const OUT = '/tmp/claude-1000/-mnt-c-src-aeo-app1/037f8049-e28c-4e87-b501-2be704094e78/scratchpad/laneC';
 describe.skipIf(!existsSync(FX))('Lane C acceptance — Nybsys 2026-09-30', () => {
-  const d = JSON.parse(readFileSync(FX, 'utf8'));
+  // skipIf still runs this body at collection time; guard the read so a missing fixture skips, not fails.
+  const d = existsSync(FX) ? JSON.parse(readFileSync(FX, 'utf8')) : { runs: [] };
   const client = { domain: 'nybsys.com', brand: 'Nybsys' };
   const seeds = (d.sweep?.competitors ?? []).map((c: any) => ({ name: c.name, domain: c.domain }));
   const raw: SweepRunResult[] = d.runs.map((r: any) => ({

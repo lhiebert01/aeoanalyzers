@@ -14,7 +14,7 @@ The app is built as a **React SPA with Vercel serverless API routes**.
 - **Auth & Database**: Supabase (PostgreSQL + Auth with Row Level Security).
 - **AI**: Google Gemini API (gemini-3-flash-preview).
 - **Reports**: docx library (in-browser DOCX generation, code-split via dynamic import).
-- **Payments**: Stripe (Free, Pro $49/mo, Business $199/mo).
+- **Payments**: Stripe (Free, Day Pass $29, Pro $149/mo, Business $599/mo).
 - **Analytics**: Google Analytics 4 (GA4).
 - **Hosting**: Vercel (static site + serverless API routes).
 - **DNS**: Network Solutions (aeoanalyzers.com).

@@ -13,6 +13,7 @@
 //  - a thin result is reported as thin, never stretched into a sentence
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { sweepCapUsd } from '../src/lib/sweepCaps.js';
 import { ENGINE_ADAPTERS, configuredEngines, panelEngines, type Engine } from '../api/_lib/engines.js';
 import {
   scoreRun, aggregateSweep, sweepScorecard,
@@ -47,6 +48,12 @@ const brandedQuestions = (domain: string): string[] => [`who is ${domain}`, `wha
 
 let spent = 0;
 let LIVE_ENGINES: Engine[] = [];
+// Pricing decision 13 Oct 2026: each target is one sweep and gets the customer ceiling for the
+// panel ($1.50 v1.1, $4.00 v1.2) unless PER_SWEEP_CAP_USD is passed explicitly (the founder-
+// authorised override for research panels larger than a customer sweep). BUDGET_USD still
+// bounds the whole batch.
+const SWEEP_PANEL = process.env.PANEL === 'v1.2' ? 'v1.2' : 'v1.1';
+const PER_SWEEP_CAP: number = process.env.PER_SWEEP_CAP_USD ? Number(process.env.PER_SWEEP_CAP_USD) : sweepCapUsd(SWEEP_PANEL);
 
 /** The Sep 7 four-engine run stopped at $6.0161 against a $6.00 authorisation. The guard
  *  checked `spent >= BUDGET` BEFORE each call, so the call that crossed the line had already
@@ -98,7 +105,9 @@ async function sweepOne(t: any) {
     for (const q of categoryQuestions(t.category)) for (let i = 0; i < REPS; i++) tasks.push({ engine: e, query: q, queryType: 'category', runIndex: i });
   }
 
+  const sweepStart = spent;
   for (const task of tasks) {
+    if ((spent - sweepStart) + maxCallUsd > PER_SWEEP_CAP) throw new Error(`SWEEP CAP STOP — this sweep spent $${(spent - sweepStart).toFixed(4)}, next call reserves $${maxCallUsd.toFixed(4)}, per-sweep ceiling $${PER_SWEEP_CAP}. Stopped BEFORE spending.`);
     if (!canAfford()) throw new Error(`BUDGET STOP — spent $${spent.toFixed(4)}, next call reserves $${maxCallUsd.toFixed(4)}, ceiling $${BUDGET}. Stopped BEFORE spending.`);
     try {
       const a: any = await ENGINE_ADAPTERS[task.engine](task.query);
@@ -143,6 +152,7 @@ async function sweepOne(t: any) {
   LIVE_ENGINES = await preflight((process.env.PANEL === 'v1.2' ? panelEngines('v1.2') : configuredEngines()) as Engine[]);
   const live = LIVE_ENGINES;
   console.error(`pre-flight OK — ${live.length} engines answering: ${live.join(', ')}`);
+  console.error(`per-sweep ceiling $${PER_SWEEP_CAP.toFixed(2)}${process.env.PER_SWEEP_CAP_USD ? ' (explicit override)' : ` (panel ${SWEEP_PANEL} customer cap)`}`);
   const results: any[] = [];
   for (const t of todo) {
     process.stderr.write(`\n[${t.id}] `);

@@ -26,6 +26,7 @@ import { SCORING_VERSION } from '../src/lib/sweepDisclosure.js';
 import { accuracyWhenNamed } from '../src/lib/fidelity.js';
 import { extractTruthRecord, type TruthRecord } from '../src/lib/truthRecord.js';
 import { COST_SCALE } from '../src/lib/costEstimate.js';
+import { CostGuard, PLAN_PANEL, PLAN_SWEEPS, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, type PaidTier } from '../src/lib/sweepCaps.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
 import { planSweep } from '../src/lib/sweepPlan.js';
 
@@ -59,11 +60,11 @@ const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com']
 // them touches the scoring path and this change must not.
 const PAYWALL_MESSAGE =
   'A Citation Sweep asks the real answer engines your buyers\' questions and stores every answer. ' +
-  'It is a paid feature — start a $24 Day Pass or a plan to run one.';
+  'It is a paid feature — start a Day Pass or a plan to run one.';
 // Monthly sweep quota per tier — the real-money spend guardrail. A size-capped
 // sweep MEASURED at ~$1.34 COGS (Haiku + economical engines, max_searches 3), so
 // gross margin stays ≥75% even at max usage: Day Pass ~79%, Pro ~75%, Business ~84%.
-const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, Business: 20, Pro: 8, daypass: 3 };
+const MONTHLY_QUOTA: Record<string, number> = { admin: 100000, ...PLAN_SWEEPS };
 // One paid sweep is bounded by total query-runs (queries × runs) so it both fits
 // the serverless timeout (at concurrency 8) AND has predictable cost/margin.
 const MAX_QUERY_RUNS_PER_SWEEP = 15;
@@ -89,7 +90,7 @@ class HttpError extends Error {
  *  wall. That teaser was the leak: reaching it meant a free account had already
  *  been handed the drafted competitor set and the twelve-question buyer panel,
  *  which is the expensive half of this product. WO-AEO-TIER-LEAK-007. */
-async function resolveAccess(req: VercelRequest): Promise<{ userId: string | null; tier: string; quickCheck: boolean }> {
+async function resolveAccess(req: VercelRequest): Promise<{ userId: string | null; tier: string; quickCheck: boolean; spentThisMonthUsd?: number; monthlyCapUsd?: number }> {
   const supaUrl = process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const anon = process.env.VITE_SUPABASE_ANON_KEY;
@@ -129,15 +130,22 @@ async function resolveAccess(req: VercelRequest): Promise<{ userId: string | nul
   // Paid: enforce the monthly quota (this is the only hard error).
   const monthStart = new Date();
   monthStart.setUTCDate(1); monthStart.setUTCHours(0, 0, 0, 0);
+  // Count this month's sweeps AND sum what they cost (stored scaled by COST_SCALE).
+  // Fails CLOSED: if the count can't be read, no paid sweep starts (the cap is a money control).
   const cntRes = await fetch(
-    `${supaUrl}/rest/v1/citation_sweeps?user_id=eq.${userId}&created_at=gte.${monthStart.toISOString()}&select=id`,
-    { headers: { ...H, Prefer: 'count=exact', Range: '0-0' } }
+    `${supaUrl}/rest/v1/citation_sweeps?user_id=eq.${userId}&created_at=gte.${monthStart.toISOString()}&select=total_cost_usd`,
+    { headers: H }
   );
-  const used = Number((cntRes.headers.get('content-range') || '0-0/0').split('/')[1] || 0);
+  if (!cntRes.ok) throw new HttpError(503, 'Could not check your monthly sweep allowance. No sweep was used — please try again shortly.');
+  const rowsThisMonth: Array<{ total_cost_usd: number | null }> = await cntRes.json();
+  const used = rowsThisMonth.length;
+  const spentThisMonthUsd = rowsThisMonth.reduce((a, r) => a + (Number(r.total_cost_usd) || 0), 0) / COST_SCALE;
   const quota = MONTHLY_QUOTA[tier] ?? 0;
-  if (used >= quota) throw new HttpError(429, `Monthly sweep limit reached for your ${tier} plan (${quota}/mo). Upgrade or wait for next month.`);
+  if (used >= quota) throw new HttpError(429, `Monthly sweep limit reached for your plan (${quota} sweeps). Upgrade or wait for next month.`);
+  const monthlyCapUsd = monthlyCostCapUsd(tier as PaidTier);
+  if (spentThisMonthUsd >= monthlyCapUsd) throw new HttpError(429, 'Monthly sweep allowance reached for your plan. Upgrade or wait for next month.');
 
-  return { userId, tier, quickCheck: false };
+  return { userId, tier, quickCheck: false, spentThisMonthUsd, monthlyCapUsd };
 }
 
 interface Task {
@@ -254,7 +262,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Access gate FIRST — this endpoint spends real money per call. Free/unauthed
   // callers are downgraded to a near-zero-cost quick check (not rejected).
-  let access: { userId: string | null; tier: string; quickCheck: boolean };
+  let access: { userId: string | null; tier: string; quickCheck: boolean; spentThisMonthUsd?: number; monthlyCapUsd?: number };
   try {
     access = await resolveAccess(req);
   } catch (e: any) {
@@ -277,7 +285,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const category: string = (body.category || '').trim(); // WO-INTEGRITY-002 A1: persisted for the pin/rebuild
     // WO-AEO-POSITION-AND-PANEL-006: which panel (v1.1 = series of record; v1.2 = + Grok) and which
     // country is named INSIDE each category question. Both are recorded on the stored summary.
-    const panelVersion: PanelVersion = body.panel === 'v1.2' ? 'v1.2' : 'v1.1';
+    // Pricing decision 13 Oct 2026: the plan decides the panel. Day Pass runs four engines
+    // (v1.1) whatever is asked; Pro and Business run five (v1.2) unless the caller asks for
+    // v1.1 to compare against an older v1.1 series. Admin chooses freely.
+    const tierPanel = (PLAN_PANEL as Record<string, PanelVersion>)[access.tier];
+    const panelVersion: PanelVersion =
+      access.tier === 'daypass' ? 'v1.1'
+      : tierPanel ? (body.panel === 'v1.1' ? 'v1.1' : tierPanel)
+      : body.panel === 'v1.2' ? 'v1.2' : 'v1.1';
     const location: string | null = typeof body.location === 'string' && body.location.trim() ? body.location.trim().slice(0, 60) : null;
     categoryQueries = categoryQueries.map((q: string) => withLocation(q, location));
     let runsPerQuery: number = Math.max(1, Math.min(5, body.runsPerQuery || 3));
@@ -359,11 +374,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const engineLimiter = makeEngineLimiter({
       perplexity: Number(process.env.SWEEP_PERPLEXITY_CONCURRENCY || 3),
     });
+    // Hard spend ceiling, in true provider dollars, enforced BEFORE each call: $1.50 on
+    // v1.1, $4.00 on v1.2, never more than what is left of the plan's monthly allowance.
+    // A call the ceiling forbids is never made; it is recorded as an errored run (excluded
+    // from every score and badged), so a capped sweep is visibly partial, never a fake zero.
+    const capUsd = access.monthlyCapUsd != null
+      ? effectiveSweepCapUsd(panelVersion, access.monthlyCapUsd, access.spentThisMonthUsd || 0)
+      : sweepCapUsd(panelVersion);
+    const guard = new CostGuard(capUsd);
     const runs: SweepRunResult[] = await pool(tasks, CONCURRENCY, async (t) => {
       const base: SweepRunResult = {
         engine: t.engine, query: t.query, queryType: t.queryType, runIndex: t.runIndex,
         transcript: '', sources: [], costUsd: 0,
       };
+      const reservation = guard.tryReserve(t.engine);
+      if (reservation === null) {
+        return scoreRun({ ...base, errored: true, transcript: '[error: not asked — this sweep reached its spend ceiling]' }, { domain, brand }, competitors);
+      }
+      let booked = false;
       try {
         const answer = await engineLimiter(t.engine, () =>
           callWithRetry(
@@ -374,6 +402,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // Mark cut-off answers so scoring excludes them: trust the engine's own
         // finish_reason (answer.truncated), and fall back to a text heuristic for
         // engines/paths that don't report it (WO-QA-003 A1).
+        guard.settle(t.engine, reservation, answer.costUsd || 0); booked = true;
         const truncated = !!answer.truncated || isTruncatedText(answer.transcript);
         // Classify grounding: did the engine actually search, or answer from weights
         // (model-prior)? Model-prior runs are kept out of citation-win (WO-QA-003 A2).
@@ -383,6 +412,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // The call FAILED after bounded retries (429/5xx/timeout/missing key). Record an
         // ERRORED run — excluded from every score and badged, never counted as a real
         // "not cited" (WO-AEO-SWEEP-MEMORY-001).
+        if (!booked) guard.settle(t.engine, reservation, 0);
         return scoreRun(
           { ...base, errored: true, transcript: `[error: ${err?.message || err}]` },
           { domain, brand },
@@ -393,6 +423,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const summary = aggregateSweep(runs, { domain, brand }, competitors);
     (summary as any).panel = { version: panelVersion, engines, location };
+    if (guard.skipped) {
+      console.warn(`[run-sweep] spend ceiling reached: ${guard.skipped} call(s) not made (ceiling $${capUsd.toFixed(2)}, tier ${access.tier})`);
+      (summary as any).spendCeilingReached = { callsNotMade: guard.skipped };
+    }
 
     // Flag engines whose runs ALL errored (dead/expired key, 401, missing config)
     // so a BROKEN engine is never reported as a real "0% retrievability". A run is

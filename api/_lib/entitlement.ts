@@ -15,7 +15,7 @@ const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com']
 
 export async function isPaidRequest(
   req: VercelRequest,
-): Promise<{ paid: boolean; userId: string | null; determined: boolean }> {
+): Promise<{ paid: boolean; userId: string | null; determined: boolean; admin?: boolean }> {
   const supaUrl = process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const anon = process.env.VITE_SUPABASE_ANON_KEY;
@@ -23,7 +23,7 @@ export async function isPaidRequest(
   // Admin/service bypass (same header run-sweep honors).
   const adminToken = process.env.ADMIN_SWEEP_TOKEN;
   if (adminToken && req.headers['x-admin-token'] === adminToken) {
-    return { paid: true, userId: null, determined: true };
+    return { paid: true, userId: null, determined: true, admin: true };
   }
 
   const authHeader = String(req.headers['authorization'] || '');
@@ -39,7 +39,7 @@ export async function isPaidRequest(
     const u: any = await ures.json();
     const userId: string = u.id;
     const email = String(u.email || '').toLowerCase();
-    if (ADMIN_EMAILS.includes(email)) return { paid: true, userId, determined: true };
+    if (ADMIN_EMAILS.includes(email)) return { paid: true, userId, determined: true, admin: true };
 
     const H = { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
     const rowRes = await fetch(
@@ -53,5 +53,30 @@ export async function isPaidRequest(
     return { paid, userId, determined: true };
   } catch {
     return { paid: false, userId: null, determined: false }; // transient error → fail open (protect payers)
+  }
+}
+
+/**
+ * Analyses are capped at ANALYSES_PER_MONTH per account (pricing decision 13 Oct 2026).
+ * Counts this calendar month's saved analyses (analysis_history). Returns null when under
+ * the cap or when the count can't be read (fail open: the free score must not break on a
+ * transient Supabase error), otherwise the number already used.
+ */
+export async function analysesUsedIfCapped(userId: string, cap: number): Promise<number | null> {
+  const supaUrl = process.env.VITE_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supaUrl || !serviceKey) return null;
+  const monthStart = new Date();
+  monthStart.setUTCDate(1); monthStart.setUTCHours(0, 0, 0, 0);
+  try {
+    const r = await fetch(
+      `${supaUrl}/rest/v1/analysis_history?user_id=eq.${userId}&created_at=gte.${monthStart.toISOString()}&select=id`,
+      { headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}`, Prefer: 'count=exact', Range: '0-0' }, signal: AbortSignal.timeout(5000) },
+    );
+    if (!r.ok) return null;
+    const used = Number((r.headers.get('content-range') || '0-0/0').split('/')[1] || 0);
+    return used >= cap ? used : null;
+  } catch {
+    return null;
   }
 }

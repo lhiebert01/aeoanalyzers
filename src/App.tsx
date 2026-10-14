@@ -878,7 +878,7 @@ export default function App() {
                   the page that takes money did not. */}
               <SEO
                 title="Pricing - AEO Analyzers"
-                description="AEO Analyzers pricing: your AEO score and gaps are free. Unlock every fix — paste-ready schema, content rewrites and the full Word report — with a $24 Day Pass, or a Pro or Business plan."
+                description="AEO Analyzers pricing: your AEO score and gaps are free. Unlock every fix — paste-ready schema, content rewrites and the full Word report — with a $29 Day Pass, or a Pro or Business plan."
                 canonical="https://aeoanalyzers.com/pricing"
               />
               <Payments

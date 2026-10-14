@@ -58,7 +58,7 @@ Measurement integrity is built in: truncated answers are **excluded** (never sho
 - **Google OAuth + Email Auth:** Secure authentication via Supabase with Google sign-in support
 - **Admin Dashboard:** User management, growth metrics, and GA4 analytics link
 - **GA4 Analytics:** Full Google Analytics 4 integration for tracking user behavior and conversions
-- **Stripe Subscriptions:** Free (1 analysis), Pro ($49/mo), and Business ($199/mo) tiers
+- **Stripe Subscriptions:** Free (1 analysis), Day Pass ($29), Pro ($149/mo), and Business ($599/mo) tiers
 - **Free Tier Gate:** 1 free analysis, then upgrade required — usage tracked server-side
 
 ## Tech Stack

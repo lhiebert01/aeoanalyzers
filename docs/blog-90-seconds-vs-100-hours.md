@@ -178,7 +178,7 @@ That's why it's Analyzers, plural.
 - Copy-paste JSON-LD code
 - Web team handoff template
 
-What takes agencies $30-60K, we deliver for $49/mo.
+What takes agencies $30-60K, we deliver on a monthly plan.
 
 6/ First analysis is free. No credit card.
 

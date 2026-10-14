@@ -155,6 +155,6 @@ describe('no customer-facing surface states what anything costs us', () => {
 
   it('prices are still allowed — the rule is about our costs, not our prices', () => {
     const pricing = readFileSync(resolve(ROOT, 'src/components/Payments.tsx'), 'utf8');
-    expect(pricing).toMatch(/\$24|\$49|\$199/);
+    expect(pricing).toMatch(/\$29/); expect(pricing).toMatch(/\$149/); expect(pricing).toMatch(/\$599/);
   });
 });

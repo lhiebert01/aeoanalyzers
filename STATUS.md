@@ -59,8 +59,8 @@
 | AI-crawler visibility (prerender) | ✅ Live — `/` prerendered, body + JSON-LD crawlable |
 | Payments (Stripe) | ✅ Configured & live — **needs one real test purchase to confirm end-to-end** |
 | Free-tier value gate | ✅ Live (diagnosis free, fixes paid) |
-| Day Pass ($24 one-time / 24h) | ✅ Live |
-| Subscriptions (Pro $49 / Business $199) | ✅ Wired (price IDs + secret key + webhook all set) |
+| Day Pass ($29 one-time / 24h, 3 sweeps, panel v1.1) | ✅ Live |
+| Subscriptions (Pro $149 / Business $599, panel v1.2; prices changed 13 Oct 2026) | ✅ Wired (price IDs + secret key + webhook all set) |
 | Database | Supabase (Postgres + Auth + RLS) |
 
 ---
@@ -77,9 +77,9 @@ Values are NOT recorded here — names + purpose only.
 | `VITE_APP_URL` | Base URL for redirects |
 | `STRIPE_SECRET_KEY` | Stripe API (checkout + portal) — standard `sk_live_` key |
 | `STRIPE_WEBHOOK_SECRET` | Verifies Stripe webhook signatures (`whsec_`) |
-| `VITE_STRIPE_PRICE_ID_PRO` | Pro $49/mo price (`price_1TMYOU…`) |
-| `VITE_STRIPE_PRICE_ID_BUSINESS` | Business $199/mo price (`price_1TDiBm…`) |
-| `VITE_STRIPE_PRICE_ID_REPORT` | Day Pass $24 one-time price (`price_1Td1ai…`) |
+| `VITE_STRIPE_PRICE_ID_PRO` | Pro $149/mo price (`price_1UQHoc…`) |
+| `VITE_STRIPE_PRICE_ID_BUSINESS` | Business $599/mo price (`price_1UQI7m…`) |
+| `VITE_STRIPE_PRICE_ID_DAYPASS` | Day Pass $29 one-time price (`price_1UQIC3…`); renamed from `VITE_STRIPE_PRICE_ID_REPORT` 13 Oct 2026 |
 
 **Stripe webhook:** endpoint `we_1TDicx…` → `https://www.aeoanalyzers.com/api/webhook`, events `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`. (Repointed 2026-05-31 from a stale Cloud Run URL that was failing 100%.)
 
@@ -106,8 +106,8 @@ Values are NOT recorded here — names + purpose only.
 
 **Monetization**
 - Free: one full diagnosis (scores + gaps); the specific fixes are gated.
-- Day Pass: $24 one-time → 24h full access (no subscription).
-- Pro $49/mo, Business $199/mo.
+- Day Pass: $29 one-time → 24h full access, 3 sweeps on panel v1.1 (no subscription).
+- Pro $149/mo (8 sweeps), Business $599/mo (20 sweeps), both panel v1.2. Caps: $1.50/sweep on v1.1, $4.00 on v1.2; monthly = plan sweeps × cap; 200 analyses/month per account (`src/lib/sweepCaps.ts`).
 - Admins (lindsay.hiebert@gmail.com) and active passholders bypass the gate.
 
 **Discoverability**
