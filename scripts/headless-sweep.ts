@@ -78,7 +78,7 @@ async function pool<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Prom
 // PRE-FLIGHT: every engine answers one cheap call first, or nothing is spent (fail closed).
 if (process.env.SKIP_PREFLIGHT !== "1") {
   const dead: string[] = [];
-  for (const e of engines) { try { await (ENGINE_ADAPTERS as any)[e]("ping"); } catch (err: any) { dead.push(`${e}: ${String(err?.message || err).slice(0, 100)}`); } }
+  for (const e of engines) { try { const a: any = await (ENGINE_ADAPTERS as any)[e]("ping"); spent += a?.costUsd || 0; } catch (err: any) { dead.push(`${e}: ${String(err?.message || err).slice(0, 100)}`); } }
   if (dead.length) { console.error(`PRE-FLIGHT FAILED — nothing spent:\n  ${dead.join("\n  ")}`); process.exit(1); }
   console.error(`pre-flight OK — ${engines.join(", ")}`);
 }

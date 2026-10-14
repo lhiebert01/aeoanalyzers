@@ -72,7 +72,8 @@ function canAfford(): boolean { return spent + maxCallUsd <= BUDGET; }
 async function preflight(engines: Engine[]) {
   const dead: string[] = [];
   for (const e of engines) {
-    try { await ENGINE_ADAPTERS[e]('ping'); }
+    // Pre-flight pings cost money too (13 Oct: they sat outside the guard) — count them.
+    try { const a: any = await ENGINE_ADAPTERS[e]('ping'); spent += a?.costUsd || 0; }
     catch (err: any) { dead.push(`${e}: ${String(err?.message || err).slice(0, 120)}`); }
   }
   if (dead.length && process.env.ALLOW_PARTIAL_ENGINES !== '1') {
