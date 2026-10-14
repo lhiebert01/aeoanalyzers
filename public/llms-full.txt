@@ -31,7 +31,7 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - Blog — How AEO Analyzers works (a visual explainer of the pipeline): https://www.aeoanalyzers.com/blog/how-it-works
 - Blog — I ran my own AI-visibility tool on my own site; it scored 0% (Honest-Zero, Part 1): https://www.aeoanalyzers.com/blog/i-scored-zero
 - Blog — Reading isn't citing: why crawler traffic is not the same as being mentioned: https://aeoanalyzers.com/blog/reading-isnt-citing
-- Blog — We Built an AI Visibility Tool. Then We Tested Ourselves. The Result Was Zero. (being recognised by AI engines is not being recommended; read the transcript behind any visibility score): https://aeoanalyzers.com/blog/the-measurement-layer
+- Blog — We Built an AI Visibility Tool. Then We Tested Ourselves. The Result Was Zero. (being recognized by AI engines is not being recommended; read the transcript behind any visibility score): https://aeoanalyzers.com/blog/the-measurement-layer
 - Blog — One question is not a measurement (why twelve buyer questions on four engines are the smallest unit that produces a plan): https://aeoanalyzers.com/blog/one-question-is-not-a-measurement
 - Primer — Why AI still doesn't mention your business (what does not work, why, and the free self-checks): https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you
 - AEO tools: an honest comparison, with dates on every claim: https://aeoanalyzers.com/best-aeo-tools
@@ -68,9 +68,9 @@ We built a tool to measure whether AI engines recommend businesses. Then we poin
 
 When the engines were asked about AEO Analyzers by name, they found us in three of every four measured answers and, when they found us, described us accurately every time. When the engines were asked which companies to consider in our category, with no name in the question, we were not recommended once. That was 200 scored answers across four engines on October 13th, 2026, and the same again with a fifth engine added.
 
-We published the result on our evidence page, with the transcripts behind it. Not because zero is an attractive number, but because it exposes the distinction at the centre of this whole subject:
+We published the result on our evidence page, with the transcripts behind it. Not because zero is an attractive number, but because it exposes the distinction at the center of this whole subject:
 
-> **Being recognised is not the same as being recommended.**
+> **Being recognized is not the same as being recommended.**
 
 If someone already knows your company, an AI assistant can probably describe it. If someone asks what to buy, who to trust, or which providers to shortlist, and never mentions your name, you may not appear at all. That is a different question, and it needs a different measurement.
 
@@ -108,7 +108,7 @@ Here is what a single number cannot tell you. Did the engine mention your compan
 
 Those are not small details. They are the actual encounter between a buyer and an answer engine.
 
-AEO Analyzers keeps the answers behind every reported number. Not to make the number more impressive, but so that a founder, a marketer, or a sceptical colleague can open the transcript and judge the result for themselves.
+AEO Analyzers keeps the answers behind every reported number. Not to make the number more impressive, but so that a founder, a marketer, or a skeptical colleague can open the transcript and judge the result for themselves.
 
 A searched answer and an answer from memory are also different observations, so we report them separately. A company can be easy to describe from memory and hard to surface through a live search, or the reverse. The right response depends on which one you are looking at.
 
@@ -147,7 +147,7 @@ One conversation is not a benchmark. Answers vary, panels vary, and wording matt
 2. When buyers ask the category question without naming anyone, do the engines recommend us, and if not, whom?
 3. Which answers and which sources produced those results?
 
-Start there. Before optimising for a number, find out which buyer conversations you are missing and what the engines actually said.
+Start there. Before optimizing for a number, find out which buyer conversations you are missing and what the engines actually said.
 
 ## Measure first. Then decide what to change.
 

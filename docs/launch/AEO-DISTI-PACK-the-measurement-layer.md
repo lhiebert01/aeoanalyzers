@@ -18,7 +18,7 @@ House rules that apply to every item here: no prices anywhere; only figures that
 | D1 | Reddit | One comment on an existing thread (r/aeo or r/SEO), not a post | Lindsay |
 | D2 | LinkedIn personal | Post 2 — the measurement surprise | Lindsay |
 | D2 | X / Threads | Short 2 | Lindsay |
-| D4 | LinkedIn personal | Post 3 — recognised vs recommended | Lindsay |
+| D4 | LinkedIn personal | Post 3 — recognized vs recommended | Lindsay |
 | D4 | X / Threads | Short 3 | Lindsay |
 | Thu 15 Oct | Email | New dated fact for the six warm resends | Lindsay |
 | Tue 20 Oct | Email | Optional opener line for Wave 2 | Lindsay |
@@ -39,7 +39,7 @@ When the engines were asked about AEO Analyzers by name, they found us in three 
 
 We put the zero on our evidence page with the transcripts behind it. A measurement tool that only publishes flattering results about itself is asking you to take something on faith, and the whole point of measuring is that you should not have to.
 
-Being recognised is not the same as being recommended. The full piece, with the method and the evidence, is here:
+Being recognized is not the same as being recommended. The full piece, with the method and the evidence, is here:
 
 https://aeoanalyzers.com/blog/the-measurement-layer
 
@@ -57,7 +57,7 @@ A score should travel with its context: which engines, which questions, how many
 
 https://aeoanalyzers.com/blog/the-measurement-layer
 
-### Post 3 — recognised vs recommended (D4) · card: `hero-recognized-not-recommended-1200x630.png`
+### Post 3 — recognized vs recommended (D4) · card: `hero-recognized-not-recommended-1200x630.png`
 
 A quick experiment you can run before your next marketing meeting.
 
@@ -81,7 +81,7 @@ Republish the full post as a LinkedIn article with the same title. First line of
 
 2. Same sites, same day, two different AI engine panels: a 14-point difference in the reported score. A visibility number needs its context — which engines, which questions, how many answers, and when. https://aeoanalyzers.com/blog/the-measurement-layer
 
-3. Being recognised is not the same as being recommended. Ask an AI assistant for companies in your category without naming yours, then ask about yours by name. Compare. https://aeoanalyzers.com/blog/the-measurement-layer
+3. Being recognized is not the same as being recommended. Ask an AI assistant for companies in your category without naming yours, then ask about yours by name. Compare. https://aeoanalyzers.com/blog/the-measurement-layer
 
 ---
 

@@ -1,4 +1,4 @@
-// One command: prospect domain -> review-ready AI Visibility Executive Report +
+// One command: prospect domain -> review-ready Citation Sweep Report +
 // DRAFT outreach email. WO-AEO-EXECREPORT-001 (minimal generator, step 4).
 //
 //   npx tsx scripts/exec-report.ts   (params + keys via env)

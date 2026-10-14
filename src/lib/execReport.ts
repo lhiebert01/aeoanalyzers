@@ -1,5 +1,5 @@
 // WO-AEO-EXECREPORT-001 (minimal generator, green-lit 2026-07-31) — turns a sweep
-// into a review-ready AI Visibility Executive Report + a draft outreach email.
+// into a review-ready Citation Sweep Report + a draft outreach email.
 //
 // CONSTITUTIONAL RULES (do not relax):
 //  1. Numbers are NEVER authored by the model. Every metric/table here is computed
@@ -208,7 +208,7 @@ export function buildNarrativePrompt(d: ExecReportData): string {
     `Top trusted sources in the category: ${d.authority.authorityDomains.slice(0, 5).map((a) => a.domain).join(', ') || 'n/a'}`,
   ].join('\n');
 
-  return `You are writing the narrative prose for an "AI Visibility Executive Report" about ${d.brand}. You are given MEASURED FACTS below. Write ONLY prose — do NOT invent, restate, or alter any number, and do NOT introduce any statistic not in the facts.
+  return `You are writing the narrative prose for an "Citation Sweep Report" about ${d.brand}. You are given MEASURED FACTS below. Write ONLY prose — do NOT invent, restate, or alter any number, and do NOT introduce any statistic not in the facts.
 
 VOICE: plain-English executive; good news first, then the hard finding; consequences, not directives; NO superlatives ("best", "world-class"); when a result is out of the brand's segment, say so; recommend ONLY first-party / POSSE tactics; NEVER recommend parasite SEO, Perplexity-Pages seeding, PBNs, cloaking, or hosting content on another site to borrow its ranking.
 
@@ -284,7 +284,7 @@ function renderExecReportRaw(d: ExecReportData, narrative: ExecNarrative, varian
   const sc = d.scorecard;
   const out: string[] = [];
 
-  out.push(`# AI Visibility Executive Report — ${d.brand}`);
+  out.push(`# Citation Sweep Report — ${d.brand}`);
   out.push(mark + `**Domain:** ${d.domain} · **Sweep date:** ${d.sweepDate} · **${d.runCount} answers across ${d.summary.engines.length} engines**`);
   out.push('');
   out.push('## Why this matters');

@@ -1,4 +1,4 @@
-// Render an AI Visibility Executive Report from a STORED sweep — no engine calls, $0.
+// Render a Citation Sweep Report from a STORED sweep — no engine calls, $0.
 //
 //   npx tsx scripts/exec-report-stored.ts <sweep-id> [--out DIR] [--variant paid|courtesy]
 //                                          [--label "measured Sep 2, 2026 — pre-launch"]
