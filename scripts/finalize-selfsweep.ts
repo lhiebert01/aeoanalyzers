@@ -13,7 +13,7 @@ const comps = [{ name: 'Profound', domain: 'tryprofound.com' }, { name: 'Otterly
 const runs = d.runs.map((r: any) => ({ ...r, costUsd: 0 }));
 const awn = accuracyWhenNamed(runs.map((r: any) => scoreRun(r, client, comps)).filter((r: any) => r.queryType === 'branded'), d.truth);
 const doc = {
-  runTimestampUtc: d.truthReadAtUtc, runLabel: label, panelVersion: 'v1.1', reps: 5, concurrency: 1,
+  runTimestampUtc: d.truthReadAtUtc, runLabel: label, panelVersion: 'v1.1', enginePanel: d.panel || 'v1.1', reps: 5, concurrency: 1,
   seriesNote: 'Pinned panel v1.1, four engines, five runs per question, sequential, reserve-before-spend budget guard; 0 errored runs. Cost is not recorded in committed baselines.',
   domain: d.domain, brand: d.brand, competitors: comps,
   truth: d.truth, truthReadAtUtc: d.truthReadAtUtc,
