@@ -4,7 +4,7 @@
  "panelVersion": "v1.1",
  "reps": 5,
  "concurrency": 1,
- "seriesNote": "First run (Sep 2) was contaminated by our own concurrency on ONE engine — Perplexity returned HTTP 429 on 56/60 runs at concurrency 4. Re-run SEQUENTIALLY (concurrency=1): 0 errors, this is the measurement of record. Contaminated run preserved as _aeoanalyzers-2026-09-01-run1-perplexity429.json.",
+ "seriesNote": "First run (Sep 2) was contaminated by our own concurrency on ONE engine \u2014 Perplexity returned HTTP 429 on 56/60 runs at concurrency 4. Re-run SEQUENTIALLY (concurrency=1): 0 errors, this is the measurement of record. Contaminated run preserved as _aeoanalyzers-2026-09-01-run1-perplexity429.json.",
  "headline": {
   "brandedRetrievabilityPct": 82,
   "brandedN": 40,
@@ -17,6 +17,12 @@
    "gemini": "10/10"
   },
   "note": "Claude branded 2/10 (run1) then 3/10 (run2) = consistent = real drop, not instability; Claude search not surfacing aeoanalyzers.com. Other 3 engines 100%."
+ },
+ "headlineRestated": {
+  "brandedRetrievabilityPct": 80,
+  "brandedN": 40,
+  "restatedOn": "2026-09-23",
+  "note": "The headline above (82%) is the figure as first stored. Under the corrected rule \u2014 an engine that searched, did not find the site and said so is a miss \u2014 September branded retrievability is 80% (32 of 40). One Claude run stored as a hit reads \"I couldn't find information specifically about aeoanalyzers.com\". The published figure is 80%; the publication gate recomputes it from these transcripts."
  },
  "domain": "aeoanalyzers.com",
  "brand": "AEO Analyzers",
@@ -395,7 +401,7 @@
    "query": "best answer engine optimization software for tracking AI search visibility",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "**Frase** (frase.io) is highly recommended—it tracks AI search citations and integrates findings with research, writing, and publishing in one workflow\n. \n**AIclicks** (aiclicks.io) tracks 10+ AI platforms (most competitors track 3-5) with daily updates and built-in action systems\n. \n**SE Ranking's AI Search Toolkit** (seranking.com) combines AI brand tracking, competitive analysis, and LLM response evaluation\n.",
+   "transcript": "**Frase** (frase.io) is highly recommended\u2014it tracks AI search citations and integrates findings with research, writing, and publishing in one workflow\n. \n**AIclicks** (aiclicks.io) tracks 10+ AI platforms (most competitors track 3-5) with daily updates and built-in action systems\n. \n**SE Ranking's AI Search Toolkit** (seranking.com) combines AI brand tracking, competitive analysis, and LLM response evaluation\n.",
    "sources": [
     "https://seranking.com/ai-visibility-tracker.html",
     "https://nightwatch.io/blog/best-ai-search-monitoring-tools/",
@@ -517,7 +523,7 @@
    "query": "top generative engine optimization tools for small business startups",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "**Mangools AI Search Grader** (free)\n is ideal for beginners—\n**Otterly.ai** at $29/month and **Peec AI** at $95/month\n are budget-friendly paid options. \n**Google Search Console**, **SEMRush**, and **Ahrefs**\n also track AI visibility, while \nHubSpot Marketing Hub offers free tools\n for content optimization and GEO audits.",
+   "transcript": "**Mangools AI Search Grader** (free)\n is ideal for beginners\u2014\n**Otterly.ai** at $29/month and **Peec AI** at $95/month\n are budget-friendly paid options. \n**Google Search Console**, **SEMRush**, and **Ahrefs**\n also track AI visibility, while \nHubSpot Marketing Hub offers free tools\n for content optimization and GEO audits.",
    "sources": [
     "https://www.yotpo.com/blog/generative-engine-optimization-tools/",
     "https://blog.hubspot.com/marketing/generative-engine-optimization-small-business",
@@ -733,7 +739,7 @@
    "query": "how to monitor if my brand appears in ChatGPT and Claude responses",
    "queryType": "category",
    "runIndex": 0,
-   "transcript": "**SEOcrawl AI's Prompt Tracker** (seocrawl.ai) automatically tracks mentions across every major LLM\n, or try \n**Answer Socrates LLM Brand Tracker** (answersocrates.com) for free monitoring across ChatGPT, Perplexity, Gemini, Claude, DeepSeek, and Grok\n. \nThese tools measure brand mentions, citations, and sentiment across AI platforms while tracking AI Share of Voice and mention rates—different from traditional SEO rank tracking\n.",
+   "transcript": "**SEOcrawl AI's Prompt Tracker** (seocrawl.ai) automatically tracks mentions across every major LLM\n, or try \n**Answer Socrates LLM Brand Tracker** (answersocrates.com) for free monitoring across ChatGPT, Perplexity, Gemini, Claude, DeepSeek, and Grok\n. \nThese tools measure brand mentions, citations, and sentiment across AI platforms while tracking AI Share of Voice and mention rates\u2014different from traditional SEO rank tracking\n.",
    "sources": [
     "https://www.meltwater.com/en/blog/track-brand-mentions-claude",
     "https://seocrawl.ai/blog/chatgpt-brand-mentions",
@@ -796,7 +802,7 @@
    "query": "how to monitor if my brand appears in ChatGPT and Claude responses",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "Use dedicated AI monitoring tools for scalable, consistent tracking\n like \nSiftly (siftly.ai)\n, \nLLM Pulse\n, \nAllmond (allmond.com)\n, or \nRankshift AI\n, which \ntrack Claude, ChatGPT, Gemini, and other LLMs\n. \nCreate 5–50 prompts mirroring customer questions and run them across all engines on a schedule (daily by default)\n to track \nmention rate, position, sentiment, hallucination, competitors, and citations\n.",
+   "transcript": "Use dedicated AI monitoring tools for scalable, consistent tracking\n like \nSiftly (siftly.ai)\n, \nLLM Pulse\n, \nAllmond (allmond.com)\n, or \nRankshift AI\n, which \ntrack Claude, ChatGPT, Gemini, and other LLMs\n. \nCreate 5\u201350 prompts mirroring customer questions and run them across all engines on a schedule (daily by default)\n to track \nmention rate, position, sentiment, hallucination, competitors, and citations\n.",
    "sources": [
     "https://www.meltwater.com/en/blog/track-brand-mentions-claude",
     "https://www.mersel.ai/blog/how-to-track-claude-ai-brand-mentions",
@@ -1003,7 +1009,7 @@
    "query": "how to track and analyze brand mentions across AI answer engines",
    "queryType": "category",
    "runIndex": 4,
-   "transcript": "Use AI search monitoring tools that run predefined prompts daily or weekly to measure brand mentions, citation frequency, sentiment, and competitive positioning\n across ChatGPT, Perplexity, Gemini, and Google AI Overviews. \nOtterlyAI monitors when your brand appears in AI-generated answers and compares visibility against competitors\n (otterly.ai), while \nDageno AI provides the full workflow from monitoring → strategy → content generation → attribution\n (dageno.ai). \nBuild a set of buyer prompts, run them across engines on a schedule, and record mentions—repeat sampling matters since AI answers change run to run\n.",
+   "transcript": "Use AI search monitoring tools that run predefined prompts daily or weekly to measure brand mentions, citation frequency, sentiment, and competitive positioning\n across ChatGPT, Perplexity, Gemini, and Google AI Overviews. \nOtterlyAI monitors when your brand appears in AI-generated answers and compares visibility against competitors\n (otterly.ai), while \nDageno AI provides the full workflow from monitoring \u2192 strategy \u2192 content generation \u2192 attribution\n (dageno.ai). \nBuild a set of buyer prompts, run them across engines on a schedule, and record mentions\u2014repeat sampling matters since AI answers change run to run\n.",
    "sources": [
     "https://business.adobe.com/blog/track-brand-mentions-in-ai-search",
     "https://otterly.ai/",
@@ -1078,7 +1084,7 @@
    "query": "tools to optimize content for Perplexity and ChatGPT search recommendations",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "**ZipTie.dev** (ziptie.dev) monitors AI citations across ChatGPT, Perplexity, and Google AI Overviews with competitive analysis and optimization recommendations.\n \n**OptimizeYour.Blog** analyzes content for AI search discoverability with keyword optimization, structure analysis, and citation-worthiness scoring.\n \nKey optimization tactics: use question-based headers, keep paragraphs 60-100 words, incorporate bullet points and tables, and <cite index=\"4-6,4-15\">weight freshness heavily—especially for Perplexity, which prioritizes it 3.3x more than Google.\n</cite>",
+   "transcript": "**ZipTie.dev** (ziptie.dev) monitors AI citations across ChatGPT, Perplexity, and Google AI Overviews with competitive analysis and optimization recommendations.\n \n**OptimizeYour.Blog** analyzes content for AI search discoverability with keyword optimization, structure analysis, and citation-worthiness scoring.\n \nKey optimization tactics: use question-based headers, keep paragraphs 60-100 words, incorporate bullet points and tables, and <cite index=\"4-6,4-15\">weight freshness heavily\u2014especially for Perplexity, which prioritizes it 3.3x more than Google.\n</cite>",
    "sources": [
     "https://www.linkedin.com/pulse/how-optimize-google-aioverviews-chatgpt-perplexity-llms-kopp--ikxce",
     "https://www.averi.ai/guides/optimize-blog-content-chatgpt-perplexity-gemini",
@@ -1561,7 +1567,7 @@
    "query": "GEO software vs AEO software differences and tool recommendations",
    "queryType": "category",
    "runIndex": 3,
-   "transcript": "**Key Difference:** \nAEO emphasizes being the cited answer; GEO emphasizes how AI represents your brand more broadly\n. \nAEO directly pulls and displays content, while GEO interprets and attributes content along with other sources\n.\n\n**Top Tool Recommendations:**\n- \nProfound (profound.com) starts at $399/month\n for multi-engine tracking\n- \nOtterly.ai starts at $29/month\n and \ntracks brand visibility across ChatGPT, Google AI Overviews, Perplexity, and Microsoft Copilot\n\n- \nScrunch (scrunch.com) is the most complete AEO/GEO tool for 2026—pairing multi-LLM monitoring and analytics with auditing, optimization, and AI content delivery",
+   "transcript": "**Key Difference:** \nAEO emphasizes being the cited answer; GEO emphasizes how AI represents your brand more broadly\n. \nAEO directly pulls and displays content, while GEO interprets and attributes content along with other sources\n.\n\n**Top Tool Recommendations:**\n- \nProfound (profound.com) starts at $399/month\n for multi-engine tracking\n- \nOtterly.ai starts at $29/month\n and \ntracks brand visibility across ChatGPT, Google AI Overviews, Perplexity, and Microsoft Copilot\n\n- \nScrunch (scrunch.com) is the most complete AEO/GEO tool for 2026\u2014pairing multi-LLM monitoring and analytics with auditing, optimization, and AI content delivery",
    "sources": [
     "https://arcalea.com/ai-seo-tools",
     "https://neilpatel.com/blog/geo-vs-aeo/",
@@ -1719,7 +1725,7 @@
    "query": "affordable alternatives to Profound for AI search tracking",
    "queryType": "category",
    "runIndex": 3,
-   "transcript": "For budget-conscious teams, **Otterly AI** and **LLMPulse** offer entry points starting at $29-49/month\n, while \n**Listable Labs** ($60/month), **Omnia** (€79/month), and **Peec AI** ($95/month) provide mid-range alternatives\n. \n**AIclicks** tracks 10+ AI platforms starting at $59/month with built-in recommendations\n, making it a strong value option for teams needing both tracking and actionable insights.",
+   "transcript": "For budget-conscious teams, **Otterly AI** and **LLMPulse** offer entry points starting at $29-49/month\n, while \n**Listable Labs** ($60/month), **Omnia** (\u20ac79/month), and **Peec AI** ($95/month) provide mid-range alternatives\n. \n**AIclicks** tracks 10+ AI platforms starting at $59/month with built-in recommendations\n, making it a strong value option for teams needing both tracking and actionable insights.",
    "sources": [
     "https://seranking.com/blog/profound-alternatives/",
     "https://www.sitepoint.com/best-profound-ai-alternatives/",
@@ -1745,7 +1751,7 @@
    "query": "affordable alternatives to Profound for AI search tracking",
    "queryType": "category",
    "runIndex": 4,
-   "transcript": "Here are the top affordable alternatives to Profound:\n\n**Budget-friendly options:** \nOtterly AI is the most affordable entry point at $29/month for 15 search prompts across ChatGPT, Google AI Overviews, Perplexity, and Copilot\n, and \nLLMPulse offers lower entry points starting at $29/month\n.\n\n**Mid-tier value:** \nListable Labs ($60/month), Omnia (€79/month), and Peec AI ($95/month)\n offer comprehensive tracking with better feature sets than budget options.\n\n**Full-featured alternatives:** \nAIclicks tracks 10+ AI platforms with a built-in recommendations engine starting at $59/month\n, and \nAhrefs Brand Radar starts at $29/month for standalone AI tracking\n.",
+   "transcript": "Here are the top affordable alternatives to Profound:\n\n**Budget-friendly options:** \nOtterly AI is the most affordable entry point at $29/month for 15 search prompts across ChatGPT, Google AI Overviews, Perplexity, and Copilot\n, and \nLLMPulse offers lower entry points starting at $29/month\n.\n\n**Mid-tier value:** \nListable Labs ($60/month), Omnia (\u20ac79/month), and Peec AI ($95/month)\n offer comprehensive tracking with better feature sets than budget options.\n\n**Full-featured alternatives:** \nAIclicks tracks 10+ AI platforms with a built-in recommendations engine starting at $59/month\n, and \nAhrefs Brand Radar starts at $29/month for standalone AI tracking\n.",
    "sources": [
     "https://www.sitepoint.com/best-profound-ai-alternatives/",
     "https://demand-genius.com/blog/profound-alternatives",
@@ -2053,7 +2059,7 @@
    "query": "top generative engine optimization tools for small business startups",
    "queryType": "category",
    "runIndex": 0,
-   "transcript": "For small business startups aiming to enhance their visibility in AI-generated search results, the following Generative Engine Optimization (GEO) tools are recommended:\n\n1. **Otterly.AI**: Offers affordable monitoring and auditing of brand mentions across major AI engines, with plans starting at $29/month. ([top10seosoftware.com](https://top10seosoftware.com/collections/best-generative-engine-optimization-tools/?utm_source=openai))\n\n2. **Rankscale**: Provides budget-friendly monitoring with AI Readiness Score audits and an Action Center, priced at $20/month. ([ranktracker.com](https://www.ranktracker.com/blog/generative-engine-optimization-platforms/?utm_source=openai))\n\n3. **Geoptie**: Recognized as a Gartner Cool Vendor in 2025, it offers GEO monitoring and optimization tools suitable for SMBs and startups, starting at $49/month. ([geotoolsreview.ai](https://www.geotoolsreview.ai/?utm_source=openai))\n\n4. **HubSpot AEO**: A specialized optimization tool designed to help businesses increase their visibility in AI-generated search results, with a free 28-day trial and subsequent pricing at $50/month. ([slashdot.org](https://slashdot.org/software/generative-engine-optimization-geo/f-small-business/?utm_source=openai))\n\n5. **Maggie’s AutoBlog**: An AI-powered platform that auto-generates SEO and GEO-targeted blog content, analyzing your site to craft optimized posts. ([geo.vote](https://geo.vote/15-best-generative-engine-optimization-tools-for-small-business-ai-visibility-in-2026/?utm_source=openai))\n\nThese tools are tailored to assist small businesses in improving their presence within AI-driven search environments.",
+   "transcript": "For small business startups aiming to enhance their visibility in AI-generated search results, the following Generative Engine Optimization (GEO) tools are recommended:\n\n1. **Otterly.AI**: Offers affordable monitoring and auditing of brand mentions across major AI engines, with plans starting at $29/month. ([top10seosoftware.com](https://top10seosoftware.com/collections/best-generative-engine-optimization-tools/?utm_source=openai))\n\n2. **Rankscale**: Provides budget-friendly monitoring with AI Readiness Score audits and an Action Center, priced at $20/month. ([ranktracker.com](https://www.ranktracker.com/blog/generative-engine-optimization-platforms/?utm_source=openai))\n\n3. **Geoptie**: Recognized as a Gartner Cool Vendor in 2025, it offers GEO monitoring and optimization tools suitable for SMBs and startups, starting at $49/month. ([geotoolsreview.ai](https://www.geotoolsreview.ai/?utm_source=openai))\n\n4. **HubSpot AEO**: A specialized optimization tool designed to help businesses increase their visibility in AI-generated search results, with a free 28-day trial and subsequent pricing at $50/month. ([slashdot.org](https://slashdot.org/software/generative-engine-optimization-geo/f-small-business/?utm_source=openai))\n\n5. **Maggie\u2019s AutoBlog**: An AI-powered platform that auto-generates SEO and GEO-targeted blog content, analyzing your site to craft optimized posts. ([geo.vote](https://geo.vote/15-best-generative-engine-optimization-tools-for-small-business-ai-visibility-in-2026/?utm_source=openai))\n\nThese tools are tailored to assist small businesses in improving their presence within AI-driven search environments.",
    "sources": [
     "https://top10seosoftware.com/collections/best-generative-engine-optimization-tools/?utm_source=openai",
     "https://www.ranktracker.com/blog/generative-engine-optimization-platforms/?utm_source=openai",
@@ -2210,7 +2216,7 @@
    "query": "what are the leading AEO software platforms for digital marketers",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "Leading AEO (Answer Engine Optimization) software platforms for digital marketers include:\n\n- **Optimizely**: Offers a comprehensive AEO platform with AI visibility tools and autonomous agents, enhanced by a partnership with Conductor. ([optimizely.com](https://www.optimizely.com/company/press/conductor-partnership-and-aeo-platform-launch?utm_source=openai))\n\n- **HubSpot AEO**: Provides AI visibility tracking, competitor analysis, and CRM integration, suitable for both standalone use and integration within Marketing Hub Pro and Enterprise. ([hubspot.com](https://www.hubspot.com/products/aeo/best-aeo-software?utm_source=openai))\n\n- **Ahrefs' Letaido**: An AI-driven marketing workspace that automates complex tasks, content creation, and continuous monitoring, integrated with Ahrefs’ SEO data. ([techradar.com](https://www.techradar.com/pro/a-full-40-hour-week-now-takes-just-60-minutes-ahrefs-new-ai-agents-promise-always-on-marketing-support?utm_source=openai))\n\n- **Conductor**: An enterprise-grade AEO platform offering AI search performance tracking and integration with existing SEO workflows. ([stackmatix.com](https://www.stackmatix.com/blog/aeo-tools?utm_source=openai))\n\n- **Profound**: Provides deep prompt intelligence and broad AI engine coverage, ideal for enterprise teams requiring extensive AI visibility and analytics. ([indexly.ai](https://indexly.ai/blog/top-geo-and-aeo-platforms-for-content-marketing-in-2026/?utm_source=openai))\n\n- **Scrunch**: Focuses on AI crawler behavior and traffic analysis, offering features like AI visibility tracking and content optimization guidance. ([vismore.ai](https://www.vismore.ai/blog/top-aeo-tools?utm_source=openai))\n\n- **AirOps**: A full content operations platform that includes AEO capabilities, enabling end-to-end workflow automation and content optimization. ([techradar.com](https://www.techradar.com/pro/i-tested-the-7-best-aeo-tools?utm_source=openai))\n\nThese platforms assist digital marketers in optimizing their content for AI-driven search engines and enhancing online visibility.",
+   "transcript": "Leading AEO (Answer Engine Optimization) software platforms for digital marketers include:\n\n- **Optimizely**: Offers a comprehensive AEO platform with AI visibility tools and autonomous agents, enhanced by a partnership with Conductor. ([optimizely.com](https://www.optimizely.com/company/press/conductor-partnership-and-aeo-platform-launch?utm_source=openai))\n\n- **HubSpot AEO**: Provides AI visibility tracking, competitor analysis, and CRM integration, suitable for both standalone use and integration within Marketing Hub Pro and Enterprise. ([hubspot.com](https://www.hubspot.com/products/aeo/best-aeo-software?utm_source=openai))\n\n- **Ahrefs' Letaido**: An AI-driven marketing workspace that automates complex tasks, content creation, and continuous monitoring, integrated with Ahrefs\u2019 SEO data. ([techradar.com](https://www.techradar.com/pro/a-full-40-hour-week-now-takes-just-60-minutes-ahrefs-new-ai-agents-promise-always-on-marketing-support?utm_source=openai))\n\n- **Conductor**: An enterprise-grade AEO platform offering AI search performance tracking and integration with existing SEO workflows. ([stackmatix.com](https://www.stackmatix.com/blog/aeo-tools?utm_source=openai))\n\n- **Profound**: Provides deep prompt intelligence and broad AI engine coverage, ideal for enterprise teams requiring extensive AI visibility and analytics. ([indexly.ai](https://indexly.ai/blog/top-geo-and-aeo-platforms-for-content-marketing-in-2026/?utm_source=openai))\n\n- **Scrunch**: Focuses on AI crawler behavior and traffic analysis, offering features like AI visibility tracking and content optimization guidance. ([vismore.ai](https://www.vismore.ai/blog/top-aeo-tools?utm_source=openai))\n\n- **AirOps**: A full content operations platform that includes AEO capabilities, enabling end-to-end workflow automation and content optimization. ([techradar.com](https://www.techradar.com/pro/i-tested-the-7-best-aeo-tools?utm_source=openai))\n\nThese platforms assist digital marketers in optimizing their content for AI-driven search engines and enhancing online visibility.",
    "sources": [
     "https://www.optimizely.com/company/press/conductor-partnership-and-aeo-platform-launch?utm_source=openai",
     "https://www.hubspot.com/products/aeo/best-aeo-software?utm_source=openai",
@@ -2235,7 +2241,7 @@
    "query": "what are the leading AEO software platforms for digital marketers",
    "queryType": "category",
    "runIndex": 3,
-   "transcript": "Leading Answer Engine Optimization (AEO) platforms for digital marketers include:\n\n- **InfuseOS**: Offers AI visibility and execution, identifying content gaps and turning them into prioritized growth actions. ([infuseos.com](https://infuseos.com/resources/the-best-4-aeo-platforms-infuseos-vs-airops-vs-profound-vs-athenahq?utm_source=openai))\n\n- **Profound**: Provides enterprise-grade AI visibility intelligence with deep prompt demand analysis, tracking brand visibility across multiple AI surfaces. ([indexly.ai](https://indexly.ai/blog/top-geo-and-aeo-platforms-for-content-marketing-in-2026/?utm_source=openai))\n\n- **Scrunch AI**: Features an Agent Experience Platform (AXP) that creates AI-friendly versions of websites for better interaction with AI crawlers. ([vismore.ai](https://www.vismore.ai/blog/top-aeo-tools?utm_source=openai))\n\n- **HubSpot AEO**: Integrates AEO tools with CRM and marketing platforms, offering prompt suggestions informed by CRM data and AI visibility tied directly to pipeline and revenue. ([hubspot.com](https://www.hubspot.com/products/aeo/best-aeo-software?utm_source=openai))\n\n- **Ahrefs' Letaido**: An AI-driven marketing workspace that automates complex, multi-step marketing tasks, content creation, and research, with native integration to Ahrefs’ SEO and marketing data. ([techradar.com](https://www.techradar.com/pro/a-full-40-hour-week-now-takes-just-60-minutes-ahrefs-new-ai-agents-promise-always-on-marketing-support?utm_source=openai))",
+   "transcript": "Leading Answer Engine Optimization (AEO) platforms for digital marketers include:\n\n- **InfuseOS**: Offers AI visibility and execution, identifying content gaps and turning them into prioritized growth actions. ([infuseos.com](https://infuseos.com/resources/the-best-4-aeo-platforms-infuseos-vs-airops-vs-profound-vs-athenahq?utm_source=openai))\n\n- **Profound**: Provides enterprise-grade AI visibility intelligence with deep prompt demand analysis, tracking brand visibility across multiple AI surfaces. ([indexly.ai](https://indexly.ai/blog/top-geo-and-aeo-platforms-for-content-marketing-in-2026/?utm_source=openai))\n\n- **Scrunch AI**: Features an Agent Experience Platform (AXP) that creates AI-friendly versions of websites for better interaction with AI crawlers. ([vismore.ai](https://www.vismore.ai/blog/top-aeo-tools?utm_source=openai))\n\n- **HubSpot AEO**: Integrates AEO tools with CRM and marketing platforms, offering prompt suggestions informed by CRM data and AI visibility tied directly to pipeline and revenue. ([hubspot.com](https://www.hubspot.com/products/aeo/best-aeo-software?utm_source=openai))\n\n- **Ahrefs' Letaido**: An AI-driven marketing workspace that automates complex, multi-step marketing tasks, content creation, and research, with native integration to Ahrefs\u2019 SEO and marketing data. ([techradar.com](https://www.techradar.com/pro/a-full-40-hour-week-now-takes-just-60-minutes-ahrefs-new-ai-agents-promise-always-on-marketing-support?utm_source=openai))",
    "sources": [
     "https://infuseos.com/resources/the-best-4-aeo-platforms-infuseos-vs-airops-vs-profound-vs-athenahq?utm_source=openai",
     "https://indexly.ai/blog/top-geo-and-aeo-platforms-for-content-marketing-in-2026/?utm_source=openai",
@@ -2576,7 +2582,7 @@
    "query": "Peec AI alternatives for AEO tracking",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "If you're seeking alternatives to Peec AI for Answer Engine Optimization (AEO) tracking, consider the following options:\n\n- **Otterly.ai**: Offers a more affordable entry point at $29/month, though additional fees apply for Google engine coverage. ([aeolabs.ai](https://www.aeolabs.ai/blog/peec-ai-alternatives?utm_source=openai))\n\n- **Profound**: Tailored for enterprise needs, providing features like Single Sign-On (SSO) and SOC2 compliance, with plans starting at $99/month for ChatGPT and $399/month for three engines. ([aeolabs.ai](https://www.aeolabs.ai/blog/peec-ai-alternatives?utm_source=openai))\n\n- **Scrunch AI**: Designed for brand and PR teams focusing on narrative accuracy, with pricing starting around $250/month. ([aeolabs.ai](https://www.aeolabs.ai/blog/peec-ai-alternatives?utm_source=openai))\n\n- **Ahrefs Brand Radar**: Suitable for teams already using Ahrefs, offering AI tracking at $199/month per platform index, in addition to the base subscription. ([aeolabs.ai](https://www.aeolabs.ai/blog/peec-ai-alternatives?utm_source=openai))\n\n- **SurfacedBy**: Includes five AI platforms by tier, with Claude on every paid plan, and offers actionable recommendations, executive briefs, and weekly action plans, starting from $25/month. ([surfacedby.com](https://surfacedby.com/compare/peec-ai-alternatives?utm_source=openai))\n\n- **AthenaHQ**: Provides an Action Center task queue and supports up to eight AI platforms, with plans ranging from a free tier to $295/month. ([surfacedby.com](https://surfacedby.com/compare/peec-ai-alternatives?utm_source=openai))\n\n- **Rankscale**: Caters to technical SEOs seeking granular control, covering ten AI platforms, with pricing between $20 and $780/month. ([surfacedby.com](https://surfacedby.com/compare/peec-ai-alternatives?utm_source=openai))\n\n- **Knowatoa**: Ideal for teams managing multiple domains, offering AI Mode tracking from the outset, with plans starting at $59/month. ([surfacedby.com](https://surfacedby.com/compare/peec-ai-alternatives?utm_source=openai))\n\n- **Temso**: Provides all-in-one GEO at flat subscription pricing, covering eight AI engines and including execution workflows, starting at $89/month. ([geosoftwarerankings.com](https://www.geosoftwarerankings.com/blog/best-peec-ai-alternatives/?utm_source=openai))\n\n- **Aeoix**: Combines tracking and execution, covering eight AI engines and offering content generation and a publisher marketplace, starting at $89/month. ([aeoix.com](https://aeoix.com/blog/alternatives-to-peec-ai?utm_source=openai))�",
+   "transcript": "If you're seeking alternatives to Peec AI for Answer Engine Optimization (AEO) tracking, consider the following options:\n\n- **Otterly.ai**: Offers a more affordable entry point at $29/month, though additional fees apply for Google engine coverage. ([aeolabs.ai](https://www.aeolabs.ai/blog/peec-ai-alternatives?utm_source=openai))\n\n- **Profound**: Tailored for enterprise needs, providing features like Single Sign-On (SSO) and SOC2 compliance, with plans starting at $99/month for ChatGPT and $399/month for three engines. ([aeolabs.ai](https://www.aeolabs.ai/blog/peec-ai-alternatives?utm_source=openai))\n\n- **Scrunch AI**: Designed for brand and PR teams focusing on narrative accuracy, with pricing starting around $250/month. ([aeolabs.ai](https://www.aeolabs.ai/blog/peec-ai-alternatives?utm_source=openai))\n\n- **Ahrefs Brand Radar**: Suitable for teams already using Ahrefs, offering AI tracking at $199/month per platform index, in addition to the base subscription. ([aeolabs.ai](https://www.aeolabs.ai/blog/peec-ai-alternatives?utm_source=openai))\n\n- **SurfacedBy**: Includes five AI platforms by tier, with Claude on every paid plan, and offers actionable recommendations, executive briefs, and weekly action plans, starting from $25/month. ([surfacedby.com](https://surfacedby.com/compare/peec-ai-alternatives?utm_source=openai))\n\n- **AthenaHQ**: Provides an Action Center task queue and supports up to eight AI platforms, with plans ranging from a free tier to $295/month. ([surfacedby.com](https://surfacedby.com/compare/peec-ai-alternatives?utm_source=openai))\n\n- **Rankscale**: Caters to technical SEOs seeking granular control, covering ten AI platforms, with pricing between $20 and $780/month. ([surfacedby.com](https://surfacedby.com/compare/peec-ai-alternatives?utm_source=openai))\n\n- **Knowatoa**: Ideal for teams managing multiple domains, offering AI Mode tracking from the outset, with plans starting at $59/month. ([surfacedby.com](https://surfacedby.com/compare/peec-ai-alternatives?utm_source=openai))\n\n- **Temso**: Provides all-in-one GEO at flat subscription pricing, covering eight AI engines and including execution workflows, starting at $89/month. ([geosoftwarerankings.com](https://www.geosoftwarerankings.com/blog/best-peec-ai-alternatives/?utm_source=openai))\n\n- **Aeoix**: Combines tracking and execution, covering eight AI engines and offering content generation and a publisher marketplace, starting at $89/month. ([aeoix.com](https://aeoix.com/blog/alternatives-to-peec-ai?utm_source=openai))\ufffd",
    "sources": [
     "https://www.aeolabs.ai/blog/peec-ai-alternatives?utm_source=openai",
     "https://surfacedby.com/compare/peec-ai-alternatives?utm_source=openai",
@@ -3167,7 +3173,7 @@
    "query": "best answer engine optimization software for tracking AI search visibility",
    "queryType": "category",
    "runIndex": 0,
-   "transcript": "For **answer engine optimization / AI search visibility tracking**, the strongest dedicated picks are **Frase** (*frase.io*), **Profound** (*tryprofound.com*), and **SE Ranking’s SE Visible** (*seranking.com*), with **Semrush AI Toolkit** (*semrush.com*) as the best all-in-one option if you already use Semrush.[2][3][8][1]  \nIf you want broader enterprise AEO, **Conductor’s AEO Platform** (*conductor.com*) is also cited as a strong choice.[5]  \nIf you want, I can narrow this to the **best budget**, **best agency tool**, or **best enterprise platform**.",
+   "transcript": "For **answer engine optimization / AI search visibility tracking**, the strongest dedicated picks are **Frase** (*frase.io*), **Profound** (*tryprofound.com*), and **SE Ranking\u2019s SE Visible** (*seranking.com*), with **Semrush AI Toolkit** (*semrush.com*) as the best all-in-one option if you already use Semrush.[2][3][8][1]  \nIf you want broader enterprise AEO, **Conductor\u2019s AEO Platform** (*conductor.com*) is also cited as a strong choice.[5]  \nIf you want, I can narrow this to the **best budget**, **best agency tool**, or **best enterprise platform**.",
    "sources": [
     "https://visible.seranking.com/blog/best-ai-visibility-tools/",
     "https://www.position.digital/blog/best-ai-visibility-tracking-tools/",
@@ -3194,7 +3200,7 @@
    "query": "best answer engine optimization software for tracking AI search visibility",
    "queryType": "category",
    "runIndex": 1,
-   "transcript": "For **AI search visibility tracking**, the strongest picks are **Frase** (*frase.io*) for an all-in-one workflow, **Semrush AI Toolkit** (*semrush.com*) for broader SEO + AI tracking, and **SE Ranking / SE Visible** (*seranking.com*) for dedicated AI visibility monitoring.[2][3][6][7][8]  \n\nIf you want the most enterprise-focused option, **Conductor’s AEO Platform** (*conductor.com*) and **Profound** (*tryprofound.com*) are the names to look at for answer-engine optimization and brand citation tracking.[5][8]  \n\nIf you want, I can narrow this to the **best tool for agencies, SaaS, or enterprise teams**.",
+   "transcript": "For **AI search visibility tracking**, the strongest picks are **Frase** (*frase.io*) for an all-in-one workflow, **Semrush AI Toolkit** (*semrush.com*) for broader SEO + AI tracking, and **SE Ranking / SE Visible** (*seranking.com*) for dedicated AI visibility monitoring.[2][3][6][7][8]  \n\nIf you want the most enterprise-focused option, **Conductor\u2019s AEO Platform** (*conductor.com*) and **Profound** (*tryprofound.com*) are the names to look at for answer-engine optimization and brand citation tracking.[5][8]  \n\nIf you want, I can narrow this to the **best tool for agencies, SaaS, or enterprise teams**.",
    "sources": [
     "https://visible.seranking.com/blog/best-ai-visibility-tools/",
     "https://www.position.digital/blog/best-ai-visibility-tracking-tools/",
@@ -3221,7 +3227,7 @@
    "query": "best answer engine optimization software for tracking AI search visibility",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "For **answer engine optimization (AEO)** and tracking **AI search visibility**, the strongest tools are **Profound** (`tryprofound.com`), **SE Ranking’s SE Visible** (`seranking.com`), and **Semrush AI Toolkit** (`semrush.com`); each is repeatedly cited for monitoring mentions, citations, prompts, and competitor visibility across AI engines like ChatGPT, Perplexity, Gemini, and Google AI Overviews.[2][5][7][8]  \n\nIf you want the **best all-in-one SEO + AI visibility stack**, choose **Semrush**; if you want **standalone AI visibility monitoring**, choose **Profound** or **SE Visible**.[2][7][8]",
+   "transcript": "For **answer engine optimization (AEO)** and tracking **AI search visibility**, the strongest tools are **Profound** (`tryprofound.com`), **SE Ranking\u2019s SE Visible** (`seranking.com`), and **Semrush AI Toolkit** (`semrush.com`); each is repeatedly cited for monitoring mentions, citations, prompts, and competitor visibility across AI engines like ChatGPT, Perplexity, Gemini, and Google AI Overviews.[2][5][7][8]  \n\nIf you want the **best all-in-one SEO + AI visibility stack**, choose **Semrush**; if you want **standalone AI visibility monitoring**, choose **Profound** or **SE Visible**.[2][7][8]",
    "sources": [
     "https://visible.seranking.com/blog/best-ai-visibility-tools/",
     "https://www.position.digital/blog/best-ai-visibility-tracking-tools/",
@@ -3248,7 +3254,7 @@
    "query": "best answer engine optimization software for tracking AI search visibility",
    "queryType": "category",
    "runIndex": 3,
-   "transcript": "For **tracking AI search visibility**, the strongest options are **Frase** (best all-in-one for content teams), **Semrush AI Toolkit** (best if you already use Semrush), and **SE Ranking / SE Visible** (strong for monitoring mentions, citations, and sentiment across answer engines).[3][2][6][8] If you want enterprise-grade **Answer Engine Optimization (AEO)**, **Conductor** and **Profound** are the names to look at.[5][8]\n\nIf you want the most practical shortlist, I’d start with **Frase**, **Semrush** (`semrush.com`), **SE Ranking** (`seranking.com`), **Profound** (`tryprofound.com`), and **Conductor** (`conductor.com`).[3][2][8][5]",
+   "transcript": "For **tracking AI search visibility**, the strongest options are **Frase** (best all-in-one for content teams), **Semrush AI Toolkit** (best if you already use Semrush), and **SE Ranking / SE Visible** (strong for monitoring mentions, citations, and sentiment across answer engines).[3][2][6][8] If you want enterprise-grade **Answer Engine Optimization (AEO)**, **Conductor** and **Profound** are the names to look at.[5][8]\n\nIf you want the most practical shortlist, I\u2019d start with **Frase**, **Semrush** (`semrush.com`), **SE Ranking** (`seranking.com`), **Profound** (`tryprofound.com`), and **Conductor** (`conductor.com`).[3][2][8][5]",
    "sources": [
     "https://visible.seranking.com/blog/best-ai-visibility-tools/",
     "https://www.position.digital/blog/best-ai-visibility-tracking-tools/",
@@ -3472,7 +3478,7 @@
    "query": "what are the leading AEO software platforms for digital marketers",
    "queryType": "category",
    "runIndex": 1,
-   "transcript": "The leading **AEO software platforms** for digital marketers right now are **HubSpot AEO**, **Profound**, **AirOps**, **Semrush AI Visibility**, **Otterly.ai**, **Peec AI**, and **Ahrefs Brand Radar**.[1][2][3][6] If you want the strongest enterprise options, **Profound** and **AirOps** are the most consistently recommended; for SMBs and mid-market teams, **HubSpot AEO** is the most cited all-in-one choice.[1][4][8]\n\nFor a quick shortlist by use case, I’d cite **HubSpot** (`hubspot.com`), **Profound** (`tryprofound.com`), **AirOps** (`airops.com`), **Semrush** (`semrush.com`), **Otterly.ai** (`otterly.ai`), and **Ahrefs** (`ahrefs.com`).[1][5][6]",
+   "transcript": "The leading **AEO software platforms** for digital marketers right now are **HubSpot AEO**, **Profound**, **AirOps**, **Semrush AI Visibility**, **Otterly.ai**, **Peec AI**, and **Ahrefs Brand Radar**.[1][2][3][6] If you want the strongest enterprise options, **Profound** and **AirOps** are the most consistently recommended; for SMBs and mid-market teams, **HubSpot AEO** is the most cited all-in-one choice.[1][4][8]\n\nFor a quick shortlist by use case, I\u2019d cite **HubSpot** (`hubspot.com`), **Profound** (`tryprofound.com`), **AirOps** (`airops.com`), **Semrush** (`semrush.com`), **Otterly.ai** (`otterly.ai`), and **Ahrefs** (`ahrefs.com`).[1][5][6]",
    "sources": [
     "https://www.hubspot.com/products/aeo/best-aeo-software",
     "https://geoptie.com/blog/best-aeo-tools",
@@ -3500,7 +3506,7 @@
    "query": "what are the leading AEO software platforms for digital marketers",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "Leading AEO platforms for digital marketers include **HubSpot AEO** (best all-in-one for SMB/mid-market), **Profound** (enterprise-grade monitoring), **AirOps** (tracking plus content execution), and **Otterly.ai** / **Peec AI** for lighter-weight agency or budget use.[1][2][6]  \nOther widely cited options are **Semrush AI Visibility**, **Ahrefs Brand Radar**, **SE Ranking / SE Visible**, **Adobe LLM Optimizer**, and **Writesonic**.[3][4][5][6]  \nIf you want the shortest shortlist, I’d start with **HubSpot**, **Profound**, and **AirOps**; for more SEO-native teams, **Semrush** and **Ahrefs** are the most familiar names.[1][3][5]",
+   "transcript": "Leading AEO platforms for digital marketers include **HubSpot AEO** (best all-in-one for SMB/mid-market), **Profound** (enterprise-grade monitoring), **AirOps** (tracking plus content execution), and **Otterly.ai** / **Peec AI** for lighter-weight agency or budget use.[1][2][6]  \nOther widely cited options are **Semrush AI Visibility**, **Ahrefs Brand Radar**, **SE Ranking / SE Visible**, **Adobe LLM Optimizer**, and **Writesonic**.[3][4][5][6]  \nIf you want the shortest shortlist, I\u2019d start with **HubSpot**, **Profound**, and **AirOps**; for more SEO-native teams, **Semrush** and **Ahrefs** are the most familiar names.[1][3][5]",
    "sources": [
     "https://www.hubspot.com/products/aeo/best-aeo-software",
     "https://geoptie.com/blog/best-aeo-tools",
@@ -3528,7 +3534,7 @@
    "query": "what are the leading AEO software platforms for digital marketers",
    "queryType": "category",
    "runIndex": 3,
-   "transcript": "Leading AEO software platforms for digital marketers include **HubSpot AEO**, **Profound**, **AirOps**, **Semrush AI Visibility / AI Toolkit**, **Otterly.ai**, **Ahrefs Brand Radar**, and **Peec AI**.[1][2][3][5][6] For most marketers, **HubSpot AEO** is positioned as the best all-in-one choice, while **Profound** is the strongest enterprise option and **AirOps** is best when you want visibility plus content execution.[1][4][5] If you want a quick shortlist, I’d start with **hubspot.com**, **tryprofound.com**, **airops.com**, **semrush.com**, and **otterly.ai**.[1][4][5][6]",
+   "transcript": "Leading AEO software platforms for digital marketers include **HubSpot AEO**, **Profound**, **AirOps**, **Semrush AI Visibility / AI Toolkit**, **Otterly.ai**, **Ahrefs Brand Radar**, and **Peec AI**.[1][2][3][5][6] For most marketers, **HubSpot AEO** is positioned as the best all-in-one choice, while **Profound** is the strongest enterprise option and **AirOps** is best when you want visibility plus content execution.[1][4][5] If you want a quick shortlist, I\u2019d start with **hubspot.com**, **tryprofound.com**, **airops.com**, **semrush.com**, and **otterly.ai**.[1][4][5][6]",
    "sources": [
     "https://www.hubspot.com/products/aeo/best-aeo-software",
     "https://geoptie.com/blog/best-aeo-tools",
@@ -3863,7 +3869,7 @@
    "query": "tools to optimize content for Perplexity and ChatGPT search recommendations",
    "queryType": "category",
    "runIndex": 0,
-   "transcript": "For **content optimization tools**, I’d prioritize **Semrush** (semrush.com), **Frase** (frase.io), and **Frizerly** (frizerly.com), since these are repeatedly cited for AI-search content research, topic selection, and citation tracking.[1][3] For **Perplexity-specific testing and benchmarking**, use **Perplexity Hub** (perplexity.ai/hub) plus **Google Analytics** and **brand-monitoring tools** to see what gets surfaced and cited.[2][7] If you want a more AI-search-focused stack, **Sight AI** (trysight.ai) and **ZipTie** (ziptie.dev) are also cited for tracking brand mentions and auditing crawlability/concept coverage.[4][6]",
+   "transcript": "For **content optimization tools**, I\u2019d prioritize **Semrush** (semrush.com), **Frase** (frase.io), and **Frizerly** (frizerly.com), since these are repeatedly cited for AI-search content research, topic selection, and citation tracking.[1][3] For **Perplexity-specific testing and benchmarking**, use **Perplexity Hub** (perplexity.ai/hub) plus **Google Analytics** and **brand-monitoring tools** to see what gets surfaced and cited.[2][7] If you want a more AI-search-focused stack, **Sight AI** (trysight.ai) and **ZipTie** (ziptie.dev) are also cited for tracking brand mentions and auditing crawlability/concept coverage.[4][6]",
    "sources": [
     "https://blog.frizerly.com/15361/what_are_the_best_tools_for_optimizing_content_to_rank_higher_in_chatgpt_and_perplexity_ai",
     "https://www.linkedin.com/pulse/how-optimize-your-content-perplexity-ai-search-step-by-step-qw82c",
@@ -3913,7 +3919,7 @@
    "query": "tools to optimize content for Perplexity and ChatGPT search recommendations",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "For **content optimization tools**, the strongest options in these results are **Frase** and **Semrush** for research, topic selection, and AI-search visibility workflows, plus **Frizerly** and **Sight AI** if you want more dedicated **Perplexity/ChatGPT optimization** features.[1][3][4] For measurement and debugging, use **Perplexity’s own Hub** for query testing and benchmarking, along with **Google Analytics** and brand/citation monitoring tools to track whether your content is being surfaced.[2][7] If you want, I can also give you a **best-tool stack by budget** or a **step-by-step workflow** for Perplexity and ChatGPT search optimization.",
+   "transcript": "For **content optimization tools**, the strongest options in these results are **Frase** and **Semrush** for research, topic selection, and AI-search visibility workflows, plus **Frizerly** and **Sight AI** if you want more dedicated **Perplexity/ChatGPT optimization** features.[1][3][4] For measurement and debugging, use **Perplexity\u2019s own Hub** for query testing and benchmarking, along with **Google Analytics** and brand/citation monitoring tools to track whether your content is being surfaced.[2][7] If you want, I can also give you a **best-tool stack by budget** or a **step-by-step workflow** for Perplexity and ChatGPT search optimization.",
    "sources": [
     "https://blog.frizerly.com/15361/what_are_the_best_tools_for_optimizing_content_to_rank_higher_in_chatgpt_and_perplexity_ai",
     "https://www.linkedin.com/pulse/how-optimize-your-content-perplexity-ai-search-step-by-step-qw82c",
@@ -3963,7 +3969,7 @@
    "query": "tools to optimize content for Perplexity and ChatGPT search recommendations",
    "queryType": "category",
    "runIndex": 4,
-   "transcript": "For **Perplexity/ChatGPT search optimization**, I’d start with **Semrush (semrush.com)**, **Frase (frase.io)**, **Frizerly (frizerly.com)**, and **Sight AI (trysight.ai)** for topic research, content gaps, and AI-visibility tracking.[1][3][4] For practical optimization, also use **Perplexity Hub** for query and benchmark ideas, plus schema tools like **Google’s Rich Results Test** and **Google’s Structured Data Markup Helper** to improve structure and machine readability.[7][9]",
+   "transcript": "For **Perplexity/ChatGPT search optimization**, I\u2019d start with **Semrush (semrush.com)**, **Frase (frase.io)**, **Frizerly (frizerly.com)**, and **Sight AI (trysight.ai)** for topic research, content gaps, and AI-visibility tracking.[1][3][4] For practical optimization, also use **Perplexity Hub** for query and benchmark ideas, plus schema tools like **Google\u2019s Rich Results Test** and **Google\u2019s Structured Data Markup Helper** to improve structure and machine readability.[7][9]",
    "sources": [
     "https://blog.frizerly.com/15361/what_are_the_best_tools_for_optimizing_content_to_rank_higher_in_chatgpt_and_perplexity_ai",
     "https://www.linkedin.com/pulse/how-optimize-your-content-perplexity-ai-search-step-by-step-qw82c",
@@ -4016,7 +4022,7 @@
    "query": "Peec AI alternatives for AEO tracking",
    "queryType": "category",
    "runIndex": 1,
-   "transcript": "Top **Peec AI alternatives for AEO tracking** are **Profound** (enterprise AI visibility), **AthenaHQ** (broad LLM coverage with predictive claims), **Otterly AI** (budget-friendly monitoring), **Scrunch AI** (brand sentiment/narrative), and **Writesonic GEO** or **AirOps** if you want tracking tied to execution rather than just monitoring.[1][3][4][5]\n\nIf you want the closest “Peec-like” monitoring stack, start with **Profound**, **AthenaHQ**, **Rankscale**, **Otterly AI**, and **Ahrefs Brand Radar**; for full workflow platforms, look at **Dageno AI**, **AirOps**, and **Quattr**.[1][3][4][5]",
+   "transcript": "Top **Peec AI alternatives for AEO tracking** are **Profound** (enterprise AI visibility), **AthenaHQ** (broad LLM coverage with predictive claims), **Otterly AI** (budget-friendly monitoring), **Scrunch AI** (brand sentiment/narrative), and **Writesonic GEO** or **AirOps** if you want tracking tied to execution rather than just monitoring.[1][3][4][5]\n\nIf you want the closest \u201cPeec-like\u201d monitoring stack, start with **Profound**, **AthenaHQ**, **Rankscale**, **Otterly AI**, and **Ahrefs Brand Radar**; for full workflow platforms, look at **Dageno AI**, **AirOps**, and **Quattr**.[1][3][4][5]",
    "sources": [
     "https://blog.hubspot.com/marketing/peec-ai-alternatives",
     "https://blog.timsoulo.com/14-peec-ai-alternatives-for-ai-search-visibility-tracking-2026/",
@@ -4044,7 +4050,7 @@
    "query": "Peec AI alternatives for AEO tracking",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "Top **Peec AI alternatives for AEO tracking** are **Profound** for enterprise-grade AI visibility, **Otterly AI** for simpler monitoring, **AthenaHQ** for free/low-cost entry, **Writesonic GEO** for tracking plus content execution, and **SE Ranking / Semrush AI Toolkit** if you want AEO inside a broader SEO suite.[1][2][3][4]  \nIf you want the closest “monitoring only” replacements, look at **Profound**, **Otterly AI**, **Rankscale**, and **Ahrefs Brand Radar**; if you want tracking plus workflow, use **AirOps**, **Quattr**, or **Dageno AI**.[3][4][5]  \nFor a quick shortlist, I’d check **profound.com**, **otterly.ai**, **airops.com**, **quattr.com**, and **dageno.ai**.[3][4][5]",
+   "transcript": "Top **Peec AI alternatives for AEO tracking** are **Profound** for enterprise-grade AI visibility, **Otterly AI** for simpler monitoring, **AthenaHQ** for free/low-cost entry, **Writesonic GEO** for tracking plus content execution, and **SE Ranking / Semrush AI Toolkit** if you want AEO inside a broader SEO suite.[1][2][3][4]  \nIf you want the closest \u201cmonitoring only\u201d replacements, look at **Profound**, **Otterly AI**, **Rankscale**, and **Ahrefs Brand Radar**; if you want tracking plus workflow, use **AirOps**, **Quattr**, or **Dageno AI**.[3][4][5]  \nFor a quick shortlist, I\u2019d check **profound.com**, **otterly.ai**, **airops.com**, **quattr.com**, and **dageno.ai**.[3][4][5]",
    "sources": [
     "https://blog.hubspot.com/marketing/peec-ai-alternatives",
     "https://blog.timsoulo.com/14-peec-ai-alternatives-for-ai-search-visibility-tracking-2026/",
@@ -4155,7 +4161,7 @@
    "query": "Profound vs Otterly AI for answer engine optimization",
    "queryType": "category",
    "runIndex": 1,
-   "transcript": "For **answer engine optimization**, I’d pick **Profound** if you need **deeper attribution, real-user prompt data, and enterprise workflows**; pick **Otterly.ai** if you want **faster setup, published pricing, and basic AI-mention/citation monitoring**. [1][2][5]  \nThe clearest short-list is **profound.com / tryprofound.com** for enterprise AEO and **otterly.ai** for self-serve tracking, with Otterly starting around **$29/month** while Profound is typically **demo/enterprise-led**. [1][5][6]  \nIf you want, I can turn this into a **buying recommendation by team size** (startup, agency, enterprise).",
+   "transcript": "For **answer engine optimization**, I\u2019d pick **Profound** if you need **deeper attribution, real-user prompt data, and enterprise workflows**; pick **Otterly.ai** if you want **faster setup, published pricing, and basic AI-mention/citation monitoring**. [1][2][5]  \nThe clearest short-list is **profound.com / tryprofound.com** for enterprise AEO and **otterly.ai** for self-serve tracking, with Otterly starting around **$29/month** while Profound is typically **demo/enterprise-led**. [1][5][6]  \nIf you want, I can turn this into a **buying recommendation by team size** (startup, agency, enterprise).",
    "sources": [
     "https://www.blazehive.io/comparisons/profound-vs-otterly-ai/",
     "https://www.tryprofound.com/articles/profound-vs-otterly",
@@ -4182,7 +4188,7 @@
    "query": "Profound vs Otterly AI for answer engine optimization",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "For **answer engine optimization**, I’d pick **Profound** if you need deeper attribution, real-user prompt data, and enterprise workflows; pick **Otterly.AI** if you want faster setup, self-serve pricing, and basic AI-visibility monitoring. [1][2][3]  \n\n**Profound** is the stronger choice for mature AEO teams, while **Otterly.AI** is the better budget-friendly option for tracking mentions and citations across engines like ChatGPT, Perplexity, and Google AI Overviews. [1][5][6]",
+   "transcript": "For **answer engine optimization**, I\u2019d pick **Profound** if you need deeper attribution, real-user prompt data, and enterprise workflows; pick **Otterly.AI** if you want faster setup, self-serve pricing, and basic AI-visibility monitoring. [1][2][3]  \n\n**Profound** is the stronger choice for mature AEO teams, while **Otterly.AI** is the better budget-friendly option for tracking mentions and citations across engines like ChatGPT, Perplexity, and Google AI Overviews. [1][5][6]",
    "sources": [
     "https://www.blazehive.io/comparisons/profound-vs-otterly-ai/",
     "https://www.tryprofound.com/articles/profound-vs-otterly",
@@ -4209,7 +4215,7 @@
    "query": "Profound vs Otterly AI for answer engine optimization",
    "queryType": "category",
    "runIndex": 3,
-   "transcript": "For **answer engine optimization**, **Profound** is the stronger choice if you need **enterprise-grade depth**—especially richer attribution, real-user prompt data, and automated workflows—while **Otterly.AI** is better for **fast, affordable monitoring** and self-serve setup.[1][2][5]  \nIf your goal is to **track brand mentions and citations across AI engines** with a lower budget, pick **Otterly.AI**; if you need **deeper analysis and operational reporting**, pick **Profound**.[1][2][3]  \nRelevant sites to compare: **tryprofound.com**, **otterly.ai**, and comparison reviews like **blazehive.io** and **sequencecommerce.com**.[1][2][5]",
+   "transcript": "For **answer engine optimization**, **Profound** is the stronger choice if you need **enterprise-grade depth**\u2014especially richer attribution, real-user prompt data, and automated workflows\u2014while **Otterly.AI** is better for **fast, affordable monitoring** and self-serve setup.[1][2][5]  \nIf your goal is to **track brand mentions and citations across AI engines** with a lower budget, pick **Otterly.AI**; if you need **deeper analysis and operational reporting**, pick **Profound**.[1][2][3]  \nRelevant sites to compare: **tryprofound.com**, **otterly.ai**, and comparison reviews like **blazehive.io** and **sequencecommerce.com**.[1][2][5]",
    "sources": [
     "https://www.blazehive.io/comparisons/profound-vs-otterly-ai/",
     "https://www.tryprofound.com/articles/profound-vs-otterly",
@@ -4236,7 +4242,7 @@
    "query": "Profound vs Otterly AI for answer engine optimization",
    "queryType": "category",
    "runIndex": 4,
-   "transcript": "For **answer engine optimization**, I’d pick **Profound** if you need deeper **enterprise-grade attribution, real user prompt data, and workflow/analytics depth**; pick **Otterly.AI** if you want **faster setup, published lower pricing, and straightforward AI visibility monitoring**.[1][2][5]  \nIn short: **Profound = depth**, **Otterly.AI = accessibility**.[1][2][3]  \nIf you want, I can also give you a **feature-by-feature comparison** of Profound vs Otterly.AI for AEO teams.[1][3][5]",
+   "transcript": "For **answer engine optimization**, I\u2019d pick **Profound** if you need deeper **enterprise-grade attribution, real user prompt data, and workflow/analytics depth**; pick **Otterly.AI** if you want **faster setup, published lower pricing, and straightforward AI visibility monitoring**.[1][2][5]  \nIn short: **Profound = depth**, **Otterly.AI = accessibility**.[1][2][3]  \nIf you want, I can also give you a **feature-by-feature comparison** of Profound vs Otterly.AI for AEO teams.[1][3][5]",
    "sources": [
     "https://www.blazehive.io/comparisons/profound-vs-otterly-ai/",
     "https://www.tryprofound.com/articles/profound-vs-otterly",
@@ -4263,7 +4269,7 @@
    "query": "GEO software vs AEO software differences and tool recommendations",
    "queryType": "category",
    "runIndex": 0,
-   "transcript": "**AEO software** is built to win **direct answers**—featured snippets, PAA boxes, voice answers, and AI Overviews—so it emphasizes short answer-first structure and schema/structured data; **GEO software** is built to win **citations in generative AI responses** from tools like ChatGPT, Perplexity, Gemini, and Claude, so it emphasizes source-worthiness, authority, and content depth.[4][6]  \n\nFor tools, look at **Conductor** (`conductor.com`) and **Writer** (`writer.com`) for enterprise AI-visibility workflows, and **Adobe** (`business.adobe.com`) for content-structure/visibility guidance; the clearest distinction is that AEO tools track snippet/answer capture, while GEO tools track whether AI systems cite or synthesize your content.[5][6][4]",
+   "transcript": "**AEO software** is built to win **direct answers**\u2014featured snippets, PAA boxes, voice answers, and AI Overviews\u2014so it emphasizes short answer-first structure and schema/structured data; **GEO software** is built to win **citations in generative AI responses** from tools like ChatGPT, Perplexity, Gemini, and Claude, so it emphasizes source-worthiness, authority, and content depth.[4][6]  \n\nFor tools, look at **Conductor** (`conductor.com`) and **Writer** (`writer.com`) for enterprise AI-visibility workflows, and **Adobe** (`business.adobe.com`) for content-structure/visibility guidance; the clearest distinction is that AEO tools track snippet/answer capture, while GEO tools track whether AI systems cite or synthesize your content.[5][6][4]",
    "sources": [
     "https://technologyadvice.com/blog/marketing/aeo-vs-geo/",
     "https://www.reddit.com/r/DigitalMarketing/comments/1pd7lti/can_someone_explain_geo_and_aeo_in_a_simple_way/",
@@ -4355,7 +4361,7 @@
    "query": "GEO software vs AEO software differences and tool recommendations",
    "queryType": "category",
    "runIndex": 4,
-   "transcript": "**AEO software** is best for tracking and improving whether your content gets pulled into **direct answers** like featured snippets, People Also Ask, and AI Overviews, while **GEO software** focuses more on whether your content is **cited or synthesized** inside generative AI responses like ChatGPT, Perplexity, Gemini, and Claude.[4][6] In practice, many vendors use the terms interchangeably, so the real difference is usually the **feature emphasis**: extraction/answer-box monitoring for AEO vs citation/share-of-voice monitoring for GEO.[1][5]\n\nFor tools, I’d recommend **Conductor** (`conductor.com`), **Adobe** (`business.adobe.com`), and **Writer** (`writer.com`) for enterprise-grade AEO/GEO workflows, plus **TechnologyAdvice** (`technologyadvice.com`) for comparing the category and **Perplexity** (`perplexity.ai`) if you want to test how AI systems surface your brand.[4][5][6][1]",
+   "transcript": "**AEO software** is best for tracking and improving whether your content gets pulled into **direct answers** like featured snippets, People Also Ask, and AI Overviews, while **GEO software** focuses more on whether your content is **cited or synthesized** inside generative AI responses like ChatGPT, Perplexity, Gemini, and Claude.[4][6] In practice, many vendors use the terms interchangeably, so the real difference is usually the **feature emphasis**: extraction/answer-box monitoring for AEO vs citation/share-of-voice monitoring for GEO.[1][5]\n\nFor tools, I\u2019d recommend **Conductor** (`conductor.com`), **Adobe** (`business.adobe.com`), and **Writer** (`writer.com`) for enterprise-grade AEO/GEO workflows, plus **TechnologyAdvice** (`technologyadvice.com`) for comparing the category and **Perplexity** (`perplexity.ai`) if you want to test how AI systems surface your brand.[4][5][6][1]",
    "sources": [
     "https://technologyadvice.com/blog/marketing/aeo-vs-geo/",
     "https://www.reddit.com/r/DigitalMarketing/comments/1pd7lti/can_someone_explain_geo_and_aeo_in_a_simple_way/",
@@ -4378,7 +4384,7 @@
    "query": "affordable alternatives to Profound for AI search tracking",
    "queryType": "category",
    "runIndex": 0,
-   "transcript": "The most **affordable** alternatives to Profound for AI search tracking are **Otterly.AI** (from **$29/mo**) and **LLM Pulse** (budget tier around **$49/mo**), with **Listable Labs** also cited at **$15/mo** for citation analytics.[1][3][5] If you want a fuller SEO suite with AI tracking, **SE Ranking** is a lower-cost option starting at **$129/mo**, while **Peec AI** is a mid-range alternative around **€89–$95/mo**.[2][5]",
+   "transcript": "The most **affordable** alternatives to Profound for AI search tracking are **Otterly.AI** (from **$29/mo**) and **LLM Pulse** (budget tier around **$49/mo**), with **Listable Labs** also cited at **$15/mo** for citation analytics.[1][3][5] If you want a fuller SEO suite with AI tracking, **SE Ranking** is a lower-cost option starting at **$129/mo**, while **Peec AI** is a mid-range alternative around **\u20ac89\u2013$95/mo**.[2][5]",
    "sources": [
     "https://blog.timsoulo.com/14-profound-ai-alternatives-for-ai-search-visibility-tracking-2026/",
     "https://seranking.com/blog/profound-alternatives/",
@@ -4407,7 +4413,7 @@
    "query": "affordable alternatives to Profound for AI search tracking",
    "queryType": "category",
    "runIndex": 1,
-   "transcript": "For **affordable alternatives to Profound**, the strongest budget picks are **Otterly.AI** (starts at **$29/mo**) and **LLM Pulse/LLMPulse** (around **€49/mo**), with **SE Ranking** (**$129/mo**) if you want AI visibility inside a broader SEO suite.[1][2][8]  \nOther low-to-mid cost options worth checking are **Peec AI** (about **€89–$95/mo**), **Cognizo** (about **€89/mo**), and **Rankshift/ZeroRank AI** (around **€69–$89/mo**) depending on whether you want simple tracking or more workflow features.[2][3]  \nIf you want the cheapest entry point specifically, **Listable Labs** is cited at **$15/mo** by one source, though it’s less established than **Otterly.AI**, **SE Ranking**, or **Peec AI**.[5][1][2]",
+   "transcript": "For **affordable alternatives to Profound**, the strongest budget picks are **Otterly.AI** (starts at **$29/mo**) and **LLM Pulse/LLMPulse** (around **\u20ac49/mo**), with **SE Ranking** (**$129/mo**) if you want AI visibility inside a broader SEO suite.[1][2][8]  \nOther low-to-mid cost options worth checking are **Peec AI** (about **\u20ac89\u2013$95/mo**), **Cognizo** (about **\u20ac89/mo**), and **Rankshift/ZeroRank AI** (around **\u20ac69\u2013$89/mo**) depending on whether you want simple tracking or more workflow features.[2][3]  \nIf you want the cheapest entry point specifically, **Listable Labs** is cited at **$15/mo** by one source, though it\u2019s less established than **Otterly.AI**, **SE Ranking**, or **Peec AI**.[5][1][2]",
    "sources": [
     "https://blog.timsoulo.com/14-profound-ai-alternatives-for-ai-search-visibility-tracking-2026/",
     "https://seranking.com/blog/profound-alternatives/",
@@ -4436,7 +4442,7 @@
    "query": "affordable alternatives to Profound for AI search tracking",
    "queryType": "category",
    "runIndex": 2,
-   "transcript": "**OtterlyAI** is the most affordable option I found, with a **$29/month** Lite plan, and **SE Ranking** is a good budget-friendly all-in-one if you want SEO plus AI visibility tracking starting at **$129/month**[1][2]. If you want more depth without going full enterprise, **Peec AI** (about **€89–$95/month**) and **LLM Pulse / LLMPulse** (around **€49–$89/month**) are the main mid-range alternatives to look at[2][3][8].",
+   "transcript": "**OtterlyAI** is the most affordable option I found, with a **$29/month** Lite plan, and **SE Ranking** is a good budget-friendly all-in-one if you want SEO plus AI visibility tracking starting at **$129/month**[1][2]. If you want more depth without going full enterprise, **Peec AI** (about **\u20ac89\u2013$95/month**) and **LLM Pulse / LLMPulse** (around **\u20ac49\u2013$89/month**) are the main mid-range alternatives to look at[2][3][8].",
    "sources": [
     "https://blog.timsoulo.com/14-profound-ai-alternatives-for-ai-search-visibility-tracking-2026/",
     "https://seranking.com/blog/profound-alternatives/",
@@ -4463,7 +4469,7 @@
    "query": "affordable alternatives to Profound for AI search tracking",
    "queryType": "category",
    "runIndex": 3,
-   "transcript": "The most affordable **Profound** alternatives for AI search tracking are **Otterly.AI** at **$29/mo** and **LLM Pulse** at about **€49/mo**, with **Listable Labs** also cited at **$15/mo** for citation analytics.[1][5][8] If you want a fuller SEO suite, **SE Ranking** starts at **$129/mo** and **Semrush AI Visibility Toolkit** is around **$99/mo per domain**, but they cost more than the budget-first tools.[2][5]",
+   "transcript": "The most affordable **Profound** alternatives for AI search tracking are **Otterly.AI** at **$29/mo** and **LLM Pulse** at about **\u20ac49/mo**, with **Listable Labs** also cited at **$15/mo** for citation analytics.[1][5][8] If you want a fuller SEO suite, **SE Ranking** starts at **$129/mo** and **Semrush AI Visibility Toolkit** is around **$99/mo per domain**, but they cost more than the budget-first tools.[2][5]",
    "sources": [
     "https://blog.timsoulo.com/14-profound-ai-alternatives-for-ai-search-visibility-tracking-2026/",
     "https://seranking.com/blog/profound-alternatives/",
@@ -4491,7 +4497,7 @@
    "query": "affordable alternatives to Profound for AI search tracking",
    "queryType": "category",
    "runIndex": 4,
-   "transcript": "The most **affordable** alternatives to Profound for AI search tracking are **Otterly.AI** and **LLMPulse**, with starting prices around **$29/mo** and **$49/mo** respectively.[1][2][8] If you want a low-cost but more established SEO suite, **SE Ranking** is a strong option, starting around **$129/mo** and adding AI visibility tracking on top of broader SEO tools.[2][6]\n\nOther budget-friendly names to compare are **Peec AI** (about **€89–$95/mo**), **ZipTie.dev** (about **$69/mo**), and **Listable Labs** (about **$15/mo** for citation analytics), depending on whether you want simple monitoring or deeper reporting.[2][3][5]",
+   "transcript": "The most **affordable** alternatives to Profound for AI search tracking are **Otterly.AI** and **LLMPulse**, with starting prices around **$29/mo** and **$49/mo** respectively.[1][2][8] If you want a low-cost but more established SEO suite, **SE Ranking** is a strong option, starting around **$129/mo** and adding AI visibility tracking on top of broader SEO tools.[2][6]\n\nOther budget-friendly names to compare are **Peec AI** (about **\u20ac89\u2013$95/mo**), **ZipTie.dev** (about **$69/mo**), and **Listable Labs** (about **$15/mo** for citation analytics), depending on whether you want simple monitoring or deeper reporting.[2][3][5]",
    "sources": [
     "https://blog.timsoulo.com/14-profound-ai-alternatives-for-ai-search-visibility-tracking-2026/",
     "https://seranking.com/blog/profound-alternatives/",
@@ -4599,7 +4605,7 @@
    "query": "who is aeoanalyzers.com",
    "queryType": "branded",
    "runIndex": 4,
-   "transcript": "**AEO Analyzers** (aeoanalyzers.com) is an Answer Engine Optimization (AEO) SaaS platform created by Lindsay Hiebert and operated by PI GenAI LLC (pigenai.com). The platform measures website visibility, retrievability, and citation rates across major AI answer engines including ChatGPT, Claude, Perplexity, and Google Gemini. It delivers technical diagnostics—such as schema markup validation and content recommendations—to help businesses improve their presence in AI-generated responses.",
+   "transcript": "**AEO Analyzers** (aeoanalyzers.com) is an Answer Engine Optimization (AEO) SaaS platform created by Lindsay Hiebert and operated by PI GenAI LLC (pigenai.com). The platform measures website visibility, retrievability, and citation rates across major AI answer engines including ChatGPT, Claude, Perplexity, and Google Gemini. It delivers technical diagnostics\u2014such as schema markup validation and content recommendations\u2014to help businesses improve their presence in AI-generated responses.",
    "sources": [
     "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFvoCHtc07DPzX_wzC_ZzthFXz-GIh3uEN4AdIymCtdj2-362ClCkLLB1kVFCCIve3MxNQZ6T1Wg6ZB1ai_QbC_3FdWgr6L9FJRYEOInT4o",
     "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGy0hRuTfwR7Q3EstcohPXFw3XRkDAOsaof4q7NZWgoGBoc_6AHrd-G8ym24ozo3xJNnIkOE9jyb_rqc6jRFVboG2lX7Ax7_CdPy_cmV_YikfKjSA==",
@@ -5315,7 +5321,7 @@
    "query": "how to track and analyze brand mentions across AI answer engines",
    "queryType": "category",
    "runIndex": 4,
-   "transcript": "To track and analyze brand mentions across AI engines like ChatGPT, Perplexity, Gemini, and Claude, use Generative Engine Optimization (GEO) platforms such as Profound (tryprofound.com), Otterly.ai (otterly.ai), SE Ranking (seranking.com), or the Semrush AI Toolkit (semrush.com) to automate prompt tracking, sentiment analysis, citations, and share of voice. For quick or entry-level audits, you can evaluate your brand narrative using HubSpot’s free AI Search Grader (hubspot.com) or platforms like Geoptie (geoptie.com). Finally, measure downstream impact by setting up referral traffic tracking for AI answer engines inside Google Analytics (analytics.google.com).",
+   "transcript": "To track and analyze brand mentions across AI engines like ChatGPT, Perplexity, Gemini, and Claude, use Generative Engine Optimization (GEO) platforms such as Profound (tryprofound.com), Otterly.ai (otterly.ai), SE Ranking (seranking.com), or the Semrush AI Toolkit (semrush.com) to automate prompt tracking, sentiment analysis, citations, and share of voice. For quick or entry-level audits, you can evaluate your brand narrative using HubSpot\u2019s free AI Search Grader (hubspot.com) or platforms like Geoptie (geoptie.com). Finally, measure downstream impact by setting up referral traffic tracking for AI answer engines inside Google Analytics (analytics.google.com).",
    "sources": [
     "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGyp1yz7iY4J6JgITu1j-M-FUbIrODkO1gt9hnL73frjk55lk3Muis4lViWI6OW6B_RTMOwOXmfDGZelmXtra9hpEtoqQDfmn_CjUatnyBDA9d4JdqFMT4EOG_xE4truEDN",
     "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGqMPDPHTee9pdLJqvRloCfGk41IgWPmcG2NBHsuXNh_aNdTwvaqf9ZKokszjfmmcMkFIBGpZj3ZskLx0LigiFVt261aFvHP5k9FYSmNhCbTpUYmXk2tpLgO_kakVXCM1r06nY0q4efTNtUgJRsB_yjpf2vydjuqk4kNfAEtpOTNErcIkgAsb1LcRDJ",
@@ -5410,7 +5416,7 @@
    "query": "tools to optimize content for Perplexity and ChatGPT search recommendations",
    "queryType": "category",
    "runIndex": 3,
-   "transcript": "To monitor citations and track brand mentions across ChatGPT and Perplexity, use specialized Generative Engine Optimization (GEO) tools such as Profound (tryprofound.com), Otterly.ai (otterly.ai), and the Semrush AI Visibility Toolkit (semrush.com). \n\nFor optimizing web content, entities, and structured data so LLMs can easily parse your site, tools like WordLift (wordlift.io), Surfer SEO (surferseo.com), and Gracker AI (gracker.ai) are recommended. \n\nFor free initial brand audits, you can also use HubSpot’s AI Search Grader (hubspot.com).",
+   "transcript": "To monitor citations and track brand mentions across ChatGPT and Perplexity, use specialized Generative Engine Optimization (GEO) tools such as Profound (tryprofound.com), Otterly.ai (otterly.ai), and the Semrush AI Visibility Toolkit (semrush.com). \n\nFor optimizing web content, entities, and structured data so LLMs can easily parse your site, tools like WordLift (wordlift.io), Surfer SEO (surferseo.com), and Gracker AI (gracker.ai) are recommended. \n\nFor free initial brand audits, you can also use HubSpot\u2019s AI Search Grader (hubspot.com).",
    "sources": [
     "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEy32XAyxOcavff_D7E-zcuMggjwqHEnc-mLCPQRwRjn-gtuTSt4b3_sXaGHNMH26H9IzMXkj-lUE6RJcKUBSojX3Gqy18Q631JbMYOhLMWDQwB",
     "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE3R0Cols1v3e0D5SMQ_dpdiqzkxz0oA717PoUd08A3EZETkY97_Ncc1d2PfCe55ddgudgHrIPIZVkMWeA6O970Bk2p9q93MlQZcyHIQW6oZ1GhQIlvi8NOj755sMl0Ia2fTi1lil1maTavvzEk_tbsHcrwGcmLkdyIkk4z2Q==",
@@ -5978,7 +5984,7 @@
    },
    {
     "key": "description",
-    "value": "AEO Analyzers scores how citable your site is by ChatGPT, Gemini, Perplexity &amp; Claude — then proves it with live Citation Sweeps and the exact fixes."
+    "value": "AEO Analyzers scores how citable your site is by ChatGPT, Gemini, Perplexity &amp; Claude \u2014 then proves it with live Citation Sweeps and the exact fixes."
    }
   ],
   "hasOrganization": true,

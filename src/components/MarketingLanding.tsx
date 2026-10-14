@@ -150,6 +150,9 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         >
           Your AEO score and gaps are <strong>free</strong>. Unlock every fix — paste-ready schema, content rewrites, and the full Word report — with a <strong>$24 Day Pass</strong> (24 hours, no subscription) or a plan.
         </motion.p>
+        {/* Founder-approved 13 Oct 2026 (WO-006 positioning + independence lines). Verbatim. */}
+        <p className="text-zinc-800 text-lg md:text-xl font-semibold mt-10 max-w-2xl mx-auto">A URL, a few minutes, and every transcript behind every number. You decide what to fix, and who fixes it.</p>
+        <p className="text-zinc-600 text-base mt-2 max-w-2xl mx-auto">We do not sell the fix, so the measurement has nothing to prove.</p>
       </section>
 
       {/* The Attribution Gap Section */}

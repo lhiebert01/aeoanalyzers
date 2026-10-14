@@ -13,7 +13,7 @@ EV = open('public/evidence/index.html', encoding='utf-8').read()
 CSS = EV[EV.index('<style>'):EV.index('</style>') + 8]
 BAR = EV[EV.index('<body>'):EV.index('<div class="wrap">')]
 FOOT = EV[EV.index('<footer class="sitefoot">'):EV.index('</footer>') + 9]
-REVIEWED = '2026-10-10'
+REVIEWED = '2026-10-13'
 PERSON = {"@type": "Person", "@id": "https://pigenai.com/#lindsay", "name": "Lindsay Hiebert"}
 ORG = {"@type": "Organization", "@id": "https://pigenai.com/#org", "name": "PIGENAI LLC", "alternateName": "PI GenAI LLC", "url": "https://pigenai.com"}
 
@@ -62,7 +62,8 @@ def page(slug, title, desc, og_title, ld, eyebrow, h1, body):
 </html>
 """
 
-METH = """      <p class="postlead">How AEO Analyzers measures whether answer engines find, describe and recommend a business &mdash; what we ask, which engines, how many times, how we count, and what we refuse to claim. Every number we report is backed by a stored transcript you can re-read.</p>
+METH = """      <p class="postlead"><strong>A URL, a few minutes, and every transcript behind every number. You decide what to fix, and who fixes it.</strong> We do not sell the fix, so the measurement has nothing to prove.</p>
+      <p>How AEO Analyzers measures whether answer engines find, describe and recommend a business &mdash; what we ask, which engines, how many times, how we count, and what we refuse to claim. Every number we report is backed by a stored transcript you can re-read.</p>
 
       <h2 class="posth2">Three things, measured apart</h2>
       <p><strong>Found when asked by name.</strong> Asked about you by name, does the engine reach your own site? An answer counts only when your domain is among its sources or in its text; an engine that searched, did not find you and said so is a miss, even if its answer then described you from somewhere else.</p>
@@ -82,7 +83,7 @@ METH = """      <p class="postlead">How AEO Analyzers measures whether answer en
       <p>Questions are written the way a buyer asks an assistant, not as keywords. Each one is tagged by the buyer intent it carries &mdash; <em>shortlist</em> (who are the options), <em>constraint</em> (options under a hard requirement such as price, size or compliance), <em>alternatives</em> (replacing a named option), <em>comparison</em> (choosing between named options) and <em>problem</em> (describing a situation rather than asking for names) &mdash; and the mix is shown on every panel, so you can see whether you are being measured on the questions closest to a purchase. A panel is versioned; when a question changes, the version changes, and the months either side are not compared.</p>
 
       <h2 class="posth2">Repetition, N and confidence</h2>
-      <p>Engines answer the same question differently from one run to the next, so one answer proves nothing. Every question is asked several times on every engine, and every figure carries its N with a line saying what N is made of &mdash; how many questions, engines and runs, how many answers were scored, and how many were left out and why.</p>
+      <p>Engines answer the same question differently from one run to the next, so one answer proves nothing. Every question is asked several times on every engine, and every figure carries its N with a line saying what N is made of &mdash; how many questions, engines and runs, how many answers were scored, and how many were left out and why. Confidence is high from 12 answers &mdash; one question across all four engines, three runs each &mdash; medium from 6 to 11, and low under 6.</p>
 
       <h2 class="posth2">What is left out, and why</h2>
       <ul class="lessons">
@@ -111,6 +112,8 @@ ABOUT = """      <p class="postlead">AEO Analyzers is built and operated by PIGE
         <li><b>CISSP &middot; MBA &middot; M.S.</b><span>Security, business and engineering credentials.</span></li>
         <li><b>Founder, PIGENAI LLC</b><span>A portfolio of applied-AI and AI-governance products, built hands-on.</span></li>
       </ul>
+
+      <p><strong>A URL, a few minutes, and every transcript behind every number. You decide what to fix, and who fixes it.</strong> We do not sell the fix, so the measurement has nothing to prove.</p>
 
       <h2 class="posth2">Why this product exists</h2>
       <p>Buyers now ask AI assistants the questions a business exists to answer, and the engines answer with or without it. AEO Analyzers measures what they say &mdash; whether ChatGPT, Claude, Perplexity and Gemini find a business by name, describe it accurately, and recommend it when buyers ask &mdash; reports those apart, each with its own fix path, and backs every figure with a stored transcript. The method is public on <a class="ilink" href="/methodology">the methodology page</a>; the founder runs it on this site and publishes the number every month on <a class="ilink" href="/evidence">the ledger</a>, whatever it is.</p>

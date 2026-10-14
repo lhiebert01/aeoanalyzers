@@ -13,7 +13,7 @@ import {
   isTruncatedText,
   isModelPrior,
   isErroredRun,
-  confidenceLevel,
+  confidenceLevel, confidenceLabel, CONFIDENCE_RULE,
   wilsonInterval,
   type SweepRunResult,
 } from '../lib/citationSweep';
@@ -439,15 +439,11 @@ describe('model-prior vs search-grounded (WO-QA-003 A2)', () => {
 });
 
 describe('sample size & confidence (WO-QA-003 A3)', () => {
-  it('confidenceLevel: N<3 low, 3–4 med, >=5 high', () => {
-    expect(confidenceLevel(1)).toBe('low');
-    expect(confidenceLevel(2)).toBe('low');
-    expect(confidenceLevel(3)).toBe('med');
-    expect(confidenceLevel(4)).toBe('med');
-    expect(confidenceLevel(5)).toBe('high');
-    expect(confidenceLevel(20)).toBe('high');
+  it('confidence (founder ruling 13 Oct 2026): low under 6, medium 6–11, high from 12 — tested at every boundary', () => {
+    expect([1, 5, 6, 11, 12, 40].map(confidenceLevel)).toEqual(['low', 'low', 'med', 'med', 'high', 'high']);
+    expect([5, 6, 12].map(confidenceLabel)).toEqual(['low confidence', 'medium confidence', 'high confidence']);
+    expect(CONFIDENCE_RULE).toBe('confidence is high from 12 answers, medium from 6 to 11, and low under 6');
   });
-
   it('wilsonInterval: stays within [0,100] and widens at small N', () => {
     expect(wilsonInterval(0, 0)).toEqual({ low: 0, high: 0 });
     const two = wilsonInterval(2, 2);   // 100% at N=2 — interval must reach well below 100

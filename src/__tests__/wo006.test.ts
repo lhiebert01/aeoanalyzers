@@ -118,3 +118,25 @@ describe('Item A — the two pages are documents, not the homepage shell', () =>
     expect(readFileSync('public/about/index.html', 'utf8')).not.toMatch(/most tools|other tools|only give/i);
   });
 });
+
+describe('13 Oct rulings — labels agree everywhere; the two lines are published verbatim', () => {
+  it('an export prints the same label text as the screen, never the raw code', async () => {
+    const { buildSweepReport } = await import('../lib/sweepReport');
+    const { scoreRun, aggregateSweep } = await import('../lib/citationSweep');
+    const d = JSON.parse(readFileSync('docs/baselines/aeoanalyzers-2026-10-08.json', 'utf8'));
+    const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+    const runs = d.runs.map((r: any) => scoreRun(r, client, []));
+    const md = buildSweepReport({ result: { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers', runsPerQuery: 5, engines: [], skippedEngines: [], configured: ['claude', 'openai', 'perplexity', 'gemini'], summary: aggregateSweep(runs, client, []), runs, persisted: true, generatedAt: '2026-10-08T00:00:00Z', tier: 'paid' } as any, competitors: [], fidelity: null, entityLinking: null, authority: null, bots: null, truth: null, pageFactDensity: null, ownedDomains: [], isAdmin: false, savedView: true });
+    expect(md).not.toMatch(/\b(?:med|moderate) confidence/);
+    expect(md).toContain('N=40 · high confidence');
+    expect(md).toContain('confidence is high from 12 answers, medium from 6 to 11, and low under 6');
+  });
+  const POS = 'A URL, a few minutes, and every transcript behind every number. You decide what to fix, and who fixes it.';
+  const IND = 'We do not sell the fix, so the measurement has nothing to prove.';
+  for (const f of ['src/components/MarketingLanding.tsx', 'public/methodology/index.html', 'public/about/index.html']) {
+    it(`${f} carries both approved lines verbatim`, () => {
+      const h = readFileSync(f, 'utf8');
+      expect(h).toContain(POS); expect(h).toContain(IND);
+    });
+  }
+});

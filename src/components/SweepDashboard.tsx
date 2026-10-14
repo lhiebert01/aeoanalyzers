@@ -13,7 +13,7 @@ import { SCORE_VS_SWEEP } from '../content/scoreVsSweep';
 import { ScoreVsSweepCard, CrossLink, AgendaBlock } from './ScoreVsSweepCard';
 import { avgPawc } from '../lib/pawc';
 import { auditFactDensity, type FactDensityAudit } from '../lib/factDensity';
-import { sweepScorecard, confidenceLevel, aggregateSweep, scoreRun } from '../lib/citationSweep';
+import { sweepScorecard, confidenceLevel, confidenceLabel, aggregateSweep, scoreRun } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType, Competitor } from '../lib/citationSweep';
 import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
@@ -617,7 +617,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
   // Sample-size confidence chip (A3): honest about small-N cells.
   const confChip = (n: number) => {
     const lvl = confidenceLevel(n);
-    const label = lvl === 'low' ? 'low confidence' : lvl === 'med' ? 'moderate' : 'high confidence';
+    const label = confidenceLabel(n);
     const cls = lvl === 'low' ? 'text-amber-600' : lvl === 'med' ? 'text-zinc-500' : 'text-emerald-600';
     return { label, cls };
   };

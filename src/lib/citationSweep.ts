@@ -697,9 +697,19 @@ const pct = (num: number, den: number): number => (den ? Math.round((num / den) 
 // hedged in the plain-English summary ("early signal, N=2", not "reliably").
 
 /** Confidence keyed to sample size: N<3 low, 3–4 med, ≥5 high. */
+// Founder ruling, 13 Oct 2026: high = 12 or more answers (one question across the full four-engine
+// panel, three runs), medium = 6 to 11, low = under 6. Five answers is not high. ONE label function
+// feeds the screen, every export and the method text, so they cannot disagree again.
+export const CONFIDENCE_HIGH_MIN = 12;
+export const CONFIDENCE_MED_MIN = 6;
 export function confidenceLevel(n: number): 'low' | 'med' | 'high' {
-  return n < 3 ? 'low' : n < 5 ? 'med' : 'high';
+  return n < CONFIDENCE_MED_MIN ? 'low' : n < CONFIDENCE_HIGH_MIN ? 'med' : 'high';
 }
+export function confidenceLabel(n: number): string {
+  const l = confidenceLevel(n);
+  return l === 'high' ? 'high confidence' : l === 'med' ? 'medium confidence' : 'low confidence';
+}
+export const CONFIDENCE_RULE = `confidence is high from ${CONFIDENCE_HIGH_MIN} answers, medium from ${CONFIDENCE_MED_MIN} to ${CONFIDENCE_HIGH_MIN - 1}, and low under ${CONFIDENCE_MED_MIN}`;
 
 /** Wilson 95% score interval for a cited/N proportion, as whole percents. Narrower
  *  and better-behaved at small N than the normal approximation (never runs past

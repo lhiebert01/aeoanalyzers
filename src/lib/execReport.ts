@@ -18,7 +18,7 @@
 // later template session; the mechanics + slots are what ship now.
 
 import {
-  sweepScorecard, aggregateSweep, scoreRun, detectCompetitors, normalizeDomain, confidenceLevel,
+  sweepScorecard, aggregateSweep, scoreRun, detectCompetitors, normalizeDomain, confidenceLabel,
   type SweepRunResult, type Competitor, type SweepScorecard, type SweepSummary,
 } from './citationSweep';
 import { avgPawc } from './pawc';
@@ -270,7 +270,7 @@ export function defaultNarrative(d: ExecReportData): ExecNarrative {
 // ─── Rendering ──────────────────────────────────────────────────────────────
 
 function scoreCell(v: number | null, n: number): string {
-  return v === null ? '—' : `${v}% (N=${n}, ${confidenceLevel(n)} confidence)`;
+  return v === null ? '—' : `${v}% (N=${n}, ${confidenceLabel(n)})`;
 }
 
 /** Render the executive report as Markdown. COURTESY adds a watermark on every

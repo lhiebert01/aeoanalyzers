@@ -11,7 +11,7 @@
 // Nothing that was in the report is removed; it is reordered and re-set. Metric labels show
 // the plain-English label first and the precise label second (Lane F).
 
-import { sweepScorecard, confidenceLevel, type SweepSummary, type SweepRunResult, type Competitor } from './citationSweep';
+import { sweepScorecard, confidenceLabel, CONFIDENCE_RULE, type SweepSummary, type SweepRunResult, type Competitor } from './citationSweep';
 import { segmentBreakdown, winnableSegment, segmentSummaryNote, classifyQuerySegment, SEGMENT_LABEL } from './querySegment';
 import { tierForDomain, TIER_LABEL } from './authorityTiers';
 import type { AuthorityGapReport } from './authorityGap';
@@ -120,7 +120,7 @@ export function buildSweepCover(inp: SweepReportInputs): CoverInput {
   const client = { domain: r.domain, brand: r.brand || undefined };
   const sc = sweepScorecard(r.runs, client, inp.competitors);
   const segs = segmentBreakdown(r.runs);
-  const conf = (n: number) => `N=${n} · ${confidenceLevel(n)} confidence`;
+  const conf = (n: number) => `N=${n} · ${confidenceLabel(n)}`;
   const val = (v: number | null) => (v === null ? 'Unmeasured' : `${v}%`);
   const brand = r.brand || r.domain;
   const named = (sc.topCompetitors.length ? sc.topCompetitors : r.summary.topCompetitors).slice(0, 5)
@@ -225,7 +225,7 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
 
   // ── Where you win and lose ──
   out.push('## Where you win and lose');
-  const scoreCell = (v: number | null, n: number) => (v === null ? '—' : `**${v}%** (N=${n}, ${confidenceLevel(n)} confidence)`);
+  const scoreCell = (v: number | null, n: number) => (v === null ? '—' : `**${v}%** (N=${n}, ${confidenceLabel(n)})`);
   out.push('| What it measures | Result |');
   out.push('| --- | --- |');
   out.push(`| **${ALIAS.retrievability.plain}** — ${ALIAS.retrievability.precise.toLowerCase()} | ${scoreCell(sc.brandedRetrievabilityPct, sc.brandedRuns)} |`);
@@ -353,7 +353,7 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
   out.push('- **Search-grounded only.** An answer given from the model\'s memory with no live search is reported as "answered from memory" and never counted as a zero.');
   out.push('- **Strict branded rule.** A branded answer counts as found only when your domain appears in its sources or text; "search ran, site not found" is a miss.');
   out.push('- **Errors excluded.** A run that hit a rate limit or timed out is excluded, not scored zero. Answers cut off by the token cap are not scored.');
-  out.push('- **N and confidence.** Every score carries its N; confidence is low under 3 answers, medium at 3 or 4, and high from 5.');
+  out.push(`- **N and confidence.** Every score carries its N; ${CONFIDENCE_RULE}.`);
   out.push('');
   out.push('### Scores by engine');
   for (const e of r.summary.engines) {
