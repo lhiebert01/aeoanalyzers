@@ -83,10 +83,10 @@ observation** — only the founder can take these:
 
 ## 2026-10-10 — WO-AEO-POSITION-AND-PANEL-006 (shipped 2e483c8; three items wait on you)
 
-- [ ] **xAI API key** → `XAI_API_KEY` in `.env` (and Vercel to allow panel v1.2 in the app). Then I run the Grok day-0 and the v1.1-vs-v1.2 comparison inside the $10.00 already authorised.
+- [x] **xAI key added 13 Oct** (.env + Vercel). Grok comparison running. ~~xAI API key~~ → `XAI_API_KEY` in `.env` (and Vercel to allow panel v1.2 in the app). Then I run the Grok day-0 and the v1.1-vs-v1.2 comparison inside the $10.00 already authorised.
 - [ ] **Google OAuth client** (Web) for Search Console: redirect `https://aeoanalyzers.com/api/gsc?action=callback`; set `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REDIRECT_URI`, `GOOGLE_OAUTH_STATE_SECRET` in Vercel; consent screen in Testing with the second account as a test user; add that email to `GSC_ALLOWED_EMAILS`; run `supabase/migrations/20261011_wo006_gsc_connections.sql`. Then the second account connects end to end.
 - [ ] **Search Console Queries export** (CSV) for aeoanalyzers.com → I produce the worked blended-vs-separated CTR example.
 - [x] **Sign-off** received 13 Oct; both lines published verbatim on /, /methodology, /about (`16eba0e`).
 
 ## 2026-10-13 — decision waiting (default: no change until you say yes)
-- [ ] **Align the app's "Found when asked by name" tile with the published definition?** The tile counts an answer that names the brand; /evidence and /methodology count only answers that reach the site's own domain (and a "couldn't find it" answer is a miss). Recommended: yes. Effect: 6 of 16 stored SaaS target sweeps read 92–96% instead of 100%; our own August sweep reads 55% in the app as on /evidence. Changes customer-facing figures, so it waits for you.
+- [x] **Aligned 13 Oct (`92d6508`)** — 22 of 48 stored sweeps move down, none emailed 8 Oct; our published months unchanged. ~~Align the app's "Found when asked by name" tile with the published definition?** The tile counts an answer that names the brand; /evidence and /methodology count only answers that reach the site's own domain (and a "couldn't find it" answer is a miss). Recommended: yes. Effect: 6 of 16 stored SaaS target sweeps read 92–96% instead of 100%; our own August sweep reads 55% in the app as on /evidence. Changes customer-facing figures, so it waits for you.
