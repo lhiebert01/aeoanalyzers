@@ -6,7 +6,7 @@ import {
   normalizeDomain,
   containsWord,
   domainCited,
-  scoreRun,
+  scoreRun, foundByName,
   aggregateSweep,
   sweepScorecard,
   detectCompetitors,
@@ -165,9 +165,9 @@ describe('aggregateSweep — three-layer roll-up', () => {
   it('separates retrievability (branded) from citation win (category) and rounds', () => {
     const runs: SweepRunResult[] = [
       // Branded: 3/3 cited → retrievability 100%
-      run({ engine: 'claude', queryType: 'branded', transcript: 'AEO Analyzers ...', costUsd: 0.01 }),
+      run({ engine: 'claude', queryType: 'branded', sources: ['https://aeoanalyzers.com/'], transcript: 'AEO Analyzers ...', costUsd: 0.01 }),
       run({ engine: 'claude', queryType: 'branded', transcript: 'aeoanalyzers.com ...', costUsd: 0.01 }),
-      run({ engine: 'claude', queryType: 'branded', transcript: 'AEO Analyzers ...', costUsd: 0.01 }),
+      run({ engine: 'claude', queryType: 'branded', sources: ['https://aeoanalyzers.com/'], transcript: 'AEO Analyzers ...', costUsd: 0.01 }),
       // Category: 1/3 cited → citation win 33%
       run({ engine: 'claude', queryType: 'category', transcript: 'AEO Analyzers is one option', costUsd: 0.01 }),
       run({ engine: 'claude', queryType: 'category', transcript: 'Otterly is best', costUsd: 0.01 }),
@@ -220,7 +220,9 @@ describe('sweepScorecard — five buyer-facing scores + plain summary', () => {
 
   it('computes retrievability, category win, owned-citation rate, and competitive share', () => {
     const sc = sweepScorecard(runs, client, competitors);
-    expect(sc.brandedRetrievabilityPct).toBe(100);        // 2/2 branded cited
+    // 13 Oct 2026 ruling: found = the answer reached the site's own domain. The first branded answer
+    // only NAMES the brand, so it is named, not found: 1 of 2.
+    expect(sc.brandedRetrievabilityPct).toBe(50);
     expect(sc.categoryRecommendationWinPct).toBe(50);     // 1/2 category cited
     expect(sc.ownedCitationRatePct).toBe(33);             // 1 of 3 surfaced runs cited the domain
     expect(sc.competitiveSharePct).toBe(33);              // 1 brand rec / (1 + 2 Profound)
@@ -230,7 +232,6 @@ describe('sweepScorecard — five buyer-facing scores + plain summary', () => {
   it('writes a plain-English summary that names the numbers and the top competitor', () => {
     const { plainSummary } = sweepScorecard(runs, client, competitors);
     expect(plainSummary).toContain('AEO Analyzers');
-    expect(plainSummary).toContain('100%');
     expect(plainSummary).toContain('50%');
     expect(plainSummary).toMatch(/Profound wins most often \(2×\)/);
   });
@@ -381,7 +382,7 @@ describe('errored runs (WO-AEO-SWEEP-MEMORY-001) — failed calls are unmeasured
 
   it('aggregateSweep counts errored runs, excludes them from the score base, and computes % on valid N', () => {
     const s = aggregateSweep([
-      run({ engine: 'perplexity', queryType: 'branded', transcript: 'AEO Analyzers is a tool.' }), // cited
+      run({ engine: 'perplexity', queryType: 'branded', sources: ['https://aeoanalyzers.com/'], transcript: 'AEO Analyzers is a tool.' }), // found (own domain in sources)
       run({ engine: 'perplexity', queryType: 'branded', errored: true, transcript: '[error: 429]' }), // excluded
       run({ engine: 'perplexity', queryType: 'branded', errored: true, transcript: '[error: 429]' }), // excluded
     ], client, []);
@@ -468,7 +469,7 @@ describe('sample size & confidence (WO-QA-003 A3)', () => {
   it('plain summary hedges low-N claims instead of over-claiming certainty', () => {
     const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
     const { plainSummary } = sweepScorecard([
-      run({ queryType: 'branded', transcript: 'AEO Analyzers is great' }),
+      run({ queryType: 'branded', sources: ['https://aeoanalyzers.com/'], transcript: 'AEO Analyzers is great' }),
       run({ queryType: 'branded', transcript: 'see aeoanalyzers.com' }),
     ], client, []);
     expect(plainSummary).toContain('early signal, N=2');
@@ -548,5 +549,25 @@ describe('source-mined vendors are specific, and a domain-shaped seed folds with
     const set = effectiveCompetitorSet(runs, client, [{ name: 'Customer.io' }]);
     expect(set.filter((c) => /customer/i.test(c.name))).toHaveLength(1);
     expect(set[0]).toMatchObject({ name: 'Customer.io', seeded: true });
+  });
+});
+
+describe('found when asked by name = the published definition (13 Oct 2026)', () => {
+  const client = { domain: 'acme.com', brand: 'Acme' };
+  const sc = (transcript: string, sources: string[] = []) => scoreRun({ engine: 'claude', query: 'who is acme.com', queryType: 'branded', runIndex: 0, transcript, sources, costUsd: 0 } as any, client, []);
+  it('naming the brand is NOT found; reaching the domain is', () => {
+    expect(foundByName(sc('Acme is a CRM company.'))).toBe(false);
+    expect(foundByName(sc('Acme is a CRM company.', ['https://acme.com/about']))).toBe(true);
+    expect(foundByName(sc('Acme (acme.com) is a CRM company.'))).toBe(true);
+  });
+  it('PROVE BY BREAKING: either not-found detector makes it a miss — incl. "the results don\'t contain any information about"', () => {
+    expect(foundByName(sc("I couldn't find information about acme.com.", ['https://acme.com/']))).toBe(false);
+    expect(foundByName(sc("The search results don't contain any information about \"acme.com\" specifically.", ['https://other.com/']))).toBe(false);
+  });
+  it('our three published months are unchanged by the alignment: 22, 32, 35 of 40', () => {
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const c = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
+    const n = (f: string) => JSON.parse(readFileSync(`docs/baselines/${f}`, 'utf8')).runs.filter((r: any) => r.queryType === 'branded').map((r: any) => scoreRun({ ...r }, c, [])).filter(foundByName).length;
+    expect([n('aeoanalyzers-SERIES-ANCHOR-2026-08-01.json'), n('aeoanalyzers-2026-09-01.json'), n('aeoanalyzers-2026-10-08.json')]).toEqual([22, 32, 35]);
   });
 });

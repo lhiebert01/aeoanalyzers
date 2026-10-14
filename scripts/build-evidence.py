@@ -17,7 +17,8 @@ import json, re, os, sys
 BASE = 'docs/baselines'
 NOT_FOUND = re.compile(
     r"(could ?n'?t find|couldn.t find|unable to find|no (?:specific )?(?:website|information|results?)"
-    r" (?:specifically )?(?:at|about|for)|don'?t have (?:any )?(?:specific )?information)", re.I)
+    r" (?:specifically )?(?:at|about|for)|don'?t have (?:any )?(?:specific )?information"
+    r"|(?:do not|don'?t|does not|doesn'?t) (?:contain|include|mention|have) (?:any )?(?:specific )?information (?:about|on|for))", re.I)
 
 def runs(f, kind):
     return [r for r in json.load(open(f'{BASE}/{f}'))['runs'] if r['queryType'] == kind]

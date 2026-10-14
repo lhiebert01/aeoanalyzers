@@ -199,8 +199,11 @@ async function askGrok(query: string): Promise<EngineAnswer> {
   for (const c of resp.citations || []) { const u = typeof c === 'string' ? c : c?.url; if (u) sources.push(u); }
   const searchInvoked = sources.length > 0 || (resp.output || []).some((i: any) => /search/.test(String(i?.type || '')));
   const u = resp.usage || {};
+  // xAI returns the BILLED cost: usage.cost_in_usd_ticks, 1 USD = 1e10 ticks (13 Oct 2026: 439,740,000
+  // ticks = $0.044 for one answer with three web searches). Use it; the token estimate is only a fallback.
   const inRate = Number(process.env.SWEEP_GROK_IN_PER_M || 3), outRate = Number(process.env.SWEEP_GROK_OUT_PER_M || 15);
-  const costUsd = (u.input_tokens || 0) / 1e6 * inRate + (u.output_tokens || 0) / 1e6 * outRate + Number(process.env.SWEEP_GROK_SEARCH_FEE || 0.025);
+  const costUsd = typeof u.cost_in_usd_ticks === 'number' ? u.cost_in_usd_ticks / 1e10
+    : (u.input_tokens || 0) / 1e6 * inRate + (u.output_tokens || 0) / 1e6 * outRate + Number(process.env.SWEEP_GROK_SEARCH_FEE || 0.025);
   return { transcript, sources: uniq(sources), costUsd, model, truncated, searchInvoked };
 }
 

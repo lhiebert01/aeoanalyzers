@@ -17,9 +17,9 @@ const run = (over: Partial<SweepRunResult>): SweepRunResult => ({
 const truth: TruthRecord = { brandName: 'AEO Analyzers', founders: ['Lindsay Hiebert'], sameAs: [], facts: [] };
 
 const runs: SweepRunResult[] = [
-  run({ queryType: 'branded', transcript: 'AEO Analyzers, founded by Lindsay Hiebert.' }),           // cited-accurate
+  run({ queryType: 'branded', sources: ['https://aeoanalyzers.com/'], transcript: 'AEO Analyzers, founded by Lindsay Hiebert.' }),           // cited-accurate
   run({ queryType: 'branded', transcript: 'AEO Analyzers was co-founded by Jesper Nissen.',          // drifted + entity collision
-        sources: ['https://en.wikipedia.org/wiki/AEA'] }),
+        sources: ['https://aeoanalyzers.com/', 'https://en.wikipedia.org/wiki/AEA'] }),
   run({ queryType: 'category', transcript: 'Try Profound (tryprofound.com) for tracking.' }),        // competitor, brand not cited
   run({ queryType: 'category', transcript: 'Profound (tryprofound.com) is the enterprise pick.' }),  // competitor
 ];

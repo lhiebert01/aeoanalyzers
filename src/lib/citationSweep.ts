@@ -303,6 +303,17 @@ function positivelyMentioned(text: string, matchesSubject: (clause: string) => b
  *  "couldn't find it" clause. Grounded — no LLM. The not-found guard is what stops
  *  an engine that merely echoes the domain back while disclaiming knowledge from
  *  scoring as a citation (the inflated-retrievability bug this module had). */
+/** Founder ruling, 13 Oct 2026: "Found when asked by name" means what /evidence and /methodology
+ *  publish — the answer reached the site's OWN domain (in its sources or its text), and the engine did
+ *  not search, fail and say so. Both not-found detectors apply: the transcript phrase the ledger has
+ *  always used, and the scorer's own site-not-found rule (which catches "the results don't contain any
+ *  information about X"). An answer that only NAMES the brand counts toward "described accurately when
+ *  named", not toward found. Our own published months are unchanged by this: 22, 32 and 35 of 40. */
+export const EXPLICIT_NOT_FOUND = /(could ?n'?t find|couldn.t find|unable to find|no (?:specific )?(?:website|information|results?) (?:specifically )?(?:at|about|for)|don'?t have (?:any )?(?:specific )?information|(?:do not|don'?t|does not|doesn'?t) (?:contain|include|mention|have) (?:any )?(?:specific )?information (?:about|on|for))/i;
+export function foundByName(r: { domainCited?: boolean; siteNotFound?: boolean; transcript?: string }): boolean {
+  return !!r.domainCited && !r.siteNotFound && !EXPLICIT_NOT_FOUND.test(r.transcript || '');
+}
+
 export function scoreRun(
   run: SweepRunResult,
   client: { domain: string; brand?: string },
@@ -610,7 +621,7 @@ export function aggregateSweep(
     if (r.truncated) { agg.truncatedRuns++; continue; }
     if (r.queryType === 'branded') {
       agg.brandedRuns++;
-      if (r.cited) agg.brandedCited++;
+      if (foundByName(r)) agg.brandedCited++;
     } else {
       // Model-prior category answers (no live search) don't measure citation-win —
       // count them separately and keep them out of the win denominator (A2).
@@ -759,7 +770,7 @@ export function sweepScorecard(
     if (isErroredRun(r)) { erroredRuns++; continue; } // failed call — unmeasured, never scored
     if (r.truncated) continue; // cut-off answer — unmeasured, never scored (A1)
     if (r.queryType === 'branded') {
-      brandedRuns++; if (r.cited) brandedCited++;
+      brandedRuns++; if (foundByName(r)) brandedCited++;
       if (r.cited) { surfaced++; if (r.domainCited) domainCited++; }
     } else if (isModelPrior(r)) {
       // No live search — report as model-prior visibility, keep out of citation-win.

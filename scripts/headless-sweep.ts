@@ -10,7 +10,7 @@
 // Out:     JSON {domain, brand, summary, runs} to stdout.
 
 import { readFileSync } from "node:fs";
-import { ENGINE_ADAPTERS, configuredEngines } from "../api/_lib/engines.js";
+import { ENGINE_ADAPTERS, configuredEngines, panelEngines } from "../api/_lib/engines.js";
 import { scoreRun, aggregateSweep, type SweepRunResult, type Competitor } from "../src/lib/citationSweep.js";
 import { extractTruthRecord } from "../src/lib/truthRecord.js";
 
@@ -28,7 +28,10 @@ const brandedQueries: string[] = JSON.parse(process.env.SWEEP_BRANDED || "[]");
 const categoryQueries: string[] = JSON.parse(process.env.SWEEP_CATEGORY || "[]");
 const competitors: Competitor[] = JSON.parse(process.env.SWEEP_COMPETITORS || "[]");
 const reps = Number(process.env.SWEEP_REPS || 3);
-const engines = configuredEngines();
+// WO-006: SWEEP_PANEL=v1.2 adds Grok (its own series); default v1.1 is the series of record.
+const PANEL = process.env.SWEEP_PANEL === "v1.2" ? "v1.2" : "v1.1";
+const engines = PANEL === "v1.2" ? panelEngines("v1.2") : configuredEngines();
+if (PANEL === "v1.2" && !engines.includes("grok" as any)) { console.error("panel v1.2 needs XAI_API_KEY"); process.exit(1); }
 
 if (!domain || (!brandedQueries.length && !categoryQueries.length)) {
   console.error("need SWEEP_DOMAIN + at least one query"); process.exit(1);
@@ -89,4 +92,4 @@ const summary = aggregateSweep(runs, { domain, brand }, competitors);
 const cost = runs.reduce((s, r) => s + (r.costUsd || 0), 0);
 console.error(`done. total engine cost ≈ $${cost.toFixed(4)}`);
 if (budgetStopped) console.error(`BUDGET STOP — stopped before spending at $${spent.toFixed(4)} of $${BUDGET}`);
-console.log(JSON.stringify({ domain, brand, generatedAtNote: "stamp date after run", budgetUsd: Number.isFinite(BUDGET) ? BUDGET : null, budgetStopped, truth, truthReadAtUtc: new Date().toISOString(), summary, runs }, null, 2));
+console.log(JSON.stringify({ domain, brand, generatedAtNote: "stamp date after run", budgetUsd: Number.isFinite(BUDGET) ? BUDGET : null, budgetStopped, panel: PANEL, spentUsd: Number(spent.toFixed(4)), truth, truthReadAtUtc: new Date().toISOString(), summary, runs }, null, 2));

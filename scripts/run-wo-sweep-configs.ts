@@ -13,7 +13,7 @@
 //  - a thin result is reported as thin, never stretched into a sentence
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { ENGINE_ADAPTERS, configuredEngines, type Engine } from '../api/_lib/engines.js';
+import { ENGINE_ADAPTERS, configuredEngines, panelEngines, type Engine } from '../api/_lib/engines.js';
 import {
   scoreRun, aggregateSweep, sweepScorecard,
   type SweepRunResult, type Competitor,
@@ -139,7 +139,7 @@ async function sweepOne(t: any) {
   if (!todo.length) { console.log('Nothing to do — every target already has a stored result.'); process.exit(0); }
   console.error(`to run: ${todo.map((t: any) => t.id).join(', ')} (${CFG.targets.length - todo.length} already banked)`);
 
-  LIVE_ENGINES = await preflight(configuredEngines() as Engine[]);
+  LIVE_ENGINES = await preflight((process.env.PANEL === 'v1.2' ? panelEngines('v1.2') : configuredEngines()) as Engine[]);
   const live = LIVE_ENGINES;
   console.error(`pre-flight OK — ${live.length} engines answering: ${live.join(', ')}`);
   const results: any[] = [];

@@ -25,7 +25,7 @@ const load = (f: string) => JSON.parse(readFileSync(root(`docs/baselines/${f}`),
 /** An engine that ran a search, did not find the site, and said so is a MISS — even if
  *  the stored flag counted it. WO-AEO-SWEEP-INTEGRITY-002 Lane A2. */
 const NOT_FOUND =
-  /(could ?n'?t find|couldn.t find|unable to find|no (?:specific )?(?:website|information|results?) (?:specifically )?(?:at|about|for)|don'?t have (?:any )?(?:specific )?information)/i;
+  /(could ?n'?t find|couldn.t find|unable to find|no (?:specific )?(?:website|information|results?) (?:specifically )?(?:at|about|for)|don'?t have (?:any )?(?:specific )?information|(?:do not|don'?t|does not|doesn'?t) (?:contain|include|mention|have) (?:any )?(?:specific )?information (?:about|on|for))/i;
 
 type Run = { queryType: string; domainCited?: boolean; transcript?: string };
 
