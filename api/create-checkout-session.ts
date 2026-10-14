@@ -87,7 +87,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       metadata: { userId, planId },
     });
 
-    res.json({ sessionId: session.id, url: session.url });
+    // priceId is not secret (it ships in the client bundle); returned so a deploy can be verified per tier.
+    res.json({ sessionId: session.id, url: session.url, priceId });
   } catch (error: any) {
     console.error('Stripe Error:', error);
     res.status(500).json({ error: error.message });
