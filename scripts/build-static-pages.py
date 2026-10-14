@@ -84,6 +84,7 @@ METH = """      <p class="postlead"><strong>A URL, a few minutes, and every tran
 
       <h2 class="posth2">Repetition, N and confidence</h2>
       <p>Engines answer the same question differently from one run to the next, so one answer proves nothing. Every question is asked several times on every engine, and every figure carries its N with a line saying what N is made of &mdash; how many questions, engines and runs, how many answers were scored, and how many were left out and why. Confidence is high from 12 answers &mdash; one question across all four engines, three runs each &mdash; medium from 6 to 11, and low under 6.</p>
+      <p>A worked example of how much the engine panel and run-to-run drift move a figure, with one stored answer quoted in full: <a class="ilink" href="/blog/the-measurement-layer">We built an AI visibility tool. Then we tested ourselves</a>.</p>
 
       <h2 class="posth2">What is left out, and why</h2>
       <ul class="lessons">

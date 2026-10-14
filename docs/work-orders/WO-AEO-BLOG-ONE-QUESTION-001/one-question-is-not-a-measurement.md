@@ -45,7 +45,7 @@ One question asked twelve times collapses all of that into a single number. Twel
 
 Five properties separate a number you can plan against from a number that felt convincing at the time. None of them is exotic. All of them are missing from the minute-long test.
 
-1. Several engines, not one. ChatGPT, Claude, Gemini and Perplexity retrieve from different indexes and weight sources differently. A company can be recommended by one and unknown to another. A single-engine result is a fact about that engine.
+1. Several engines, not one. ChatGPT, Claude, Gemini and Perplexity retrieve from different indexes and weight sources differently. A company can be recommended by one and unknown to another. A single-engine result is a fact about that engine. How much the choice of engines moves the number, and how much the same test drifts from one run to the next, is measured in [We built an AI visibility tool. Then we tested ourselves](https://aeoanalyzers.com/blog/the-measurement-layer).
 2. Real buyer questions across the three segments. The question set should look like the questions your customers type, in their words, at the level they think. It should be written down and reused unchanged each month so that movement is real movement.
 3. Search-grounded answers separated from model memory. Some answers come from a live search. Some come from what the model absorbed in training, with no search at all. A zero from memory and a zero from search are different problems with different fixes, and a report that pools them hides which one you have.
 4. Failed runs excluded, not scored. Engines rate-limit and time out. A run that returned an error is not a run in which you were not recommended. Counting it as one quietly deflates every score.

@@ -27,6 +27,8 @@ title="One Question Is Not a Measurement | AEO Analyzers"; assert len(title)<=65
 
 def inline(s):
     s=html.escape(s,quote=False)
+    # [text](https://...) -> in-site link with readable anchor text (WO-009 internal links).
+    s=re.sub(r'\[([^\]]+)\]\((https://[^)\s]+)\)', lambda m: f'<a class="ilink" href="{m.group(2).replace("https://aeoanalyzers.com","")}">{m.group(1)}</a>', s)
     s=re.sub(r'(https://[^\s<)]+?)([.,;:)]?)(?=\s|$)', lambda m:f'<a href="{m.group(1)}">{m.group(1)}</a>{m.group(2)}', s)
     return s
 

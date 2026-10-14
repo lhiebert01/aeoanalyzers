@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>AEO Analyzers Blog</title>
+    <link>https://aeoanalyzers.com/blog/</link>
+    <atom:link href="https://aeoanalyzers.com/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Short, grounded pieces on why AI assistants cite some sites and not others, with our own measurements published whatever they say.</description>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 14 Oct 2026 12:00:00 GMT</lastBuildDate>
+    <item>
+      <title>We Built an AI Visibility Tool. Then We Tested Ourselves. The Result Was Zero.</title>
+      <link>https://aeoanalyzers.com/blog/the-measurement-layer</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/the-measurement-layer</guid>
+      <pubDate>Wed, 14 Oct 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>AI engines found us by name but did not recommend us in our category test. What a 14-point panel effect and 0.9 points of drift teach about AI visibility.</description>
+      <media:content url="https://aeoanalyzers.com/og/og-the-measurement-layer-v2.png" medium="image" type="image/png"/>
+    </item>
+    <item>
+      <title>One question is not a measurement</title>
+      <link>https://aeoanalyzers.com/blog/one-question-is-not-a-measurement</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/one-question-is-not-a-measurement</guid>
+      <pubDate>Thu, 01 Oct 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>The one-minute AI visibility test tells you whether you win one question, not which questions you could win. Twelve questions on four engines produce a plan.</description>
+      <media:content url="https://aeoanalyzers.com/blog/one-question-is-not-a-measurement/img/og-one-question-1200x630.png" medium="image" type="image/png"/>
+    </item>
+    <item>
+      <title>The AEO Buyer’s Guide: three short reads</title>
+      <link>https://aeoanalyzers.com/aeo-buyers-guide</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/aeo-buyers-guide</guid>
+      <pubDate>Mon, 21 Sep 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Three short reads: what an AEO tool should do, what to require before you buy, and how to compare the market. Six minutes, each linking to the full guide.</description>
+      <media:content url="https://aeoanalyzers.com/img/buyer-series/aeo-buyers-guide-og-1200x630.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>The AEO Buyer’s Standard: 13 questions to ask before you buy</title>
+      <link>https://aeoanalyzers.com/aeo-buyers-standard</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/aeo-buyers-standard</guid>
+      <pubDate>Mon, 21 Sep 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Purchasing requirements for answer engine optimization software. Seven requirements and thirteen questions to put to any AEO vendor - including us.</description>
+      <media:content url="https://aeoanalyzers.com/img/buyer-series/aeo-buyers-standard-og-1200x630.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>What should an AEO tool actually do?</title>
+      <link>https://aeoanalyzers.com/what-should-an-aeo-tool-do</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/what-should-an-aeo-tool-do</guid>
+      <pubDate>Mon, 21 Sep 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>AI visibility is six different outcomes. A mention is not a citation, a citation is not a recommendation. What the four kinds of AEO software actually answer.</description>
+      <media:content url="https://aeoanalyzers.com/img/buyer-series/what-should-an-aeo-tool-do-og-1200x630.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Best AEO tools in 2026: what to compare before you buy</title>
+      <link>https://aeoanalyzers.com/best-aeo-tools</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/best-aeo-tools</guid>
+      <pubDate>Mon, 21 Sep 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>A dated, sourced comparison of AEO software judged on seven purchasing requirements. Every competitor fact links to the vendor's own page. No winner named.</description>
+      <media:content url="https://aeoanalyzers.com/img/buyer-series/best-aeo-tools-og-1200x630.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Why AI still doesn’t mention your business</title>
+      <link>https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you</guid>
+      <pubDate>Sat, 19 Sep 2026 12:00:00 GMT</pubDate>
+      <dc:creator>AEO Analyzers</dc:creator>
+      <description>Three gates in order — in the index, retrieved, cited — and why most advice aims at the third while most sites fail the first. Free checks included.</description>
+      <media:content url="https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you/img/primer-og-1200x630.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>The engines read my site. Reading isn't citing.</title>
+      <link>https://aeoanalyzers.com/blog/reading-isnt-citing</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/reading-isnt-citing</guid>
+      <pubDate>Tue, 04 Aug 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>AI crawlers fetched my pages and cited them zero times. Why being read is not being cited, and why more content was never going to fix it.</description>
+      <media:content url="https://aeoanalyzers.com/og-blog-reading-isnt-citing.png" medium="image" type="image/png"/>
+    </item>
+    <item>
+      <title>How AEO Analyzers works: the 90-second tour of a hundred-hour analysis</title>
+      <link>https://aeoanalyzers.com/blog/how-it-works</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/how-it-works</guid>
+      <pubDate>Sat, 01 Aug 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>The pipeline, drawn: read your site, ask four answer engines your buyers' questions, score three layers, back every number with a stored transcript.</description>
+      <media:content url="https://aeoanalyzers.com/og-blog-how-it-works.png" medium="image" type="image/png"/>
+    </item>
+    <item>
+      <title>I ran my own AI-visibility tool on my own site. It scored 0%.</title>
+      <link>https://aeoanalyzers.com/blog/i-scored-zero</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/i-scored-zero</guid>
+      <pubDate>Fri, 31 Jul 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Known by name, recommended to buyers 0% of the time. The measured zero, what it means, and the monthly ledger that tracks whether it moves.</description>
+      <media:content url="https://aeoanalyzers.com/og-blog-i-scored-zero.png" medium="image" type="image/png"/>
+    </item>
+    <item>
+      <title>What you actually get: the action plan inside every Citation Sweep</title>
+      <link>https://aeoanalyzers.com/blog/what-you-actually-get</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/what-you-actually-get</guid>
+      <pubDate>Fri, 31 Jul 2026 12:00:00 GMT</pubDate>
+      <dc:creator>AEO Analyzers</dc:creator>
+      <description>A sweep ends in a five-layer action plan: paste-in schema, fidelity corrections, an off-site plan from real citations, a battle-map, and proof.</description>
+      <media:content url="https://aeoanalyzers.com/og-blog-what-you-actually-get.png" medium="image" type="image/png"/>
+    </item>
+    <item>
+      <title>Is your brand the answer AI gives — or is a competitor?</title>
+      <link>https://aeoanalyzers.com/blog/are-you-the-answer-ai-gives</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/are-you-the-answer-ai-gives</guid>
+      <pubDate>Tue, 28 Jul 2026 12:00:00 GMT</pubDate>
+      <dc:creator>AEO Analyzers</dc:creator>
+      <description>When buyers ask ChatGPT, Gemini or Perplexity for the best in your category, they get one answer: you or a competitor. A worked sample report; check yours free.</description>
+      <media:content url="https://aeoanalyzers.com/og-blog-are-you-the-answer.png" medium="image" type="image/png"/>
+    </item>
+  </channel>
+</rss>

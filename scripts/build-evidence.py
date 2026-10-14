@@ -310,7 +310,8 @@ PAGE = f"""<!doctype html>
       recommendation rate by 14.0 points. Repeating the three-engine run the same day moved the average
       by 0.9 points, while single companies moved by as much as 17 points. The 13 October figures are
       recomputed from <a class="ilink" href="{GH}/{PT_F}">the stored transcripts</a>; the 7 September figures
-      are from <a class="ilink" href="https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/FINDING-PANEL-COMPOSITION-2026-09-08.md">the written finding</a>.</p>
+      are from <a class="ilink" href="https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/FINDING-PANEL-COMPOSITION-2026-09-08.md">the written finding</a>.
+      A worked example of reading this run, transcript first: <a class="ilink" href="/blog/the-measurement-layer">We built an AI visibility tool. Then we tested ourselves</a>.</p>
       <div class="ledger" id="exhibit-2026-10-13">
         <p class="ledgernote"><strong>One stored answer from that run, in full.</strong> Perplexity, searched the web,
         13 October 2026. Question, with no company named: &ldquo;{_h.escape(EX_Q)}&rdquo;</p>
@@ -446,7 +447,9 @@ if True:  # regenerated every run (monthly refresh); the first run also handed t
       Found by name: {lb}% in October, {sb}% in September, {ab}% in August. Recommended to buyers
       did not move at all. Those are two different problems, so they are never blended into one
       score. The word &ldquo;aeoanalyzers&rdquo; appears in none of the {lcn} category answers
-      &mdash; absent, not ranked last.</p>
+      &mdash; absent, not ranked last. On 13 October we re-measured on the same four engines and
+      again with a fifth added; the figures, one stored answer in full and what they mean are in
+      <a class="ilink" href="/blog/the-measurement-layer">We built an AI visibility tool. Then we tested ourselves</a>.</p>
     </div>
 
     <div class="ledgerstrip">

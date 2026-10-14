@@ -136,6 +136,7 @@ page = f'''<!doctype html>
 <meta name="twitter:image" content="{OG}">
 <meta name="twitter:image:alt" content="{alt}">
 <meta name="theme-color" content="#08343B">
+<link rel="alternate" type="application/rss+xml" title="AEO Analyzers Blog" href="https://aeoanalyzers.com/blog/feed.xml">
 <script type="application/ld+json">
 {json.dumps(ld, indent=2, ensure_ascii=False)}
 </script>
@@ -147,6 +148,12 @@ page = f'''<!doctype html>
     <h1 class="posttitle">{inline(h1)}</h1>
     <div class="postbody">
 {article}
+      <h2 class="posth2">Related</h2>
+      <ul>
+        <li><a class="ilink" href="/blog/i-scored-zero">I ran my own AI-visibility tool. It scored 0%</a></li>
+        <li><a class="ilink" href="/blog/one-question-is-not-a-measurement">One question is not a measurement</a></li>
+        <li><a class="ilink" href="/methodology">How we measure: the methodology</a></li>
+      </ul>
     </div>
 {tail}'''
 assert not re.search(r'\$\s?\d', re.sub(r'<style>.*?</style>', '', page, flags=re.S))

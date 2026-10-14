@@ -198,6 +198,7 @@ footer p{max-width:none}
 .postfig img{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--hair)}
 .postfig figcaption{font-size:13.5px;color:var(--muted);margin-top:9px;line-height:1.45}
 </style>
+<link rel="alternate" type="application/rss+xml" title="AEO Analyzers Blog" href="https://aeoanalyzers.com/blog/feed.xml">
 </head>
 <body>
 <header class="sitebar">
@@ -235,7 +236,7 @@ footer p{max-width:none}
       <h2 class="posth2">What does a measurement need before you act on it?</h2>
       <p>Five properties separate a number you can plan against from a number that felt convincing at the time. None of them is exotic. All of them are missing from the minute-long test.</p>
       <ol>
-        <li>Several engines, not one. ChatGPT, Claude, Gemini and Perplexity retrieve from different indexes and weight sources differently. A company can be recommended by one and unknown to another. A single-engine result is a fact about that engine.</li>
+        <li>Several engines, not one. ChatGPT, Claude, Gemini and Perplexity retrieve from different indexes and weight sources differently. A company can be recommended by one and unknown to another. A single-engine result is a fact about that engine. How much the choice of engines moves the number, and how much the same test drifts from one run to the next, is measured in <a class="ilink" href="/blog/the-measurement-layer">We built an AI visibility tool. Then we tested ourselves</a>.</li>
         <li>Real buyer questions across the three segments. The question set should look like the questions your customers type, in their words, at the level they think. It should be written down and reused unchanged each month so that movement is real movement.</li>
         <li>Search-grounded answers separated from model memory. Some answers come from a live search. Some come from what the model absorbed in training, with no search at all. A zero from memory and a zero from search are different problems with different fixes, and a report that pools them hides which one you have.</li>
         <li>Failed runs excluded, not scored. Engines rate-limit and time out. A run that returned an error is not a run in which you were not recommended. Counting it as one quietly deflates every score.</li>

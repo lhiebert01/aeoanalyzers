@@ -155,6 +155,18 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         <p className="text-zinc-600 text-base mt-2 max-w-2xl mx-auto">We do not sell the fix, so the measurement has nothing to prove.</p>
       </section>
 
+      {/* WO-009 C: the current piece from the blog, one card. Update when a new post becomes current. */}
+      <section className="max-w-4xl mx-auto px-6 pb-20" aria-labelledby="latest-post-title">
+        <a href="/blog/the-measurement-layer" className="group grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-0 bg-white border border-zinc-300 rounded-3xl overflow-hidden shadow-sm hover:border-zinc-900 transition-all">
+          <img src="/og/og-the-measurement-layer-v2.png" alt="Your AI visibility score is not the evidence. The transcript is." width={1200} height={630} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+          <div className="p-6 md:p-8 flex flex-col justify-center text-left">
+            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-zinc-700">Latest from the blog</p>
+            <h2 id="latest-post-title" className="text-xl md:text-2xl font-bold text-zinc-900 mt-2 leading-snug group-hover:underline">We Built an AI Visibility Tool. Then We Tested Ourselves. The Result Was Zero.</h2>
+            <p className="text-zinc-700 text-sm mt-3 leading-relaxed">Why an AI visibility score is only the beginning, and why the answer transcript matters more.</p>
+          </div>
+        </a>
+      </section>
+
       {/* The Attribution Gap Section */}
       <section id="why-aeo" className="max-w-6xl mx-auto px-6" aria-labelledby="gap-title">
         <div className="bg-zinc-900 text-white rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
@@ -243,7 +255,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         </div>
         {/* Sep 7 2026: dropped the "AI-crawler telemetry" promise — no customer-facing
             way to connect a domain exists yet (see Payments.tsx). Drift monitoring ships. */}
-        <p className="text-center text-zinc-400 text-sm mt-8 max-w-2xl mx-auto">Plus answer-drift monitoring across re-runs — so you know what the engines say about you, and whether it changed. <strong className="text-zinc-600">The AEO analysis is free</strong> &mdash; your score, your sub-scores and every gap named. <strong className="text-zinc-600">Citation Sweeps are paid</strong>: all four engines, repeated runs, every answer stored as a transcript.</p>
+        <p className="text-center text-zinc-600 text-sm mt-8 max-w-2xl mx-auto">Plus answer-drift comparison across your re-runs — so you know what the engines say about you, and whether it changed. <strong className="text-zinc-600">The AEO analysis is free</strong> &mdash; your score, your sub-scores and every gap named. <strong className="text-zinc-600">Citation Sweeps are paid</strong>: all four engines, repeated runs, every answer stored as a transcript.</p>
       </section>
 
       {/* Trust & Authority Section */}

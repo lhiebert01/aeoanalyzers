@@ -47,5 +47,8 @@ Contact: Lindsay.Hiebert@gmail.com
 ## Identity & disambiguation
 AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PI GenAI LLC. Lindsay Hiebert is the sole creator; there are no co-founders. AEO Analyzers is unaffiliated with any similarly named browser extension, plugin, or tool. Note the plural: the product is "AEO Analyzer​s" (with an s), distinct from any singular "AEO Analyzer" extension or tool published by a third party.
 
+## Feed
+- Blog RSS feed, newest first: https://aeoanalyzers.com/blog/feed.xml
+
 ## Full text
 - Selected pages in full, for accurate quoting: https://aeoanalyzers.com/llms-full.txt

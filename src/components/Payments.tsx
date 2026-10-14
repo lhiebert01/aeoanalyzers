@@ -37,9 +37,8 @@ const PLANS = [
       // shipped (src/lib/driftDiff.ts, api/drift-check.ts, per-run drift badges),
       // so the true half of the claim stays. Restore the telemetry half only when a
       // customer can actually connect a domain.
-      'Answer-drift monitoring across re-runs',
+      'Answer-drift comparison across your re-runs',
       'Competitor benchmarking & authority-gap report',
-      '3 monitored domains',
       'Priority processing & team tools'
     ],
     buttonText: 'Upgrade to Business',
@@ -146,7 +145,7 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
                   <span className="text-[10px] font-bold bg-amber-300 text-zinc-900 px-2 py-0.5 rounded-full uppercase tracking-widest">One-time</span>
                 </div>
                 <p className="text-zinc-300 text-sm max-w-md leading-relaxed mb-4">
-                  Just need to fix one site? Unlock <strong className="text-white">everything for 24 hours</strong> — no subscription.
+                  Measuring one site? Unlock <strong className="text-white">everything for 24 hours</strong> — no subscription.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
                   {[
@@ -201,7 +200,7 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
                 <span className="text-4xl font-bold tracking-tight">{plan.price}</span>
                 <span className="text-zinc-500 font-medium">{plan.period}</span>
               </div>
-              <p className="text-zinc-500 text-sm leading-relaxed">
+              <p className="text-zinc-600 text-sm leading-relaxed">
                 {plan.description}
               </p>
             </div>
@@ -260,7 +259,7 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
             </ul>
           </div>
         </div>
-        <p className="text-center text-zinc-500 text-sm mt-6">Need more sweeps than your plan includes? <strong className="text-zinc-700">Add-on sweep credits</strong> and higher-volume monitoring are available — <button type="button" onClick={() => onContact?.('Sweep credits / higher-volume monitoring')} className="underline hover:text-zinc-900">contact us</button> or upgrade your plan.</p>
+        <p className="text-center text-zinc-500 text-sm mt-6">Need more sweeps than your plan includes? <button type="button" onClick={() => onContact?.('More sweeps')} className="underline hover:text-zinc-900">Contact us</button> or upgrade your plan.</p>
       </div>
 
       <div className="mt-12 p-8 bg-zinc-50 border border-zinc-300 rounded-3xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-8">
@@ -270,7 +269,7 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
           </div>
           <div>
             <h4 className="font-bold text-lg">Enterprise & Agencies</h4>
-            <p className="text-zinc-600 text-sm">Need high-volume sweeps, more monitored domains, or white-label reports?</p>
+            <p className="text-zinc-600 text-sm">Need high-volume sweeps, more domains, or white-label reports?</p>
           </div>
         </div>
         <button type="button" onClick={() => onContact?.('Enterprise & Agencies')} className="px-8 py-3 bg-white border border-zinc-300 rounded-xl font-bold hover:bg-zinc-50 transition-all whitespace-nowrap">
