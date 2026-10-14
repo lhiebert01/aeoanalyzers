@@ -122,6 +122,32 @@ def rows():
         </tr>""")
     return '\n'.join(out)
 
+# ---- 13 Oct 2026 panel test (engine panel v1.2 day-0). NOT a monthly series point.
+PT_F = 'aeoanalyzers-panel-v1.2-day0-2026-10-13.json'
+_pt = json.load(open(f'{BASE}/{PT_F}'))
+def _pt_figs(keep):
+    rs = [r for r in _pt['runs'] if keep(r) and not (r.get('errored') or (r.get('transcript') or '').startswith('[error'))]
+    b = [r for r in rs if r['queryType'] == 'branded']
+    c = [r for r in rs if r['queryType'] == 'category']
+    bh = sum(1 for r in b if r.get('domainCited') and not NOT_FOUND.search(r.get('transcript') or ''))
+    ch = sum(1 for r in c if r.get('domainCited'))
+    return round(100 * bh / len(b)), len(b), round(100 * ch / len(c)), len(c)
+pt4 = _pt_figs(lambda r: r['engine'] != 'grok')
+pt5 = _pt_figs(lambda r: True)
+pt_acc = (_pt['accuracyWhenNamed']['accurate'], _pt['accuracyWhenNamed']['named'])
+assert pt4 == (75, 40, 0, 200) and pt5 == (80, 50, 0, 249) and pt_acc == (50, 50), (pt4, pt5, pt_acc)
+# The exhibit quoted in /blog/the-measurement-layer: one stored, search-grounded category answer.
+EX_Q = 'how to monitor if my brand appears in ChatGPT and Claude responses'
+_ex = [r for r in _pt['runs'] if r['engine'] == 'perplexity' and r['queryType'] == 'category'
+       and r['query'] == EX_Q and r['runIndex'] == 3]
+assert len(_ex) == 1 and _ex[0]['searchInvoked'] and not _ex[0]['domainCited']
+EX = _ex[0]
+assert 'aeoanalyzers' not in EX['transcript'].lower() and not re.search(r'\$|\bfree\b|pric|afford|budget', EX['transcript'], re.I)
+import html as _h
+EX_TEXT = '<br>'.join(_h.escape(l.strip()) for l in EX['transcript'].split('\n') if l.strip())
+EX_TEXT = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', EX_TEXT)
+EX_SOURCES = '\n'.join(f'          <li><a class="ilink" href="{_h.escape(u)}" rel="nofollow">{_h.escape(u)}</a></li>' for u in EX['sources'])
+
 LATEST = MONTHS[-1]
 CARDS = f"""    <div class="score" aria-label="Latest measurement: {LATEST['month']}, {total} stored answers across four answer engines">
       <div class="tile good"><div class="lab">Found by name</div><div class="num">{lb}%</div><div class="note">N={ln} &middot; {sb}% in September, {ab}% in August</div></div>
@@ -269,6 +295,31 @@ PAGE = f"""<!doctype html>
       beside &ldquo;found by name&rdquo; and replaces nothing. For August and September the site&rsquo;s
       facts were not captured at the time, so those months are checked against the site as read on
       8 October 2026; the brand name and founder it checks have not changed.</p>
+
+      <h2 class="posth2" id="panel-test-2026-10-13">One more run, 13 October 2026: four engines, then five</h2>
+      <p>On 13 October 2026 we asked the same pinned questions again, five runs each, and added Grok as a
+      fifth engine. This is a test of the engine panel, not a monthly point in the ledger above: the
+      ledger stays on the same four engines so each month compares with the last.</p>
+      <ul class="lessons">
+        <li><b>Four engines (ChatGPT, Claude, Perplexity, Gemini).</b><span>Found by name in {pt4[0]}% of {pt4[1]} answers. Recommended in {pt4[2]}% of {pt4[3]} category answers.</span></li>
+        <li><b>Five engines (the same four plus Grok).</b><span>Found by name in {pt5[0]}% of {pt5[1]} answers. Recommended in {pt5[2]}% of {pt5[3]} category answers. Every one of the {pt_acc[1]} answers that named us described us accurately on the two facts we check.</span></li>
+        <li><b>Five days apart, the same four engines gave {ob}% and {pt4[0]}%.</b><span>Found by name was {ob}% on 8 October and {pt4[0]}% on 13 October, each of 40 answers, which is why no single run is read as a trend.</span></li>
+      </ul>
+      <p class="ledgernote"><strong>Panel effect and drift, measured 7 September 2026 on seven software companies.</strong>
+      In one run on one date, adding a fourth engine to the same answers moved the average category
+      recommendation rate by 14.0 points. Repeating the three-engine run the same day moved the average
+      by 0.9 points, while single companies moved by as much as 17 points. The 13 October figures are
+      recomputed from <a class="ilink" href="{GH}/{PT_F}">the stored transcripts</a>; the 7 September figures
+      are from <a class="ilink" href="https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/FINDING-PANEL-COMPOSITION-2026-09-08.md">the written finding</a>.</p>
+      <div class="ledger" id="exhibit-2026-10-13">
+        <p class="ledgernote"><strong>One stored answer from that run, in full.</strong> Perplexity, searched the web,
+        13 October 2026. Question, with no company named: &ldquo;{_h.escape(EX_Q)}&rdquo;</p>
+        <blockquote class="ledgernote">{EX_TEXT}</blockquote>
+        <p class="ledgernote">AEO Analyzers was not recommended. Sources the engine cited, as stored:</p>
+        <ul class="ledgernote">
+{EX_SOURCES}
+        </ul>
+      </div>
 
       <h2 class="posth2">What we have learned so far</h2>
       <ul class="lessons">

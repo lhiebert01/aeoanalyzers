@@ -348,6 +348,40 @@ footer p{max-width:none}
       facts were not captured at the time, so those months are checked against the site as read on
       8 October 2026; the brand name and founder it checks have not changed.</p>
 
+      <h2 class="posth2" id="panel-test-2026-10-13">One more run, 13 October 2026: four engines, then five</h2>
+      <p>On 13 October 2026 we asked the same pinned questions again, five runs each, and added Grok as a
+      fifth engine. This is a test of the engine panel, not a monthly point in the ledger above: the
+      ledger stays on the same four engines so each month compares with the last.</p>
+      <ul class="lessons">
+        <li><b>Four engines (ChatGPT, Claude, Perplexity, Gemini).</b><span>Found by name in 75% of 40 answers. Recommended in 0% of 200 category answers.</span></li>
+        <li><b>Five engines (the same four plus Grok).</b><span>Found by name in 80% of 50 answers. Recommended in 0% of 249 category answers. Every one of the 50 answers that named us described us accurately on the two facts we check.</span></li>
+        <li><b>Five days apart, the same four engines gave 88% and 75%.</b><span>Found by name was 88% on 8 October and 75% on 13 October, each of 40 answers, which is why no single run is read as a trend.</span></li>
+      </ul>
+      <p class="ledgernote"><strong>Panel effect and drift, measured 7 September 2026 on seven software companies.</strong>
+      In one run on one date, adding a fourth engine to the same answers moved the average category
+      recommendation rate by 14.0 points. Repeating the three-engine run the same day moved the average
+      by 0.9 points, while single companies moved by as much as 17 points. The 13 October figures are
+      recomputed from <a class="ilink" href="https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/baselines/aeoanalyzers-panel-v1.2-day0-2026-10-13.json">the stored transcripts</a>; the 7 September figures
+      are from <a class="ilink" href="https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/FINDING-PANEL-COMPOSITION-2026-09-08.md">the written finding</a>.</p>
+      <div class="ledger" id="exhibit-2026-10-13">
+        <p class="ledgernote"><strong>One stored answer from that run, in full.</strong> Perplexity, searched the web,
+        13 October 2026. Question, with no company named: &ldquo;how to monitor if my brand appears in ChatGPT and Claude responses&rdquo;</p>
+        <blockquote class="ledgernote">Use <strong>Apify AI Brand Monitor</strong> (apify.com) to run repeatable prompts across ChatGPT and Claude, tracking mentions, citations, sentiment, competitors, and share of voice.[1] For an enterprise dashboard, consider <strong>Meltwater GenAI Lens</strong> (meltwater.com); for DIY monitoring, run a fixed prompt set weekly in fresh sessions and log responses, cited domains, and accuracy.[2][3]</blockquote>
+        <p class="ledgernote">AEO Analyzers was not recommended. Sources the engine cited, as stored:</p>
+        <ul class="ledgernote">
+          <li><a class="ilink" href="https://www.shadow.inc/resources/how-to-monitor-brand-mentions-in-ai" rel="nofollow">https://www.shadow.inc/resources/how-to-monitor-brand-mentions-in-ai</a></li>
+          <li><a class="ilink" href="https://apify.com/khadinakbar/ai-search-brand-monitor" rel="nofollow">https://apify.com/khadinakbar/ai-search-brand-monitor</a></li>
+          <li><a class="ilink" href="https://nightwatch.io/blog/llm-tracking-tools/" rel="nofollow">https://nightwatch.io/blog/llm-tracking-tools/</a></li>
+          <li><a class="ilink" href="https://seranking.com/chatgpt-visibility-tracker.html" rel="nofollow">https://seranking.com/chatgpt-visibility-tracker.html</a></li>
+          <li><a class="ilink" href="https://www.omniforce.run/blog/how-to-track-your-brand-in-chatgpt-ai-visibility" rel="nofollow">https://www.omniforce.run/blog/how-to-track-your-brand-in-chatgpt-ai-visibility</a></li>
+          <li><a class="ilink" href="https://brandmentions.com/blog/chatgpt-brand-visibility-audit/" rel="nofollow">https://brandmentions.com/blog/chatgpt-brand-visibility-audit/</a></li>
+          <li><a class="ilink" href="https://www.meltwater.com/en/products/genai-lens" rel="nofollow">https://www.meltwater.com/en/products/genai-lens</a></li>
+          <li><a class="ilink" href="https://answersocrates.com/llm-brand-tracker" rel="nofollow">https://answersocrates.com/llm-brand-tracker</a></li>
+          <li><a class="ilink" href="https://www.meltwater.com/en/blog/ai-brand-monitoring" rel="nofollow">https://www.meltwater.com/en/blog/ai-brand-monitoring</a></li>
+          <li><a class="ilink" href="https://www.airops.com/blog/ai-search-brand-monitoring-tools" rel="nofollow">https://www.airops.com/blog/ai-search-brand-monitoring-tools</a></li>
+        </ul>
+      </div>
+
       <h2 class="posth2">What we have learned so far</h2>
       <ul class="lessons">
         <li><b>Most of our &ldquo;AI crawler traffic&rdquo; was not AI crawlers.</b><span>We logged bots by the name they gave us. Anyone can call themselves GPTBot, and vulnerability scanners do while asking for credential files. Three-quarters of everything we had counted as crawling was that. The published 265 became 36 once we counted only fetches of pages that exist. Lesson: a count is only as honest as the thing it trusts &mdash; verify the bot, not the name.</span></li>
