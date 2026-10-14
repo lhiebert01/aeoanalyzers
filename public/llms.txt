@@ -26,7 +26,7 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - Pricing: https://aeoanalyzers.com/pricing
 - User guide and FAQ: https://aeoanalyzers.com/guide
 - Blog (index): https://www.aeoanalyzers.com/blog/
-- Blog — Is your brand the answer AI gives, or is a competitor? (a walkthrough of a sample AI Visibility Executive Report): https://www.aeoanalyzers.com/blog/are-you-the-answer-ai-gives
+- Blog — Is your brand the answer AI gives, or is a competitor? (a walkthrough of a sample Citation Sweep report): https://www.aeoanalyzers.com/blog/are-you-the-answer-ai-gives
 - Blog — What you actually get: the action plan inside every Citation Sweep: https://www.aeoanalyzers.com/blog/what-you-actually-get
 - Blog — How AEO Analyzers works (a visual explainer of the pipeline): https://www.aeoanalyzers.com/blog/how-it-works
 - Blog — I ran my own AI-visibility tool on my own site; it scored 0% (Honest-Zero, Part 1): https://www.aeoanalyzers.com/blog/i-scored-zero

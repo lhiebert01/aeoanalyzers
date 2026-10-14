@@ -8,9 +8,16 @@ author: "Lindsay Hiebert, Founder and CEO, PIGENAI LLC"
 date: 2026-10-14
 seo_title: "We Tested Our AI Visibility. The Result Was Zero | AEO Analyzers"
 meta_description: "AI engines found us by name but did not recommend us in our category test. What a 14-point panel effect and 0.9 points of drift teach about AI visibility."
-og_image: /og/og-the-measurement-layer.png
+og_image: /og/og-the-measurement-layer-v2.png
 og_alt: "A buyer question feeds AI answer cards linked to a measurement receipt showing the engine panel and source evidence."
-hero_image: /images/blog/hero-the-measurement-layer.png
+hero_image: /images/blog/hero-the-measurement-layer-v2.png
+hero_alt: "A buyer question, three engine answers tagged searched or from memory, and the panel receipt: 4 engines, 200 answers, 13 Oct 2026, sources read."
+hero_caption: "Our own site, 13 October 2026, panel v1.1. Figures and transcripts on /evidence."
+opening_embed_image: /images/blog/embed-recognized-not-recommended.png
+opening_embed_alt: "Asked by name: found 75%. Asked by category: recommended 0% in test. Known when named, missing from the shortlist."
+opening_embed_caption: "Found by name on 30 of 40 answers; recommended on 0 of 200 category answers. 13 October 2026, four engines."
+embed_image: /images/blog/embed-measurement-architecture.png
+embed_alt: "One score is not a measurement: inputs (buyer questions, engine panel, repeated runs, score) produce evidence (transcripts, searched versus memory, cited sources, sample and drift) which produces the diagnosis (missing mentions, source gaps, priority actions)."
 search_themes: "AI visibility measurement; AI recommendation tracking; answer engine optimization; AI answer transcripts; AI search visibility"
 rules: "No prices. Measure and manage claimed; improve never. Only figures on /evidence. No named competitors, no negative language about other tools or practitioners. Section marked EXHIBIT is filled by the agent from a stored transcript before publishing; nothing illustrative is presented as measured."
 ---
@@ -55,7 +62,7 @@ Every result AEO Analyzers produces states the engine panel on its face and adds
 
 There is a second problem that dashboards make easy to miss. The same question does not always get the same answer.
 
-In our own repeated measurements we observed 0.9 points of run-to-run drift. That is a result from our tests, under our conditions, not a universal threshold for every system. It is enough to teach a useful habit: do not celebrate or panic over a small movement without first asking whether it exceeds ordinary variation under a comparable test.
+When we re-ran the same test on seven companies, the net average moved by 0.9 points, but single companies moved by as much as 17 points inside that average. Our own found-by-name figure went from 88% on October 8th to 75% on October 13th on the same four engines. Those are results from our tests, under our conditions, not a universal threshold for every system. They are enough to teach a useful habit: do not celebrate or panic over a small movement without first asking whether it exceeds ordinary variation under a comparable test.
 
 Good measurement should prevent unnecessary work. It should not manufacture work every time a line moves.
 

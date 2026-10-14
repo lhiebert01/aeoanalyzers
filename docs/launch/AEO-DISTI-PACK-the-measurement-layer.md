@@ -3,7 +3,7 @@
 Post: https://aeoanalyzers.com/blog/the-measurement-layer · Series: Buyer Series · Pack date: 14 Oct 2026
 Owner: Lindsay Hiebert. Everything below is posted by hand from his own accounts. The agent publishes the post and the OG; it posts nothing to any channel.
 
-House rules that apply to every item here: no prices anywhere; only figures that are on /evidence (0% category on 200 answers, 75% found by name, accurate 40/40, 14-point panel effect, 0.9-point drift, 13 Oct 2026); no named competitors and no negative language about other tools or practitioners; links are bare https URLs with nothing around them; the fan-out feature is not mentioned on any channel until its own post is released.
+House rules that apply to every item here: no prices anywhere; only figures that are on /evidence (0% category on 200 answers, 75% found by name, accurate 40/40, 14-point panel effect, 0.9-point net average drift across seven companies with single companies moving up to 17 points, our own 88% → 75% between 8 and 13 Oct); no named competitors and no negative language about other tools or practitioners; links are bare https URLs with nothing around them; the fan-out feature is not mentioned on any channel until its own post is released.
 
 ---
 
@@ -31,7 +31,7 @@ If publish day is Wednesday 15 Oct, D1 is Thursday and D2 Friday; D4 then lands 
 
 ## 2. LinkedIn — three posts, in order
 
-### Post 1 — the uncomfortable result (D0) · card: `social-zero-percent` or the main OG
+### Post 1 — the uncomfortable result (D0) · card: `hero-recognized-not-recommended-1200x630.png` (served at /og/hero-recognized-not-recommended-1200x630.png)
 
 We built a tool to measure whether AI engines recommend businesses. Then we pointed it at our own company, and published what came back.
 
@@ -45,19 +45,19 @@ https://aeoanalyzers.com/blog/the-measurement-layer
 
 If you work in marketing or SEO, I would value knowing one thing: when someone reports your company's AI visibility score, what evidence do they show you?
 
-### Post 2 — the measurement surprise (D2) · card: `social-transcript` or the main OG
+### Post 2 — the measurement surprise (D2) · card: the article OG (/og/og-the-measurement-layer-v2.png — "The transcript is.")
 
 Same websites. Same day. Two different panels of AI engines. The reported visibility results differed by 14 points.
 
 Nothing about the businesses changed. The engines being asked were different. That is why every result we produce now states the engine panel on its face, with one plain line saying a different panel would give a different number, and by roughly how much.
 
-There is a second habit worth building. In our own repeated runs we measured 0.9 points of drift between identical tests. So a one-point move is not news until it clears ordinary variation under the same conditions.
+There is a second habit worth building. When we re-ran the same test on seven companies, the net average moved by 0.9 points, but single companies inside that average moved by as much as 17. Our own found-by-name figure went from 88% to 75% in five days on the same four engines. So a one-point move is not news until it clears ordinary variation under the same conditions.
 
 A score should travel with its context: which engines, which questions, how many answers, and when. The write-up is here:
 
 https://aeoanalyzers.com/blog/the-measurement-layer
 
-### Post 3 — recognised vs recommended (D4) · card: main OG
+### Post 3 — recognised vs recommended (D4) · card: `hero-recognized-not-recommended-1200x630.png`
 
 A quick experiment you can run before your next marketing meeting.
 
@@ -71,7 +71,7 @@ https://aeoanalyzers.com/blog/the-measurement-layer
 
 ### LinkedIn article (D1)
 
-Republish the full post as a LinkedIn article with the same title. First line of the article: "Originally published at https://aeoanalyzers.com/blog/the-measurement-layer". Also put the canonical link in the first comment. Use the main OG as the article cover.
+Republish the full post as a LinkedIn article with the same title. First line of the article: "Originally published at https://aeoanalyzers.com/blog/the-measurement-layer". Also put the canonical link in the first comment. Use /og/og-the-measurement-layer-v2.png as the article cover.
 
 ---
 
@@ -89,7 +89,7 @@ Republish the full post as a LinkedIn article with the same title. First line of
 
 Where: a thread in r/aeo, r/SEO or r/AI_Agents where someone is asking how to measure AI visibility or whether a score can be trusted. Disclosure line is required by r/aeo Rule 5 and is good manners everywhere.
 
-> I build a measurement tool in this space, so take that into account. Two things we found that might help with the question here. First, the same sites measured on the same day through two different sets of AI engines came out 14 points apart, so any score needs to say which engines were asked. Second, we measured 0.9 points of drift between identical runs, so a one-point move is not a signal on its own. We also ran the tool on our own company and published the result, which was zero percent recommended in our category on 200 answers, with the transcripts. The write-up is at https://aeoanalyzers.com/blog/the-measurement-layer if the thread wants it.
+> I build a measurement tool in this space, so take that into account. Two things we found that might help with the question here. First, the same sites measured on the same day through two different sets of AI engines came out 14 points apart, so any score needs to say which engines were asked. Second, when we re-ran the same test on seven companies the net average moved 0.9 points but single companies moved by up to 17, so a one-point move is not a signal on its own. We also ran the tool on our own company and published the result, which was zero percent recommended in our category on 200 answers, with the transcripts. The write-up is at https://aeoanalyzers.com/blog/the-measurement-layer if the thread wants it.
 
 Keep it to that. Do not reply to replies with more links.
 

@@ -18,6 +18,14 @@ meta = {k.strip(): v.strip().strip('"') for k, v in (l.split(':', 1) for l in fm
 URL = meta['canonical']; assert URL == SITE + '/blog/the-measurement-layer'
 OG = SITE + meta['og_image']; HERO_PNG = SITE + meta['hero_image']
 HERO_WEBP = meta['hero_image'].replace('.png', '.webp')
+EMBED_WEBP = meta['embed_image'].replace('.png', '.webp')
+EMBED_UNDER = 'Read the answer, not just the score'
+OPEN_WEBP = meta['opening_embed_image'].replace('.png', '.webp')
+OPEN_BEFORE = 'A buyer can decide before they ever visit your website'
+
+def caption(text):
+    # "/evidence" in a caption links to the dated 13 Oct section that holds these figures.
+    return html.escape(text, quote=False).replace('/evidence', '<a class="ilink" href="/evidence#panel-test-2026-10-13">/evidence</a>')
 
 assert not re.search(r'\$\s?\d', body), 'no prices in any post'
 for w in ('Search Console', 'fan-out', 'machine-written'):
@@ -47,7 +55,18 @@ for p in re.split(r'\n\s*\n', rest):
     if not p: continue
     if p == '---': out.append('      <hr>'); continue
     if p.startswith('### '): out.append(f'      <h3 class="posth3">{inline(p[4:])}</h3>'); continue
-    if p.startswith('## '): out.append(f'      <h2 class="posth2">{inline(p[3:])}</h2>'); continue
+    if p.startswith('## '):
+        if p[3:].strip() == OPEN_BEFORE:
+            out.append(f'''      <figure class="postfig">
+        <img src="{OPEN_WEBP}" alt="{html.escape(meta['opening_embed_alt'], quote=True)}" width="1731" height="909" loading="lazy" decoding="async">
+        <figcaption>{caption(meta['opening_embed_caption'])}</figcaption>
+      </figure>''')
+        out.append(f'      <h2 class="posth2">{inline(p[3:])}</h2>')
+        if p[3:].strip() == EMBED_UNDER:
+            out.append(f'''      <figure class="postfig">
+        <img src="{EMBED_WEBP}" alt="{html.escape(meta['embed_alt'], quote=True)}" width="1731" height="909" loading="lazy" decoding="async">
+      </figure>''')
+        continue
     if p.startswith('> '):
         out.append('      <blockquote class="postquote"><p>' + inline(' '.join(l[2:] for l in p.splitlines())) + '</p></blockquote>'); continue
     if re.match(r'^\d+\. ', p):
@@ -56,11 +75,13 @@ for p in re.split(r'\n\s*\n', rest):
         out.append(f'      <p class="postlead">{inline(p[1:-1])}</p>')
         out.append('      <p class="postmeta">Lindsay Hiebert &middot; October 14, 2026 &middot; 8-minute read</p>')
         out.append(f'''      <figure class="postfig">
-        <img src="{HERO_WEBP}" alt="{html.escape(meta['og_alt'], quote=True)}" width="1730" height="909" decoding="async" fetchpriority="high">
+        <img src="{HERO_WEBP}" alt="{html.escape(meta['hero_alt'], quote=True)}" width="1731" height="909" decoding="async" fetchpriority="high">
+        <figcaption>{caption(meta['hero_caption'])}</figcaption>
       </figure>''')
         first = False; continue
     out.append(f'      <p>{inline(p)}</p>')
 article = '\n'.join(out)
+assert article.count(EMBED_WEBP) == 1 and article.count(OPEN_WEBP) == 1, 'each embed must appear exactly once'
 
 # H2 order must match the source exactly (the editorial structure).
 assert re.findall(r'^## (.*)$', rest, re.M) == [html.unescape(re.sub('<[^>]+>', '', h)) for h in re.findall(r'<h2 class="posth2">(.*?)</h2>', article)]

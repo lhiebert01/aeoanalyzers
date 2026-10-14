@@ -26,7 +26,7 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - Pricing: https://aeoanalyzers.com/pricing
 - User guide and FAQ: https://aeoanalyzers.com/guide
 - Blog (index): https://www.aeoanalyzers.com/blog/
-- Blog — Is your brand the answer AI gives, or is a competitor? (a walkthrough of a sample AI Visibility Executive Report): https://www.aeoanalyzers.com/blog/are-you-the-answer-ai-gives
+- Blog — Is your brand the answer AI gives, or is a competitor? (a walkthrough of a sample Citation Sweep report): https://www.aeoanalyzers.com/blog/are-you-the-answer-ai-gives
 - Blog — What you actually get: the action plan inside every Citation Sweep: https://www.aeoanalyzers.com/blog/what-you-actually-get
 - Blog — How AEO Analyzers works (a visual explainer of the pipeline): https://www.aeoanalyzers.com/blog/how-it-works
 - Blog — I ran my own AI-visibility tool on my own site; it scored 0% (Honest-Zero, Part 1): https://www.aeoanalyzers.com/blog/i-scored-zero
@@ -98,7 +98,7 @@ Every result AEO Analyzers produces states the engine panel on its face and adds
 
 There is a second problem that dashboards make easy to miss. The same question does not always get the same answer.
 
-In our own repeated measurements we observed 0.9 points of run-to-run drift. That is a result from our tests, under our conditions, not a universal threshold for every system. It is enough to teach a useful habit: do not celebrate or panic over a small movement without first asking whether it exceeds ordinary variation under a comparable test.
+When we re-ran the same test on seven companies, the net average moved by 0.9 points, but single companies moved by as much as 17 points inside that average. Our own found-by-name figure went from 88% on October 8th to 75% on October 13th on the same four engines. Those are results from our tests, under our conditions, not a universal threshold for every system. They are enough to teach a useful habit: do not celebrate or panic over a small movement without first asking whether it exceeds ordinary variation under a comparable test.
 
 Good measurement should prevent unnecessary work. It should not manufacture work every time a line moves.
 
