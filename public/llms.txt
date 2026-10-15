@@ -1,12 +1,12 @@
 # AEO Analyzers
 
-AEO Analyzers shows a brand exactly how today's AI assistants (ChatGPT, Claude, Perplexity, Gemini) describe, rank, and cite it — and what to change to get cited — in about 90 seconds, instead of the hundreds of hours a web team would spend checking by hand. It is an Answer Engine Optimization (AEO) tool: using a frontier LLM it analyzes a page and returns a 0–100 AEO score and a Citation Readiness estimate (a technical-readiness score, not a measured or guaranteed citation rate), runs live Citation Sweeps that query the real answer engines with your branded and category questions to measure whether they actually cite you and who they cite instead, and produces a prioritized, deploy-ready fix list (crawler access, schema, content, structure).
+AEO Analyzers shows a brand exactly how today's AI assistants (ChatGPT, Claude, Perplexity, Gemini and Grok) describe, rank, and cite it — and what to change to get cited — in about 90 seconds, instead of the hundreds of hours a web team would spend checking by hand. It is an Answer Engine Optimization (AEO) tool: using a frontier LLM it analyzes a page and returns a 0–100 AEO score and a Citation Readiness estimate (a technical-readiness score, not a measured or guaranteed citation rate), runs live Citation Sweeps that query the real answer engines with your branded and category questions to measure whether they actually cite you and who they cite instead, and produces a prioritized, deploy-ready fix list (crawler access, schema, content, structure).
 
 ## What it does
 - Crawler-access gate: audits robots.txt / llms.txt (and edge blocks like a noindex header or a Cloudflare AI block) against the major answer-engine bots — a blocked bot caps the score, because a page AI can't read can't be cited.
 - AEO score (0–100) with a transparent formula: Entity×0.3 + Density×0.3 + Clarity×0.2 + Structure×0.2.
 - Citation Readiness: a technical-readiness estimate of how citable the page is (structure, schema, factual density) — not a measured or guaranteed citation rate.
-- Citation Sweeps: query the real answer engines (ChatGPT, Claude, Perplexity, Gemini) with your branded and category questions and report whether they cite you, who they cite instead, and the exact answers — measured and reproducible.
+- Citation Sweeps: Pro and Business ask five answer engines: ChatGPT, Claude, Perplexity, Gemini and Grok. The no-subscription Day Pass asks four. Each sweep asks your branded and category questions and reports whether they cite you, who they cite instead, and the exact answers — measured and reproducible.
 - Brand-aware analysis: editorial/news/SaaS/ecommerce/service sites each get the correct recommendations (editorial voice is preserved, never corporatized).
 - Provenance-safe JSON-LD: a "verified, safe to paste" schema block (detected values only) separate from a "candidate, verify first" block (inferred values).
 - Advanced diagnostics: Citation Hook Density, E-E-A-T Author Audit, LLM Summarization Test, Zero-Click/Snippet Predictor, Query-to-Content Gap, Semantic Chunking.
@@ -35,7 +35,7 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - Blog — How AEO Analyzers works (a visual explainer of the pipeline): https://www.aeoanalyzers.com/blog/how-it-works
 - Blog — I ran my own AI-visibility tool on my own site; it scored 0% (Honest-Zero, Part 1): https://www.aeoanalyzers.com/blog/i-scored-zero
 - Blog — Reading isn't citing: why crawler traffic is not the same as being mentioned: https://aeoanalyzers.com/blog/reading-isnt-citing
-- Blog — We added a fifth AI engine. Here is what changed, and what did not. (Pro and Business sweeps now ask Grok as well; a new engine starts a new series; why AI Overviews, AI Mode and Copilot are not measured): https://aeoanalyzers.com/blog/the-fifth-engine
+- Blog — We added a fifth AI engine. Here is what changed, and what did not. (Pro and Business sweeps now ask Grok as well; a new engine starts a new series; why AI Overviews, AI Mode, Copilot and Meta's Muse are not in the panel): https://aeoanalyzers.com/blog/the-fifth-engine
 - Blog — We Built an AI Visibility Tool. Then We Tested Ourselves. The Result Was Zero. (being recognized by AI engines is not being recommended; read the transcript behind any visibility score): https://aeoanalyzers.com/blog/the-measurement-layer
 - Blog — One question is not a measurement (why twelve buyer questions on four engines are the smallest unit that produces a plan): https://aeoanalyzers.com/blog/one-question-is-not-a-measurement
 - Primer — Why AI still doesn't mention your business (what does not work, why, and the free self-checks): https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you

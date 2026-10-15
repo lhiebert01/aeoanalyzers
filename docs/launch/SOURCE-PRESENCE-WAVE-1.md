@@ -97,3 +97,15 @@ Answer pages (Section 4, step 4) and Earn-tier pitching (step 5) do not batch; t
 ## 8. What not to do
 
 No parasite pages, no Perplexity-Pages seeding, no paid placements dressed as editorial, no review solicitation outside each platform's rules, no engine-gaming query stuffing, no public self-refereed comparisons without transcripts, no new features under the freeze to chase a number. The number moves when the corpus contains us and the corpus is honest.
+
+## Directory profiles — live record (single source: docs/identity/ENTITY-REGISTRY.md)
+
+| Profile | Status | Date live | URL |
+|---|---|---|---|
+| Wikidata, PIGENAI LLC | live | 2026-10-15 | https://www.wikidata.org/wiki/Q141739140 |
+| Wikidata, AEO Analyzers | live | 2026-10-15 | https://www.wikidata.org/wiki/Q141739225 |
+| AlternativeTo | live | 2026-10-15 | https://alternativeto.net/software/aeo-analyzers/ |
+| G2, Slashdot / SourceForge | planned (founder, Oct 16) | | |
+| Crunchbase, LinkedIn company page | planned (founder, week of Oct 19) | | |
+
+Corpus-presence watch list: `src/data/corpus-watch.json` (AlternativeTo and both Wikidata items). The November 1 self-sweep filing reports how many category answers cite each; the first non-zero is the first corpus-presence signal.

@@ -8,6 +8,7 @@ import { scoreRun } from '../src/lib/citationSweep.js';
 import { accuracyWhenNamed } from '../src/lib/fidelity.js';
 import { coverageCounts } from '../src/lib/sourceCoverage.js';
 import { runSourceCoverage } from '../api/_lib/sourceFetch.js';
+const WATCH: { host: string; path: string }[] = JSON.parse(readFileSync('src/data/corpus-watch.json', 'utf8')).hosts;
 const [raw, out, label] = process.argv.slice(2);
 const d = JSON.parse(readFileSync(raw, 'utf8'));
 const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
@@ -18,15 +19,18 @@ const awn = accuracyWhenNamed(runs.map((r: any) => scoreRun(r, client, comps)).f
 // (page fetches only, no engine calls) and carried on the baseline for the /evidence monthly row.
 const cov = await runSourceCoverage(runs.map((r: any) => scoreRun(r, client, comps)), client.domain, client.brand);
 const cc = coverageCounts(cov);
+// WO-008 4.14: corpus-presence watch list — category answers citing our own profiles.
+const watch = WATCH.map((w) => ({ ...w, citedInCategoryAnswers: runs.filter((r: any) => r.queryType === 'category' && (r.sources || []).some((u: string) => { try { const x = new URL(u); return x.hostname.replace(/^www\./, '').endsWith(w.host) && x.pathname.startsWith(w.path); } catch { return false; } })).length }));
 const doc = {
   runTimestampUtc: d.truthReadAtUtc, runLabel: label, panelVersion: 'v1.1', enginePanel: d.panel || 'v1.1', reps: 5, concurrency: 1,
   seriesNote: 'Pinned panel v1.1, four engines, five runs per question, sequential, reserve-before-spend budget guard; 0 errored runs. Cost is not recorded in committed baselines.',
   domain: d.domain, brand: d.brand, competitors: comps,
   truth: d.truth, truthReadAtUtc: d.truthReadAtUtc,
   accuracyWhenNamed: awn && { accurate: awn.accurate, named: awn.named, pct: awn.pct, checked: awn.checked },
+  corpusWatch: watch,
   sourceCoverage: { fetchedAt: cov.fetchedAt, named: cc.yes, recurringPages: cc.n, couldNotRead: cc.unreadable, distinctSites: cov.distinctSites, rows: cov.rows },
   summary: { ...d.summary, totalCostUsd: 0, engines: d.summary.engines.map((e: any) => ({ ...e, costUsd: 0 })) },
   runs,
 };
 writeFileSync(out, JSON.stringify(doc, null, 1));
-console.log(`wrote ${out} — ${runs.length} runs, accuracy-when-named ${awn?.accurate}/${awn?.named}, named on ${cc.yes} of ${cc.n} recurring pages (${cc.unreadable} could not be read)`);
+console.log(`wrote ${out} — ${runs.length} runs, accuracy-when-named ${awn?.accurate}/${awn?.named}, named on ${cc.yes} of ${cc.n} recurring pages (${cc.unreadable} could not be read); watch list: ${watch.map((w) => `${w.host}${w.path} ${w.citedInCategoryAnswers}`).join(', ')}`);

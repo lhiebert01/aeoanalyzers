@@ -1,0 +1,557 @@
+{
+ "_note": "L-ENGINE-1 reviewed allowlist (WO-AEO-ENGINE-COUNT-CURRENCY-008). Each entry is a published line that keeps its engine count on purpose: DATED (a past measurement or the v1.1 series of record), ILLUSTRATIVE (a labeled sample or figure), GENERAL (market description, buyer behavior, a manual instruction), SCORE (the AEO Score). Reviewed 2026-10-15.",
+ "entries": [
+  {
+   "file": "public/aeo-buyers-guide/index.html",
+   "text": "or Gemini is failing to retrieve, describe, cite or choose its site — an",
+   "class": "GENERAL",
+   "note": "buyer example"
+  },
+  {
+   "file": "public/best-aeo-tools/index.html",
+   "text": "or Gemini is failing to find it, describing it incorrectly, citing s",
+   "class": "GENERAL",
+   "note": "buyer example"
+  },
+  {
+   "file": "public/best-aeo-tools/index.html",
+   "text": "h, in our September 2026 measurement — 200 recorded answers — and counted ho",
+   "class": "DATED",
+   "note": "September 2026 measurement"
+  },
+  {
+   "file": "public/best-aeo-tools/index.html",
+   "text": "on in our September 2026 measurement, the pages they cited back were titled",
+   "class": "DATED",
+   "note": "September 2026 measurement"
+  },
+  {
+   "file": "public/blog/are-you-the-answer-ai-gives/index.html",
+   "text": "They’ll ask ChatGPT, Gemini, or Perplexity “what’s the best",
+   "class": "GENERAL",
+   "note": "buyer behavior / market description"
+  },
+  {
+   "file": "public/blog/are-you-the-answer-ai-gives/index.html",
+   "text": "y, across every major engine, and compares fairly on the answers the",
+   "class": "GENERAL",
+   "note": "buyer behavior / market description"
+  },
+  {
+   "file": "public/blog/are-you-the-answer-ai-gives/index.html",
+   "text": "60 live queries · ChatGPT · Gemini · Perplexity · Claud",
+   "class": "ILLUSTRATIVE",
+   "note": "labeled Meridian Payroll sample"
+  },
+  {
+   "file": "public/blog/are-you-the-answer-ai-gives/index.html",
+   "text": "Ask about Meridian by name and all four engines find you.",
+   "class": "ILLUSTRATIVE",
+   "note": "labeled Meridian Payroll sample"
+  },
+  {
+   "file": "public/blog/are-you-the-answer-ai-gives/index.html",
+   "text": "60 real questions asked to four live AI answer engines, t",
+   "class": "ILLUSTRATIVE",
+   "note": "labeled Meridian Payroll sample"
+  },
+  {
+   "file": "public/blog/are-you-the-answer-ai-gives/index.html",
+   "text": "When buyers ask ChatGPT, Gemini or Perplexity for the best in your category, they get",
+   "class": "GENERAL",
+   "note": "buyer behavior / market description"
+  },
+  {
+   "file": "public/blog/feed.xml",
+   "text": "Twelve questions on four engines produce a plan.",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/blog/feed.xml",
+   "text": "Analyzers When buyers ask ChatGPT, Gemini or Perplexity for the best in your category, they get",
+   "class": "GENERAL",
+   "note": "buyer behavior / market description"
+  },
+  {
+   "file": "public/blog/how-it-works/index.html",
+   "text": "Diagram drawn August 2026 for the four-engine panel; Pro and Busi",
+   "class": "DATED",
+   "note": "dates the diagram; already names Pro and Business"
+  },
+  {
+   "file": "public/blog/how-it-works/index.html",
+   "text": "A four-by-five grid of one question asked to four AI engine",
+   "class": "ILLUSTRATIVE",
+   "note": "labeled illustrative figure"
+  },
+  {
+   "file": "public/blog/i-scored-zero/index.html",
+   "text": "ry time — 98% branded retrievability across the store",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/blog/i-scored-zero/index.html",
+   "text": "measured five times per query, across all four engines.",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/blog/i-scored-zero/index.html",
+   "text": "July 2026, four answer engines.",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/blog/i-scored-zero/index.html",
+   "text": "cross the same four engines.",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/blog/i-scored-zero/index.html",
+   "text": "rs stored 240 four engines · every one re-readable",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/blog/i-scored-zero/index.html",
+   "text": "ctober we re-measured on the same four engines and again with a fifth added; t",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/blog/index.html",
+   "text": "ns across three segments and four engines are the smallest unit that produces a p",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/blog/index.html",
+   "text": "n by name 98%, recommended to buyers 0% — measured fi",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "stions on four engines is a shape.",
+   "class": "DATED",
+   "note": "the dated twelve-question test in the post"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "erplexity retrieve from different indexes and weight sources differently.",
+   "class": "GENERAL",
+   "note": "market description"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "r ways on three engines.",
+   "class": "DATED",
+   "note": "the dated twelve-question test in the post"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "gments on four engines, in the company's real category rather",
+   "class": "DATED",
+   "note": "the dated twelve-question test in the post"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "question, three of the four engines never searched.",
+   "class": "DATED",
+   "note": "the dated twelve-question test in the post"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "stions on four engines produce a plan..",
+   "class": "DATED",
+   "note": "the dated twelve-question test in the post"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "ons times 4 engines, under the headline One question is not",
+   "class": "DATED",
+   "note": "the dated twelve-question test in the post"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "rows and four columns labelled 12 questions times 4 engines.",
+   "class": "DATED",
+   "note": "the dated twelve-question test in the post"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "stions on four engines produce a plan.",
+   "class": "DATED",
+   "note": "the dated twelve-question test in the post"
+  },
+  {
+   "file": "public/blog/the-fifth-engine/index.html",
+   "text": "the same three-engine run that day moved the average by 0.9 point",
+   "class": "DATED",
+   "note": "September 2026 panel-effect test"
+  },
+  {
+   "file": "public/blog/the-fifth-engine/index.html",
+   "text": "So the five-engine panel starts its own series, from its own first date.",
+   "class": "DATED",
+   "note": "series of record (panel v1.1) / the new series start, not a plan claim"
+  },
+  {
+   "file": "public/blog/the-fifth-engine/index.html",
+   "text": "r monthly series of record stays on four engines, so each month co",
+   "class": "DATED",
+   "note": "series of record (panel v1.1) / the new series start, not a plan claim"
+  },
+  {
+   "file": "public/blog/the-fifth-engine/index.html",
+   "text": "Four engines (ChatGPT, Claude, Perplexity, Gemini): found by",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/blog/the-fifth-engine/index.html",
+   "text": "Five engines (the same four plus Grok): found by name in 80% of 50",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/blog/the-fifth-engine/index.html",
+   "text": "The series of record asks four engines: ChatGPT, Claude, Per",
+   "class": "DATED",
+   "note": "series of record (panel v1.1) / the new series start, not a plan claim"
+  },
+  {
+   "file": "public/blog/the-measurement-layer/index.html",
+   "text": "ngines on October 13th, 2026, and the same again with a fifth",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/blog/the-measurement-layer/index.html",
+   "text": "13 October 2026, four engines.",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/blog/the-measurement-layer/index.html",
+   "text": "went from 88% on October 8th to 75% on October 13th on the same four",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/blog/the-measurement-layer/index.html",
+   "text": "receipt: 4 engines, 200 answers, 13 Oct 2026, sources read..",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/blog/what-you-actually-get/index.html",
+   "text": "Your customers have started asking ChatGPT, Gemini, Perplexity, and Claude",
+   "class": "GENERAL",
+   "note": "market description"
+  },
+  {
+   "file": "public/blog/why-ai-doesnt-mention-you/index.html",
+   "text": "Four assistants, four indexes.",
+   "class": "ILLUSTRATIVE",
+   "note": "figure draws four indexes; caption keeps the figure's scope"
+  },
+  {
+   "file": "public/blog/why-ai-doesnt-mention-you/index.html",
+   "text": "Across 200 answers to category questions, measured five ti",
+   "class": "DATED",
+   "note": "September 2026 measurement"
+  },
+  {
+   "file": "public/blog/why-ai-doesnt-mention-you/index.html",
+   "text": ", that is 240 separate questions , asked one at a time, with every answe",
+   "class": "GENERAL",
+   "note": "do-it-yourself arithmetic (12 x 4 x 5)"
+  },
+  {
+   "file": "public/blog/why-ai-doesnt-mention-you/index.html",
+   "text": "Four AI assistants drawing on four different indexes with little o",
+   "class": "ILLUSTRATIVE",
+   "note": "figure draws four indexes; caption keeps the figure's scope"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "Answers stored 240 four engines · every one re-readable",
+   "class": "DATED",
+   "note": "ledger records"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "Two engines returned the site every time, two almost never.",
+   "class": "DATED",
+   "note": "ledger records"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "Same instrument every month: the same pinned twelve-question panel,",
+   "class": "DATED",
+   "note": "ledger records"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "more run, 13 October 2026: four engines, then five",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "bove: the ledger stays on the same four engines so each month compares with the",
+   "class": "DATED",
+   "note": "series of record (panel v1.1) / the new series start, not a plan claim"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "Four engines (ChatGPT, Claude, Perplexity, Gemini).",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "Five engines (the same four plus Grok).",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "ines gave 88% and 75%.",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "Repeating the three-engine run the same day moved the average by 0.9 p",
+   "class": "DATED",
+   "note": "ledger records"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "Same twelve-question panel, five runs each, four engines, every an",
+   "class": "DATED",
+   "note": "ledger records"
+  },
+  {
+   "file": "public/get-recommended/index.html",
+   "text": "On October 13th, 2026, four engines found aeoanalyzers.",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/llms-full.txt",
+   "text": "- Blog — One question is not a measurement (why twelve buyer questions on four e",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/llms-full.txt",
+   "text": "the same three-engine run that day moved the average by 0.9 point",
+   "class": "DATED",
+   "note": "September 2026 panel-effect test"
+  },
+  {
+   "file": "public/llms-full.txt",
+   "text": "So the five-engine panel starts its own series, from its own first date.",
+   "class": "DATED",
+   "note": "series of record (panel v1.1) / the new series start, not a plan claim"
+  },
+  {
+   "file": "public/llms-full.txt",
+   "text": "r monthly series of record stays on four engines, so each month co",
+   "class": "DATED",
+   "note": "series of record (panel v1.1) / the new series start, not a plan claim"
+  },
+  {
+   "file": "public/llms-full.txt",
+   "text": "y name in 75% of 40 answers; recommended in 0% of 200 categ",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/llms-full.txt",
+   "text": "y name in 80% of 50 answers; recommended in 0% of 249 categ",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/llms-full.txt",
+   "text": "ngines on October 13th, 2026, and the same again with a fifth",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/llms-full.txt",
+   "text": "th on the same four engines.",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/llms-full.txt",
+   "text": "On October 13th, 2026, four engines found aeoanalyzers.",
+   "class": "DATED",
+   "note": "13 October 2026 panel test"
+  },
+  {
+   "file": "public/llms.txt",
+   "text": "- Blog — One question is not a measurement (why twelve buyer questions on four e",
+   "class": "DATED",
+   "note": "July–October 2026 measurements and the series of record"
+  },
+  {
+   "file": "public/methodology/index.html",
+   "text": "Panel v1.1 — ChatGPT, Claude, Perplexity and Gemini — is our",
+   "class": "DATED",
+   "note": "series of record (panel v1.1) / the new series start, not a plan claim"
+  },
+  {
+   "file": "public/methodology/index.html",
+   "text": "example, one question across four engines, three runs each — medium from 6 to 11, and low under 6.",
+   "class": "ILLUSTRATIVE",
+   "note": "worked example of N"
+  },
+  {
+   "file": "src/App.tsx",
+   "text": "t mb-6\" > Secure your <span className=\"text-zinc-500\">AI Cita",
+   "class": "SCORE",
+   "note": "AEO Score (structural scan), examples with \"like\""
+  },
+  {
+   "file": "src/components/ImplementationRoadmap.tsx",
+   "text": "AI engine like Google Gemini, ChatGPT, or Perplexity answers a user'",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/components/ImplementationRoadmap.tsx",
+   "text": "I-powered search engines like Google Gemini, ChatGPT, and Perplexity are replacing",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/components/MarketingLanding.tsx",
+   "text": "AI agents like ChatGPT, Gemini, and Perplexity, your site must be sema",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/components/PersonasAndFAQ.tsx",
+   "text": "r site so AI agents like Gemini, ChatGPT, and Perplexity can easily fin",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/components/PersonasAndFAQ.tsx",
+   "text": "r site so AI answer engines — ChatGPT, Gemini, Perplexity, Claude — find, trust, and",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/components/PressKit.tsx",
+   "text": "n someone asks ChatGPT, Gemini, Perplexity, or Claude about your categ",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/components/PressKit.tsx",
+   "text": "nAI LLC — July 2026** — AEO Analyzers today released the ne",
+   "class": "DATED",
+   "note": "July 2026 press release text"
+  },
+  {
+   "file": "src/components/PressKit.tsx",
+   "text": "### What the platform does * **Citation Sweeps:** buyers' question",
+   "class": "DATED",
+   "note": "July 2026 press release text"
+  },
+  {
+   "file": "src/components/PressKit.tsx",
+   "text": "n a buyer asks ChatGPT, Gemini, Perplexity, or Claude for the best opt",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/components/PressKit.tsx",
+   "text": "Ask ChatGPT, Gemini, Perplexity, or Claude for the best opt",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/components/PressKit.tsx",
+   "text": "eople are asking ChatGPT, Gemini, Perplexity, and Claude for recommendat",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/components/PressKit.tsx",
+   "text": "nAI LLC — July 2026</strong> — AEO Analyzers today released",
+   "class": "DATED",
+   "note": "July 2026 press release text"
+  },
+  {
+   "file": "src/components/PressKit.tsx",
+   "text": "text-xs\">What the platform does:</p> <ul className=\"list-disc pl-5 spac",
+   "class": "DATED",
+   "note": "July 2026 press release text"
+  },
+  {
+   "file": "src/components/UserGuideDashboard.tsx",
+   "text": "e for the next generation of search: ChatGPT, Claude, Gemini, and Perplexit",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/lib/botClassify.ts",
+   "text": "{ token: 'Applebot', vendor: 'Apple', engine: 'Apple (Siri",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/lib/botClassify.ts",
+   "text": "{ token: 'ClaudeBot', vendor: 'Anthropic', engine: 'Anthrop",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/lib/crawlerAccess.ts",
+   "text": "The major citation engines can still read you, but consider allowi",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/lib/execReport.ts",
+   "text": "a quick, no-strings AI-visibility check on ${d.domain} — what ChatGPT, Claude,",
+   "class": "DATED",
+   "note": "names the panel that specific courtesy report ran (v1.1)"
+  },
+  {
+   "file": "src/lib/fanoutClassifier.ts",
+   "text": "Nothing here describes ChatGPT, Claude or Perplexity traffic.'",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/lib/indexCoverage.ts",
+   "text": "CRITICAL: AI answer engines do not run JavaScript, and your server returns only ~${render",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/services/docxGenerator.ts",
+   "text": "readable \"business card\" — telling AI engines exactly what your",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "src/services/docxGenerator.ts",
+   "text": "I-powered search engines like Google Gemini, ChatGPT, and Perplexity are replacing",
+   "class": "GENERAL",
+   "note": "market description, examples or crawler reference"
+  }
+ ]
+}

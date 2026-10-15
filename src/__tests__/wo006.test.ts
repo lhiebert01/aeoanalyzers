@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
-import { panelOf, panelDisclosure, withLocation, testConditionsLines, PANELS } from '../lib/panel';
+import { panelOf, panelDisclosure, withLocation, testConditionsLines, PANELS, NOT_COVERED } from '../lib/panel';
 import { buildSeries, otherPanels } from '../lib/sweepDisclosure';
 import { classifyIntent, intentMix, intentMixLine } from '../lib/queryIntent';
 import { classifyQuery, segment, parseGscCsv, FANOUT_RULES, FANOUT_LIMITS } from '../lib/fanoutClassifier';
@@ -26,8 +26,10 @@ describe('Item B — panels: v1.1 unchanged, v1.2 separate, never differenced', 
     expect(buildSeries(rows as any, rows[2] as any).map((p) => [p.id, p.deltaCategory])).toEqual([['c', null]]);
   });
   it('the disclosure names the engines, what is not covered, and the measured panel effect', () => {
-    expect(panelDisclosure('v1.1')).toBe('Measured on ChatGPT, Claude, Perplexity and Gemini (panel v1.1). Not covered: Grok, Microsoft Copilot and Google AI Overviews. A different set of engines gives a different number — in our own September 2026 measurement, adding one engine to the same runs moved the category figure by 14 points.');
-    expect(panelDisclosure('v1.2')).toMatch(/and Grok \(panel v1\.2\)\. Not covered: Microsoft Copilot and Google AI Overviews\./);
+    expect(panelDisclosure('v1.1')).toBe('Measured on ChatGPT, Claude, Perplexity and Gemini (panel v1.1). Not covered: Grok, Google AI Overviews, Google AI Mode, Microsoft Copilot, Meta\'s Muse. A different set of engines gives a different number — in our own September 2026 measurement, adding one engine to the same runs moved the category figure by 14 points.');
+    expect(panelDisclosure('v1.2')).toMatch(/and Grok \(panel v1\.2\)\. Not covered: Google AI Overviews, Google AI Mode, Microsoft Copilot, Meta's Muse\./);
+    // WO-008: the inline list equals the single source.
+    expect(NOT_COVERED).toEqual(JSON.parse(readFileSync('src/data/engines.json', 'utf8')).notCovered);
   });
   it('the sweep route refuses a v1.2 run without Grok rather than mislabel a v1.1 run', () => {
     expect(readFileSync('api/run-sweep.ts', 'utf8')).toMatch(/panelVersion === 'v1\.2' && !process\.env\.XAI_API_KEY\) return res\.status\(400\)/);

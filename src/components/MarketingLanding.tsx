@@ -54,6 +54,14 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
       a: "A Citation Sweep runs your buyers' questions against the real answer engines, multiple times each, and measures three separate things — Retrievability (does AI find you when asked about your brand), Fidelity (does AI's answer about you match the facts), and Citation Win (does AI pick you for category questions like 'best [category] tools'). Every result is backed by a stored transcript you can read."
     },
     {
+      q: "Which AI engines does AEO Analyzers measure?",
+      a: "Pro and Business ask five answer engines: ChatGPT, Claude, Perplexity, Gemini and Grok. The no-subscription Day Pass asks four. Every question is asked with web search enabled, and every answer is stored with its full transcript."
+    },
+    {
+      q: "Why aren't Google AI Overviews, Microsoft Copilot or Meta's Muse included?",
+      a: "We add an engine when it can be measured the same way as the others: asked directly, with web search enabled, and every answer stored with its transcript. Google's AI Overviews and AI Mode and Microsoft Copilot are not in the panel today, for the reasons in our post We added a fifth AI engine (aeoanalyzers.com/blog/the-fifth-engine). Meta's Muse launched in September 2026 as a task agent. We are evaluating it for the panel on the same terms as the others: asked directly, with web search enabled, and every answer stored with its transcript."
+    },
+    {
       q: "How do you catch facts AI gets wrong about my business?",
       a: "We build a 'truth record' from your own structured data and site, then compare each AI engine's answer against it. If an engine invents a fact — a wrong founder, a stale price, a feature you don't have — we flag it with the correct value and the fix. We report it as a separate layer from whether you were mentioned at all, because being cited wrongly costs you the sale just as surely as not being cited."
     },
@@ -75,7 +83,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     <div className="space-y-24 pb-24">
       <SEO
         title="Be the Answer AI Gives"
-        description="AEO Analyzers scores how citable your site is by ChatGPT, Gemini, Perplexity & Claude — then proves it with live Citation Sweeps and the exact fixes."
+        description="AEO Analyzers scores how citable your site is, then measures it with Citation Sweeps: five answer engines on Pro and Business, four on the Day Pass."
         ogType="website"
         author="Lindsay Hiebert"
         publishedDate="2026-03-22T00:00:00Z"
@@ -233,7 +241,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           </div>
           <h2 id="measure-title" className="text-4xl md:text-6xl font-black tracking-tight mb-6">Don't just optimize — <span className="text-zinc-400 italic font-serif">prove it.</span></h2>
           <p className="text-zinc-500 text-xl max-w-3xl mx-auto leading-relaxed">
-            A score predicts. A <strong>Citation Sweep</strong> proves. We ask the real engines — ChatGPT, Claude, Perplexity, Gemini — your buyers' questions, multiple times each, and measure three separable layers. Every result is backed by the actual transcript.
+            A score predicts. A <strong>Citation Sweep</strong> proves. We ask the real answer engines your buyers' questions, multiple times each: five on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass. We measure three separable layers. Every result is backed by the actual transcript.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
@@ -255,7 +263,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         </div>
         {/* Sep 7 2026: dropped the "AI-crawler telemetry" promise — no customer-facing
             way to connect a domain exists yet (see Payments.tsx). Drift monitoring ships. */}
-        <p className="text-center text-zinc-600 text-sm mt-8 max-w-2xl mx-auto">Plus answer-drift comparison across your re-runs — so you know what the engines say about you, and whether it changed. <strong className="text-zinc-600">The AEO analysis is free</strong> &mdash; your score, your sub-scores and every gap named. <strong className="text-zinc-600">Citation Sweeps are paid</strong>: four engines, or five with Grok on Pro and Business, repeated runs, every answer stored as a transcript.</p>
+        <p className="text-center text-zinc-600 text-sm mt-8 max-w-2xl mx-auto">Plus answer-drift comparison across your re-runs — so you know what the engines say about you, and whether it changed. <strong className="text-zinc-600">The AEO analysis is free</strong> &mdash; your score, your sub-scores and every gap named. <strong className="text-zinc-600">Citation Sweeps are paid</strong>: five answer engines on Pro and Business, four on the Day Pass, repeated runs, every answer stored as a transcript.</p>
         {/* WO-012 H: the one homepage change — link the Measure. Act. Record. page. */}
         <p className="text-center text-sm mt-4"><a href="/get-recommended" className="underline font-semibold text-zinc-900">How AI engines choose who to recommend, and what you can do about it &rarr;</a></p>
       </section>
@@ -265,7 +273,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         <div className="text-center mb-16">
           <h2 id="trust-title" className="text-4xl md:text-6xl font-black tracking-tight mb-6">Why <span className="text-zinc-400">Analyzers</span>, Plural?</h2>
           <p className="text-zinc-500 text-xl max-w-3xl mx-auto leading-relaxed">
-            Keywords answer a different question. We analyze the structural, content, entity, and authority signals tied to retrievability and citation — then test the outcome directly across Gemini, ChatGPT, Claude, and Perplexity. We don't claim to know their algorithms; we measure what they actually do. That's why it's Analyzer<strong>s</strong>.
+            Keywords answer a different question. We analyze the structural, content, entity, and authority signals tied to retrievability and citation — then test the outcome directly with Citation Sweeps across five answer engines on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass. We don't claim to know their algorithms; we measure what they actually do. That's why it's Analyzer<strong>s</strong>.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
@@ -281,7 +289,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
               <Target className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-black mb-4">Built for Every Answer Engine</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini, we analyze the structural, content, entity, and authority signals tied to retrievability and citation, then test the outcome directly across Gemini, ChatGPT, Claude, and Perplexity — measuring what they actually do, not guessing their algorithms. ~90 seconds, not hundreds of manual hours.</p>
+            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini, we analyze the structural, content, entity, and authority signals tied to retrievability and citation, then test the outcome directly with Citation Sweeps across five answer engines on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass — measuring what they actually do, not guessing their algorithms. ~90 seconds, not hundreds of manual hours.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">

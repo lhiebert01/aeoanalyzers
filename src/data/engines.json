@@ -1,0 +1,20 @@
+{
+  "_note": "WO-AEO-ENGINE-COUNT-CURRENCY-008: the single source for which engines each plan asks. Lint L-ENGINE-1 (scripts/lint-engine-count.mjs) checks published copy against it. Changing a panel starts with a lint failure listing every line to revisit.",
+  "panels": {
+    "v1.1": { "engines": ["ChatGPT", "Claude", "Perplexity", "Gemini"], "count": 4 },
+    "v1.2": { "engines": ["ChatGPT", "Claude", "Perplexity", "Gemini", "Grok"], "count": 5 }
+  },
+  "plans": { "Day Pass": "v1.1", "Pro": "v1.2", "Business": "v1.2" },
+  "seriesOfRecord": "v1.1",
+  "citationSweepAccess": "Paid only: the Day Pass, or a Pro or Business subscription. No free tier includes a sweep.",
+  "aeoScore": {
+    "what": "A structural scan of the website (a different product from Citation Sweeps).",
+    "engines": "Powered by Google Gemini (one model answers each analysis; OpenAI and Anthropic are fallbacks when Gemini is unavailable). The free score excludes the fixes.",
+    "source": "https://aeoanalyzers.com (homepage: 'Powered by Google Gemini'); api/llm-generate.ts"
+  },
+  "notCovered": ["Google AI Overviews", "Google AI Mode", "Microsoft Copilot", "Meta's Muse"],
+  "canonical": "Pro and Business ask five answer engines: ChatGPT, Claude, Perplexity, Gemini and Grok. The no-subscription Day Pass asks four.",
+  "short": "five answer engines on Pro and Business, four on the Day Pass",
+  "museLine": "Meta's Muse launched in September 2026 as a task agent. We are evaluating it for the panel on the same terms as the others: asked directly, with web search enabled, and every answer stored with its transcript.",
+  "museCheck": { "checked": "2026-10-15", "result": "Meta Model API offers Muse Spark with a built-in web_search tool on the Responses API that returns url_citation annotations (url, title).", "sources": ["https://dev.meta.ai/resources/blog/build-with-muse-spark/", "https://dev.meta.ai/docs/cookbook/search-grounding"] }
+}

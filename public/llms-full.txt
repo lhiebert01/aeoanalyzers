@@ -1,12 +1,12 @@
 # AEO Analyzers
 
-AEO Analyzers shows a brand exactly how today's AI assistants (ChatGPT, Claude, Perplexity, Gemini) describe, rank, and cite it — and what to change to get cited — in about 90 seconds, instead of the hundreds of hours a web team would spend checking by hand. It is an Answer Engine Optimization (AEO) tool: using a frontier LLM it analyzes a page and returns a 0–100 AEO score and a Citation Readiness estimate (a technical-readiness score, not a measured or guaranteed citation rate), runs live Citation Sweeps that query the real answer engines with your branded and category questions to measure whether they actually cite you and who they cite instead, and produces a prioritized, deploy-ready fix list (crawler access, schema, content, structure).
+AEO Analyzers shows a brand exactly how today's AI assistants (ChatGPT, Claude, Perplexity, Gemini and Grok) describe, rank, and cite it — and what to change to get cited — in about 90 seconds, instead of the hundreds of hours a web team would spend checking by hand. It is an Answer Engine Optimization (AEO) tool: using a frontier LLM it analyzes a page and returns a 0–100 AEO score and a Citation Readiness estimate (a technical-readiness score, not a measured or guaranteed citation rate), runs live Citation Sweeps that query the real answer engines with your branded and category questions to measure whether they actually cite you and who they cite instead, and produces a prioritized, deploy-ready fix list (crawler access, schema, content, structure).
 
 ## What it does
 - Crawler-access gate: audits robots.txt / llms.txt (and edge blocks like a noindex header or a Cloudflare AI block) against the major answer-engine bots — a blocked bot caps the score, because a page AI can't read can't be cited.
 - AEO score (0–100) with a transparent formula: Entity×0.3 + Density×0.3 + Clarity×0.2 + Structure×0.2.
 - Citation Readiness: a technical-readiness estimate of how citable the page is (structure, schema, factual density) — not a measured or guaranteed citation rate.
-- Citation Sweeps: query the real answer engines (ChatGPT, Claude, Perplexity, Gemini) with your branded and category questions and report whether they cite you, who they cite instead, and the exact answers — measured and reproducible.
+- Citation Sweeps: Pro and Business ask five answer engines: ChatGPT, Claude, Perplexity, Gemini and Grok. The no-subscription Day Pass asks four. Each sweep asks your branded and category questions and reports whether they cite you, who they cite instead, and the exact answers — measured and reproducible.
 - Brand-aware analysis: editorial/news/SaaS/ecommerce/service sites each get the correct recommendations (editorial voice is preserved, never corporatized).
 - Provenance-safe JSON-LD: a "verified, safe to paste" schema block (detected values only) separate from a "candidate, verify first" block (inferred values).
 - Advanced diagnostics: Citation Hook Density, E-E-A-T Author Audit, LLM Summarization Test, Zero-Click/Snippet Predictor, Query-to-Content Gap, Semantic Chunking.
@@ -32,7 +32,7 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - Blog — How AEO Analyzers works (a visual explainer of the pipeline): https://www.aeoanalyzers.com/blog/how-it-works
 - Blog — I ran my own AI-visibility tool on my own site; it scored 0% (Honest-Zero, Part 1): https://www.aeoanalyzers.com/blog/i-scored-zero
 - Blog — Reading isn't citing: why crawler traffic is not the same as being mentioned: https://aeoanalyzers.com/blog/reading-isnt-citing
-- Blog — We added a fifth AI engine. Here is what changed, and what did not. (Pro and Business sweeps now ask Grok as well; a new engine starts a new series; why AI Overviews, AI Mode and Copilot are not measured): https://aeoanalyzers.com/blog/the-fifth-engine
+- Blog — We added a fifth AI engine. Here is what changed, and what did not. (Pro and Business sweeps now ask Grok as well; a new engine starts a new series; why AI Overviews, AI Mode, Copilot and Meta's Muse are not in the panel): https://aeoanalyzers.com/blog/the-fifth-engine
 - Blog — We Built an AI Visibility Tool. Then We Tested Ourselves. The Result Was Zero. (being recognized by AI engines is not being recommended; read the transcript behind any visibility score): https://aeoanalyzers.com/blog/the-measurement-layer
 - Blog — One question is not a measurement (why twelve buyer questions on four engines are the smallest unit that produces a plan): https://aeoanalyzers.com/blog/one-question-is-not-a-measurement
 - Primer — Why AI still doesn't mention your business (what does not work, why, and the free self-checks): https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you
@@ -91,6 +91,8 @@ Both are true. They are not the same measurement, and we will not put them on on
 ## Which engines are not in the panel, and why
 
 Google's AI Overviews, Google's AI Mode and Microsoft Copilot are not in either panel. The reason is plain: none of them has an API that returns its answer. The answer exists only on a results page, and what that page shows depends on who is signed in, where they are, and what they searched before. Without an API we cannot ask the same question under the same conditions every time, so a figure for them could not be repeated or checked, and we do not publish figures that cannot be. We do not scrape those pages or imitate them.
+
+Meta's Muse launched in September 2026 as a task agent. We are evaluating it for the panel on the same terms as the others: asked directly, with web search enabled, and every answer stored with its transcript.
 
 ## What else changed the same week
 
@@ -415,7 +417,7 @@ Wikidata is a free, public database of facts that answer engines and search engi
 1. Create your Wikidata entries
 Where to start: https://www.wikidata.org (create a free account with "Create account", top right)
    1. Create a free Wikidata account and sign in.
-   2. Search Wikidata for your company and your product first. If an item already exists, improve it instead of creating a second one.
+   2. Search Wikidata for your company and your product first. If an item already exists, edit it instead of creating a second one.
    3. Open https://www.wikidata.org/wiki/Special:NewItem. Label: Your company. Description: short and neutral, such as "software company in Your City, Country". Aliases: other spellings people use.
    4. Add each statement in the company table: click "+ add statement", type the property, pick it from the list, type the value, pick it, then "+ add reference", choose "reference URL" and paste the source. Publish.
    5. Create the product item the same way (Label: Your product) with the product table, then link the two: "product or material produced" on the company, "developer" on the product.

@@ -5,7 +5,10 @@
 // 8 September ruling — a changed panel makes any shift ambiguous between the engines and the day.
 //
 // Not covered by any panel, and not faked: Microsoft Copilot (no public API for its grounded answers),
-// Google AI Overviews and AI Mode (SERP features, not endpoints; the Gemini API is a different product).
+// Google AI Overviews and AI Mode (SERP features, not endpoints; the Gemini API is a different product),
+// and Meta's Muse (under evaluation, WO-008 4.12). Must equal src/data/engines.json notCovered
+// (a test checks); kept inline because serverless routes import this module.
+export const NOT_COVERED = ['Google AI Overviews', 'Google AI Mode', 'Microsoft Copilot', "Meta's Muse"];
 
 export type PanelVersion = 'v1.1' | 'v1.2';
 export const PANELS: Record<PanelVersion, { engines: string[]; note: string }> = {
@@ -30,7 +33,7 @@ export const PANEL_EFFECT_POINTS = 14;
 export function panelDisclosure(version: PanelVersion, enginesRun?: string[]): string {
   const engines = (enginesRun && enginesRun.length ? enginesRun : PANELS[version].engines).map((e) => LABEL[e] || e);
   const list = engines.length > 1 ? `${engines.slice(0, -1).join(', ')} and ${engines[engines.length - 1]}` : engines[0];
-  const missing = version === 'v1.1' ? 'Grok, Microsoft Copilot and Google AI Overviews' : 'Microsoft Copilot and Google AI Overviews';
+  const missing = [...(version === 'v1.1' ? ['Grok'] : []), ...NOT_COVERED].join(', ');
   return `Measured on ${list} (panel ${version}). Not covered: ${missing}. A different set of engines gives a different number — in our own September 2026 measurement, adding one engine to the same runs moved the category figure by ${PANEL_EFFECT_POINTS} points.`;
 }
 

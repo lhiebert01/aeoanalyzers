@@ -40,6 +40,8 @@ Both are true. They are not the same measurement, and we will not put them on on
 
 Google's AI Overviews, Google's AI Mode and Microsoft Copilot are not in either panel. The reason is plain: none of them has an API that returns its answer. The answer exists only on a results page, and what that page shows depends on who is signed in, where they are, and what they searched before. Without an API we cannot ask the same question under the same conditions every time, so a figure for them could not be repeated or checked, and we do not publish figures that cannot be. We do not scrape those pages or imitate them.
 
+Meta's Muse launched in September 2026 as a task agent. We are evaluating it for the panel on the same terms as the others: asked directly, with web search enabled, and every answer stored with its transcript.
+
 ## What else changed the same week
 
 We ran the new panel the way a customer would, on a paid account, and it found things.

@@ -16,9 +16,11 @@ const PIGENAI_ORG_ID = 'https://pigenai.com/#org';
 // WO-013: Wikidata items, from docs/identity/ENTITY-REGISTRY.md (the single source).
 const WIKIDATA_ORG = 'https://www.wikidata.org/wiki/Q141739140'; // PIGENAI LLC
 const WIKIDATA_APP = 'https://www.wikidata.org/wiki/Q141739225'; // AEO Analyzers
+// WO-008 4.14: live directory listings of the product (registry, Listings table). Product node only.
+const APP_LISTINGS = ['https://alternativeto.net/software/aeo-analyzers/'];
 
 const APP_DESCRIPTION =
-  'AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, Perplexity, and Claude — and gives you the exact fixes, in 90 seconds.';
+  'AEO Analyzers scores how citable your site is and gives you the exact fixes, then measures it with Citation Sweeps: five answer engines on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass.';
 
 // WO-DOGFOOD-001: atomic, quotable disambiguation sentence. "AEO Analyzer" is a
 // crowded near-generic name (browser extensions, other tools, even a same-named
@@ -181,7 +183,7 @@ function softwareApplicationNode() {
     //
     // Wikidata Q141739225 is AEO Analyzers, the software (developer: Q141739140), created by the
     // founder 15 Oct 2026; see docs/identity/ENTITY-REGISTRY.md. Never a portfolio URL.
-    sameAs: [WIKIDATA_APP],
+    sameAs: [WIKIDATA_APP, ...APP_LISTINGS],
     // Explicit sole authorship of the software. Without this, answer engines
     // infer the creator from third-party sources and can misattribute a
     // co-founder that does not exist. Lindsay Hiebert is the sole creator.

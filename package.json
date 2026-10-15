@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/check-no-orphan-modules.mjs && node scripts/build-blog-feed.mjs && vite build && node scripts/prerender.mjs && node scripts/check-prerender.mjs",
+    "build": "tsx scripts/lint-engine-count.ts && node scripts/check-no-orphan-modules.mjs && node scripts/build-blog-feed.mjs && vite build && node scripts/prerender.mjs && node scripts/check-prerender.mjs",
     "build:nopre": "vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
     "test": "vitest run",
     "indexnow": "node scripts/indexnow-ping.mjs",
-    "indexnow:all": "node scripts/indexnow-ping.mjs --all"
+    "indexnow:all": "node scripts/indexnow-ping.mjs --all",
+    "lint:engines": "tsx scripts/lint-engine-count.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.112.5",
@@ -44,6 +45,7 @@
     "jszip": "^3.10.1",
     "puppeteer-core": "^25.1.0",
     "tailwindcss": "^4.1.14",
+    "tsx": "4.21.0",
     "typescript": "~5.8.2",
     "vitest": "^2.1.9"
   }

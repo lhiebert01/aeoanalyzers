@@ -15,13 +15,13 @@ interface SEOProps {
 
 const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://aeoanalyzers.com';
 const DEFAULT_TITLE = 'AEO Analyzers | Be the Answer AI Gives';
-const DEFAULT_DESCRIPTION = 'AEO Analyzers scores how citable your site is by ChatGPT, Gemini, Perplexity & Claude — then proves it with live Citation Sweeps and the exact fixes.';
+const DEFAULT_DESCRIPTION = 'AEO Analyzers scores how citable your site is, then measures it with Citation Sweeps: five answer engines on Pro and Business, four on the Day Pass.';
 const DEFAULT_AUTHOR = 'Lindsay Hiebert';
 
 const SEO: React.FC<SEOProps> = ({
   title,
   description = DEFAULT_DESCRIPTION,
-  keywords = ['AEO', 'Answer Engine Optimization', 'AI Search', 'Brand Citations', 'SEO for AI', 'LLM Optimization', 'Gemini SEO', 'ChatGPT SEO', 'Perplexity SEO', 'AI Search Optimization', 'Generative Engine Optimization', 'GEO', 'AI Citation', 'AI Attribution', 'Semantic SEO', 'Knowledge Graph Optimization'],
+  keywords = ['AEO', 'Answer Engine Optimization', 'AI Search', 'Brand Citations', 'SEO for AI', 'LLM Optimization', 'Gemini SEO', 'ChatGPT SEO', 'Perplexity SEO', 'Grok SEO', 'AI Search Optimization', 'Generative Engine Optimization', 'GEO', 'AI Citation', 'AI Attribution', 'Semantic SEO', 'Knowledge Graph Optimization'],
   canonical,
   ogType = 'website',
   ogImage = '/aeo-og-sweep-2026c.png',
@@ -60,7 +60,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:image:type" content={imageType} />
-      <meta property="og:image:alt" content="AEO Analyzers — Be the Answer AI Gives. Citation Sweep results across ChatGPT, Claude, Gemini, and Perplexity: retrievability, fidelity, and who gets cited instead." />
+      <meta property="og:image:alt" content="AEO Analyzers: Be the Answer AI Gives. A sample AEO Score of 88 out of 100, with a citation estimate and the top recommendations." />
       <meta property="og:locale" content="en_US" />
       
       {/* Article Metadata (if applicable) */}
@@ -74,7 +74,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
-      <meta name="twitter:image:alt" content="AEO Analyzers — Be the Answer AI Gives. Citation Sweep results across ChatGPT, Claude, Gemini, and Perplexity: retrievability, fidelity, and who gets cited instead." />
+      <meta name="twitter:image:alt" content="AEO Analyzers: Be the Answer AI Gives. A sample AEO Score of 88 out of 100, with a citation estimate and the top recommendations." />
 
       {/* Robots */}
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
