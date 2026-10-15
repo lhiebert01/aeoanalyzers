@@ -13,7 +13,7 @@ EV = open('public/evidence/index.html', encoding='utf-8').read()
 CSS = EV[EV.index('<style>'):EV.index('</style>') + 8]
 BAR = EV[EV.index('<body>'):EV.index('<div class="wrap">')]
 FOOT = EV[EV.index('<footer class="sitefoot">'):EV.index('</footer>') + 9]
-REVIEWED = '2026-10-13'
+REVIEWED = '2026-10-14'
 PERSON = {"@type": "Person", "@id": "https://pigenai.com/#lindsay", "name": "Lindsay Hiebert"}
 ORG = {"@type": "Organization", "@id": "https://pigenai.com/#org", "name": "PIGENAI LLC", "alternateName": "PI GenAI LLC", "url": "https://pigenai.com"}
 
