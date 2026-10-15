@@ -304,7 +304,7 @@ PAGE = f"""<!doctype html>
       ledger stays on the same four engines so each month compares with the last.</p>
       <ul class="lessons">
         <li><b>Four engines (ChatGPT, Claude, Perplexity, Gemini).</b><span>Found by name in {pt4[0]}% of {pt4[1]} answers. Recommended in {pt4[2]}% of {pt4[3]} category answers.</span></li>
-        <li><b>Five engines (the same four plus Grok).</b><span>Found by name in {pt5[0]}% of {pt5[1]} answers. Recommended in {pt5[2]}% of {pt5[3]} category answers. Every one of the {pt_acc[1]} answers that named us described us accurately on the two facts we check.</span></li>
+        <li><b>Five engines (the same four plus Grok).</b><span>Found by name in {pt5[0]}% of {pt5[1]} answers. Recommended in {pt5[2]}% of {pt5[3]} category answers. Every one of the {pt_acc[1]} answers that named us described us accurately. Since 15 October 2026 the check covers our prices, plan names and free allowance as well as the company name and founder; re-scored under it, these answers are unchanged, because they quoted the prices in force that day.</span></li>
         <li><b>Five days apart, the same four engines gave {ob}% and {pt4[0]}%.</b><span>Found by name was {ob}% on 8 October and {pt4[0]}% on 13 October, each of 40 answers, which is why no single run is read as a trend.</span></li>
       </ul>
       <p class="ledgernote"><strong>Panel effect and drift, measured 7 September 2026 on seven software companies.</strong>
