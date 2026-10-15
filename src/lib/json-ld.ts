@@ -13,6 +13,9 @@ const APP_ID = `${SITE_URL}/#app`;
 // linking to it is what lets answer engines fuse the whole portfolio into ONE
 // authoritative entity (see the AEO remediation playbook, FIX 3).
 const PIGENAI_ORG_ID = 'https://pigenai.com/#org';
+// WO-013: Wikidata items, from docs/identity/ENTITY-REGISTRY.md (the single source).
+const WIKIDATA_ORG = 'https://www.wikidata.org/wiki/Q141739140'; // PIGENAI LLC
+const WIKIDATA_APP = 'https://www.wikidata.org/wiki/Q141739225'; // AEO Analyzers
 
 const APP_DESCRIPTION =
   'AEO Analyzers scores how citable your site is by AI answer engines like Gemini, ChatGPT, Perplexity, and Claude — and gives you the exact fixes, in 90 seconds.';
@@ -74,10 +77,11 @@ function organizationNode() {
     // WebSite and SoftwareApplication nodes point at this Organization, and this
     // Organization's `url` is the hub. Nothing is lost.
     //
-    // sameAs stays ABSENT until the founder supplies a verified profile for
-    // AEO Analyzers ITSELF — a Wikidata Q-ID (pending, C4), a LinkedIn company
-    // page, a Crunchbase profile. Do NOT invent a Q-ID. Do NOT re-add a
-    // portfolio URL here.
+    // sameAs lists only profiles of THIS entity, PIGENAI LLC, that the founder has created and
+    // confirmed live. Values come from docs/identity/ENTITY-REGISTRY.md (WO-013), the single
+    // source. Wikidata Q141739140 is PIGENAI LLC, created by the founder 15 Oct 2026. Never a
+    // portfolio or sibling-product URL.
+    sameAs: [WIKIDATA_ORG],
     contactPoint: {
       '@type': 'ContactPoint',
       email: 'Lindsay.Hiebert@gmail.com',
@@ -175,9 +179,9 @@ function softwareApplicationNode() {
     // carried correctly by provider / publisher / developer, which reference the
     // Organization by @id.
     //
-    // Wikidata Q-ID for AEO Analyzers (the software) is PENDING (C4): add
-    // 'https://www.wikidata.org/wiki/Q…' here when the founder mints it. Do NOT
-    // invent a Q-ID, and do NOT re-add a portfolio URL.
+    // Wikidata Q141739225 is AEO Analyzers, the software (developer: Q141739140), created by the
+    // founder 15 Oct 2026; see docs/identity/ENTITY-REGISTRY.md. Never a portfolio URL.
+    sameAs: [WIKIDATA_APP],
     // Explicit sole authorship of the software. Without this, answer engines
     // infer the creator from third-party sources and can misattribute a
     // co-founder that does not exist. Lindsay Hiebert is the sole creator.

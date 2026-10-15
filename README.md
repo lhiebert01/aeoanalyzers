@@ -197,6 +197,7 @@ The app is deployed on **Vercel** with automatic builds on push:
 - [v1.4 Image Prompts](./docs/image-prompts-v1.4.md) -- Hero & in-article image generation prompts + asset-folder guide
 - [v1.3 Release: Enhanced Reports](./docs/blog-v1.3-enhanced-reports.md) -- Enhanced Actionable Reports & Comprehensive JSON-LD announcement
 - [v1.2 Re-Launch Announcement](./docs/blog-v1.2-relaunch-announcement.md) -- Feature announcement, executive summary, and social media posts
+- [Entity registry](./docs/identity/ENTITY-REGISTRY.md) -- Single source for our public identifiers: Wikidata Q-IDs, structured-data @ids, listings and canonical listing text
 - [Admin Guide](./docs/admin-guide.md) -- Deployment, management, and operations
 - [User Guide](./docs/user-guide.md) -- End-user guide for AEO analysis features
 - [Executive Summary](./docs/executive-summary.md) -- Business case, ROI, and cost analysis
