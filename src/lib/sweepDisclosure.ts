@@ -9,7 +9,7 @@
 // 4.4 Two dates on the same configs are a series: the product shows both, the delta and a
 //     link to each date's transcripts — the pairing that was assembled by hand on Oct 8.
 import type { SweepRunResult, SweepScorecard, SweepSummary } from './citationSweep';
-import { panelOf, type PanelVersion } from './panel';
+import { panelOf, type PanelVersion } from './panel.js';
 
 /** Bump when a scoring rule changes (strict branded rule, errored exclusion, grounding). */
 export const SCORING_VERSION = '2026-10-13'; // 13 Oct: found-by-name = own domain reached, neither not-found detector fires
