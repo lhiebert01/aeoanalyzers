@@ -240,16 +240,31 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
       <div className="mt-16 max-w-4xl mx-auto">
         <h3 className="text-2xl font-bold tracking-tight text-center mb-2">What's included — and what counts as a Sweep</h3>
         <p className="text-zinc-600 text-center mb-8 max-w-2xl mx-auto">Every account gets 3 free checks. The AEO diagnostic (score + fixes) is included on every paid plan: 25 analyses with a Day Pass, 100 a month on Pro and 200 a month on Business. <strong className="text-zinc-700">Citation Sweeps</strong> — the live multi-engine measurement — are the metered entitlement.</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm">
-            <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Included Citation Sweeps</div>
-            <ul className="space-y-2 text-sm text-zinc-700">
-              <li className="flex justify-between"><span>Free</span><span className="font-bold text-zinc-700">None &mdash; 3 free checks</span></li>
-              <li className="flex justify-between"><span>Day Pass ($29)</span><span className="font-bold">3 full sweeps</span></li>
-              <li className="flex justify-between"><span>Pro ($149/mo)</span><span className="font-bold">8 full sweeps / month</span></li>
-              <li className="flex justify-between"><span>Business ($599/mo)</span><span className="font-bold">20 full sweeps / month</span></li>
-            </ul>
+        {/* Founder decision 14 Oct 2026: AEO Scores and Citation Sweeps are limited separately
+            (a sweep asks every engine in the panel; a score is one site analysis). Mirrors
+            src/lib/sweepCaps.ts (ANALYSES_ALLOWANCE, PLAN_SWEEPS, PLAN_PANEL). */}
+        <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm mb-4">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left text-zinc-700">
+              <thead>
+                <tr className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">
+                  <th scope="col" className="pb-3 pr-4">Plan</th>
+                  <th scope="col" className="pb-3 pr-4">AEO Scores</th>
+                  <th scope="col" className="pb-3 pr-4">Citation Sweeps</th>
+                  <th scope="col" className="pb-3">Engines in a sweep</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200">
+                <tr><th scope="row" className="py-2 pr-4 font-semibold">Free</th><td className="py-2 pr-4">3, ever</td><td className="py-2 pr-4">None</td><td className="py-2">&mdash;</td></tr>
+                <tr><th scope="row" className="py-2 pr-4 font-semibold">Day Pass ($29)</th><td className="py-2 pr-4">25 within its 24 hours</td><td className="py-2 pr-4">3 within its 24 hours</td><td className="py-2">4: ChatGPT, Claude, Perplexity, Gemini. No Grok</td></tr>
+                <tr><th scope="row" className="py-2 pr-4 font-semibold">Pro ($149/mo)</th><td className="py-2 pr-4">100 a month</td><td className="py-2 pr-4">8 a month</td><td className="py-2">5: the four plus Grok</td></tr>
+                <tr><th scope="row" className="py-2 pr-4 font-semibold">Business ($599/mo)</th><td className="py-2 pr-4">200 a month</td><td className="py-2 pr-4">20 a month</td><td className="py-2">5: the four plus Grok</td></tr>
+              </tbody>
+            </table>
           </div>
+          <p className="text-zinc-600 text-sm mt-4">Each sweep is up to 15 question-runs on every engine in its panel, for example 5 questions × 3 runs, or 12 questions × 1 run.</p>
+        </div>
+        <div className="grid grid-cols-1 gap-4">
           <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm">
             <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">What one Sweep covers</div>
             <ul className="space-y-2 text-sm text-zinc-700">
