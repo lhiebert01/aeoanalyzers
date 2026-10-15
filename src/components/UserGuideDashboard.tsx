@@ -159,7 +159,7 @@ export default function UserGuideDashboard() {
             </div>
             <h3 className="text-3xl font-black tracking-tight text-indigo-900">Implementing JSON-LD</h3>
             <p className="text-indigo-700/80 text-lg leading-relaxed">
-              After every analysis, we generate a custom "machine-readable" layer. It earns rich results in Google and helps engines tell your company apart from a similarly named one. It is not how you get quoted — in a controlled test across seven AI platforms only Gemini could read schema at all, and a fact placed only there was answered by none of them — so anything a model needs to know must also appear in your visible text.
+              After every analysis, we generate a custom "machine-readable" layer. It earns rich results in Google and helps engines tell your company apart from a similarly named one. It is not how you get quoted. In a test published by Otterly.ai between December 2025 and March 2026, six of seven AI platforms could not fetch or correctly interpret a page's schema markup when asked, and none used a fact placed only in the schema to answer a question about it. So anything a model needs to know must also appear in your visible text.
             </p>
             <div className="space-y-4">
               <div className="flex items-start gap-4">

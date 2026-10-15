@@ -106,9 +106,8 @@ WHY = {
 # That is why these are rewritten rather than trimmed from the X versions: one
 # idea, one link, no hashtags. Keyed by CAMPAIGN number.
 BLUESKY = {
- 1: ["You did what the AEO guides said and nothing changed.",
-     "llms.txt goes unrequested on 97% of sites that have one. An AI sees roughly the first 200 characters after your h1.",
-     "The free self-checks, no tool required:",
+ # Founder, 15 Oct 2026: the sourced sentence word for word (292/300 with the full link).
+ 1: ["An Ahrefs study of 137,000 sites found that 97% of the roughly 38,000 llms.txt files among them received no requests at all in May 2026, and an SE Ranking study of about 300,000 domains found no link between having one and being cited by AI.",
      "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you"],
  2: ["\"AI visibility\" is six different outcomes with almost nothing in common.",
      "A mention is not a citation. A citation is not a recommendation. Measurement is not diagnosis.",

@@ -1,7 +1,5 @@
 # BLITZ DISTI PACK — AEO buyer series
 
-> **Status 2026-09-30:** all six posts are LIVE on LinkedIn, Facebook and X — links in `PUBLISHED-POSTS-LEDGER.md`. Remaining: Bluesky, Medium, Substack (Section F).
-
 Six posts. Each block below is ready to select and copy in one go — no prefixes, no hard wraps, nothing to strip.
 
 **Standing rules:** Every post carries its link in the body — the autoposter has no comment API, so there is no other placement, and the copy is written to carry the URL naturally. No cost or expense figure appears anywhere. Every number is reproducible from a stored transcript or a published study; nothing is invented, not even as an example. No claim that other tools "only give you a score".
@@ -75,8 +73,8 @@ You did the work the guides told you to do. Nothing changed.
 
 Here's some of what we measured and what the published research says:
 
-→ llms.txt goes unrequested on 97% of the sites that have one
-→ six of seven AI platforms show no sign of using your schema when choosing what to cite
+→ An Ahrefs study of 137,000 sites found that 97% of the roughly 38,000 llms.txt files among them received no requests at all in May 2026, and an SE Ranking study of about 300,000 domains found no link between having one and being cited by AI.
+→ In a test published by Otterly.ai between December 2025 and March 2026, six of seven AI platforms could not fetch or correctly interpret a page's schema markup when asked, and none used a fact placed only in the schema to answer a question about it.
 → the assistants read different indexes, so being in one doesn't put you in another
 → an AI sees roughly the first 200 characters after your h1, and ignores your meta description entirely
 
@@ -92,11 +90,7 @@ https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you
 
 ### X — copy from here
 
-You did what the AEO guides said. Nothing changed.
-
-llms.txt unrequested on 97% of sites that have one. 6 of 7 platforms show no sign of using your schema to cite. An AI sees ~200 characters after your h1.
-
-Free self-checks, and two of our own failures:
+An Ahrefs study of 137,000 sites found that 97% of the roughly 38,000 llms.txt files among them received no requests at all in May 2026, and an SE Ranking study of about 300,000 domains found no link between having one and being cited by AI.
 
 https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you
 

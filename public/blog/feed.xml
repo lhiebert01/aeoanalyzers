@@ -6,7 +6,16 @@
     <atom:link href="https://aeoanalyzers.com/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Short, grounded pieces on why AI assistants cite some sites and not others, with our own measurements published whatever they say.</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 14 Oct 2026 12:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 15 Oct 2026 12:00:00 GMT</lastBuildDate>
+    <item>
+      <title>We added a fifth AI engine. Here is what changed, and what did not.</title>
+      <link>https://aeoanalyzers.com/blog/the-fifth-engine</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/the-fifth-engine</guid>
+      <pubDate>Thu, 15 Oct 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Pro and Business Citation Sweeps now ask Grok as well. Why a new engine starts a new series, which engines we leave out and why, and what else changed.</description>
+      <media:content url="https://aeoanalyzers.com/og/og-the-fifth-engine.png" medium="image" type="image/png"/>
+    </item>
     <item>
       <title>We Built an AI Visibility Tool. Then We Tested Ourselves. The Result Was Zero.</title>
       <link>https://aeoanalyzers.com/blog/the-measurement-layer</link>

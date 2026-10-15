@@ -36,15 +36,15 @@ POSTS = [
   why="The primer. Widest audience, least commercial, strongest numbers.",
   li=["You did the work the guides told you to do. Nothing changed.",
       "Here's some of what we measured and what the published research says:",
-      "→ llms.txt goes unrequested on 97% of the sites that have one\n→ six of seven AI platforms show no sign of using your schema when choosing what to cite\n→ the assistants read different indexes, so being in one doesn't put you in another\n→ an AI sees roughly the first 200 characters after your h1, and ignores your meta description entirely",
+      "→ An Ahrefs study of 137,000 sites found that 97% of the roughly 38,000 llms.txt files among them received no requests at all in May 2026, and an SE Ranking study of about 300,000 domains found no link between having one and being cited by AI.\n→ In a test published by Otterly.ai between December 2025 and March 2026, six of seven AI platforms could not fetch or correctly interpret a page\'s schema markup when asked, and none used a fact placed only in the schema to answer a question about it.\n→ the assistants read different indexes, so being in one doesn't put you in another\n→ an AI sees roughly the first 200 characters after your h1, and ignores your meta description entirely",
       "That last one is the cheapest fix in this whole field and almost nobody does it.",
       "The piece includes the free self-checks — no tool required — and two of our own failures, because a primer that only lists other people's mistakes isn't worth reading.",
       "Run the free self-checks on your own site and tell me what you find. I'll answer anything in the comments.",
       "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you",
       "#AEO #AISearch #SEO #GenerativeEngineOptimization #ContentStrategy"],
-  x=["You did what the AEO guides said. Nothing changed.",
-     "llms.txt unrequested on 97% of sites that have one. 6 of 7 platforms show no sign of using your schema to cite. An AI sees ~200 characters after your h1.",
-     "Free self-checks, and two of our own failures:",
+  # Founder, 15 Oct 2026: the sourced sentence word for word, so nothing drifts. Both
+  # sentences cannot fit 280, so X carries the llms.txt sentence and the link only.
+  x=["An Ahrefs study of 137,000 sites found that 97% of the roughly 38,000 llms.txt files among them received no requests at all in May 2026, and an SE Ranking study of about 300,000 domains found no link between having one and being cited by AI.",
      "https://aeoanalyzers.com/blog/why-ai-doesnt-mention-you"]),
 
  dict(n=3, title="What should an AEO tool actually do?",

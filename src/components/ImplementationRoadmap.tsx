@@ -327,7 +327,7 @@ ${analysisResult.implementationChecklist.map(item => `- [ ] [${item.priority.toU
 ### Phase 4: Independent authority & citation-building (ongoing, highest long-term impact)
 * Earn real third-party citations, listings, reviews, and mentions
 * Publish FAQ pages with structured data and technical explainer content
-${analysisResult.crawlerAccess?.llmsTxtFound ? '' : `* (Optional — no evidence this affects citations) add an llms.txt. 97% of files across 137,000 sites saw zero traffic and no correlation with citations was found across ~300,000 domains; Google states it does not use the file. Worth having, not a fix.
+${analysisResult.crawlerAccess?.llmsTxtFound ? '' : `* (Optional — no evidence this affects citations) add an llms.txt. An Ahrefs study of 137,000 sites found that 97% of the roughly 38,000 llms.txt files among them received no requests at all in May 2026, and an SE Ranking study of about 300,000 domains found no link between having one and being cited by AI. Google states it does not use the file. Worth having, not a fix.
 `}* Add use-case and deployment documentation
 
 ---

@@ -157,12 +157,12 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
 
       {/* WO-009 C: the current piece from the blog, one card. Update when a new post becomes current. */}
       <section className="max-w-4xl mx-auto px-6 pb-20" aria-labelledby="latest-post-title">
-        <a href="/blog/the-measurement-layer" className="group grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-0 bg-white border border-zinc-300 rounded-3xl overflow-hidden shadow-sm hover:border-zinc-900 transition-all">
-          <img src="/og/og-the-measurement-layer-v2.png" alt="Your AI visibility score is not the evidence. The transcript is." width={1200} height={630} loading="lazy" decoding="async" className="w-full h-full object-contain bg-[#000603]" />
+        <a href="/blog/the-fifth-engine" className="group grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-0 bg-white border border-zinc-300 rounded-3xl overflow-hidden shadow-sm hover:border-zinc-900 transition-all">
+          <img src="/og/og-the-fifth-engine.png" alt="A fifth engine. A new series, not a new number." width={1200} height={630} loading="lazy" decoding="async" className="w-full h-full object-contain bg-[#000603]" />
           <div className="p-6 md:p-8 flex flex-col justify-center text-left">
             <p className="text-[11px] font-black uppercase tracking-[0.18em] text-zinc-700">Latest from the blog</p>
-            <h2 id="latest-post-title" className="text-xl md:text-2xl font-bold text-zinc-900 mt-2 leading-snug group-hover:underline">We Built an AI Visibility Tool. Then We Tested Ourselves. The Result Was Zero.</h2>
-            <p className="text-zinc-700 text-sm mt-3 leading-relaxed">Why an AI visibility score is only the beginning, and why the answer transcript matters more.</p>
+            <h2 id="latest-post-title" className="text-xl md:text-2xl font-bold text-zinc-900 mt-2 leading-snug group-hover:underline">We added a fifth AI engine. Here is what changed, and what did not.</h2>
+            <p className="text-zinc-700 text-sm mt-3 leading-relaxed">Pro and Business Citation Sweeps now ask Grok as well. Why a new engine starts a new series, and which engines we leave out and why.</p>
           </div>
         </a>
       </section>

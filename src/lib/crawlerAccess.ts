@@ -298,8 +298,8 @@ export function evaluateCrawlerAccess(input: {
     score = Math.max(0, score - 2);
     recommendations.push(
       'Optional, and labelled honestly: **no evidence this affects citations.** An /llms.txt is a concise, ' +
-      'LLM-friendly index of your key pages and facts. The measured picture: 97% of llms.txt files across ' +
-      '137,000 sites received zero traffic, no correlation with citations was found across ~300,000 domains, ' +
+      'LLM-friendly index of your key pages and facts. The measured picture: ' +
+      'An Ahrefs study of 137,000 sites found that 97% of the roughly 38,000 llms.txt files among them received no requests at all in May 2026, and an SE Ranking study of about 300,000 domains found no link between having one and being cited by AI. ' +
       'Google Search states it does not use the file, and no other major answer engine commits to reading it. ' +
       'It costs ten minutes and does no harm, so it is worth having and worth showing — it is not a fix, and ' +
       'it is not a step in a plan. Indexing, visible body text and independent citations are what move a citation rate.'
