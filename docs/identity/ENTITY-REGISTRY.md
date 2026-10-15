@@ -27,11 +27,11 @@ Aliases: PIGENAI LLC → PIGENAI, PI GenAI LLC. AEO Analyzers → AEOAnalyzers, 
 ## Listings (directories and profiles)
 | Listing | URL | Status | Date live | Added to Wikidata as a reference? |
 |---|---|---|---|---|
-| AlternativeTo | | planned (founder, Oct 16) | | |
-| Crunchbase | | planned (founder, Oct 16) | | |
+| AlternativeTo | | submitted Oct 15, 2026 (priority review queue; not live yet) | | |
+| Crunchbase | | planned (founder, week of Oct 19) | | |
 | G2 | | planned (founder, Oct 16) | | |
 | Slashdot / SourceForge | | planned (founder, Oct 16) | | |
-| LinkedIn company page | | planned (founder, Oct 16) | | |
+| LinkedIn company page | | planned (founder, week of Oct 19) | | |
 | GitHub repository | https://github.com/lhiebert01/aeoanalyzers | live | | n/a |
 
 ## Canonical listing text (use word for word; no prices)
@@ -41,3 +41,4 @@ Pricing model: Freemium, linked to https://aeoanalyzers.com/pricing. No price fi
 
 ## Change log
 - 2026-10-15 — Wikidata items Q141739140 and Q141739225 created by the founder; registry created (WO-013).
+- 2026-10-15 — AlternativeTo submitted by the founder (priority review); G2 and Slashdot planned Oct 16; Crunchbase and LinkedIn moved to the week of Oct 19. No listing is live yet, so no listing URL is in sameAs.

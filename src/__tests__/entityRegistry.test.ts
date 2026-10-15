@@ -25,7 +25,7 @@ describe('entity registry ↔ structured data', () => {
   it('no listing is marked live before the founder confirms it', () => {
     const rows = REG.split('## Listings')[1].split('## Canonical')[0].split('\n').filter((l) => /^\| (AlternativeTo|Crunchbase|G2|Slashdot|LinkedIn)/.test(l));
     expect(rows).toHaveLength(5);
-    for (const r of rows) expect(r).toMatch(/\| \| planned \(founder, Oct 16\) \|/);
+    for (const r of rows) { expect(r).toMatch(/^\| [^|]+ \| \| (planned|submitted)/); expect(r).not.toMatch(/\| live \|/); }
   });
 });
 
