@@ -5,8 +5,8 @@
 //    engines), $6.00 on panel v1.2 (five engines, adds Grok; raised from $4.00 on 14 Oct
 //    2026 after the largest customer sweep measured $4.48).
 //  - Per account per month: plan sweeps × the per-sweep cap of the plan's panel.
-//  - Analyses per account per month: Pro 100, Business 200 (14 Oct 2026); Day Pass and
-//    free accounts keep the 200 account limit.
+//  - Analyses (founder decisions, 14 Oct 2026): free 3 per account, ever; Day Pass 25 within
+//    its 24 hours; Pro 100 a month; Business 200 a month.
 //
 // The ceiling is enforced BEFORE money is spent: each call reserves the most it can
 // cost before it starts, so concurrent calls cannot jointly cross the line.
@@ -22,11 +22,27 @@ export const PLAN_SWEEPS: Record<PaidTier, number> = { daypass: 3, Pro: 8, Busin
 /** The panel each plan runs. The Day Pass is four engines; Pro and Business are five. */
 export const PLAN_PANEL: Record<PaidTier, CapPanel> = { daypass: 'v1.1', Pro: 'v1.2', Business: 'v1.2' };
 
-/** Analyses per account per calendar month. Anything that is not Pro or Business gets the account limit. */
-export const ANALYSES_PER_MONTH: Record<PaidTier | 'free', number> = { free: 200, daypass: 200, Pro: 100, Business: 200 };
+/** Analyses allowed per account in the tier's window (see analysesWindowStart). */
+export const ANALYSES_ALLOWANCE: Record<PaidTier | 'free', number> = { free: 3, daypass: 25, Pro: 100, Business: 200 };
 
-export function analysesPerMonth(tier: string | null | undefined): number {
-  return (ANALYSES_PER_MONTH as Record<string, number>)[tier || 'free'] ?? ANALYSES_PER_MONTH.free;
+export function analysesAllowance(tier: string | null | undefined): number {
+  return (ANALYSES_ALLOWANCE as Record<string, number>)[tier || 'free'] ?? ANALYSES_ALLOWANCE.free;
+}
+
+/** Where the tier's analysis count starts: free counts every analysis ever (null), a Day Pass
+ *  counts from the start of its 24 hours, Pro and Business from the 1st of the month (UTC). */
+export function analysesWindowStart(tier: string | null | undefined, passUntil: string | null | undefined, now = new Date()): Date | null {
+  if (tier === 'Pro' || tier === 'Business') return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  if (tier === 'daypass' && passUntil) return new Date(new Date(passUntil).getTime() - 24 * 3_600_000);
+  return null;
+}
+
+/** The refusal a capped account sees, in the tier's own terms. */
+export function analysesLimitMessage(tier: string | null | undefined): string {
+  const n = analysesAllowance(tier);
+  if (tier === 'Pro' || tier === 'Business') return `You have used this month's ${n} analyses. The allowance resets on the 1st.`;
+  if (tier === 'daypass') return `You have used the ${n} analyses included in your Day Pass.`;
+  return `You have used your ${n} free analyses. Start a Day Pass or a plan to keep going.`;
 }
 
 export function sweepCapUsd(panel: CapPanel): number {

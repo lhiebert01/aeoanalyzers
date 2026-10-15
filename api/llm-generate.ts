@@ -19,7 +19,7 @@ import { GoogleGenAI } from '@google/genai';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import { isPaidRequest, analysesUsedIfCapped } from './_lib/entitlement.js';
-import { analysesPerMonth } from '../src/lib/sweepCaps.js';
+import { analysesAllowance, analysesLimitMessage, analysesWindowStart } from '../src/lib/sweepCaps.js';
 import { redactFixFields, markGated } from '../src/lib/fixGating.js';
 
 // Gemini flash models in priority order (best quality first, stable fallbacks).
@@ -173,16 +173,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Resolve entitlement in parallel with generation (no added latency).
     const entP = isPaidRequest(req);
 
-    // Analyses are capped per account per month by plan: Pro 100, Business 200, otherwise
-    // 200 (founder decisions 13–14 Oct 2026). Checked BEFORE generating so a capped account
-    // costs nothing. Admin is exempt.
+    // Analyses are capped per account by tier: free 3 ever, Day Pass 25 in its 24 hours,
+    // Pro 100 and Business 200 a month (founder decisions 14 Oct 2026). Checked BEFORE
+    // generating so a capped account costs nothing. Admin is exempt.
     if (purpose !== 'sweep-config') {
       const ent0 = await entP;
       if (ent0.userId && !ent0.admin) {
-        const allowance = analysesPerMonth(ent0.tier);
-        const used = await analysesUsedIfCapped(ent0.userId, allowance);
+        const used = await analysesUsedIfCapped(ent0.userId, analysesAllowance(ent0.tier), analysesWindowStart(ent0.tier, ent0.passUntil));
         if (used !== null) {
-          return res.status(429).json({ error: `You have used this month's ${allowance} analyses. The allowance resets on the 1st.` });
+          return res.status(429).json({ error: analysesLimitMessage(ent0.tier) });
         }
       }
     }

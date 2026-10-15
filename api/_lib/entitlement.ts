@@ -15,7 +15,7 @@ const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com']
 
 export async function isPaidRequest(
   req: VercelRequest,
-): Promise<{ paid: boolean; userId: string | null; determined: boolean; admin?: boolean; tier?: string }> {
+): Promise<{ paid: boolean; userId: string | null; determined: boolean; admin?: boolean; tier?: string; passUntil?: string | null }> {
   const supaUrl = process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const anon = process.env.VITE_SUPABASE_ANON_KEY;
@@ -52,28 +52,27 @@ export async function isPaidRequest(
     const paid = sub === 'Business' || sub === 'Pro' || !!dayPassActive;
     // The plan decides the analyses allowance; a subscription outranks a Day Pass.
     const tier = sub === 'Business' || sub === 'Pro' ? sub : dayPassActive ? 'daypass' : 'free';
-    return { paid, userId, determined: true, tier };
+    return { paid, userId, determined: true, tier, passUntil: row?.report_pass_until ?? null };
   } catch {
     return { paid: false, userId: null, determined: false }; // transient error → fail open (protect payers)
   }
 }
 
 /**
- * Analyses are capped per account per month by plan (analysesPerMonth: Pro 100, Business 200,
- * otherwise the 200 account limit; founder decisions 13–14 Oct 2026).
- * Counts this calendar month's saved analyses (analysis_history). Returns null when under
- * the cap or when the count can't be read (fail open: the free score must not break on a
- * transient Supabase error), otherwise the number already used.
+ * Analyses are capped per account by tier (analysesAllowance / analysesWindowStart in
+ * src/lib/sweepCaps.ts: free 3 ever, Day Pass 25 in its 24 hours, Pro 100 and Business 200 a
+ * month). Counts saved analyses (analysis_history) since `since`, or all of them when `since` is
+ * null. Returns null when under the cap or when the count can't be read (fail open: the free score
+ * must not break on a transient Supabase error), otherwise the number already used.
  */
-export async function analysesUsedIfCapped(userId: string, cap: number): Promise<number | null> {
+export async function analysesUsedIfCapped(userId: string, cap: number, since: Date | null): Promise<number | null> {
   const supaUrl = process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supaUrl || !serviceKey) return null;
-  const monthStart = new Date();
-  monthStart.setUTCDate(1); monthStart.setUTCHours(0, 0, 0, 0);
+  const window = since ? `&created_at=gte.${since.toISOString()}` : '';
   try {
     const r = await fetch(
-      `${supaUrl}/rest/v1/analysis_history?user_id=eq.${userId}&created_at=gte.${monthStart.toISOString()}&select=id`,
+      `${supaUrl}/rest/v1/analysis_history?user_id=eq.${userId}${window}&select=id`,
       { headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}`, Prefer: 'count=exact', Range: '0-0' }, signal: AbortSignal.timeout(5000) },
     );
     if (!r.ok) return null;

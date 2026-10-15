@@ -154,7 +154,7 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
                     'Paste-ready JSON-LD (verified)',
                     'Before/after content rewrites',
                     'Word (.docx) report + handoff',
-                    'AEO analyses for 24 hours (within the 200 / month account limit)',
+                    '25 AEO analyses within the 24 hours',
                   ].map((f, i) => (
                     <div key={i} className="flex items-start gap-2 text-sm text-zinc-200">
                       <Check className="w-4 h-4 text-amber-300 mt-0.5 shrink-0" />
@@ -239,12 +239,12 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
       {/* Entitlements & add-ons — make caps and extras explicit */}
       <div className="mt-16 max-w-4xl mx-auto">
         <h3 className="text-2xl font-bold tracking-tight text-center mb-2">What's included — and what counts as a Sweep</h3>
-        <p className="text-zinc-600 text-center mb-8 max-w-2xl mx-auto">The AEO diagnostic (score + fixes) is included on every paid plan: up to 100 analyses a month on Pro and 200 on Business, and a Day Pass draws on the 200-a-month account limit. <strong className="text-zinc-700">Citation Sweeps</strong> — the live multi-engine measurement — are the metered entitlement.</p>
+        <p className="text-zinc-600 text-center mb-8 max-w-2xl mx-auto">Every account gets 3 free checks. The AEO diagnostic (score + fixes) is included on every paid plan: 25 analyses with a Day Pass, 100 a month on Pro and 200 a month on Business. <strong className="text-zinc-700">Citation Sweeps</strong> — the live multi-engine measurement — are the metered entitlement.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm">
             <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Included Citation Sweeps</div>
             <ul className="space-y-2 text-sm text-zinc-700">
-              <li className="flex justify-between"><span>Free</span><span className="font-bold text-zinc-700">None &mdash; the AEO analysis is free</span></li>
+              <li className="flex justify-between"><span>Free</span><span className="font-bold text-zinc-700">None &mdash; 3 free checks</span></li>
               <li className="flex justify-between"><span>Day Pass ($29)</span><span className="font-bold">3 full sweeps</span></li>
               <li className="flex justify-between"><span>Pro ($149/mo)</span><span className="font-bold">8 full sweeps / month</span></li>
               <li className="flex justify-between"><span>Business ($599/mo)</span><span className="font-bold">20 full sweeps / month</span></li>

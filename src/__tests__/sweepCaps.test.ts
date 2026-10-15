@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CostGuard, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, PLAN_PANEL, analysesPerMonth } from '../lib/sweepCaps';
+import { CostGuard, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, PLAN_PANEL, analysesAllowance, analysesWindowStart, analysesLimitMessage } from '../lib/sweepCaps';
 
 describe('spend caps (pricing decision 13 Oct 2026)', () => {
   it('per-sweep caps are $1.50 on v1.1 and $6.00 on v1.2 (raised 14 Oct 2026)', () => {
@@ -12,12 +12,24 @@ describe('spend caps (pricing decision 13 Oct 2026)', () => {
     expect(monthlyCostCapUsd('Business')).toBe(120);
     expect(PLAN_PANEL).toEqual({ daypass: 'v1.1', Pro: 'v1.2', Business: 'v1.2' });
   });
-  it('analyses per month: Pro 100, Business 200, everyone else the 200 account limit', () => {
-    expect(analysesPerMonth('Pro')).toBe(100);
-    expect(analysesPerMonth('Business')).toBe(200);
-    expect(analysesPerMonth('daypass')).toBe(200);
-    expect(analysesPerMonth('free')).toBe(200);
-    expect(analysesPerMonth(undefined)).toBe(200);
+  it('analyses: free 3 ever, Day Pass 25, Pro 100, Business 200 (14 Oct 2026)', () => {
+    expect(analysesAllowance('free')).toBe(3);
+    expect(analysesAllowance(undefined)).toBe(3);
+    expect(analysesAllowance('daypass')).toBe(25);
+    expect(analysesAllowance('Pro')).toBe(100);
+    expect(analysesAllowance('Business')).toBe(200);
+  });
+  it('analysis windows: free counts every analysis, Day Pass its 24 hours, plans the month', () => {
+    const now = new Date('2026-10-14T18:30:00Z');
+    expect(analysesWindowStart('free', null, now)).toBeNull();
+    expect(analysesWindowStart('daypass', '2026-10-15T09:00:00Z', now)!.toISOString()).toBe('2026-10-14T09:00:00.000Z');
+    expect(analysesWindowStart('Pro', null, now)!.toISOString()).toBe('2026-10-01T00:00:00.000Z');
+    expect(analysesWindowStart('Business', null, now)!.toISOString()).toBe('2026-10-01T00:00:00.000Z');
+  });
+  it('the refusal names the tier\'s own allowance', () => {
+    expect(analysesLimitMessage('free')).toContain('3 free analyses');
+    expect(analysesLimitMessage('daypass')).toContain('25 analyses included in your Day Pass');
+    expect(analysesLimitMessage('Pro')).toContain("this month's 100 analyses");
   });
   it('a sweep never gets more than what is left of the month', () => {
     expect(effectiveSweepCapUsd('v1.2', 48, 0)).toBe(6);

@@ -119,7 +119,7 @@ export default function App() {
   const openContact = (subject?: string) => { setContactSubject(subject); setContactOpen(true); };
   const { trackEvent } = useGA4();
 
-  const FREE_LIMIT = 3; // Free signed-in users: 3 analyses (score + gaps; fixes are gated server-side)
+  const FREE_LIMIT = 3; // Free accounts: 3 analyses ever (founder, 14 Oct 2026); api/llm-generate enforces it server-side
 
   const isAdmin = user?.email?.toLowerCase() === 'lindsay.hiebert@gmail.com' ||
                   user?.email?.toLowerCase() === 'liindsay.hiebert@gmail.com';
@@ -534,7 +534,7 @@ export default function App() {
     const effectiveUsageCount = user ? (userProfile?.usage_count || 0) : freeUses;
 
     if (!isPro && effectiveUsageCount >= FREE_LIMIT) {
-      setError(`You've reached the free limit of ${FREE_LIMIT} analysis. Please sign in or upgrade to continue.`);
+      setError(`You've used your ${FREE_LIMIT} free checks. Start a Day Pass or a plan to keep going.`);
       setView(user ? 'payments' : 'auth');
       return;
     }
