@@ -13,9 +13,10 @@
 // analysis — the LLM produced the answer; this module judges it against facts.
 
 import type { TruthRecord } from './truthRecord';
+import { extractPriceClaims, extractFreeAllowance, sentencesAboutBrand } from './siteFacts.js';
 
 export interface FidelityIssue {
-  type: 'hallucinated_founder' | 'omitted_founder' | 'brand_not_identified';
+  type: 'hallucinated_founder' | 'omitted_founder' | 'brand_not_identified' | 'price_mismatch' | 'retired_name' | 'allowance_mismatch';
   field: string;
   /** The wrong/asserted value, when applicable. */
   wrong?: string;
@@ -146,6 +147,9 @@ export function scoreFidelity(transcript: string, truth: TruthRecord): FidelityS
     });
   }
 
+  // WO-010 A: prices, retired names and the free allowance, against what the site publishes.
+  for (const i of sitePublishedIssues(text, truth)) { score -= 35; issues.push(i); }
+
   return {
     fidelityPct: Math.max(0, Math.min(100, score)),
     brandIdentified,
@@ -154,6 +158,44 @@ export function scoreFidelity(transcript: string, truth: TruthRecord): FidelityS
     hallucinatedFounders,
     issues,
   };
+}
+
+/** WO-010 A: claims the site's own published record contradicts. Each issue carries the quoted
+ *  claim (`wrong`) and the site's value (`correct`) for side-by-side display. Checked only for
+ *  what the site publishes: no published prices, no price check. */
+export function sitePublishedIssues(transcript: string, truth: TruthRecord): FidelityIssue[] {
+  const text = String(transcript || '');
+  const out: FidelityIssue[] = [];
+  const about = sentencesAboutBrand(text, truth.brandName);
+  const prices = truth.prices || [];
+  if (prices.length) {
+    const known = new Set(prices.map((p) => p.amount));
+    const correct = prices.filter((p) => p.amount > 0).map((p) => p.label);
+    const seen = new Set<string>();
+    for (const sentence of about) {
+      for (const c of extractPriceClaims(sentence)) {
+        if (known.has(c.amount) || seen.has(c.claim)) continue;
+        seen.add(c.claim);
+        out.push({ type: 'price_mismatch', field: 'price', wrong: c.claim, correct,
+          detail: `The engine quotes "${c.claim}"; ${truth.pricesSource || 'your site'} publishes ${correct.join(', ')}.`,
+          source: truth.pricesSource || 'your site', severity: 'high' });
+      }
+    }
+  }
+  for (const name of truth.retiredNames || []) {
+    if (new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(text)) {
+      out.push({ type: 'retired_name', field: 'product name', wrong: name, correct: truth.brandName ? [truth.brandName] : [],
+        detail: `The engine calls the product "${name}", a name the site no longer uses.`, source: 'the site\'s own record of retired names', severity: 'high' });
+    }
+  }
+  if (truth.freeAllowance) {
+    const a = extractFreeAllowance(about.join(' '));
+    if (a && a.count !== truth.freeAllowance) {
+      out.push({ type: 'allowance_mismatch', field: 'free allowance', wrong: a.claim, correct: [`${truth.freeAllowance} free checks`],
+        detail: `The engine says "${a.claim}"; your pricing page says ${truth.freeAllowance} free checks.`, source: truth.pricesSource || 'your pricing page', severity: 'high' });
+    }
+  }
+  return out;
 }
 
 // ─── Sweep integration (WO-QA-003 B1) ───────────────────────────────────────
@@ -231,10 +273,13 @@ export function accuracyWhenNamed(brandedRuns: { cited?: boolean; transcript: st
   const checked = [
     ...(truth.brandName ? [`the brand name "${truth.brandName}"`] : []),
     ...((truth.founders || []).length ? [`the founder${truth.founders.length > 1 ? 's' : ''} ${truth.founders.join(' and ')}`] : []),
+    ...((truth.prices || []).length ? [`your prices (${truth.prices!.filter((p) => p.amount > 0).map((p) => p.label).join(', ')})`] : []),
+    ...(truth.freeAllowance ? [`your free allowance (${truth.freeAllowance} free checks)`] : []),
+    ...((truth.retiredNames || []).length ? ['retired product names'] : []),
   ];
   const pct = named ? Math.round((100 * f.citedAccurate) / named) : null;
   const definition = named
-    ? `${f.citedAccurate} of the ${named} answers that named you stated no fact your site contradicts. Checked: ${checked.length ? checked.join(' and ') : 'nothing — your site publishes neither a brand name nor a founder in a form we can read'}, as your own site publishes them.`
+    ? `${f.citedAccurate} of the ${named} answers that named you stated no fact your site contradicts. Checked: ${checked.length ? checked.join(', ').replace(/, ([^,]*)$/, ' and $1') : 'nothing — your site publishes neither a brand name nor a founder in a form we can read'}, as your own site publishes them.`
     : 'No answer named you, so there was nothing to check.';
   return { accurate: f.citedAccurate, named, pct, checked, definition };
 }

@@ -1,3 +1,5 @@
+> Prices and plan names in this document are as of its date; current pricing is at https://aeoanalyzers.com/pricing.
+
 # AEO Analyzers: Launch Plan
 ## From MVP to Production and Revenue
 

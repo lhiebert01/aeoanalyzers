@@ -1,7 +1,7 @@
 {
   "name": "AEO Analyzers",
   "short_name": "AEO Analyzers",
-  "description": "The world's first AI Simulation Engine for Answer Engine Optimization.",
+  "description": "AEO Analyzers measures whether AI answer engines find, describe accurately and recommend your site, and gives you the fixes.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

@@ -116,8 +116,9 @@ describe('the AEO buyer series stays interlinked', () => {
     for (const f of Object.keys(PAGES)) {
       const html = readFileSync(resolve(ROOT, f), 'utf8');
       expect(html, `${f} needs JSON-LD`).toContain('application/ld+json');
-      expect(html).toContain('https://aeoanalyzers.com/#organization');
-      expect(html).toContain('https://aeoanalyzers.com/#founder');
+      // WO-010 F: the canonical identity @ids, the same ones the homepage graph now uses.
+      expect(html).toContain('https://pigenai.com/#org');
+      expect(html).toContain('https://pigenai.com/#lindsay');
     }
   });
 });

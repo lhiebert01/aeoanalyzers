@@ -1,3 +1,5 @@
+> Prices and plan names in this document are as of its date; current pricing is at https://aeoanalyzers.com/pricing.
+
 # AEO Analyzers v1.4 — Launch Plan & Messaging Assets
 
 *Owner: Lindsay Hiebert · Target launch: week of 2026-06-01 · Theme: "Trustworthy AEO"*

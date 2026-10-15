@@ -237,7 +237,7 @@ export default function UserGuideDashboard() {
         </div>
 
         <p className="text-zinc-600 max-w-2xl leading-relaxed">
-          A score predicts; a Citation Sweep proves. We ask the real answer engines — ChatGPT, Claude, Perplexity, and Gemini — your buyers' questions, multiple times each, and store every transcript. A sweep measures three separable layers:
+          A score predicts; a Citation Sweep proves. We ask the real answer engines — ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business — your buyers' questions, multiple times each, and store every transcript. A sweep measures three separable layers:
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

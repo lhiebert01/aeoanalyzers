@@ -1,3 +1,5 @@
+> Prices and plan names in this document are as of its date; current pricing is at https://aeoanalyzers.com/pricing.
+
 # aeoanalyzers.com/blog — index as supplied by the founder, 22 September 2026
 
 Used by the WO for the gap analysis. If the live index differs, the live index wins.

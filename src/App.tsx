@@ -1100,7 +1100,7 @@ export default function App() {
                       <tr>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Website</th>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Score</th>
-                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Citation Prob.</th>
+                        <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Citation Readiness</th>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Date</th>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest">Type</th>
                         <th className="px-6 py-4 text-xs font-bold text-zinc-400 uppercase tracking-widest"></th>
@@ -1281,7 +1281,7 @@ export default function App() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="inline-block px-4 py-1.5 bg-zinc-100 text-zinc-600 rounded-full text-xs font-bold mb-6 uppercase tracking-wider"
                   >
-                    The Fixes — Not Just a Score. In 90 Seconds.
+                    The Fixes — Not Just a Score.
                   </motion.div>
                   <motion.h1 
                     initial={{ opacity: 0, y: 20 }}
@@ -1765,7 +1765,7 @@ function ScoreRatingExplainer({ score, citationProbability }: { score: number; c
     { range: '31–50', rating: 'Below Average', description: 'Major gaps — AI may find the site but won\'t trust it as a source' },
     { range: '51–70', rating: 'Okay / Fair', description: 'Foundational elements exist but content lacks the specificity AI needs to cite confidently' },
     { range: '71–85', rating: 'Good', description: 'Strong structure + content — AI will cite this for many relevant queries' },
-    { range: '86–100', rating: 'Excellent', description: 'Source of Truth — AI engines actively prefer this site as a primary reference' },
+    { range: '86–100', rating: 'Excellent', description: 'Technically ready to be cited; whether engines recommend you is measured by a Citation Sweep' },
   ];
 
   const activeTierIndex = score <= 30 ? 0 : score <= 50 ? 1 : score <= 70 ? 2 : score <= 85 ? 3 : 4;

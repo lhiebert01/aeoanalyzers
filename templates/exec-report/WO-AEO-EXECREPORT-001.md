@@ -1,3 +1,5 @@
+> Prices and plan names in this document are as of its date; current pricing is at https://aeoanalyzers.com/pricing.
+
 # WO-AEO-EXECREPORT-001 — AI Visibility Executive Report (Product + Outreach Generator)
 **Product:** AEO Analyzers (aeoanalyzers.com) · **Stack:** Next.js / Supabase / Stripe / Vercel · Claude API for narrative generation
 **Goal:** Productize the Mazda-style courtesy assessment as (a) a $250 self-serve "AI Visibility Executive Report" and (b) a super-admin outreach generator producing watermarked courtesy versions — one engine, two doors.

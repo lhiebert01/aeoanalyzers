@@ -107,7 +107,7 @@ describe('the sweep interface runs nothing for a free viewer', () => {
    *  points, each required by name. */
   it('carries all seven things §2.1a requires the wall to say', () => {
     for (const point of [
-      'Four answer engines, with web search on',           // the panel
+      'The answer engines in your plan, with web search on', // the panel (WO-010 G: four or five by plan)
       'Your buyers&apos; questions, not a generic list',    // generated from their site
       'Repeated runs per question',                         // and the per-cell N
       'the per-cell N is shown on every number',

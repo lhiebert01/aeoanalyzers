@@ -1,8 +1,12 @@
 const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://aeoanalyzers.com';
 
 // --- Stable @id anchors so every node in the graph cross-references cleanly ---
-const ORG_ID = `${SITE_URL}/#organization`;
-const FOUNDER_ID = `${SITE_URL}/#founder`;
+// WO-010 F: the Organization node here IS PIGENAI LLC and the Person is the founder, so they
+// carry the portfolio's canonical @ids verbatim (identity canon), the same ids every blog post's
+// publisher and author already use. A site-local "/#organization" made the homepage declare a
+// second PIGENAI LLC that no other property referenced.
+const ORG_ID = 'https://pigenai.com/#org';
+const FOUNDER_ID = 'https://pigenai.com/#lindsay';
 const WEBSITE_ID = `${SITE_URL}/#website`;
 const APP_ID = `${SITE_URL}/#app`;
 // PI GenAI LLC hub entity — the portfolio's canonical Organization. Reciprocal

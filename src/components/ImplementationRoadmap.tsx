@@ -116,7 +116,7 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, 
     if (score <= 50) return { rating: 'Below Average', description: 'Major gaps — AI may find the site but won\'t trust it as a source' };
     if (score <= 70) return { rating: 'Okay / Fair', description: 'Foundational elements exist but content lacks the specificity AI needs to cite confidently' };
     if (score <= 85) return { rating: 'Good', description: 'Strong structure + content — AI will cite this for many relevant queries' };
-    return { rating: 'Excellent', description: 'Source of Truth — AI engines actively prefer this site as a primary reference' };
+    return { rating: 'Excellent', description: 'Technically ready to be cited; whether engines recommend you is measured by a Citation Sweep' };
   };
 
   const { rating: scoreRating } = getScoreRating(analysisResult.score);
@@ -138,7 +138,7 @@ We recently completed an Answer Engine Optimization (AEO) review of ${siteUrl} u
 | 31–50 | Below Average | Major gaps — AI may find the site but won't trust it as a source |
 | 51–70 | Okay / Fair | Foundational elements exist but content lacks the specificity AI needs to cite confidently |
 | 71–85 | Good | Strong structure + content — AI will cite this for many relevant queries |
-| 86–100 | Excellent | Source of Truth — AI engines actively prefer this site as a primary reference |
+| 86–100 | Excellent | Technically ready to be cited; whether engines recommend you is measured by a Citation Sweep |
 
 Your score of ${analysisResult.score}/100 with ${analysisResult.citationProbability}% citation readiness (a technical estimate, not a measured citation rate) places you in the **${scoreRating}** range.
 
@@ -327,8 +327,8 @@ ${analysisResult.implementationChecklist.map(item => `- [ ] [${item.priority.toU
 ### Phase 4: Independent authority & citation-building (ongoing, highest long-term impact)
 * Earn real third-party citations, listings, reviews, and mentions
 * Publish FAQ pages with structured data and technical explainer content
-* (Optional — no evidence this affects citations) add an llms.txt. 97% of files across 137,000 sites saw zero traffic and no correlation with citations was found across ~300,000 domains; Google states it does not use the file. Worth having, not a fix.
-* Add use-case and deployment documentation
+${analysisResult.crawlerAccess?.llmsTxtFound ? '' : `* (Optional — no evidence this affects citations) add an llms.txt. 97% of files across 137,000 sites saw zero traffic and no correlation with citations was found across ~300,000 domains; Google states it does not use the file. Worth having, not a fix.
+`}* Add use-case and deployment documentation
 
 ---
 

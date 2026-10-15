@@ -102,6 +102,8 @@ export interface EngineAggregate {
   /** Runs where the engine CALL failed (429/5xx/timeout) — excluded from every score,
    *  like truncations. Badged "N of M runs errored — excluded" (WO-AEO-SWEEP-MEMORY-001). */
   erroredRuns: number;
+  /** Of those, how many failed again on their one retry (WO-010 C): "errored after retry". */
+  erroredAfterRetry?: number;
   /** True when NO valid (non-errored, non-truncated) run remains to score this engine —
    *  the UI renders "insufficient valid runs", never a percentage. */
   insufficientValid: boolean;
@@ -519,6 +521,16 @@ export function resolveVendorsFromSources(
   return [...found.entries()].map(([domain, name]) => ({ name, domain }));
 }
 
+/** A vendor's core name: lower-case letters and digits, without a trailing "AI", "HQ", "Inc",
+ *  "io", "app" or "com" — so "Otterly AI", "Otterly" and "otterly.ai" share one key. */
+export function coreName(name: string): string {
+  return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+    .replace(/(?:\s+|^)(?:ai|hq|inc|io|app|com|co)$/g, '').replace(/\s+/g, '');
+}
+const ENGINE_NAMES = new Set(['claude', 'chatgpt', 'gemini', 'googlegemini', 'grok', 'perplexity']);
+/** The answer engines themselves are never "cited instead of you". */
+export function isEngineName(name: string): boolean { return ENGINE_NAMES.has(coreName(name)); }
+
 /** The set "cited instead" is counted against: the ENTERED competitors (tagged seeded), plus
  *  every vendor the answers themselves name — by domain in the text, or by name in the text
  *  with the domain in the sources. Before this, a supplied seed list switched detection off
@@ -534,9 +546,10 @@ export function effectiveCompetitorSet(
   const key = (c: Competitor) => (seedDomain(c) ? registrable(normalizeDomain(seedDomain(c))) : '') || c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
   const out: (Competitor & { seeded: boolean })[] = [];
   const seen = new Set<string>();
+  const seenCore = new Set<string>();
   for (const c of provided || []) {
-    if (!c || !c.name) continue;
-    const k = key(c); if (seen.has(k)) continue; seen.add(k);
+    if (!c || !c.name || isEngineName(c.name)) continue;
+    const k = key(c); if (seen.has(k) || seenCore.has(coreName(c.name))) continue; seen.add(k); seenCore.add(coreName(c.name));
     out.push({ ...c, seeded: true });
   }
   // Source-resolved first: its name is the word as the engine wrote it ("CommScope"), which
@@ -544,9 +557,12 @@ export function effectiveCompetitorSet(
   for (const c of [...resolveVendorsFromSources(runs, client), ...detectCompetitors(runs, client)]) {
     const k = key(c);
     // a mined domain that names a seed (seed "Celona" ↔ celona.io) folds into the seed
-    const seedHit = out.find((o) => o.seeded && (seedDomain(o) ? registrable(normalizeDomain(seedDomain(o))) === k : c.name.toLowerCase().includes(o.name.toLowerCase())));
+    if (isEngineName(c.name)) continue; // an answer engine is never a competitor (WO-010 G)
+    // WO-010 G: one row per vendor — "Otterly", "Otterly AI" and otterly.ai are one competitor.
+    const sameVendor = (o: Competitor) => coreName(o.name) === coreName(c.name) || (!!c.domain && coreName(o.name) === coreName(String(registrable(normalizeDomain(c.domain))).split('.')[0]));
+    const seedHit = out.find((o) => o.seeded && (seedDomain(o) ? registrable(normalizeDomain(seedDomain(o))) === k : c.name.toLowerCase().includes(o.name.toLowerCase()) || sameVendor(o)));
     if (seedHit) { if (!seedHit.domain && c.domain) seedHit.domain = c.domain; continue; }
-    if (seen.has(k)) continue; seen.add(k);
+    if (seen.has(k) || out.some(sameVendor)) continue; seen.add(k);
     out.push({ ...c, seeded: false });
   }
   return out;
@@ -615,7 +631,7 @@ export function aggregateSweep(
     // "not cited". Count it for the badge but keep it out of every score. Checked first
     // so a stored "[error:…]" run can't be mistaken for a truncation or a miss
     // (WO-AEO-SWEEP-MEMORY-001).
-    if (isErroredRun(r)) { agg.erroredRuns++; continue; }
+    if (isErroredRun(r)) { agg.erroredRuns++; if ((r.transcript || '').includes('failed again after one retry')) agg.erroredAfterRetry = (agg.erroredAfterRetry || 0) + 1; continue; }
     // A truncated answer is unmeasured — count it (for the block ratio) but do NOT
     // let it move any score (WO-QA-003 A1).
     if (r.truncated) { agg.truncatedRuns++; continue; }

@@ -24,9 +24,9 @@ import {
 } from '../src/lib/citationSweep.js';
 import { SCORING_VERSION } from '../src/lib/sweepDisclosure.js';
 import { accuracyWhenNamed } from '../src/lib/fidelity.js';
-import { extractTruthRecord, type TruthRecord } from '../src/lib/truthRecord.js';
+import { extractTruthRecord, withSiteRecord, type TruthRecord } from '../src/lib/truthRecord.js';
 import { COST_SCALE } from '../src/lib/costEstimate.js';
-import { CostGuard, NOT_ASKED, PLAN_PANEL, allowanceWindowStart, PLAN_SWEEPS, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, type PaidTier } from '../src/lib/sweepCaps.js';
+import { CostGuard, NOT_ASKED, RETRIED_MARK, PLAN_PANEL, allowanceWindowStart, PLAN_SWEEPS, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, type PaidTier } from '../src/lib/sweepCaps.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
 import { planSweep } from '../src/lib/sweepPlan.js';
 import { alertSweepEngineFail } from './_lib/engineAlert.js';
@@ -425,9 +425,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // breather, before it is excluded. Calls the spend ceiling declined are not retried, and
     // nothing starts when too little of the time budget is left to finish it.
     const failedIdx = runs.map((r, i) => (r.errored && r.transcript !== NOT_ASKED ? i : -1)).filter((i) => i >= 0);
+    // WO-010 C: the alert fires on the FIRST failure, before the retry, so a partial outage is
+    // visible even when the retry rescues every answer. Founder decision 14 Oct: one or more
+    // failed answers emails once, then that engine is quiet for 24 hours.
+    for (const eng of [...new Set(failedIdx.map((i) => runs[i].engine))]) {
+      const engFailed = failedIdx.filter((i) => runs[i].engine === eng);
+      const engTotal = runs.filter((r) => r.engine === eng).length;
+      await alertSweepEngineFail(eng, engFailed.length, engTotal, (runs[engFailed[0]].transcript || '').slice(0, 200));
+    }
     if (failedIdx.length && deadline - Date.now() > SWEEP_CALL_TIMEOUT_MS + 5_000) {
+      await sleep(Number(process.env.SWEEP_RETRY_BACKOFF_MS || 3000)); // back-off before the one retry
       const again = await pool(failedIdx, CONCURRENCY, (i) => askOne(tasks[i]));
-      failedIdx.forEach((i, k) => { if (!again[k].errored) runs[i] = again[k]; });
+      // A run that fails again says so in its stored transcript, so a saved view can say "after retry".
+      failedIdx.forEach((i, k) => { runs[i] = again[k].errored && again[k].transcript !== NOT_ASKED ? { ...again[k], transcript: again[k].transcript.replace(/\]\s*$/, ` ${RETRIED_MARK}]`) } : again[k]; });
     }
 
     const summary = aggregateSweep(runs, { domain, brand }, competitors);
@@ -450,10 +460,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         (eng as any).status = 'unavailable'; // UI renders "Service unavailable", not 0%
         (eng as any).errorSample = (erroredRuns[0].transcript || '').slice(0, 200);
       }
-      // Founder decision 14 Oct 2026: ONE failed answer is enough to email. Calls our own
-      // spend ceiling declined are not engine failures and never alert.
-      const failed = erroredRuns.filter((r) => r.transcript !== NOT_ASKED);
-      if (failed.length) await alertSweepEngineFail(eng.engine, failed.length, engRuns.length, (failed[0].transcript || '').slice(0, 200));
     }
 
     // Cost obfuscation (founder ruling, Sep 7 2026). Provider token cost is
@@ -671,8 +677,11 @@ async function fetchSiteSnapshot(
 
     const html = await get(base, 8000);
     if (!html) return null;
-    const llmsTxt = await get(`${origin}/llms.txt`, 4000);
-    return { truth: extractTruthRecord(html, llmsTxt), factDensity: auditFactDensity(html) };
+    // WO-010 A: the pricing page too, so a quoted price can be checked against what the site
+    // publishes. A site without /pricing simply has no price check.
+    const [llmsTxt, pricingHtml] = await Promise.all([get(`${origin}/llms.txt`, 4000), get(`${origin}/pricing`, 4000)]);
+    const truth = withSiteRecord(extractTruthRecord(html, llmsTxt, pricingHtml), domain, new Date()) as TruthRecord;
+    return { truth, factDensity: auditFactDensity(html) };
   } catch {
     return null;
   }

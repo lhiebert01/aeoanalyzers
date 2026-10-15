@@ -110,7 +110,7 @@ const userFaqs: FAQItem[] = [
 const measurementFaqs: FAQItem[] = [
   {
     question: "What's the difference between the AEO Score and a Citation Sweep?",
-    answer: "The AEO Score is a fast diagnostic — it analyzes your page and predicts how citable you are, then hands you the fixes. A Citation Sweep is live proof: it actually asks ChatGPT, Claude, Perplexity, and Gemini your buyers' questions and shows whether they cite you, who they cite instead, and the exact answers they gave — every result backed by a stored transcript you can read."
+    answer: "The AEO Score is a fast diagnostic — it analyzes your page and predicts how citable you are, then hands you the fixes. A Citation Sweep is live proof: it actually asks ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, your buyers' questions and shows whether they cite you, who they cite instead, and the exact answers they gave — every result backed by a stored transcript you can read."
   },
   {
     question: "What does a Citation Sweep actually measure?",

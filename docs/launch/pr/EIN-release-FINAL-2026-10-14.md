@@ -1,3 +1,5 @@
+> Prices and plan names in this document are as of its date; current pricing is at https://aeoanalyzers.com/pricing.
+
 > **Corrected 23 Sep 2026.** The crawler count in this document was restated from 265 to 36: the original
 > counted vulnerability scanners that call themselves GPTBot. See correction 4 on /blog/i-scored-zero.
 

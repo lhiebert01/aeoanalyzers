@@ -5,6 +5,8 @@
 //
 // Deterministic — parses the site's own first-party signals, never an LLM.
 
+import { publishedPrices, publishedFreeAllowance, ownSiteRecordAt, type PricePoint } from './siteFacts.js';
+
 export interface TruthRecord {
   brandName: string | null;
   /** Canonical founder/creator name(s) — the fact answer engines most often get
@@ -21,6 +23,16 @@ export interface TruthRecord {
   hasOrgId?: boolean;
   /** The served entity node already carries a disambiguatingDescription. */
   hasDisambiguation?: boolean;
+  /** WO-010 A: the prices the site publishes (its pricing page, and individual Offer prices in its
+   *  JSON-LD). Present only when the set is complete enough to judge a quoted price against it:
+   *  an AggregateOffer's low/high bounds alone are not. */
+  prices?: PricePoint[];
+  /** The free allowance the pricing page states ("3 free checks"), when it states one. */
+  freeAllowance?: number | null;
+  /** Product names the site no longer uses (our own domain only; see siteFacts.ts). */
+  retiredNames?: string[];
+  /** Where prices / allowance came from, shown beside a contradicted claim. */
+  pricesSource?: string;
 }
 
 /** Extract and parse every <script type="application/ld+json"> block, flattening
@@ -55,7 +67,7 @@ function metaContent(html: string, key: string): string | null {
 const FOUNDER_TITLE = /founder|creator|co-?founder|owner|principal/i;
 
 /** Build the truth record from a page's HTML plus its llms.txt (if any). */
-export function extractTruthRecord(html: string, llmsTxt?: string | null): TruthRecord {
+export function extractTruthRecord(html: string, llmsTxt?: string | null, pricingHtml?: string | null): TruthRecord {
   const h = String(html || '');
   const nodes = extractJsonLdNodes(h);
 
@@ -113,7 +125,16 @@ export function extractTruthRecord(html: string, llmsTxt?: string | null): Truth
   const hasOrgId = !!(orgLike && orgLike['@id']);
   const hasDisambiguation = nodes.some((n) => !!n?.disambiguatingDescription);
 
+  // WO-010 A: published prices. Judged only when the set is complete: the pricing page was read
+  // and printed prices, or the JSON-LD carries individual Offer prices (not just aggregate bounds).
+  const hasIndividualOffer = JSON.stringify(nodes).includes('"price"');
+  const pagePrices = pricingHtml ? publishedPrices([], pricingHtml) : [];
+  const prices = pagePrices.length || hasIndividualOffer ? publishedPrices(nodes, pricingHtml) : [];
+  const freeAllowance = publishedFreeAllowance(pricingHtml);
+
   return {
+    ...(prices.length ? { prices, pricesSource: pagePrices.length ? 'your pricing page' : 'your structured data' } : {}),
+    ...(freeAllowance ? { freeAllowance } : {}),
     brandName: brandName || null,
     founders: [...founders].filter(Boolean),
     sameAs: [...sameAs],
@@ -121,5 +142,22 @@ export function extractTruthRecord(html: string, llmsTxt?: string | null): Truth
     hasOrganization,
     hasOrgId,
     hasDisambiguation,
+  };
+}
+
+/** WO-010 A: add what the site published at the sweep's own time and the snapshot did not carry.
+ *  Snapshots stored before 15 Oct 2026 hold no prices; for our own domain the dated record in
+ *  siteFacts.ts supplies the prices, free allowance and retired names in force at `at`, so a
+ *  re-score judges each answer against the site of its own day. Any other domain is returned
+ *  unchanged: we never guess a customer's past prices. */
+export function withSiteRecord(truth: TruthRecord | null | undefined, domain: string, at: Date | string | number): TruthRecord | null {
+  if (!truth) return null;
+  const own = ownSiteRecordAt(domain, at);
+  if (!own) return truth;
+  return {
+    ...truth,
+    ...((truth.prices || []).length ? {} : { prices: own.prices, pricesSource: own.source }),
+    freeAllowance: truth.freeAllowance ?? own.freeAllowance,
+    retiredNames: own.retiredNames,
   };
 }

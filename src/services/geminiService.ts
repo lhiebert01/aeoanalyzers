@@ -796,6 +796,19 @@ export function applyAccuracyGuards(
     }
   }
 
+  // WO-010 E: the generated checklist must not contradict the scan's own findings. No "make sure
+  // crawlers can reach you" item when crawler access scored 100, and no "add an llms.txt" item
+  // when an llms.txt was found.
+  if (result.crawlerAccess) {
+    const ca = result.crawlerAccess;
+    const crawlerItem = /\b(robots\.txt|user-agents?|crawler access|GPTBot|ClaudeBot|PerplexityBot|Google-Extended|OAI-SearchBot)\b/i;
+    const llmsItem = /\bllms\.txt\b/i;
+    const contradicts = (text: string) =>
+      (ca.score >= 100 && !ca.criticalBlock && crawlerItem.test(text)) || (ca.llmsTxtFound && llmsItem.test(text));
+    if (Array.isArray(result.implementationChecklist)) result.implementationChecklist = result.implementationChecklist.filter((i) => !contradicts(String(i?.action || '')));
+    if (Array.isArray(result.recommendations)) result.recommendations = result.recommendations.filter((r) => !contradicts(String(r || '')));
+  }
+
   // Change 3: strip internal-architecture offers and cap the catalog at 4 on
   // EVERY generated JSON-LD block. Disclose what was removed.
   const removed: { name: string; reason: string }[] = [];

@@ -100,7 +100,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           animate={{ opacity: 1, scale: 1 }}
           className="inline-block px-5 py-2 bg-zinc-900 text-white rounded-full text-xs sm:text-sm font-black mb-8 uppercase tracking-[0.2em]"
         >
-          The Fixes — Not Just a Score. In 90 Seconds.
+          The Fixes — Not Just a Score.
         </motion.div>
         <motion.h1 
           id="hero-title"

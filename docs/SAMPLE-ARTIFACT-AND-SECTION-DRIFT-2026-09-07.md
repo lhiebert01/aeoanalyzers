@@ -1,3 +1,5 @@
+> Prices and plan names in this document are as of its date; current pricing is at https://aeoanalyzers.com/pricing.
+
 # Two rulings prepared — Sep 7 2026
 
 ## Part 1 · Does the Meridian mock structurally resemble a real artifact?

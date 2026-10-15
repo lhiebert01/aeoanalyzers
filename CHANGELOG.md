@@ -1,5 +1,9 @@
 # Changelog
 
+## Current pricing (15 Oct 2026)
+
+Prices and plan names in the entries below are as of each entry's date. Current: Free (3 free checks), Day Pass $29 (24 hours; 3 Citation Sweeps on the four-engine panel, 25 AEO analyses), Pro Optimizer $149/month (8 sweeps, five-engine panel with Grok, 100 analyses), Business Authority $599/month (20 sweeps, 200 analyses). Source of truth: https://aeoanalyzers.com/pricing.
+
 ## v1.5.1 — Grounded-only output: no fabricated claims (2026-06-21)
 
 - **Claims-safety backstop** (`src/lib/claimsSafety.ts`): new deterministic pass inside `applyAccuracyGuards` that uses the analyzed page's text as ground truth. Strips fabricated `aggregateRating`/`review` nodes and any ungrounded number from every generated JSON-LD block (including the "candidate" block); drops content rewrites that invent a number/guarantee/pass-rate not on the page; strips ungrounded numbers from the meta-description rewrite; reframes "add statistics/ratings" checklist advice as conditional. Stripped values disclosed via new `claimsSafetyRemoved` field.

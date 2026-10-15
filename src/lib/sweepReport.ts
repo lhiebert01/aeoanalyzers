@@ -19,9 +19,9 @@ import type { FidelitySummary } from './fidelity';
 import type { EntityLinkingReport } from './entityLinking';
 import type { TruthRecord } from './truthRecord';
 import type { FactDensityAudit } from './factDensity';
-import { extractBeliefs, beliefsMarkdown, flaggedWrongValues } from './beliefs';
+import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, flaggedSiteValues } from './beliefs';
 import { buildDoNowPlan, type DoNowStep } from './doNowPlan';
-import { buildSweepActionAgenda } from './sweepActions';
+import { buildSweepActionAgenda, displayQuestion } from './sweepActions';
 import { doNowChecklist } from './doNowChecklist';
 import { buildCover, sweepMeaning, DIRECTIVE, type CoverInput } from './reportCover';
 import { pawcSplit, mentionsClient, PROMINENT_FOOTNOTE } from './pawcSplit';
@@ -142,7 +142,7 @@ export function buildSweepCover(inp: SweepReportInputs): CoverInput {
   const p = plan(inp);
   const firstThree = p.steps.length
     ? p.steps.slice(0, 3).map((s: DoNowStep) => ({ what: s.what, section: 'Action plan' }))
-    : losingQuestions(r).slice(0, 3).map((q) => ({ what: `Write the page that answers: “${q}”`, section: 'Action plan' }));
+    : losingQuestions(r).slice(0, 3).map((q) => ({ what: `Write the page that answers: “${displayQuestion(q, ((r.summary as any)?.panel?.location ?? null) as string | null)}”`, section: 'Action plan' }));
   return {
     title: `Citation Sweep Report — ${r.domain}`,
     brand: r.brand,
@@ -197,7 +197,7 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
   out.push('');
   {
     const brandedRuns = r.runs.filter((x) => x.queryType === 'branded');
-    const rows = extractBeliefs(brandedRuns, r.brand || truth?.brandName || undefined, flaggedWrongValues(fidelity));
+    const rows = extractBeliefs(brandedRuns, r.brand || truth?.brandName || undefined, flaggedWrongValues(fidelity), flaggedSiteValues(fidelity));
     const md = beliefsMarkdown(rows, brandedRuns.length, '###');
     if (md.length) out.push(...md.map((l) => (l.startsWith('### ') ? '### Every claim the engines made, counted' : l)));
   }
@@ -220,6 +220,12 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
     out.push(`Engines are confusing you with: ${entityLinking.collisions.join(', ')}.`);
     for (const f of entityLinking.flags) out.push(`- [${f.kind}] ${f.detail} (${f.source})`);
     out.push('Fix: an explicit "not affiliated with…" disambiguation line + a connected @id entity graph.');
+    out.push('');
+  }
+  if (entityLinking?.retrievedAlongside?.length) {
+    out.push('### Retrieved alongside you');
+    out.push('Engines pulled these up for your name; your answer was still correct.');
+    for (const a of entityLinking.retrievedAlongside) out.push(`- ${a.entity} (${a.source})`);
     out.push('');
   }
 
@@ -333,6 +339,7 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
     hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
     collisions: entityLinking?.collisions ?? [],
     losingCategoryQuestions: losingQuestions(r),
+    location: ((r.summary as any)?.panel?.location ?? null) as string | null,
     doNowAuthorities: authority ? doNowChecklist(authority.authorityDomains) : [],
     brand: r.brand || undefined,
     domain: r.domain,
@@ -372,7 +379,7 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
       out.push(e.categoryRuns === 0
         ? `- ${ALIAS.categoryWin.plain} (${ALIAS.categoryWin.precise.toLowerCase()}): Unmeasured — no search invoked${e.modelPriorRuns > 0 ? ` (${e.modelPriorRuns} answered from memory)` : ''}`
         : `- ${ALIAS.categoryWin.plain} (${ALIAS.categoryWin.precise.toLowerCase()}, search-grounded): **${e.citationWinPct}%** · N=${e.categoryRuns}`);
-      if ((e as { erroredRuns?: number }).erroredRuns) out.push(`- (${(e as { erroredRuns?: number }).erroredRuns} run(s) errored — excluded from the scores above)`);
+      if ((e as { erroredRuns?: number }).erroredRuns) out.push(`- (${(e as { erroredRuns?: number }).erroredRuns} run(s) errored${e.erroredAfterRetry && e.erroredAfterRetry === e.erroredRuns ? ' after retry' : ''} — excluded from the scores above)`);
       if (e.modelPriorRuns > 0) out.push(`- (${e.modelPriorRuns} ${ALIAS.modelPrior.plain.toLowerCase()} — reported separately, not scored)`);
       if (e.truncatedRuns > 0) out.push(`- (${e.truncatedRuns} truncated answer${e.truncatedRuns > 1 ? 's' : ''} excluded from the scores above)`);
     }

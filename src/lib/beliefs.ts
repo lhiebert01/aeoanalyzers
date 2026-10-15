@@ -1,3 +1,4 @@
+import { extractPriceClaims, sentencesAboutBrand } from './siteFacts.js';
 // WO-AEO-REPORT-POLISH-001 Lane B — "What the engines believe about you".
 //
 // The fidelity classifier checks two facts (founder, brand name) against the customer's own
@@ -17,11 +18,19 @@
 // table is derived, not persisted.)
 
 /** The values the fidelity classifier already judged wrong — the ONLY source of "wrong" here. */
+const SITE_CONTRADICTED = new Set(['hallucinated_founder', 'price_mismatch', 'retired_name', 'allowance_mismatch']);
 export function flaggedWrongValues(fidelity: { issues?: { type?: string; wrong?: string }[] } | null | undefined): string[] {
-  return (fidelity?.issues || []).filter((i) => i.type === 'hallucinated_founder' && i.wrong).map((i) => i.wrong as string);
+  return (fidelity?.issues || []).filter((i) => SITE_CONTRADICTED.has(String(i.type)) && i.wrong).map((i) => i.wrong as string);
 }
 
-export type BeliefField = 'Legal / brand name' | 'Headquarters' | 'Founder / CEO' | 'Founded' | 'Product line' | 'Segment' | 'Parent company';
+/** WO-010 A: the site's own value beside each contradicted claim (an old quoted price beside the one the site publishes). */
+export function flaggedSiteValues(fidelity: { issues?: { type?: string; wrong?: string; correct?: string[] }[] } | null | undefined): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const i of fidelity?.issues || []) if (SITE_CONTRADICTED.has(String(i.type)) && i.wrong && i.correct?.length) out[norm(i.wrong)] = i.correct.join(', ');
+  return out;
+}
+
+export type BeliefField = 'Legal / brand name' | 'Headquarters' | 'Founder / CEO' | 'Founded' | 'Product line' | 'Price' | 'Segment' | 'Parent company';
 export type BeliefStatus = 'Consistent' | 'Single-source' | 'Conflicts' | 'Contradicts your site';
 
 export interface BeliefRow {
@@ -32,6 +41,8 @@ export interface BeliefRow {
   /** Number of branded answers that asserted it. */
   times: number;
   status: BeliefStatus;
+  /** For "Contradicts your site": what the site publishes instead (WO-010 A). */
+  siteValue?: string;
 }
 
 interface RunLike { engine: string; queryType?: string; transcript?: string | null; cited?: boolean; domainCited?: boolean; error?: string | null }
@@ -39,6 +50,8 @@ interface RunLike { engine: string; queryType?: string; transcript?: string | nu
 const ENGINE_ORDER = ['claude', 'openai', 'perplexity', 'gemini', 'grok'];
 export const ENGINE_LABEL: Record<string, string> = { claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', grok: 'Grok' };
 
+// A price token with its period and plan name, as extractPriceClaims reads it.
+const PRICE_TOKEN = /\$\s?\d[\d,]*(?:\.\d{1,2})?(?:\s*(?:\/|per)\s*(?:mo|month|yr|year|day|24\s?h|user|seat))?(?:\s+[A-Z][\w-]*(?:\s+[A-Z][\w-]*)?)?/g;
 const clean = (s: string) => s.replace(/\*\*|__|\[\d+\]|\(\d+\)/g, '').replace(/\s+/g, ' ').trim();
 const norm = (s: string) => clean(s).toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
 const cap = (s: string) => s.replace(/\s*[,;:(]?\s*$/, '').trim();
@@ -73,7 +86,7 @@ const LIST_LEAD = /^(?:with|spanning|including|across|from|through|via|by|on|at|
  *  dash is a clause the splitter cut out of a sentence ("manage their contacts effectively",
  *  "pipeline automation—all in one simple"; Nimble, Oct 8 2026). */
 const CLAUSE = /\b(?:their|your|its|our|they|you|we|manage|manages|helps?|lets?|allows?|makes?|keeps?|track|effectively|easily|simply|seamlessly|all in one|all-in-one)\b|[—–]|\b\w+ly\b/i;
-const GENERIC_ITEM = /^(?:relationships?|contacts?|data|features?|insights?|workflows?|integrations?|automation|management|intelligence)$/i;
+const GENERIC_ITEM = /^(?:relationships?|contacts?|data|features?|insights?|workflows?|integrations?|automation|management|intelligence|pricing|prices?|plans?)$/i;
 /** Merge key for list items: "private 5G networks", "private-5G" and "private 5G" are one product line. */
 function itemKey(s: string): string {
   return norm(s).replace(/\b(?:networks?|infrastructure|solutions?|platforms?|systems?|connectivity|technolog(?:y|ies)|services?|products?|offerings?|hardware|software)\b/g, ' ')
@@ -106,7 +119,7 @@ function sameValue(a: string, b: string): boolean {
   return x === y || (x.length >= 4 && y.length >= 4 && (x.includes(y) || y.includes(x)));
 }
 
-export function extractBeliefs(runs: RunLike[], brand?: string, flaggedWrong: string[] = []): BeliefRow[] {
+export function extractBeliefs(runs: RunLike[], brand?: string, flaggedWrong: string[] = [], siteValues: Record<string, string> = {}): BeliefRow[] {
   const branded = runs.filter((r) => (r.queryType ?? 'branded') === 'branded' && !r.error && (r.transcript || '').trim());
   // field -> claim -> { engines, times }
   const acc = new Map<BeliefField, Map<string, { claim: string; engines: Set<string>; times: number }>>();
@@ -134,9 +147,15 @@ export function extractBeliefs(runs: RunLike[], brand?: string, flaggedWrong: st
       }
     }
     for (const v of nameVariants(brand, text)) if (!seen.has('Legal / brand name')) { add('Legal / brand name', v, r.engine, true); seen.add('Legal / brand name'); }
+    // WO-010 A: a price is one whole claim ("$10/mo Starter"), counted under Price, and taken out of
+    // the text before product lines are split, so it never leaves a fragment like "mo Pro".
+    const prices = new Set<string>();
+    for (const sentence of sentencesAboutBrand(text, brand)) for (const c of extractPriceClaims(sentence)) prices.add(c.claim);
+    for (const c of prices) add('Price', c, r.engine, false);
+    const textNoPrices = prices.size ? text.replace(PRICE_TOKEN, ' ') : text;
     for (const [field, pats] of Object.entries(LIST) as [BeliefField, RegExp[]][]) {
       const items = new Set<string>();
-      for (const p of pats) for (const m of text.matchAll(p)) for (const it of splitItems(m[1])) items.add(it);
+      for (const p of pats) for (const m of textNoPrices.matchAll(p)) for (const it of splitItems(m[1])) items.add(it);
       for (const it of items) add(field, it, r.engine, false);
     }
   }
@@ -149,10 +168,11 @@ export function extractBeliefs(runs: RunLike[], brand?: string, flaggedWrong: st
     for (const { claim, engines, times } of m.values()) {
       const saidBy = ENGINE_ORDER.filter((e) => engines.has(e)).concat([...engines].filter((e) => !ENGINE_ORDER.includes(e)));
       let status: BeliefStatus = wrong.has(norm(claim)) ? 'Contradicts your site' : conflicts ? 'Conflicts' : saidBy.length >= 2 ? 'Consistent' : 'Single-source';
-      rows.push({ field, claim, saidBy, times, status });
+      const siteValue = status === 'Contradicts your site' ? siteValues[norm(claim)] : undefined;
+      rows.push({ field, claim, saidBy, times, status, ...(siteValue ? { siteValue } : {}) });
     }
   }
-  const FIELD_ORDER: BeliefField[] = ['Legal / brand name', 'Headquarters', 'Founder / CEO', 'Founded', 'Parent company', 'Product line', 'Segment'];
+  const FIELD_ORDER: BeliefField[] = ['Legal / brand name', 'Headquarters', 'Founder / CEO', 'Founded', 'Parent company', 'Price', 'Product line', 'Segment'];
   rows.sort((a, b) => FIELD_ORDER.indexOf(a.field) - FIELD_ORDER.indexOf(b.field) || b.times - a.times || a.claim.localeCompare(b.claim));
   // List fields: every consistent item, then single-source items up to a cap of 12 per field.
   const perField = new Map<BeliefField, number>();
@@ -168,9 +188,9 @@ export function extractBeliefs(runs: RunLike[], brand?: string, flaggedWrong: st
 export function beliefsMarkdown(rows: BeliefRow[], brandedAnswers: number, heading: '##' | '###' = '##'): string[] {
   if (!rows.length) return [];
   const out = [`${heading} What the engines believe about you`];
-  out.push(`Every factual claim the ${brandedAnswers} branded answers made, counted. *Consistent* = two or more engines said it; *Single-source* = one engine; *Conflicts* = engines gave different values for the same fact. This table reports agreement, not truth — check a *Conflicts* or *Single-source* row against your own site.`);
+  out.push(`Every factual claim the ${brandedAnswers} branded answers made, counted. *Consistent* = two or more engines said it; *Single-source* = one engine; *Conflicts* = engines gave different values for the same fact; *Contradicts your site* = your own site publishes a different value, shown beside it. Apart from that last status, this table reports agreement, not truth — check a *Conflicts* or *Single-source* row against your own site.`);
   out.push('| Claim | Said by | Times | Status |'); out.push('|---|---|---|---|');
-  for (const r of rows.slice(0, 40)) out.push(`| **${r.field}:** ${r.claim} | ${r.saidBy.map((e) => ENGINE_LABEL[e] || e).join(', ')} | ${r.times} | ${r.status} |`);
+  for (const r of rows.slice(0, 40)) out.push(`| **${r.field}:** ${r.claim} | ${r.saidBy.map((e) => ENGINE_LABEL[e] || e).join(', ')} | ${r.times} | ${r.status}${r.siteValue ? ` — your site: ${r.siteValue}` : ''} |`);
   out.push('');
   return out;
 }

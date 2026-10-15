@@ -23,7 +23,7 @@ import {
 } from './citationSweep';
 import { avgPawc } from './pawc';
 import { summarizeFidelity, accuracyWhenNamed, type FidelitySummary, type AccuracyWhenNamed } from './fidelity';
-import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, type BeliefRow } from './beliefs';
+import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, flaggedSiteValues, type BeliefRow } from './beliefs';
 import { describeDenominator, type Denominator } from './sweepDisclosure';
 import { stripCost, sanitizeCustomerExport } from './customerSafe';
 import { panelOf, panelDisclosure, testConditionsLines } from './panel';
@@ -113,7 +113,7 @@ export function assembleReportData(input: {
   const summary = aggregateSweep(runs, client, competitors);
   const branded = runs.filter((r) => r.queryType === 'branded');
   const fidelity = truth ? summarizeFidelity(branded, truth) : null;
-  const beliefs = extractBeliefs(branded, brand || truth?.brandName || undefined, flaggedWrongValues(fidelity));
+  const beliefs = extractBeliefs(branded, brand || truth?.brandName || undefined, flaggedWrongValues(fidelity), flaggedSiteValues(fidelity));
   const entityLinking = detectEntityLinkingFailures(branded, client, truth);
   const authority = aggregateAuthorityGap(runs, domain);
   const segments = segmentBreakdown(runs);

@@ -15,7 +15,7 @@ import { avgPawc } from '../lib/pawc';
 import { auditFactDensity, type FactDensityAudit } from '../lib/factDensity';
 import { sweepScorecard, confidenceLevel, confidenceLabel, aggregateSweep, scoreRun } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType, Competitor } from '../lib/citationSweep';
-import { extractTruthRecord, type TruthRecord } from '../lib/truthRecord';
+import { extractTruthRecord, withSiteRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
 import { doNowChecklist } from '../lib/doNowChecklist';
 import { buildSweepReport, buildSweepCover, pitchTargetsFrom, ALIAS, type SweepResponse, type SweepReportInputs } from '../lib/sweepReport';
@@ -25,7 +25,7 @@ import { accuracyWhenNamed } from '../lib/fidelity';
 import { panelOf, panelDisclosure, testConditionsLines, type PanelVersion } from '../lib/panel';
 import { classifyIntent, intentMix, INTENTS, INTENT_LABEL } from '../lib/queryIntent';
 import { otherPanels, describeDenominator, buildSeries, pooledFromSummary, rescoreNote, SCORING_VERSION, type SeriesPoint } from '../lib/sweepDisclosure';
-import { extractBeliefs, flaggedWrongValues, ENGINE_LABEL as BELIEF_ENGINE } from '../lib/beliefs';
+import { extractBeliefs, flaggedWrongValues, flaggedSiteValues, ENGINE_LABEL as BELIEF_ENGINE } from '../lib/beliefs';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
 import { getAccessToken, supabaseQuery, supabaseUpdate } from '../supabase';
 import { safeJsonParse } from '../services/geminiService';
@@ -324,11 +324,18 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
         {
           const stored = pooledFromSummary(sweep.summary);
           const now = pooledFromSummary(reconstructed.summary);
-          const note = rescoreNote(sweep.scoring_version, stored, now);
-          setRescoreNoteText(note);
+          const pooledNote = rescoreNote(sweep.scoring_version, stored, now);
           // WO-004: History shows accuracy-when-named from the stored summary; add it when the row has a snapshot.
-          const awnSaved = accuracyWhenNamed(scored.filter((r) => r.queryType === 'branded'), sweep.full_result?.truth);
+          // WO-010 A: judge against what the site published at the sweep's own time (prices, free
+          // allowance, retired names); for our own domain the dated record fills an older snapshot.
+          const truthAtRun = withSiteRecord(sweep.full_result?.truth as TruthRecord | undefined, sweep.domain, sweep.created_at);
+          const awnSaved = accuracyWhenNamed(scored.filter((r) => r.queryType === 'branded'), truthAtRun);
+          const storedAwn = sweep.summary?.accuracyWhenNamed as { accurate: number; named: number } | undefined;
+          const awnMoved = !!(awnSaved && storedAwn && (storedAwn.accurate !== awnSaved.accurate || storedAwn.named !== awnSaved.named));
+          const awnNote = awnMoved ? `Described accurately when named ${storedAwn!.accurate}/${storedAwn!.named} → ${awnSaved!.accurate}/${awnSaved!.named}: scoring rules ${SCORING_VERSION} also check the prices, free allowance and product names your site published.` : null;
           const summaryOut = awnSaved ? { ...reconstructed.summary, accuracyWhenNamed: { accurate: awnSaved.accurate, named: awnSaved.named } } : reconstructed.summary;
+          const note = [pooledNote, awnNote].filter(Boolean).join(' ') || null;
+          setRescoreNoteText(note);
           if (note || sweep.scoring_version !== SCORING_VERSION || (awnSaved && !sweep.summary?.accuracyWhenNamed)) {
             supabaseUpdate('citation_sweeps', `id=eq.${savedSweepId}`, { summary: summaryOut, scoring_version: SCORING_VERSION, rescored_at: new Date().toISOString(), rescore_note: note })
               .then((r) => { if (r.error) return supabaseUpdate('citation_sweeps', `id=eq.${savedSweepId}`, { summary: summaryOut }); })
@@ -353,7 +360,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
         // audit. So a saved sweep === the original run (same screen + same downloaded
         // report). Nothing is re-fetched from the client's site (that would be a
         // different point in time) and nothing is fabricated.
-        const savedTruth = sweep.full_result?.truth as TruthRecord | undefined;
+        const savedTruth = withSiteRecord(sweep.full_result?.truth as TruthRecord | undefined, sweep.domain, sweep.created_at) ?? undefined;
         const savedFactDensity = sweep.full_result?.factDensity as FactDensityAudit | undefined;
         if (savedTruth) {
           const brandedRuns = runs.filter((r) => r.queryType === 'branded');
@@ -524,11 +531,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
       // B1: build the client's truth record from their own live site, then check
       // the branded answers for drift (fabricated founders etc.). No sweep cost —
       // a single page fetch; grounded against first-party JSON-LD + llms.txt.
-      fetch('/api/fetch-site', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: d }) })
-        .then((r) => r.json())
-        .then((site) => {
+      const fetchSite = (url: string) => fetch('/api/fetch-site', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) }).then((r) => r.json()).catch(() => null);
+      // WO-010 A: the pricing page as well, so a quoted price is checked against what the site publishes.
+      Promise.all([fetchSite(d), fetchSite(`${d.replace(/\/+$/, '')}/pricing`)])
+        .then(([site, pricing]) => {
           if (!site?.html) return;
-          const tr = extractTruthRecord(site.html, site.llmsTxt);
+          const tr = withSiteRecord(extractTruthRecord(site.html, site.llmsTxt, pricing?.html || null), d, new Date()) as TruthRecord;
           setTruth(tr);
           setPageFactDensity(auditFactDensity(site.html)); // E2: content-depth audit
           const brandedRuns = (json.runs || []).filter((r: SweepRunResult) => r.queryType === 'branded');
@@ -718,7 +726,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
           <ul className="mt-7 max-w-2xl mx-auto space-y-3 text-sm text-zinc-700">
             <li className="flex gap-3">
               <ShieldCheck className="w-4 h-4 mt-0.5 text-zinc-400 shrink-0" />
-              <span><b>Four answer engines, with web search on</b> — ChatGPT, Claude, Perplexity and Gemini,
+              <span><b>The answer engines in your plan, with web search on</b> — ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business,
               asked the way a buyer asks them.</span>
             </li>
             <li className="flex gap-3">
@@ -1172,6 +1180,18 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                   })()}
                 </div>
               )}
+              {/* WO-010 B: pages pulled up for the name in answers that were still correct. Not confusion. */}
+              {entityLinking?.retrievedAlongside && entityLinking.retrievedAlongside.length > 0 && (
+                <div className="mt-4 border-t border-zinc-200 pt-3">
+                  <p className="text-sm font-bold text-zinc-800">Retrieved alongside you</p>
+                  <p className="text-xs text-zinc-600 mt-1">Engines pulled these up for your name; your answer was still correct.</p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {entityLinking.retrievedAlongside.map((a) => (
+                      <a key={a.entity} href={a.source} target="_blank" rel="noopener noreferrer" className="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-white text-zinc-700 border border-zinc-300 hover:underline">{a.entity}</a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             );
           })()}
@@ -1181,13 +1201,13 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
               where the fidelity classifier already said so. */}
           {result && (() => {
             const brandedRuns = result.runs.filter((x) => x.queryType === 'branded');
-            const rows = extractBeliefs(brandedRuns, result.brand || truth?.brandName || undefined, flaggedWrongValues(fidelity));
+            const rows = extractBeliefs(brandedRuns, result.brand || truth?.brandName || undefined, flaggedWrongValues(fidelity), flaggedSiteValues(fidelity));
             if (!rows.length) return null;
             const tone: Record<string, string> = { Consistent: 'bg-emerald-50 text-emerald-800 border-emerald-200', 'Single-source': 'bg-amber-50 text-amber-800 border-amber-200', Conflicts: 'bg-red-50 text-red-800 border-red-200', 'Contradicts your site': 'bg-red-100 text-red-900 border-red-300' };
             return (
               <div className="bg-white border border-zinc-200 rounded-2xl px-5 py-4">
                 <h3 className="text-sm font-bold text-zinc-900">What the engines believe about you</h3>
-                <p className="text-xs text-zinc-600 mt-1">Every factual claim the {brandedRuns.length} branded answers made, counted. <b>Consistent</b> = two or more engines said it. <b>Single-source</b> = one engine. <b>Conflicts</b> = different values for the same fact. This reports agreement, not truth &mdash; check a Conflicts or Single-source row against your own site.</p>
+                <p className="text-xs text-zinc-600 mt-1">Every factual claim the {brandedRuns.length} branded answers made, counted. <b>Consistent</b> = two or more engines said it. <b>Single-source</b> = one engine. <b>Conflicts</b> = different values for the same fact. <b>Contradicts your site</b> = your own site publishes a different value, shown beside it. Otherwise this reports agreement, not truth &mdash; check a Conflicts or Single-source row against your own site.</p>
                 <div className="overflow-x-auto mt-3">
                   <table className="w-full text-xs">
                     <thead><tr className="text-left text-zinc-500 border-b border-zinc-200"><th className="py-1 pr-3">Claim</th><th className="py-1 pr-3">Said by</th><th className="py-1 pr-3">Times</th><th className="py-1">Status</th></tr></thead>
@@ -1197,7 +1217,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                           <td className="py-1.5 pr-3 text-zinc-800"><span className="text-zinc-500">{b.field}:</span> {b.claim}</td>
                           <td className="py-1.5 pr-3 text-zinc-700">{b.saidBy.map((e) => BELIEF_ENGINE[e] || e).join(', ')}</td>
                           <td className="py-1.5 pr-3 text-zinc-700 tabular-nums">{b.times}</td>
-                          <td className="py-1.5"><span className={`inline-block px-2 py-0.5 rounded-full border font-semibold ${tone[b.status] || ''}`}>{b.status}</span></td>
+                          <td className="py-1.5"><span className={`inline-block px-2 py-0.5 rounded-full border font-semibold ${tone[b.status] || ''}`}>{b.status}</span>{b.siteValue && <div className="text-[11px] text-zinc-700 mt-1">Your site: {b.siteValue}</div>}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1255,7 +1275,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                     )}
                     {e.modelPriorRuns > 0 && <div className="mt-2 text-[11px] text-zinc-400">{e.modelPriorRuns} answered from memory (no search) reported separately</div>}
                     {e.truncatedRuns > 0 && <div className="mt-2 text-[11px] text-amber-600">{e.truncatedRuns} truncated answer{e.truncatedRuns > 1 ? 's' : ''} excluded</div>}
-                    {((e as { erroredRuns?: number }).erroredRuns ?? 0) > 0 && <div className="mt-2 text-[11px] text-amber-600">{(e as { erroredRuns?: number }).erroredRuns} of {e.brandedRuns + e.categoryRuns + e.truncatedRuns + e.modelPriorRuns + ((e as { erroredRuns?: number }).erroredRuns ?? 0)} runs errored — excluded</div>}
+                    {((e as { erroredRuns?: number }).erroredRuns ?? 0) > 0 && <div className="mt-2 text-[11px] text-amber-800">{(e as { erroredRuns?: number }).erroredRuns} of {e.brandedRuns + e.categoryRuns + e.truncatedRuns + e.modelPriorRuns + ((e as { erroredRuns?: number }).erroredRuns ?? 0)} runs errored{e.erroredAfterRetry && e.erroredAfterRetry === e.erroredRuns ? ' after retry' : ''} — excluded</div>}
                     {isAdmin && <div className="mt-2 text-xs text-zinc-400 flex items-center gap-1"><DollarSign className="w-3 h-3" />${e.costUsd.toFixed(3)}</div>}
                   </>
                 )}
@@ -1405,6 +1425,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                 hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
                 collisions: entityLinking?.collisions ?? [],
                 losingCategoryQuestions: [...new Set(result.runs.filter((x) => x.queryType === 'category' && !x.cited && !x.truncated && x.grounding !== 'model-prior').map((x) => x.query))],
+                location: ((result.summary as any)?.panel?.location ?? null) as string | null,
                 doNowAuthorities: authority ? doNowChecklist(authority.authorityDomains) : [],
                 brand: result.brand || undefined,
                 domain: result.domain,

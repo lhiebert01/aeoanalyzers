@@ -22,7 +22,7 @@ Search is becoming answers. When someone asks ChatGPT, Gemini, Perplexity, or Cl
 
 A score predicts. A Citation Sweep proves.
 
-The new AEO Analyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity, and Gemini — and stores every transcript. Then it measures three separable layers:
+The new AEO Analyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business — and stores every transcript. Then it measures three separable layers:
 
 - **Retrievability** — ask AI about your brand by name; does it return a real answer? A health check that should sit near 100%.
 - **Fidelity** — is what AI says about you actually true? We flag fabricated founders, stale prices, and invented features, with the correct value and the fix.
@@ -124,14 +124,14 @@ Start free: https://aeoanalyzers.com
 `;
 
   const slackBlurbContent = `
-🚀 New: the next generation of AEO Analyzers adds real-time Citation Sweeps — it asks ChatGPT, Claude, Perplexity, and Gemini your buyers' questions and shows whether they cite you or a competitor, with stored transcripts and the exact fixes. Start free at https://aeoanalyzers.com.
+🚀 New: the next generation of AEO Analyzers adds real-time Citation Sweeps — it asks ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, your buyers' questions and shows whether they cite you or a competitor, with stored transcripts and the exact fixes. Start free at https://aeoanalyzers.com.
 `;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <SEO
         title="Press Kit & Announcements - AEO Analyzers"
-        description="Announcement and press resources for AEO Analyzers — real-time Citation Sweeps across ChatGPT, Claude, Perplexity, and Gemini, backed by stored transcripts, plus the exact fixes."
+        description="Announcement and press resources for AEO Analyzers — real-time Citation Sweeps across ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, backed by stored transcripts, plus the exact fixes."
         author="Lindsay Hiebert"
         publishedDate="2026-07-28T00:00:00Z"
       />
@@ -206,7 +206,7 @@ Start free: https://aeoanalyzers.com
               <div className="space-y-6 text-zinc-600 leading-relaxed">
                 <p className="text-xl font-medium text-zinc-900">Search is becoming answers. When someone asks ChatGPT, Gemini, Perplexity, or Claude about your category, they get one answer — one or two names. If it isn't you, your customers never see you.</p>
                 <p className="font-bold text-zinc-900">A score predicts. A Citation Sweep proves.</p>
-                <p>The new AEO Analyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity, and Gemini — and stores every transcript. Then it measures three separable layers.</p>
+                <p>The new AEO Analyzers asks the real answer engines your buyers' questions — multiple times each, across ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business — and stores every transcript. Then it measures three separable layers.</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
                   <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-300">

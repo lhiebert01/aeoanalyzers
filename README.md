@@ -1,15 +1,16 @@
 # AEO Analyzers
 
-**Multiple AI Engines. One Score. 90 Seconds.**
+AEO Analyzers is answer engine optimization (AEO) software. It measures whether AI answer engines (ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business) find your site, describe it accurately and recommend it when buyers ask, backs every figure with a stored transcript, and gives you the fixes.
 
-AEO Analyzers is a professional-grade AI Simulation Engine that helps brands, businesses, and developers optimize for **Answer Engine Optimization (AEO)**. We simulate how multiple AI engines — Gemini, ChatGPT, Perplexity — perceive your website, delivering insights that would take a web team hundreds of hours, in 90 seconds.
+**Prices and plans:** https://aeoanalyzers.com/pricing is the source of truth. Any price in this repository's dated documents (release notes, plans, baselines) is as of that document's date.
 
 **Live at:** https://www.aeoanalyzers.com
 
 ## Key Features
 
 ### Core Analysis
-- **Multi-Engine AI Simulation:** Simulates how multiple AI engines perceive your content — not a single algorithm, real-world results
+- **AEO Score:** a technical-readiness analysis of how citable a page is, with the fixes (schema, content rewrites, crawler access)
+- **Citation Sweeps:** the real answer engines asked your buyers' questions, with every answer stored as a transcript
 - **AEO Score Engine:** AI-powered analysis of any website's readiness for answer engine citation (0-100 score)
 - **Transparent Score Formula:** Score = Entity×0.3 + Density×0.3 + Clarity×0.2 + Structure×0.2 — fully visible breakdown with progress bars
 - **Citation Probability:** Proprietary metric showing likelihood of AI attribution
@@ -58,8 +59,8 @@ Measurement integrity is built in: truncated answers are **excluded** (never sho
 - **Google OAuth + Email Auth:** Secure authentication via Supabase with Google sign-in support
 - **Admin Dashboard:** User management, growth metrics, and GA4 analytics link
 - **GA4 Analytics:** Full Google Analytics 4 integration for tracking user behavior and conversions
-- **Stripe Subscriptions:** Free (1 analysis), Day Pass ($29), Pro ($149/mo), and Business ($599/mo) tiers
-- **Free Tier Gate:** 1 free analysis, then upgrade required — usage tracked server-side
+- **Stripe Subscriptions:** Free (3 free checks), Day Pass ($29), Pro Optimizer ($149/mo) and Business Authority ($599/mo); current terms at https://aeoanalyzers.com/pricing
+- **Free Tier Gate:** 3 free checks per account, then upgrade required — enforced server-side
 
 ## Tech Stack
 
@@ -85,7 +86,7 @@ Measurement integrity is built in: truncated answers are **excluded** (never sho
 Browser (React SPA)
   ├── Supabase Auth (email signup, login, Google OAuth)
   ├── Supabase PostgreSQL (users, analysis_history with RLS)
-  ├── Gemini API (multi-engine AI simulation, client-side)
+  ├── Gemini API (AEO Score analysis)
   ├── Google Analytics 4 (GA4 event tracking)
   └── Vercel API Routes (serverless)
         ├── /api/fetch-site (HTML proxy with full Chrome browser headers)

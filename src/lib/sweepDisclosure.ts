@@ -12,7 +12,8 @@ import type { SweepRunResult, SweepScorecard, SweepSummary } from './citationSwe
 import { panelOf, type PanelVersion } from './panel.js';
 
 /** Bump when a scoring rule changes (strict branded rule, errored exclusion, grounding). */
-export const SCORING_VERSION = '2026-10-13'; // 13 Oct: found-by-name = own domain reached, neither not-found detector fires
+export const SCORING_VERSION = '2026-10-15'; // 15 Oct (WO-010): described-accurately also checks published prices, free allowance, retired names
+// 13 Oct: found-by-name = own domain reached, neither not-found detector fires
 
 export const isErrored = (r: SweepRunResult) => !!(r as any).errored || /^\s*\[error:/i.test(r.transcript || '');
 

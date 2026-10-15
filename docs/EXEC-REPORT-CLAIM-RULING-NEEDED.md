@@ -1,3 +1,5 @@
+> Prices and plan names in this document are as of its date; current pricing is at https://aeoanalyzers.com/pricing.
+
 # "AI Visibility Executive Report" — verified, ruling needed. Draft only, not shipped.
 
 **Question asked (founder, Sep 7 2026):** is the sample in `/blog/are-you-the-answer-ai-gives`

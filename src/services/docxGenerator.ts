@@ -121,7 +121,7 @@ export async function generateDocxReport(
     ['31–50', 'Below Average', 'Major gaps — AI may find the site but won\'t trust it as a source'],
     ['51–70', 'Okay / Fair', 'Foundational elements exist but content lacks the specificity AI needs to cite confidently'],
     ['71–85', 'Good', 'Strong structure + content — AI will cite this for many relevant queries'],
-    ['86–100', 'Excellent', 'Source of Truth — AI engines actively prefer this site as a primary reference'],
+    ['86–100', 'Excellent', 'Technically ready to be cited; whether engines recommend you is measured by a Citation Sweep'],
   ];
   const activeTierIdx = result.score <= 30 ? 0 : result.score <= 50 ? 1 : result.score <= 70 ? 2 : result.score <= 85 ? 3 : 4;
   const SCORE_COLS = [1300, 1900, 5820];
@@ -339,7 +339,8 @@ export async function generateDocxReport(
     bulletPoint('Earn real third-party citations, listings, reviews, and mentions'),
     bulletPoint('Publish FAQ pages with structured data and technical explainer content'),
     bulletPoint('Add use-case and deployment documentation'),
-    bulletPoint('(Optional, low priority) add an llms.txt — Google Search does not use it; treat as a cheap experiment, not a priority'),
+    // WO-010 E: never advise adding an llms.txt the scan already found.
+    ...(result.crawlerAccess?.llmsTxtFound ? [] : [bulletPoint('(Optional, low priority) add an llms.txt — Google Search does not use it; treat as a cheap experiment, not a priority')]),
     spacer()
   );
 

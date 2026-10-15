@@ -16,6 +16,14 @@
 // produces zero flags (positive control).
 
 import { normalizeDomain } from './citationSweep';
+import { classifyRunFidelity } from './fidelity.js';
+import type { TruthRecord } from './truthRecord';
+
+/** Does the answer text name this entity ("AEA Investors", "acme-tools.io")? */
+function mentionsEntity(text: string, entity: string): boolean {
+  const name = entity.replace(/^Wikipedia:\s*/i, '').replace(/\s*\(stock-ticker page\)$/i, '').trim();
+  return name.length >= 3 && text.toLowerCase().includes(name.toLowerCase());
+}
 
 export type EntityLinkKind = 'wikipedia-collision' | 'ticker-collision' | 'near-name-domain';
 
@@ -32,6 +40,9 @@ export interface EntityLinkingReport {
   flags: EntityLinkingFlag[];
   /** Deduped colliding-entity labels for the "engines are confusing you with: …" callout. */
   collisions: string[];
+  /** WO-010 B: pages an engine pulled up for your name in an answer that was still correct
+   *  about you and never mentioned them. Not confusion; listed so nothing is hidden. */
+  retrievedAlongside?: { entity: string; source: string }[];
 }
 
 // Finance / market-data hosts. A solo SaaS cited via one of these on a ticker path
@@ -152,19 +163,28 @@ function extractUrlsFromText(text: string): string[] {
 }
 
 export function detectEntityLinkingFailures(
-  brandedRuns: { sources?: string[]; transcript?: string }[],
+  brandedRuns: { sources?: string[]; transcript?: string; cited?: boolean }[],
   client: { domain: string; brand?: string },
   truth?: { sameAs?: string[] } | null,
   /** WO-AEO-REPORT-POLISH-001 G2: near-name domains the OWNER confirmed are theirs. Never a collision. */
   owned?: string[]
 ): EntityLinkingReport {
+  // WO-010 B: confusion needs evidence in the answer itself. A page that sat only in an answer's
+  // sources, when that answer named you and stated nothing your site contradicts, was retrieved
+  // alongside you: the engine searched your name, found it, and still described you correctly.
+  // It counts as confusion when the answer text names it or links it, or when the answer was not
+  // accurate about you (or accuracy could not be checked).
+  const fullTruth = truth && 'brandName' in truth ? (truth as TruthRecord) : null;
+  const accurate = (r: { cited?: boolean; transcript?: string }) =>
+    !!fullTruth && !!r.cited && classifyRunFidelity(true, r.transcript || '', fullTruth).state === 'cited-accurate';
+  const alongside = new Map<string, string>();
   const keys = brandKeys(client);
   const declared = new Set((truth?.sameAs || []).map((u) => registrable(parseUrl(u).host)));
   for (const d of owned || []) declared.add(registrable(String(d || '').toLowerCase().replace(/^www\./, '')));
   const flags: EntityLinkingFlag[] = [];
   const seen = new Set<string>();
 
-  const consider = (url: string) => {
+  const consider = (url: string, run: { cited?: boolean; transcript?: string }, inText: boolean) => {
     const { host, slug } = parseUrl(url);
     if (!host) return;
     const reg = registrable(host);
@@ -183,15 +203,19 @@ export function detectEntityLinkingFailures(
     }
 
     if (flag) {
+      const named = inText || mentionsEntity(run.transcript || '', flag.collidingEntity);
+      if (!named && accurate(run)) { if (!alongside.has(flag.collidingEntity)) alongside.set(flag.collidingEntity, url); return; }
       const key = `${flag.kind}|${flag.collidingEntity}`;
       if (!seen.has(key)) { seen.add(key); flags.push(flag); }
     }
   };
 
   for (const run of brandedRuns) {
-    for (const url of run.sources || []) consider(url);
-    for (const url of extractUrlsFromText(run.transcript || '')) consider(url); // A3: answer-text entities
+    for (const url of run.sources || []) consider(url, run, false);
+    for (const url of extractUrlsFromText(run.transcript || '')) consider(url, run, true); // A3: answer-text entities
   }
 
-  return { flags, collisions: [...new Set(flags.map((f) => f.collidingEntity))] };
+  const collisions = [...new Set(flags.map((f) => f.collidingEntity))];
+  const retrievedAlongside = [...alongside].filter(([e]) => !collisions.includes(e)).map(([entity, source]) => ({ entity, source }));
+  return { flags, collisions, ...(retrievedAlongside.length ? { retrievedAlongside } : {}) };
 }

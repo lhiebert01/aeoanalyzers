@@ -1,3 +1,5 @@
+> Prices and plan names in this document are as of its date; current pricing is at https://aeoanalyzers.com/pricing.
+
 # AEO Analyzers — Go-To-Market Plan (announce · market · sell)
 
 *Owner: Lindsay Hiebert · Updated 2026-05-31 · Forward-looking; revise as you ship.*

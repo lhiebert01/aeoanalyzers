@@ -1,3 +1,5 @@
+> Prices and plan names in this document are as of its date; current pricing is at https://aeoanalyzers.com/pricing.
+
 # AEO Analyzers — Distribution Master Pack (v1, 14 Oct 2026)
 
 Purpose: one place that lists every post in the AEO Analyzers blog series, which channels each has been pushed to, and what came back, so the whole series is tracked rather than one post at a time. Each post also gets its own standalone pack (the first is `AEO-DISTI-PACK-the-measurement-layer.md`); the standalone pack holds the copy, this master holds the record.

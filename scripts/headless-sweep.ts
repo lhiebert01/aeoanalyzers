@@ -1,6 +1,6 @@
 // Headless Citation Sweep — reuses the app's REAL engine adapters + scoring so the
 // output matches production exactly (only difference: not persisted to Supabase).
-// Used to generate a real sweep JSON for a hand-drafted Executive Report.
+// Used to generate a real sweep JSON for a hand-drafted report.
 //
 //   npx tsx scripts/headless-sweep.ts   (params + keys via env; see run-sweep.sh)
 //

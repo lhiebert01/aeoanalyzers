@@ -22,6 +22,9 @@ export interface SweepActionInputs {
   collisions: string[];
   /** The exact unbranded questions where you were NOT cited (the content agenda). */
   losingCategoryQuestions: string[];
+  /** The market named inside each question (panel location). Shown without it in the agenda:
+   *  "… in United States" is a test condition, not part of the page to write (WO-010 G). */
+  location?: string | null;
   /** "Do now" (self-serve) authority domains — this month's checklist. */
   doNowAuthorities: string[];
   /** For the paste-ready remediation snippet. */
@@ -150,6 +153,13 @@ export function answerShape(question: string): 'recommendation' | 'advice' {
 }
 
 /** Build the closing "What to do" agenda as markdown lines (no trailing blank). */
+/** A question as the reader should see it: without the market suffix the sweep appended. */
+export function displayQuestion(question: string, location?: string | null): string {
+  if (!location) return question;
+  const esc = location.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return question.replace(new RegExp(`\\s+in\\s+${esc}\\s*$`, 'i'), '');
+}
+
 export function buildSweepActionAgenda(inp: SweepActionInputs, opts: { heading?: boolean } = {}): string[] {
   const out: string[] = [];
   // The dashboard's md/docx already opened this section with the Do-now plan, so it passes
@@ -181,12 +191,12 @@ export function buildSweepActionAgenda(inp: SweepActionInputs, opts: { heading?:
     if (wantsList.length) {
       // The winnable set: the buyer asked to be handed candidates, so a page that
       // answers the question is a page that can be one of them.
-      for (const q of wantsList) out.push(`- Write the page that answers: "${q}"`);
+      for (const q of wantsList) out.push(`- Write the page that answers: "${displayQuestion(q, inp.location)}"`);
     }
     if (wantsAdvice.length) {
       out.push('');
       out.push(`**Read these ${wantsAdvice.length === 1 ? 'one' : `${wantsAdvice.length}`} differently.** ${wantsAdvice.length === 1 ? 'This question reads' : 'These read'} as a request for a procedure rather than for a shortlist, so an engine tends to answer ${wantsAdvice.length === 1 ? 'it' : 'them'} with steps and name no vendor at all. A zero here is weaker evidence than a zero on the questions above — it may mean the answer was never shaped like a recommendation, not that you lost a comparison. Worth a page for the reader; not worth reading as a citation loss:`);
-      for (const q of wantsAdvice) out.push(`- Write the page that answers: "${q}"`);
+      for (const q of wantsAdvice) out.push(`- Write the page that answers: "${displayQuestion(q, inp.location)}"`);
     }
     out.push('');
     if (inp.doNowAuthorities.length) {

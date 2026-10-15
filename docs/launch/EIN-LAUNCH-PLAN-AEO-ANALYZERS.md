@@ -1,3 +1,5 @@
+> Prices and plan names in this document are as of its date; current pricing is at https://aeoanalyzers.com/pricing.
+
 # EIN Presswire Launch Plan — AEO Analyzers
 
 > **SUPERSEDED for the release text.** The canonical, paste-ready release is

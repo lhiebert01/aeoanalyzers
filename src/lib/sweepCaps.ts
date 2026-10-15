@@ -69,6 +69,8 @@ export const CALL_RESERVE_USD: Record<string, number> = {
 
 /** Transcript of a call the spend ceiling declined: an errored run, never an engine failure. */
 export const NOT_ASKED = '[error: not asked — this sweep reached its spend ceiling]';
+/** Appended inside an errored transcript that also failed its one retry (WO-010 C). */
+export const RETRIED_MARK = '(failed again after one retry)';
 
 export class CostGuard {
   spent = 0;

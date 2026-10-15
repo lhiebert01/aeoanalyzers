@@ -1,5 +1,9 @@
 # Release Notes
 
+## Current pricing (15 Oct 2026)
+
+Prices and plan names in the entries below are as of each entry's date. Current: Free (3 free checks), Day Pass $29 (24 hours; 3 Citation Sweeps on the four-engine panel, 25 AEO analyses), Pro Optimizer $149/month (8 sweeps, five-engine panel with Grok, 100 analyses), Business Authority $599/month (20 sweeps, 200 analyses). Source of truth: https://aeoanalyzers.com/pricing.
+
 ## v1.8.x — August 1–5, 2026
 
 ### Maintenance + Honest-Zero GTM launch (feature-frozen — bug fixes + paying-customer blockers only)
