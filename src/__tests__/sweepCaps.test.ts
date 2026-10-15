@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CostGuard, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, PLAN_PANEL, analysesAllowance, analysesWindowStart, analysesLimitMessage } from '../lib/sweepCaps';
+import { CostGuard, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, PLAN_PANEL, analysesAllowance, allowanceWindowStart, analysesLimitMessage } from '../lib/sweepCaps';
 
 describe('spend caps (pricing decision 13 Oct 2026)', () => {
   it('per-sweep caps are $1.50 on v1.1 and $6.00 on v1.2 (raised 14 Oct 2026)', () => {
@@ -21,10 +21,10 @@ describe('spend caps (pricing decision 13 Oct 2026)', () => {
   });
   it('analysis windows: free counts every analysis, Day Pass its 24 hours, plans the month', () => {
     const now = new Date('2026-10-14T18:30:00Z');
-    expect(analysesWindowStart('free', null, now)).toBeNull();
-    expect(analysesWindowStart('daypass', '2026-10-15T09:00:00Z', now)!.toISOString()).toBe('2026-10-14T09:00:00.000Z');
-    expect(analysesWindowStart('Pro', null, now)!.toISOString()).toBe('2026-10-01T00:00:00.000Z');
-    expect(analysesWindowStart('Business', null, now)!.toISOString()).toBe('2026-10-01T00:00:00.000Z');
+    expect(allowanceWindowStart('free', null, now)).toBeNull();
+    expect(allowanceWindowStart('daypass', '2026-10-15T09:00:00Z', now)!.toISOString()).toBe('2026-10-14T09:00:00.000Z');
+    expect(allowanceWindowStart('Pro', null, now)!.toISOString()).toBe('2026-10-01T00:00:00.000Z');
+    expect(allowanceWindowStart('Business', null, now)!.toISOString()).toBe('2026-10-01T00:00:00.000Z');
   });
   it('the refusal names the tier\'s own allowance', () => {
     expect(analysesLimitMessage('free')).toContain('3 free analyses');

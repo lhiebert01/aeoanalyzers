@@ -22,16 +22,17 @@ export const PLAN_SWEEPS: Record<PaidTier, number> = { daypass: 3, Pro: 8, Busin
 /** The panel each plan runs. The Day Pass is four engines; Pro and Business are five. */
 export const PLAN_PANEL: Record<PaidTier, CapPanel> = { daypass: 'v1.1', Pro: 'v1.2', Business: 'v1.2' };
 
-/** Analyses allowed per account in the tier's window (see analysesWindowStart). */
+/** Analyses allowed per account in the tier's window (see allowanceWindowStart). */
 export const ANALYSES_ALLOWANCE: Record<PaidTier | 'free', number> = { free: 3, daypass: 25, Pro: 100, Business: 200 };
 
 export function analysesAllowance(tier: string | null | undefined): number {
   return (ANALYSES_ALLOWANCE as Record<string, number>)[tier || 'free'] ?? ANALYSES_ALLOWANCE.free;
 }
 
-/** Where the tier's analysis count starts: free counts every analysis ever (null), a Day Pass
- *  counts from the start of its 24 hours, Pro and Business from the 1st of the month (UTC). */
-export function analysesWindowStart(tier: string | null | undefined, passUntil: string | null | undefined, now = new Date()): Date | null {
+/** Where a tier's allowance count starts, for analyses AND sweeps: a Day Pass counts from the
+ *  start of its 24 hours, Pro and Business from the 1st of the month (UTC), and free analyses
+ *  count every one ever (null). */
+export function allowanceWindowStart(tier: string | null | undefined, passUntil: string | null | undefined, now = new Date()): Date | null {
   if (tier === 'Pro' || tier === 'Business') return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   if (tier === 'daypass' && passUntil) return new Date(new Date(passUntil).getTime() - 24 * 3_600_000);
   return null;

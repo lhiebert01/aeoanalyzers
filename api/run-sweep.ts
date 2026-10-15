@@ -26,7 +26,7 @@ import { SCORING_VERSION } from '../src/lib/sweepDisclosure.js';
 import { accuracyWhenNamed } from '../src/lib/fidelity.js';
 import { extractTruthRecord, type TruthRecord } from '../src/lib/truthRecord.js';
 import { COST_SCALE } from '../src/lib/costEstimate.js';
-import { CostGuard, NOT_ASKED, PLAN_PANEL, PLAN_SWEEPS, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, type PaidTier } from '../src/lib/sweepCaps.js';
+import { CostGuard, NOT_ASKED, PLAN_PANEL, allowanceWindowStart, PLAN_SWEEPS, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, type PaidTier } from '../src/lib/sweepCaps.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
 import { planSweep } from '../src/lib/sweepPlan.js';
 import { alertSweepEngineFail } from './_lib/engineAlert.js';
@@ -113,13 +113,15 @@ async function resolveAccess(req: VercelRequest): Promise<{ userId: string | nul
   else if (dayPassActive) tier = 'daypass';
   if (!tier) return FREE(); // signed-in free user → refused (WO-007)
 
-  // Paid: enforce the monthly quota (this is the only hard error).
-  const monthStart = new Date();
-  monthStart.setUTCDate(1); monthStart.setUTCHours(0, 0, 0, 0);
-  // Count this month's sweeps AND sum what they cost (stored scaled by COST_SCALE).
+  // Paid: enforce the plan's sweep quota (this is the only hard error). The window is the
+  // plan's own: Pro and Business count from the 1st of the month, a Day Pass from the start of
+  // its 24 hours (it used to count the month, so a second pass in one month got no sweeps).
+  const windowStart = allowanceWindowStart(tier, row?.report_pass_until)!;
+  const isPass = tier === 'daypass';
+  // Count this window's sweeps AND sum what they cost (stored scaled by COST_SCALE).
   // Fails CLOSED: if the count can't be read, no paid sweep starts (the cap is a money control).
   const cntRes = await fetch(
-    `${supaUrl}/rest/v1/citation_sweeps?user_id=eq.${userId}&created_at=gte.${monthStart.toISOString()}&select=total_cost_usd`,
+    `${supaUrl}/rest/v1/citation_sweeps?user_id=eq.${userId}&created_at=gte.${windowStart.toISOString()}&select=total_cost_usd`,
     { headers: H }
   );
   if (!cntRes.ok) throw new HttpError(503, 'Could not check your monthly sweep allowance. No sweep was used — please try again shortly.');
@@ -127,9 +129,13 @@ async function resolveAccess(req: VercelRequest): Promise<{ userId: string | nul
   const used = rowsThisMonth.length;
   const spentThisMonthUsd = rowsThisMonth.reduce((a, r) => a + (Number(r.total_cost_usd) || 0), 0) / COST_SCALE;
   const quota = MONTHLY_QUOTA[tier] ?? 0;
-  if (used >= quota) throw new HttpError(429, `Monthly sweep limit reached for your plan (${quota} sweeps). Upgrade or wait for next month.`);
+  if (used >= quota) throw new HttpError(429, isPass
+    ? `You have used the ${quota} sweeps included in your Day Pass.`
+    : `Monthly sweep limit reached for your plan (${quota} sweeps). Upgrade or wait for next month.`);
   const monthlyCapUsd = monthlyCostCapUsd(tier as PaidTier);
-  if (spentThisMonthUsd >= monthlyCapUsd) throw new HttpError(429, 'Monthly sweep allowance reached for your plan. Upgrade or wait for next month.');
+  if (spentThisMonthUsd >= monthlyCapUsd) throw new HttpError(429, isPass
+    ? 'You have used the sweep allowance included in your Day Pass.'
+    : 'Monthly sweep allowance reached for your plan. Upgrade or wait for next month.');
 
   return { userId, tier, quickCheck: false, spentThisMonthUsd, monthlyCapUsd };
 }

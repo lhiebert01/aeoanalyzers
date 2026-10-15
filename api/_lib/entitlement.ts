@@ -59,7 +59,7 @@ export async function isPaidRequest(
 }
 
 /**
- * Analyses are capped per account by tier (analysesAllowance / analysesWindowStart in
+ * Analyses are capped per account by tier (analysesAllowance / allowanceWindowStart in
  * src/lib/sweepCaps.ts: free 3 ever, Day Pass 25 in its 24 hours, Pro 100 and Business 200 a
  * month). Counts saved analyses (analysis_history) since `since`, or all of them when `since` is
  * null. Returns null when under the cap or when the count can't be read (fail open: the free score

@@ -19,7 +19,7 @@ import { GoogleGenAI } from '@google/genai';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import { isPaidRequest, analysesUsedIfCapped } from './_lib/entitlement.js';
-import { analysesAllowance, analysesLimitMessage, analysesWindowStart } from '../src/lib/sweepCaps.js';
+import { analysesAllowance, analysesLimitMessage, allowanceWindowStart } from '../src/lib/sweepCaps.js';
 import { redactFixFields, markGated } from '../src/lib/fixGating.js';
 
 // Gemini flash models in priority order (best quality first, stable fallbacks).
@@ -179,7 +179,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (purpose !== 'sweep-config') {
       const ent0 = await entP;
       if (ent0.userId && !ent0.admin) {
-        const used = await analysesUsedIfCapped(ent0.userId, analysesAllowance(ent0.tier), analysesWindowStart(ent0.tier, ent0.passUntil));
+        const used = await analysesUsedIfCapped(ent0.userId, analysesAllowance(ent0.tier), allowanceWindowStart(ent0.tier, ent0.passUntil));
         if (used !== null) {
           return res.status(429).json({ error: analysesLimitMessage(ent0.tier) });
         }
