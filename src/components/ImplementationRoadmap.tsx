@@ -112,10 +112,10 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, 
     .join('\n\n---\n\n');
 
   const getScoreRating = (score: number): { rating: string; description: string } => {
-    if (score <= 30) return { rating: 'Poor', description: 'AI engines will almost never cite this site' };
-    if (score <= 50) return { rating: 'Below Average', description: 'Major gaps — AI may find the site but won\'t trust it as a source' };
+    if (score <= 30) return { rating: 'Poor', description: 'Not ready to be cited: the structure, schema and facts engines read are largely missing' };
+    if (score <= 50) return { rating: 'Below Average', description: 'Major gaps in the structure, schema and facts engines read before they can use the site as a source' };
     if (score <= 70) return { rating: 'Okay / Fair', description: 'Foundational elements exist but content lacks the specificity AI needs to cite confidently' };
-    if (score <= 85) return { rating: 'Good', description: 'Strong structure + content — AI will cite this for many relevant queries' };
+    if (score <= 85) return { rating: 'Good', description: 'Strong structure and content; ready to be cited on many relevant questions, with a few gaps left' };
     return { rating: 'Excellent', description: 'Technically ready to be cited; whether engines recommend you is measured by a Citation Sweep' };
   };
 
@@ -134,10 +134,10 @@ We recently completed an Answer Engine Optimization (AEO) review of ${siteUrl} u
 
 | Range | Rating | What it means |
 |-------|--------|---------------|
-| 0–30 | Poor | AI engines will almost never cite this site |
-| 31–50 | Below Average | Major gaps — AI may find the site but won't trust it as a source |
+| 0–30 | Poor | Not ready to be cited: the structure, schema and facts engines read are largely missing |
+| 31–50 | Below Average | Major gaps in the structure, schema and facts engines read before they can use the site as a source |
 | 51–70 | Okay / Fair | Foundational elements exist but content lacks the specificity AI needs to cite confidently |
-| 71–85 | Good | Strong structure + content — AI will cite this for many relevant queries |
+| 71–85 | Good | Strong structure and content; ready to be cited on many relevant questions, with a few gaps left |
 | 86–100 | Excellent | Technically ready to be cited; whether engines recommend you is measured by a Citation Sweep |
 
 Your score of ${analysisResult.score}/100 with ${analysisResult.citationProbability}% citation readiness (a technical estimate, not a measured citation rate) places you in the **${scoreRating}** range.

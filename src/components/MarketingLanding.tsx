@@ -255,7 +255,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         </div>
         {/* Sep 7 2026: dropped the "AI-crawler telemetry" promise — no customer-facing
             way to connect a domain exists yet (see Payments.tsx). Drift monitoring ships. */}
-        <p className="text-center text-zinc-600 text-sm mt-8 max-w-2xl mx-auto">Plus answer-drift comparison across your re-runs — so you know what the engines say about you, and whether it changed. <strong className="text-zinc-600">The AEO analysis is free</strong> &mdash; your score, your sub-scores and every gap named. <strong className="text-zinc-600">Citation Sweeps are paid</strong>: all four engines, repeated runs, every answer stored as a transcript.</p>
+        <p className="text-center text-zinc-600 text-sm mt-8 max-w-2xl mx-auto">Plus answer-drift comparison across your re-runs — so you know what the engines say about you, and whether it changed. <strong className="text-zinc-600">The AEO analysis is free</strong> &mdash; your score, your sub-scores and every gap named. <strong className="text-zinc-600">Citation Sweeps are paid</strong>: four engines, or five with Grok on Pro and Business, repeated runs, every answer stored as a transcript.</p>
       </section>
 
       {/* Trust & Authority Section */}

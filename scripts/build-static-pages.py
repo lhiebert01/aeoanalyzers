@@ -13,7 +13,7 @@ EV = open('public/evidence/index.html', encoding='utf-8').read()
 CSS = EV[EV.index('<style>'):EV.index('</style>') + 8]
 BAR = EV[EV.index('<body>'):EV.index('<div class="wrap">')]
 FOOT = EV[EV.index('<footer class="sitefoot">'):EV.index('</footer>') + 9]
-REVIEWED = '2026-10-14'
+REVIEWED = '2026-10-15'
 PERSON = {"@type": "Person", "@id": "https://pigenai.com/#lindsay", "name": "Lindsay Hiebert"}
 ORG = {"@type": "Organization", "@id": "https://pigenai.com/#org", "name": "PIGENAI LLC", "alternateName": "PI GenAI LLC", "url": "https://pigenai.com"}
 
@@ -84,7 +84,7 @@ METH = """      <p class="postlead"><strong>A URL, a few minutes, and every tran
       <p>Questions are written the way a buyer asks an assistant, not as keywords. Each one is tagged by the buyer intent it carries &mdash; <em>shortlist</em> (who are the options), <em>constraint</em> (options under a hard requirement such as price, size or compliance), <em>alternatives</em> (replacing a named option), <em>comparison</em> (choosing between named options) and <em>problem</em> (describing a situation rather than asking for names) &mdash; and the mix is shown on every panel, so you can see whether you are being measured on the questions closest to a purchase. A panel is versioned; when a question changes, the version changes, and the months either side are not compared.</p>
 
       <h2 class="posth2">Repetition, N and confidence</h2>
-      <p>Engines answer the same question differently from one run to the next, so one answer proves nothing. Every question is asked several times on every engine, and every figure carries its N with a line saying what N is made of &mdash; how many questions, engines and runs, how many answers were scored, and how many were left out and why. Confidence is high from 12 answers &mdash; one question across all four engines, three runs each &mdash; medium from 6 to 11, and low under 6.</p>
+      <p>Engines answer the same question differently from one run to the next, so one answer proves nothing. Every question is asked several times on every engine, and every figure carries its N with a line saying what N is made of &mdash; how many questions, engines and runs, how many answers were scored, and how many were left out and why. Confidence is high from 12 answers &mdash; for example, one question across four engines, three runs each &mdash; medium from 6 to 11, and low under 6.</p>
       <p>A worked example of how much the engine panel and run-to-run drift move a figure, with one stored answer quoted in full: <a class="ilink" href="/blog/the-measurement-layer">We built an AI visibility tool. Then we tested ourselves</a>.</p>
 
       <h2 class="posth2">What is left out, and why</h2>

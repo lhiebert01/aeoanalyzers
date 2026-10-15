@@ -117,10 +117,10 @@ export async function generateDocxReport(
 
   // Score Rating Table
   const scoreRatingTiers: [string, string, string][] = [
-    ['0–30', 'Poor', 'AI engines will almost never cite this site'],
-    ['31–50', 'Below Average', 'Major gaps — AI may find the site but won\'t trust it as a source'],
+    ['0–30', 'Poor', 'Not ready to be cited: the structure, schema and facts engines read are largely missing'],
+    ['31–50', 'Below Average', 'Major gaps in the structure, schema and facts engines read before they can use the site as a source'],
     ['51–70', 'Okay / Fair', 'Foundational elements exist but content lacks the specificity AI needs to cite confidently'],
-    ['71–85', 'Good', 'Strong structure + content — AI will cite this for many relevant queries'],
+    ['71–85', 'Good', 'Strong structure and content; ready to be cited on many relevant questions, with a few gaps left'],
     ['86–100', 'Excellent', 'Technically ready to be cited; whether engines recommend you is measured by a Citation Sweep'],
   ];
   const activeTierIdx = result.score <= 30 ? 0 : result.score <= 50 ? 1 : result.score <= 70 ? 2 : result.score <= 85 ? 3 : 4;

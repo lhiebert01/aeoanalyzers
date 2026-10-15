@@ -114,7 +114,7 @@ export const VALIDATE_MARKUP_NOTE =
 
 /** The honest rule, in the words the order asks for. */
 export const STRUCTURED_DATA_RULE =
-  'Structured data improves accuracy for engines that already find you. It cannot improve discovery for engines that do not.';
+  'Structured data is how you state your facts to the engines in a form they can read; it cannot make an engine find you.';
 
 export function classifyProblem(perEngine: EngineRetrieval[], drifted?: number, collisions: string[] = []): Problem {
   const scored = perEngine.filter((e) => e.total > 0);

@@ -1761,10 +1761,10 @@ function ScoreRatingExplainer({ score, citationProbability }: { score: number; c
   const [open, setOpen] = useState(false);
 
   const tiers = [
-    { range: '0–30', rating: 'Poor', description: 'AI engines will almost never cite this site' },
-    { range: '31–50', rating: 'Below Average', description: 'Major gaps — AI may find the site but won\'t trust it as a source' },
+    { range: '0–30', rating: 'Poor', description: 'Not ready to be cited: the structure, schema and facts engines read are largely missing' },
+    { range: '31–50', rating: 'Below Average', description: 'Major gaps in the structure, schema and facts engines read before they can use the site as a source' },
     { range: '51–70', rating: 'Okay / Fair', description: 'Foundational elements exist but content lacks the specificity AI needs to cite confidently' },
-    { range: '71–85', rating: 'Good', description: 'Strong structure + content — AI will cite this for many relevant queries' },
+    { range: '71–85', rating: 'Good', description: 'Strong structure and content; ready to be cited on many relevant questions, with a few gaps left' },
     { range: '86–100', rating: 'Excellent', description: 'Technically ready to be cited; whether engines recommend you is measured by a Citation Sweep' },
   ];
 
