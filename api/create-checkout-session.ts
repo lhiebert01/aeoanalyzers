@@ -12,7 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const stripeKey = process.env.STRIPE_SECRET_KEY;
-  const { action, planId, userId, email } = req.body || {};
+  const { action, planId, userId, email, promoCode } = req.body || {};
 
   // --- Billing portal branch (was create-portal-session.ts) ---
   if (action === 'portal') {
@@ -71,11 +71,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let appUrl = (process.env.VITE_APP_URL || 'https://www.aeoanalyzers.com').trim().replace(/\/+$/, '');
     if (!/^https?:\/\//i.test(appUrl)) appUrl = `https://${appUrl}`;
 
-    const session = await stripe.checkout.sessions.create({
+    // A promotion code carried in the app's link (/pricing?promo=CODE, founder 15 Oct 2026) is
+    // applied for the customer, so they never type it. Stripe takes either a pre-applied discount
+    // or the entry field, not both; an unknown, inactive or non-applicable code falls back to the
+    // entry field rather than failing the checkout.
+    const code = typeof promoCode === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(promoCode.trim()) ? promoCode.trim() : '';
+    let promotionCodeId: string | null = null;
+    if (code) {
+      try {
+        const found = await stripe.promotionCodes.list({ code, active: true, limit: 1 });
+        promotionCodeId = found.data[0]?.id ?? null;
+      } catch { promotionCodeId = null; }
+    }
+    const create = (applyCode: boolean) => stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
-      // Lets a code created in the Stripe dashboard (e.g. the 100% test coupon) be entered at checkout.
-      allow_promotion_codes: true,
+      // Otherwise a code created in the Stripe dashboard (e.g. the 100% test coupon) can be entered at checkout.
+      ...(applyCode && promotionCodeId ? { discounts: [{ promotion_code: promotionCodeId }] } : { allow_promotion_codes: true }),
       mode: isDayPass ? 'payment' : 'subscription',
       success_url: `${appUrl}/?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/payments`,
@@ -86,6 +98,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         : { subscription_data: { metadata: { userId, planId } } }),
       metadata: { userId, planId },
     });
+    let session;
+    try {
+      session = await create(true);
+    } catch (err) {
+      if (!promotionCodeId) throw err;
+      session = await create(false); // the code does not apply to this plan: offer the entry field instead
+    }
 
     // priceId is not secret (it ships in the client bundle); returned so a deploy can be verified per tier.
     res.json({ sessionId: session.id, url: session.url, priceId });

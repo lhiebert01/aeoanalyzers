@@ -1618,7 +1618,7 @@ export default function App() {
             <div className="col-span-2 md:col-span-1">
               <div className="font-black tracking-tight text-lg">AEO Analyzers</div>
               <p className="mt-3 text-sm text-zinc-500 leading-relaxed max-w-xs">
-                Be the answer AI gives. We measure how citable your site is across ChatGPT, Claude, Perplexity, and Gemini — and hand you the fixes.
+                Be the answer AI gives. We measure how citable your site is across ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business — and hand you the fixes.
               </p>
             </div>
 

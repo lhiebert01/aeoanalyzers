@@ -366,7 +366,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Grok is capped too: each in-flight Grok call reserves its worst case ($0.90), so a
     // dozen at once would hold more than the whole sweep ceiling.
     const engineLimiter = makeEngineLimiter({
-      perplexity: Number(process.env.SWEEP_PERPLEXITY_CONCURRENCY || 3),
+      perplexity: Number(process.env.SWEEP_PERPLEXITY_CONCURRENCY || 2),
       grok: Number(process.env.SWEEP_GROK_CONCURRENCY || 4),
     });
     // Hard spend ceiling, in true provider dollars, enforced BEFORE each call: $1.50 on
@@ -379,7 +379,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ? effectiveSweepCapUsd(panelVersion, access.monthlyCapUsd, access.spentThisMonthUsd || 0)
       : sweepCapUsd(panelVersion);
     const guard = new CostGuard(capUsd);
-    const runs: SweepRunResult[] = await pool(tasks, CONCURRENCY, async (t) => {
+    const askOne = async (t: (typeof tasks)[number]): Promise<SweepRunResult> => {
       const base: SweepRunResult = {
         engine: t.engine, query: t.query, queryType: t.queryType, runIndex: t.runIndex,
         transcript: '', sources: [], costUsd: 0,
@@ -418,7 +418,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           competitors
         );
       }
-    });
+    };
+    const runs: SweepRunResult[] = await pool(tasks, CONCURRENCY, askOne);
+    // Founder decision 15 Oct 2026: on a paid sweep an answer that failed (rate limit, timeout,
+    // 5xx) is asked once more, after the rest of the sweep has finished and the engine has had a
+    // breather, before it is excluded. Calls the spend ceiling declined are not retried, and
+    // nothing starts when too little of the time budget is left to finish it.
+    const failedIdx = runs.map((r, i) => (r.errored && r.transcript !== NOT_ASKED ? i : -1)).filter((i) => i >= 0);
+    if (failedIdx.length && deadline - Date.now() > SWEEP_CALL_TIMEOUT_MS + 5_000) {
+      const again = await pool(failedIdx, CONCURRENCY, (i) => askOne(tasks[i]));
+      failedIdx.forEach((i, k) => { if (!again[k].errored) runs[i] = again[k]; });
+    }
 
     const summary = aggregateSweep(runs, { domain, brand }, competitors);
     (summary as any).panel = { version: panelVersion, engines, location };

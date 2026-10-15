@@ -299,7 +299,7 @@ function renderExecReportRaw(d: ExecReportData, narrative: ExecNarrative, varian
   if (d.accuracy) out.push(`| Described accurately when named | ${d.accuracy.pct === null ? '—' : `${d.accuracy.pct}% (${d.accuracy.accurate} of ${d.accuracy.named})`} |`);
   out.push(`| Recommended to new buyers (category win) | ${scoreCell(sc.categoryRecommendationWinPct, sc.categoryRuns)} |`);
   out.push(`| Your own site cited | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
-  out.push(`| Your share of the category | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
+  out.push(`| Your share of the category | ${sc.competitiveSharePct === null ? '—' : `${sc.competitiveSharePct}% (${sc.competitiveShareN} recommendations counted)`} |`);
   out.push('');
   if (d.denominator) { out.push(`_Recommended to new buyers: ${d.denominator.category}_`); out.push(`_Found when asked by name: ${d.denominator.branded}_`); if (d.accuracy) out.push(`_Described accurately when named: ${d.accuracy.definition}_`); out.push(`_${panelDisclosure(panelOf(d.summary as any), d.summary.engines.map((e) => e.engine))}_`); for (const l of testConditionsLines({ location: ((d.summary as any)?.panel?.location ?? null) as string | null })) out.push(`_${l}_`); out.push(''); }
 

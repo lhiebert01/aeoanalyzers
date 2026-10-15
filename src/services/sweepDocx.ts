@@ -21,7 +21,7 @@ export async function buildSweepDocument(markdown: string, domain: string) {
   const children = mdToDocxChildren(D, markdown, { contentWidth: CONTENT_W });
   return new D.Document({
     creator: 'AEO Analyzers',
-    title: `Citation Sweep — ${domain}`,
+    title: `Citation Sweep Report — ${domain}`,
     description: `Citation Sweep report for ${domain}`,
     styles: { default: { document: { run: { font: FONT, size: 20 } } } },
     sections: [{ properties: { page: { margin: { top: 1080, bottom: 1080, left: 1080, right: 1080 } } }, children }],
@@ -35,7 +35,7 @@ export async function generateSweepDocx(markdown: string, domain: string, stamp:
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `citation-sweep-${domain}-${stamp}.docx`;
+  a.download = `citation-sweep-report-${domain}-${stamp}.docx`;
   document.body.appendChild(a);
   a.click();
   a.remove();

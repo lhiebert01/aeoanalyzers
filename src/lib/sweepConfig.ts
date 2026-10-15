@@ -26,6 +26,16 @@ export const DEFUNCT_NAME_REGISTRY: { rx: RegExp; replacement: string }[] = [
 ];
 
 /** Rewrite any defunct product name in a string to its current name. */
+/** The guessed brand name, cleaned of stray generator punctuation: wrapping quotes and a
+ *  trailing "?", ".", ",", ":" or ";" (dogfood 15 Oct 2026: "AEO Analyzers?"). A trailing "!"
+ *  is kept, since some names carry one. */
+export function cleanBrandName(raw: string): string {
+  return String(raw || '').trim()
+    .replace(/^["'“‘\s]+|["'”’\s]+$/g, '')
+    .replace(/[\s?.,:;]+$/g, '')
+    .trim();
+}
+
 export function lintDefunctNames(text: string): string {
   let out = String(text || '');
   for (const { rx, replacement } of DEFUNCT_NAME_REGISTRY) out = out.replace(rx, replacement);

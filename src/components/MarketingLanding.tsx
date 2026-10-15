@@ -47,7 +47,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     },
     {
       q: "What does AEO Analyzers actually do?",
-      a: "Two things. First, it diagnoses your site — an AEO Score, a Citation Readiness estimate (a technical-readiness score, not a measured rate), and the exact fixes (paste-ready JSON-LD schema, content rewrites, a developer-ready report). Second, it proves the result with live Citation Sweeps: it asks the real AI engines — ChatGPT, Claude, Perplexity, and Gemini — your buyers' questions and shows whether they actually cite you, who they cite instead, and the exact answers they gave."
+      a: "Two things. First, it diagnoses your site — an AEO Score, a Citation Readiness estimate (a technical-readiness score, not a measured rate), and the exact fixes (paste-ready JSON-LD schema, content rewrites, a developer-ready report). Second, it proves the result with live Citation Sweeps: it asks the real AI engines — ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business — your buyers' questions and shows whether they actually cite you, who they cite instead, and the exact answers they gave."
     },
     {
       q: "What is a Citation Sweep and what does it measure?",
@@ -118,7 +118,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           transition={{ delay: 0.1 }}
           className="text-zinc-500 text-xl md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          <strong>AEO Analyzers is answer engine optimization (AEO) software — a tool that measures whether ChatGPT, Claude, Perplexity and Gemini retrieve your site, describe it accurately, and cite it for category questions.</strong> Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. AEO Analyzers shows you exactly <em>why</em> AI overlooks you and gives you the fixes — then you re-run the sweep to check, with live Citation Sweeps across ChatGPT, Claude, Perplexity, and Gemini, showing who they actually cite. Diagnose in ~90 seconds; measure the outcome for real.
+          <strong>AEO Analyzers is answer engine optimization (AEO) software — a tool that measures whether ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, retrieve your site, describe it accurately, and cite it for category questions.</strong> Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. AEO Analyzers shows you exactly <em>why</em> AI overlooks you and gives you the fixes — then you re-run the sweep to check, with live Citation Sweeps across ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, showing who they actually cite. Diagnose in ~90 seconds; measure the outcome for real.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

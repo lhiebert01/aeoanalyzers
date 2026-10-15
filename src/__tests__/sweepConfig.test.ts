@@ -77,3 +77,14 @@ describe('sanitizeCompetitors (A1 — competitor seed hygiene)', () => {
     expect(out).toEqual(['Profound', 'Otterly AI', 'Scrunch AI']);
   });
 });
+
+describe('cleanBrandName (dogfood 15 Oct 2026)', () => {
+  it('drops a stray trailing question mark and wrapping quotes', async () => {
+    const { cleanBrandName } = await import('../lib/sweepConfig');
+    expect(cleanBrandName('AEO Analyzers?')).toBe('AEO Analyzers');
+    expect(cleanBrandName(' "AEO Analyzers." ')).toBe('AEO Analyzers');
+    expect(cleanBrandName('AEO Analyzers')).toBe('AEO Analyzers');
+    expect(cleanBrandName('Yahoo!')).toBe('Yahoo!');
+    expect(cleanBrandName('')).toBe('');
+  });
+});

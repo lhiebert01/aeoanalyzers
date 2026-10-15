@@ -15,7 +15,7 @@ export const SCORE_VS_SWEEP = {
   },
   sweep: {
     title: 'Citation Sweep — interrogates the engines',
-    body: 'The outside-in outcome: what ChatGPT, Claude, Perplexity, and Gemini say when buyers ask — measured N times per question, every answer stored as a transcript. This is the real-world result your readiness is working toward.',
+    body: 'The outside-in outcome: what ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, say when buyers ask — measured N times per question, every answer stored as a transcript. This is the real-world result your readiness is working toward.',
   },
   // Cross-links (supplied verbatim).
   toSweep: 'Prove your fixes worked — run a Citation Sweep →',
@@ -28,7 +28,7 @@ export const SCORE_VS_SWEEP = {
   // One FAQ entry.
   faq: {
     q: 'What’s the difference between the AEO Score and a Citation Sweep?',
-    a: 'The AEO Score examines your site — an inside-out readiness measure of how citable your page is structurally (schema, entity graph, factual density), with the exact fixes to raise it. A Citation Sweep interrogates the answer engines — an outside-in measure of what ChatGPT, Claude, Perplexity, and Gemini say when buyers ask, N times per question, every answer stored as a transcript. Use the Score to do the structural work; use the Sweep to check whether the engines have caught up. Readiness usually leads outcome by a few crawl-and-authority cycles.',
+    a: 'The AEO Score examines your site — an inside-out readiness measure of how citable your page is structurally (schema, entity graph, factual density), with the exact fixes to raise it. A Citation Sweep interrogates the answer engines — an outside-in measure of what ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, say when buyers ask, N times per question, every answer stored as a transcript. Use the Score to do the structural work; use the Sweep to check whether the engines have caught up. Readiness usually leads outcome by a few crawl-and-authority cycles.',
   },
 };
 

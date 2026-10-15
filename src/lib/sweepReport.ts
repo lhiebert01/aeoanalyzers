@@ -144,7 +144,7 @@ export function buildSweepCover(inp: SweepReportInputs): CoverInput {
     ? p.steps.slice(0, 3).map((s: DoNowStep) => ({ what: s.what, section: 'Action plan' }))
     : losingQuestions(r).slice(0, 3).map((q) => ({ what: `Write the page that answers: “${q}”`, section: 'Action plan' }));
   return {
-    title: `Citation Sweep — ${r.domain}`,
+    title: `Citation Sweep Report — ${r.domain}`,
     brand: r.brand,
     domain: r.domain,
     date: fmtDate(r.generatedAt),
@@ -235,7 +235,9 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
     if (awn) out.push(`| **${ALIAS.accuracy.plain}** — ${ALIAS.accuracy.precise.toLowerCase()} | ${awn.pct === null ? '—' : `**${awn.pct}%** (${awn.accurate} of ${awn.named})`} |`);
   }
   out.push(`| **${ALIAS.owned.plain}** — ${ALIAS.owned.precise.toLowerCase()} | ${scoreCell(sc.ownedCitationRatePct, sc.ownedCitationN)} |`);
-  out.push(`| **${ALIAS.share.plain}** — ${ALIAS.share.precise.toLowerCase()} | ${scoreCell(sc.competitiveSharePct, sc.competitiveShareN)} |`);
+  // Share counts recommendations (yours + competitors' across category answers), not answers,
+  // so it carries its own count instead of an N that reads as answers scored.
+  out.push(`| **${ALIAS.share.plain}** — ${ALIAS.share.precise.toLowerCase()} | ${sc.competitiveSharePct === null ? '—' : `**${sc.competitiveSharePct}%** (${sc.competitiveShareN} recommendations counted)`} |`);
   out.push('');
   out.push('_Category win is pooled across engines over **search-grounded runs only**. An answer given from the model\'s memory is reported as unmeasured, never as a zero._');
   out.push('');

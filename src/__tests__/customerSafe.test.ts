@@ -31,6 +31,14 @@ describe('Part B — customer exports are safe by construction', () => {
     expect(realCost).toBeGreaterThan(1);
   });
   const md = buildSweepReport({ result, competitors: comps, fidelity: null, entityLinking: null, authority: null, bots: null, truth: null, pageFactDensity: null, ownedDomains: [], isAdmin: true, savedView: true, now: new Date('2026-10-08T00:00:00Z') });
+  it('dogfood 15 Oct: titled "Citation Sweep Report", and share counts recommendations, not N', () => {
+    expect(md).toMatch(/Citation Sweep Report — /);
+    const share = md.split('\n').find((l) => l.includes('Your share of the recommendations')) || '';
+    if (/\d+%/.test(share)) {
+      expect(share).toMatch(/recommendations counted/);
+      expect(share).not.toMatch(/N=\d/);
+    }
+  });
   it('Markdown, built as admin: no leak of any class', () => {
     expect(findLeaks(md, OTHER)).toEqual([]);
   });

@@ -4,7 +4,7 @@ import { Play, Loader2, Bot, Trophy, AlertTriangle, ChevronDown, ChevronRight, A
 import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authorityGap';
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, largestLosingSegment, SEGMENT_LABEL } from '../lib/querySegment';
-import { sanitizeCompetitors, lintDefunctNames, stripNonQuestionLines } from '../lib/sweepConfig';
+import { sanitizeCompetitors, lintDefunctNames, stripNonQuestionLines, cleanBrandName } from '../lib/sweepConfig';
 import { buildSweepActionAgenda } from '../lib/sweepActions';
 import { buildDoNowPlan } from '../lib/doNowPlan';
 import { planSweep } from '../lib/sweepPlan';
@@ -458,7 +458,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
 
       // Infer brand / category / competitors from the crawled page text.
       const ext = safeJsonParse(await llmJson(extractPrompt(text), EXTRACT_SCHEMA)) || {};
-      const guessedBrand = String(ext.brand || '').trim();
+      const guessedBrand = cleanBrandName(String(ext.brand || ''));
       const guessedCategory = String(ext.core_category || '').trim();
       const guessedComp: string[] = Array.isArray(ext.competitors)
         ? sanitizeCompetitors(
@@ -558,7 +558,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `citation-sweep-${result.domain}-${stamp}.md`;
+    a.download = `citation-sweep-report-${result.domain}-${stamp}.md`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -1026,18 +1026,21 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                   { label: 'Found when asked by name', hint: 'Branded retrievability', value: scorecard.brandedRetrievabilityPct, n: scorecard.brandedRuns, note: denominator?.branded, accuracy },
                   { label: 'Recommended to new buyers', hint: 'Category win — the metric that drives sales', value: scorecard.categoryRecommendationWinPct, note: denominator?.category, n: scorecard.categoryRuns, hero: true },
                   { label: ALIAS.owned.plain, hint: ALIAS.owned.precise, value: scorecard.ownedCitationRatePct, n: scorecard.ownedCitationN },
-                  { label: ALIAS.share.plain, hint: `${ALIAS.share.precise} — you vs. competitors`, value: scorecard.competitiveSharePct, n: scorecard.competitiveShareN },
+                  { label: ALIAS.share.plain, hint: `${ALIAS.share.precise} — you vs. competitors`, value: scorecard.competitiveSharePct, n: scorecard.competitiveShareN, countLabel: 'recommendations counted' },
                 ].map((s) => (
                   <div key={s.label} className={`p-4 sm:p-5 ${s.hero ? 'bg-emerald-50/60' : ''}`}>
                     <div className={`text-3xl font-black ${tone(s.value)}`}>{s.value === null ? '—' : `${s.value}%`}</div>
                     <div className="text-sm font-bold text-zinc-800 mt-1 leading-tight">{s.label}</div>
                     <div className="text-[11px] text-zinc-400 mt-0.5 leading-tight">{s.hint}</div>
-                    {s.value !== null && s.n > 0 && (
+                    {s.value !== null && s.n > 0 && ((s as { countLabel?: string }).countLabel ? (
+                      // Share counts recommendations, not answers: no N, no answer-based confidence chip.
+                      <div className="text-[11px] mt-1 leading-tight text-zinc-600">{s.n} {(s as { countLabel?: string }).countLabel}</div>
+                    ) : (
                       <div className="text-[11px] mt-1 leading-tight">
                         <span className="text-zinc-400">N={s.n}</span>
                         <span className={`ml-1.5 font-semibold ${confChip(s.n).cls}`}>· {confChip(s.n).label}</span>
                       </div>
-                    )}
+                    ))}
                     {/* WO-AEO-PRODUCT-FIXES-003 §4.3: what N is counted out of, in one line. */}
                     {(s as { note?: string }).note && <div className="text-[11px] text-zinc-600 mt-1 leading-snug">{(s as { note?: string }).note}</div>}
                     {(s as { accuracy?: typeof accuracy }).accuracy && (() => { const a = (s as { accuracy: NonNullable<typeof accuracy> }).accuracy; return (

@@ -56,6 +56,15 @@ interface PaymentsProps {
 export default function Payments({ user, userProfile, onAuthRequired, onContact }: PaymentsProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
+  // A promotion code in the link (/pricing?promo=CODE) is carried to checkout and applied there,
+  // so a customer with a code never types it. Kept for the session in case sign-in comes first.
+  const [promoCode] = useState<string | undefined>(() => {
+    try {
+      const q = new URLSearchParams(window.location.search).get('promo')?.trim();
+      if (q) sessionStorage.setItem('aeo_promo', q);
+      return q || sessionStorage.getItem('aeo_promo') || undefined;
+    } catch { return undefined; }
+  });
 
   const handleManageSubscription = async () => {
     if (!user) return;
@@ -93,7 +102,8 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
         body: JSON.stringify({ 
           planId, 
           userId: user.id,
-          email: user.email
+          email: user.email,
+          promoCode,
         }),
       });
       
