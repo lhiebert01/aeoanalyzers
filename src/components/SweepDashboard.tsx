@@ -162,7 +162,7 @@ const ENGINE_LABEL: Record<string, string> = {
   claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', grok: 'Grok',
 };
 
-export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenAnalyzer, savedSweepId, onBackToHistory }: { onUpgrade?: () => void; isAdmin?: boolean; isPaidUser?: boolean; onOpenAnalyzer?: () => void; savedSweepId?: string | null; onBackToHistory?: () => void }) {
+export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPanel, onOpenAnalyzer, savedSweepId, onBackToHistory }: { onUpgrade?: () => void; isAdmin?: boolean; isPaidUser?: boolean; planPanel?: PanelVersion; onOpenAnalyzer?: () => void; savedSweepId?: string | null; onBackToHistory?: () => void }) {
   const [domain, setDomain] = useState('');
   const [brand, setBrand] = useState('');
   const [coreCategory, setCoreCategory] = useState('');
@@ -920,7 +920,8 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, onOpenA
               smaller panels run 3×. */}
           {!running && (() => {
             const nQ = brandedList.length + categoryList.length;
-            const nEng = 4;
+            // The panel run-sweep will use: admin picks it; for customers the plan decides (PLAN_PANEL).
+            const nEng = (isAdmin ? panel : planPanel ?? 'v1.1') === 'v1.2' ? 5 : 4;
             // WO-INTEGRITY-002 B1(b): reps from the SAME planner run-sweep uses (no duplicate rule).
             const { reps, queriesRun } = planSweep(nQ, nEng, { admin: isAdmin, requestedReps: 3 });
             const answers = queriesRun * nEng * reps;

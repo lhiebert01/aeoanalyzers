@@ -1,23 +1,25 @@
 // Sweep-engine-down alert (founder decision, 14 Oct 2026). When every run of one engine in a
 // sweep errors (dead or expired key, exhausted prepaid balance, provider outage), log ONE loud,
 // greppable "[SWEEP-ENGINE-FAIL]" line and email the founder through Resend, the same sender as
-// api/contact.ts. Throttled per engine, per running instance, so one dead engine does not mail on
-// every sweep and does not mask a second engine failing. The email is best-effort: a Resend
-// failure is logged and never fails the customer's sweep.
+// api/contact.ts. One message on first failure (founder decision): an engine that is already down
+// does not mail again until a sweep sees it answer, which re-arms it. Tracked per engine, so a
+// second engine failing is never masked by the first. State lives in the running instance, so a
+// cold start re-arms it. The email is best-effort: a Resend failure never fails the sweep.
 // Env: RESEND_API_KEY (required to mail), CONTACT_FROM (verified sender), ALERT_TO (optional).
 
-export const ENGINE_FAIL_ALERT_MS = 72 * 60 * 60 * 1000; // ~3 days
 const SEND_TIMEOUT_MS = 4000;
-const lastAlert = new Map<string, number>();
+const down = new Set<string>();
 
-/** Test hook: forget the throttle state. */
-export function resetEngineFailAlerts(): void { lastAlert.clear(); }
+/** Test hook: forget which engines are down. */
+export function resetEngineFailAlerts(): void { down.clear(); }
+
+/** A sweep saw this engine answer: the next failure is a new outage and alerts again. */
+export function markEngineHealthy(engine: string): void { down.delete(engine); }
 
 /** Returns true when an alert went out (log line written; email attempted if a key is set). */
-export async function alertSweepEngineFail(engine: string, total: number, sample: string, now = Date.now()): Promise<boolean> {
-  const last = lastAlert.get(engine);
-  if (last !== undefined && now - last < ENGINE_FAIL_ALERT_MS) return false;
-  lastAlert.set(engine, now);
+export async function alertSweepEngineFail(engine: string, total: number, sample: string): Promise<boolean> {
+  if (down.has(engine)) return false;
+  down.add(engine);
   const line =
     `[SWEEP-ENGINE-FAIL] engine=${engine} — ALL ${total} runs errored (reported as UNAVAILABLE, NOT a real 0%). ` +
     `Likely a bad/expired key, an exhausted prepaid balance, or config. Sample: ${sample}`;
@@ -32,7 +34,7 @@ export async function alertSweepEngineFail(engine: string, total: number, sample
     `Customers see "Service unavailable" for ${engine}; it is excluded from scores, not counted as 0%.\n\n` +
     `Check the ${engine} account: API key, prepaid balance / auto top-up, monthly spending limit.\n\n` +
     `Error sample:\n${sample}\n\n` +
-    `Further alerts for ${engine} are suppressed for about 3 days on this server instance.`;
+    `This is the only message for this outage. You will hear again only if ${engine} recovers and then fails again.`;
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',

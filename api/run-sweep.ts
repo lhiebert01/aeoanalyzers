@@ -29,7 +29,7 @@ import { COST_SCALE } from '../src/lib/costEstimate.js';
 import { CostGuard, PLAN_PANEL, PLAN_SWEEPS, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, type PaidTier } from '../src/lib/sweepCaps.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
 import { planSweep } from '../src/lib/sweepPlan.js';
-import { alertSweepEngineFail } from './_lib/engineAlert.js';
+import { alertSweepEngineFail, markEngineHealthy } from './_lib/engineAlert.js';
 
 // Vercel Fluid Compute allows long runs; a full sweep is many sequential calls.
 export const config = { maxDuration: 300 };
@@ -427,6 +427,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         (eng as any).status = 'unavailable'; // UI renders "Service unavailable", not 0%
         (eng as any).errorSample = (erroredRuns[0].transcript || '').slice(0, 200);
         await alertSweepEngineFail(eng.engine, engRuns.length, (eng as any).errorSample);
+      } else if (erroredRuns.length < engRuns.length) {
+        markEngineHealthy(eng.engine);
       }
     }
 

@@ -1045,6 +1045,7 @@ export default function App() {
                 onUpgrade={() => navigateTo('payments')}
                 isAdmin={isAdmin}
                 isPaidUser={isPaidUser}
+                planPanel={subStatus === 'pro' || subStatus === 'business' ? 'v1.2' : 'v1.1'}
                 onOpenAnalyzer={() => navigateTo('analyzer')}
                 savedSweepId={savedSweepId}
                 onBackToHistory={() => { setSavedSweepId(null); setView('history'); window.history.pushState({}, '', '/'); window.scrollTo(0, 0); }}
