@@ -1,0 +1,336 @@
+{
+ "_note": "WO-AEO-STEP-BY-STEP-GUIDES-014 directory catalog. Every start_url was requested on last_verified; \"verified\" is true when it returned 200 (a sign-in page counts). A Cloudflare challenge (HTTP 403) means the site exists but the page could not be confirmed by a script; it is kept and marked. Re-verified quarterly by .github/workflows/catalog-check.yml. Never add a directory that is not in this file or not observed in a customer's own Source coverage.",
+ "verified_at": "2026-10-15",
+ "entries": [
+  {
+   "id": "wikidata",
+   "name": "Wikidata",
+   "types": [
+    "all"
+   ],
+   "start_url": "https://www.wikidata.org/wiki/Special:NewItem",
+   "account": "free",
+   "reviewed_before_live": false,
+   "minutes": 30,
+   "what_you_need": [
+    "company name",
+    "one-line neutral description",
+    "website",
+    "country",
+    "headquarters city"
+   ],
+   "owner": "Outreach",
+   "note": "Needs independent sources to survive; create after at least one listing below is live, then add listings as references.",
+   "hosts": [
+    "wikidata.org"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": true,
+   "check_result": "HTTP 200"
+  },
+  {
+   "id": "linkedin",
+   "name": "LinkedIn company page",
+   "types": [
+    "all"
+   ],
+   "start_url": "https://www.linkedin.com/company/setup/new/",
+   "account": "free",
+   "reviewed_before_live": false,
+   "minutes": 15,
+   "what_you_need": [
+    "logo",
+    "tagline",
+    "about text",
+    "website",
+    "industry"
+   ],
+   "owner": "Outreach",
+   "hosts": [
+    "linkedin.com"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": true,
+   "check_result": "HTTP 200 (sign-in page)"
+  },
+  {
+   "id": "crunchbase",
+   "name": "Crunchbase",
+   "types": [
+    "software",
+    "professional_services",
+    "ecommerce"
+   ],
+   "start_url": "https://www.crunchbase.com",
+   "account": "free",
+   "reviewed_before_live": true,
+   "minutes": 10,
+   "what_you_need": [
+    "company name",
+    "website",
+    "headquarters",
+    "founder names"
+   ],
+   "owner": "Outreach",
+   "hosts": [
+    "crunchbase.com"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": true,
+   "check_result": "HTTP 200"
+  },
+  {
+   "id": "g2",
+   "name": "G2",
+   "types": [
+    "software"
+   ],
+   "start_url": "https://sell.g2.com",
+   "account": "free vendor profile",
+   "reviewed_before_live": true,
+   "minutes": 10,
+   "what_you_need": [
+    "product name",
+    "category",
+    "short and long text",
+    "logo"
+   ],
+   "owner": "Outreach",
+   "hosts": [
+    "g2.com"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": true,
+   "check_result": "HTTP 200"
+  },
+  {
+   "id": "capterra",
+   "name": "Capterra / GetApp / Software Advice (one vendor portal)",
+   "types": [
+    "software"
+   ],
+   "start_url": "https://www.capterra.com/vendors/sign-up",
+   "account": "free vendor profile",
+   "reviewed_before_live": true,
+   "minutes": 15,
+   "what_you_need": [
+    "product name",
+    "category",
+    "short and long text",
+    "logo",
+    "screenshots"
+   ],
+   "owner": "Outreach",
+   "hosts": [
+    "capterra.com",
+    "getapp.com",
+    "softwareadvice.com"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": false,
+   "check_result": "HTTP 403, Cloudflare challenge: the site is up, but the page could not be confirmed by a script"
+  },
+  {
+   "id": "alternativeto",
+   "name": "AlternativeTo",
+   "types": [
+    "software"
+   ],
+   "start_url": "https://alternativeto.net",
+   "account": "free",
+   "reviewed_before_live": true,
+   "minutes": 15,
+   "what_you_need": [
+    "product name",
+    "short and long text",
+    "logo",
+    "screenshot",
+    "tags"
+   ],
+   "owner": "Outreach",
+   "hosts": [
+    "alternativeto.net"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": false,
+   "check_result": "HTTP 403, Cloudflare challenge: the site is up, but the page could not be confirmed by a script"
+  },
+  {
+   "id": "slashdot",
+   "name": "Slashdot / SourceForge business software",
+   "types": [
+    "software"
+   ],
+   "start_url": "https://sourceforge.net/software/vendors/",
+   "account": "free vendor profile",
+   "reviewed_before_live": true,
+   "minutes": 10,
+   "what_you_need": [
+    "product name",
+    "category",
+    "short and long text",
+    "logo"
+   ],
+   "owner": "Outreach",
+   "hosts": [
+    "sourceforge.net",
+    "slashdot.org"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": false,
+   "check_result": "HTTP 403, Cloudflare challenge: the site is up, but the page could not be confirmed by a script"
+  },
+  {
+   "id": "producthunt",
+   "name": "Product Hunt",
+   "types": [
+    "software",
+    "ecommerce"
+   ],
+   "start_url": "https://www.producthunt.com",
+   "account": "free",
+   "reviewed_before_live": false,
+   "minutes": 20,
+   "what_you_need": [
+    "product name",
+    "tagline",
+    "description",
+    "images"
+   ],
+   "owner": "Outreach",
+   "note": "A launch is a one-day event; plan it, do not rush it.",
+   "hosts": [
+    "producthunt.com"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": true,
+   "check_result": "HTTP 200"
+  },
+  {
+   "id": "google_business",
+   "name": "Google Business Profile",
+   "types": [
+    "local",
+    "professional_services"
+   ],
+   "start_url": "https://business.google.com",
+   "account": "free",
+   "reviewed_before_live": true,
+   "minutes": 20,
+   "what_you_need": [
+    "business name",
+    "address or service area",
+    "phone",
+    "hours",
+    "category"
+   ],
+   "owner": "Outreach",
+   "note": "Usually requires verification by Google.",
+   "hosts": [
+    "business.google.com"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": true,
+   "check_result": "HTTP 200"
+  },
+  {
+   "id": "bing_places",
+   "name": "Bing Places for Business",
+   "types": [
+    "local",
+    "professional_services"
+   ],
+   "start_url": "https://www.bingplaces.com",
+   "account": "free",
+   "reviewed_before_live": true,
+   "minutes": 10,
+   "what_you_need": [
+    "business name",
+    "address",
+    "phone",
+    "category"
+   ],
+   "owner": "Outreach",
+   "note": "Can import from Google Business Profile.",
+   "hosts": [
+    "bingplaces.com"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": true,
+   "check_result": "HTTP 200"
+  },
+  {
+   "id": "apple_business",
+   "name": "Apple Business Connect",
+   "types": [
+    "local"
+   ],
+   "start_url": "https://businessconnect.apple.com",
+   "account": "free",
+   "reviewed_before_live": true,
+   "minutes": 15,
+   "what_you_need": [
+    "business name",
+    "address",
+    "phone",
+    "hours"
+   ],
+   "owner": "Outreach",
+   "hosts": [
+    "businessconnect.apple.com"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": true,
+   "check_result": "HTTP 200"
+  },
+  {
+   "id": "yelp",
+   "name": "Yelp for Business",
+   "types": [
+    "local"
+   ],
+   "start_url": "https://biz.yelp.com",
+   "account": "free",
+   "reviewed_before_live": true,
+   "minutes": 10,
+   "what_you_need": [
+    "business name",
+    "address",
+    "phone",
+    "category"
+   ],
+   "owner": "Outreach",
+   "hosts": [
+    "yelp.com"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": true,
+   "check_result": "HTTP 200"
+  },
+  {
+   "id": "trustpilot",
+   "name": "Trustpilot Business",
+   "types": [
+    "ecommerce",
+    "software",
+    "professional_services"
+   ],
+   "start_url": "https://business.trustpilot.com",
+   "account": "free",
+   "reviewed_before_live": false,
+   "minutes": 10,
+   "what_you_need": [
+    "company name",
+    "website"
+   ],
+   "owner": "Outreach",
+   "note": "Reviews must come from real customers; never offer anything in exchange for a review.",
+   "hosts": [
+    "trustpilot.com"
+   ],
+   "last_verified": "2026-10-15",
+   "verified": true,
+   "check_result": "HTTP 200"
+  }
+ ]
+}

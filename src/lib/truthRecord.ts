@@ -7,6 +7,43 @@
 
 import { publishedPrices, publishedFreeAllowance, ownSiteRecordAt, type PricePoint } from './siteFacts.js';
 
+export interface SiteFacts {
+  metaDescription: string | null;
+  ldTypes: string[];
+  orgName: string | null;
+  appName: string | null;
+  ldDescription: string | null;
+  locality: string | null;
+  region: string | null;
+  country: string | null;
+  generator: string | null;
+}
+
+/** WO-014: the business facts the served page states about itself. */
+export function extractSiteFacts(html: string): SiteFacts {
+  const h = String(html || '');
+  const nodes = extractJsonLdNodes(h);
+  const types = new Set<string>();
+  for (const n of nodes) for (const t of (Array.isArray(n?.['@type']) ? n['@type'] : [n?.['@type']])) if (t) types.add(String(t));
+  const org = nodes.find((n) => /Organization|LocalBusiness|Store|Service|Corporation/i.test(String(n?.['@type'])) && n?.name);
+  const app = nodes.find((n) => /SoftwareApplication|WebApplication|MobileApplication/i.test(String(n?.['@type'])) && n?.name);
+  const addrNode = nodes.map((n) => n?.address).find((a) => a && typeof a === 'object');
+  const addr = Array.isArray(addrNode) ? addrNode[0] : addrNode;
+  const str = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : null);
+  const country = addr ? (str(addr.addressCountry) ?? str(addr.addressCountry?.name)) : null;
+  return {
+    metaDescription: metaContent(h, 'description') || metaContent(h, 'og:description'),
+    ldTypes: [...types],
+    orgName: str(org?.name),
+    appName: str(app?.name),
+    ldDescription: str(app?.description) ?? str(org?.description),
+    locality: addr ? str(addr.addressLocality) : null,
+    region: addr ? str(addr.addressRegion) : null,
+    country,
+    generator: metaContent(h, 'generator'),
+  };
+}
+
 export interface TruthRecord {
   brandName: string | null;
   /** Canonical founder/creator name(s) — the fact answer engines most often get
@@ -33,6 +70,10 @@ export interface TruthRecord {
   retiredNames?: string[];
   /** Where prices / allowance came from, shown beside a contradicted claim. */
   pricesSource?: string;
+  /** WO-014: what the served homepage says about the business, read deterministically (no model),
+   *  for the step-by-step guide: its own description, structured-data types and names, address and
+   *  the CMS `generator` tag. Absent on snapshots taken before 15 Oct 2026. */
+  site?: SiteFacts;
 }
 
 /** Extract and parse every <script type="application/ld+json"> block, flattening
@@ -142,6 +183,7 @@ export function extractTruthRecord(html: string, llmsTxt?: string | null, pricin
     hasOrganization,
     hasOrgId,
     hasDisambiguation,
+    site: extractSiteFacts(h),
   };
 }
 

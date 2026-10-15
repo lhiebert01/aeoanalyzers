@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { CoverCard } from './CoverCard';
 import { buildScoreCover, type LatestSweepFigure } from '../lib/scoreCover';
 import { latestSweepFor } from '../lib/latestFigures';
+import { GuidePanel, type GuideAccess } from './GuidePanel';
+import { buildGuide, type BusinessType } from '../lib/stepGuide';
+import { sweepGuideDetail, rememberedBusinessType } from '../lib/guideData';
+import { listRecord } from '../lib/recordStore';
 import { groupChecklist, OWNER_DESC, nextSweepLine } from '../lib/ownerTags';
 import { motion } from 'motion/react';
 import {
@@ -39,6 +43,9 @@ function gapAction(cat: GapCategory): string {
 
 interface ImplementationRoadmapProps {
   isPaid: boolean;
+  /** WO-014: the step-by-step guide — Pro and Business ('full'); a Day Pass gets it from its sweep. */
+  guideAccess?: GuideAccess;
+  dayPass?: boolean;
   onUpgrade: () => void;
   analyzedUrl?: string;
   analysisResult: AnalysisResult;
@@ -47,7 +54,7 @@ interface ImplementationRoadmapProps {
   recommendations?: string[];
 }
 
-export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, analysisResult, displayName, citationProbability, recommendations }: ImplementationRoadmapProps) {
+export default function ImplementationRoadmap({ isPaid, guideAccess = 'none', dayPass = false, onUpgrade, analyzedUrl, analysisResult, displayName, citationProbability, recommendations }: ImplementationRoadmapProps) {
   const [copied, setCopied] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'summary' | 'handoff' | 'platforms'>('summary');
   // Default the platform tab to the DETECTED stack so we don't lead a
@@ -436,6 +443,23 @@ ${cleanDisplayName}`;
           <div className="space-y-12">
             {/* Lane C: the same executive summary the Word report opens with (page 1). */}
             <CoverCard cover={buildScoreCover(analysisResult, analyzedUrl || 'Unknown URL', cleanDisplayName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), latestSweep)} />
+            {/* WO-014: the step-by-step guide, from this analysis and the domain's latest stored sweep. */}
+            {analyzedUrl && (() => {
+              const domain = (() => { try { return new URL(analyzedUrl.startsWith('http') ? analyzedUrl : `https://${analyzedUrl}`).hostname.replace(/^www\./, ''); } catch { return analyzedUrl; } })();
+              return (
+                <GuidePanel domain={domain} access={guideAccess} dayPassNote={dayPass} build={async (t) => {
+                  const [sw, record] = await Promise.all([sweepGuideDetail(domain).catch(() => null), listRecord(domain).catch(() => [])]);
+                  const r: any = analysisResult;
+                  return buildGuide({
+                    domain, date: new Date(), brand: null, site: sw?.site ?? null,
+                    score: { score: r.score, at: null, checklist: r.implementationChecklist || [], verifiedSchema: r.verifiedSchema || null, metaSuggested: r.metaDescriptionRewrite?.suggested || null, platform: r.detectedPlatform?.platform || null },
+                    split: buildScoreCover(analysisResult, analyzedUrl, cleanDisplayName, '', latestSweep).split ?? null,
+                    coverage: sw?.coverage ?? null, category: sw?.category ?? null,
+                    businessType: t ?? (rememberedBusinessType(domain) as BusinessType | null), record,
+                  });
+                }} />
+              );
+            })()}
             <div className="grid md:grid-cols-2 gap-12">
               <div className="space-y-6">
                 <h3 className="text-xl font-bold flex items-center gap-2">

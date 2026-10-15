@@ -1,0 +1,19 @@
+# WO-AEO-STEP-BY-STEP-GUIDES-014 F — quarterly re-check of every directory sign-up page the
+# step-by-step guides send customers to. A failed run is emailed to the repo owner by GitHub.
+name: Directory catalog check
+on:
+  schedule:
+    - cron: '0 14 1 1,4,7,10 *'   # 14:00 UTC on Jan 1, Apr 1, Jul 1, Oct 1
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/verify-directory-catalog.mjs

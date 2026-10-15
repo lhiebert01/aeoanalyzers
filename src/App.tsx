@@ -1560,6 +1560,8 @@ export default function App() {
                       {/* Implementation Roadmap (Premium Feature) */}
                       <ImplementationRoadmap
                         isPaid={isPaidUser}
+                        guideAccess={isAdmin || subStatus === 'pro' || subStatus === 'business' ? 'full' : 'none'}
+                        dayPass={hasActivePass && !(isAdmin || subStatus === 'pro' || subStatus === 'business')}
                         onUpgrade={() => setView('payments')}
                         analyzedUrl={url}
                         analysisResult={result}

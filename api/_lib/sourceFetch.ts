@@ -6,8 +6,7 @@
 // "Could not read", never a "No". No engine call is made; nothing here is customer-facing cost.
 import {
   brandMatchers, namesYou, planSourceCoverage,
-  type CoverageRow, type SourceCoverage,
-} from '../../src/lib/sourceCoverage.js';
+  type CoverageRow, type SourceCoverage, pageTitleAndByline } from '../../src/lib/sourceCoverage.js';
 import type { SweepRunResult } from '../../src/lib/citationSweep.js';
 
 export const SOURCE_COVERAGE_UA = 'AEOAnalyzersBot/1.0 (+https://aeoanalyzers.com/methodology; source coverage check)';
@@ -60,7 +59,7 @@ function visibleText(html: string): string {
     .replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ');
 }
 
-type Verdict = Pick<CoverageRow, 'verdict' | 'reason'>;
+type Verdict = Pick<CoverageRow, 'verdict' | 'reason' | 'title' | 'byline'>;
 
 export async function checkPage(url: string, matchers: RegExp[], robotsCache: Map<string, Promise<{ allow: string[]; disallow: string[] } | null>>): Promise<Verdict> {
   let u: URL;
@@ -78,7 +77,8 @@ export async function checkPage(url: string, matchers: RegExp[], robotsCache: Ma
       if (!r.ok) return { verdict: 'unreadable', reason: `HTTP ${r.status}` };
       const type = r.headers.get('content-type') || '';
       if (type && !/html|xml|text\/plain/i.test(type)) return { verdict: 'unreadable', reason: 'not HTML' };
-      return { verdict: namesYou(visibleText(await r.text()), matchers) ? 'yes' : 'no' };
+      const html = await r.text();
+      return { verdict: namesYou(visibleText(html), matchers) ? 'yes' : 'no', ...pageTitleAndByline(html) };
     } catch (err: any) {
       const timeout = err?.name === 'TimeoutError' || err?.name === 'AbortError';
       if (attempt === 0 && !timeout) continue; // one retry on a network error

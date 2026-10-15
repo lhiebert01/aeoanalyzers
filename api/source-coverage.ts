@@ -6,7 +6,8 @@
 // by the sweep. No engine call; no count or cost goes back to the customer beyond the table itself.
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { isPaidRequest } from './_lib/entitlement.js';
-import { runSourceCoverage } from './_lib/sourceFetch.js';
+import { runSourceCoverage, SOURCE_COVERAGE_UA } from './_lib/sourceFetch.js';
+import { extractSiteFacts } from '../src/lib/truthRecord.js';
 import type { SweepRunResult } from '../src/lib/citationSweep.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -41,9 +42,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const coverage = await runSourceCoverage(runs, sweep.domain, sweep.brand, Array.isArray(sweep.owned_domains) ? sweep.owned_domains : []);
-    const fullResult = { ...(sweep.full_result || {}), sourceCoverage: coverage };
+    // WO-014: the customer's own homepage, read once with the same honest user agent, so the
+    // step-by-step guide has the site's own description and types as stored data. Best-effort.
+    let siteFacts: Record<string, unknown> | null = null;
+    try {
+      const r = await fetch(`https://${sweep.domain}/`, { headers: { 'User-Agent': SOURCE_COVERAGE_UA, Accept: 'text/html' }, redirect: 'follow', signal: AbortSignal.timeout(10_000) });
+      if (r.ok) siteFacts = { ...extractSiteFacts(await r.text()), fetchedAt: new Date().toISOString() };
+    } catch { /* keep any earlier facts */ }
+    const fullResult = { ...(sweep.full_result || {}), sourceCoverage: coverage, ...(siteFacts ? { siteFacts } : {}) };
     await fetch(`${url}/rest/v1/citation_sweeps?id=eq.${sweepId}`, { method: 'PATCH', headers: { ...H, Prefer: 'return=minimal' }, body: JSON.stringify({ full_result: fullResult }), signal: T() });
-    return res.status(200).json({ sourceCoverage: coverage });
+    return res.status(200).json({ sourceCoverage: coverage, siteFacts: siteFacts ?? sweep.full_result?.siteFacts ?? null });
   } catch (err: any) {
     return res.status(500).json({ error: 'Source coverage could not be completed. Please try again.' });
   }

@@ -70,6 +70,9 @@ for b in blocks:
         out.append(f'      <p>{html.escape(E4, quote=False)}</p>')
 
 assert h1 == TITLE and len(faq) == 3, (h1, len(faq))
+# WO-014 E: the two free step-by-step guides, after the founder's text (which stays word for word).
+out.append('      <h2 class="posth2">Free step-by-step guides</h2>')
+out.append('      <ul>\n        <li><a class="ilink" href="/guides/directory-listings">How to list your business on directories, step by step</a></li>\n        <li><a class="ilink" href="/guides/wikidata">How to create your company&rsquo;s Wikidata entry, step by step</a></li>\n      </ul>')
 BODY = '\n'.join(out)
 assert BODY.count(html.escape(E4, quote=False)) == 1
 

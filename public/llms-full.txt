@@ -279,3 +279,146 @@ Run an AEO Score to confirm your site is ready, then a Citation Sweep to see whi
 How will I know if it is working?
 Measure again on the same engines and the same questions. Your Record shows each action's date beside the figures from every sweep, so a change is visible against what you did, not guessed at.
 <!-- /page:get-recommended -->
+
+<!-- page:guides/directory-listings -->
+## How to list your business on directories, step by step
+URL: https://aeoanalyzers.com/guides/directory-listings
+
+Answer engines repeat what independent pages say about you. A directory listing is one of those pages, and it is one you can create yourself. This guide walks through each directory: where to start, what to have ready, what to paste, and how you know it is done.
+
+1. LinkedIn company page
+Where to start: https://www.linkedin.com/company/setup/new/
+   1. Have ready: logo, tagline, about text, website, industry.
+   2. Create a free account (free) and sign in.
+   3. Search LinkedIn company page for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+Done when: The listing has its own public address.
+
+2. Crunchbase
+Where to start: https://www.crunchbase.com
+   1. Have ready: company name, website, headquarters, founder names.
+   2. Create a free account (free) and sign in.
+   3. Search Crunchbase for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Pricing: link to your pricing page. Do not type price figures.
+Done when: The listing has its own public address. Crunchbase reviews new listings before they appear, so this can take a few days.
+
+3. G2
+Where to start: https://sell.g2.com
+   1. Have ready: product name, category, short and long text, logo.
+   2. Create a free account (free vendor profile) and sign in.
+   3. Search G2 for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Pricing: link to your pricing page. Do not type price figures.
+Done when: The listing has its own public address. G2 reviews new listings before they appear, so this can take a few days.
+
+4. Capterra / GetApp / Software Advice (one vendor portal)
+Where to start: https://www.capterra.com/vendors/sign-up (we could not check this page automatically on October 15th, 2026; if it has moved, start from the site's home page)
+   1. Have ready: product name, category, short and long text, logo, screenshots.
+   2. Create a free account (free vendor profile) and sign in.
+   3. Search Capterra / GetApp / Software Advice (one vendor portal) for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Pricing: link to your pricing page. Do not type price figures.
+Done when: The listing has its own public address. Capterra / GetApp / Software Advice (one vendor portal) reviews new listings before they appear, so this can take a few days.
+
+5. AlternativeTo
+Where to start: https://alternativeto.net (we could not check this page automatically on October 15th, 2026; if it has moved, start from the site's home page)
+   1. Have ready: product name, short and long text, logo, screenshot, tags.
+   2. Create a free account (free) and sign in.
+   3. Search AlternativeTo for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Pricing: link to your pricing page. Do not type price figures.
+Done when: The listing has its own public address. AlternativeTo reviews new listings before they appear, so this can take a few days.
+
+6. Slashdot / SourceForge business software
+Where to start: https://sourceforge.net/software/vendors/ (we could not check this page automatically on October 15th, 2026; if it has moved, start from the site's home page)
+   1. Have ready: product name, category, short and long text, logo.
+   2. Create a free account (free vendor profile) and sign in.
+   3. Search Slashdot / SourceForge business software for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Pricing: link to your pricing page. Do not type price figures.
+Done when: The listing has its own public address. Slashdot / SourceForge business software reviews new listings before they appear, so this can take a few days.
+
+7. Product Hunt
+Where to start: https://www.producthunt.com
+   1. Have ready: product name, tagline, description, images.
+   2. Create a free account (free) and sign in.
+   3. Search Product Hunt for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Pricing: link to your pricing page. Do not type price figures.
+Done when: The listing has its own public address.
+
+8. Google Business Profile
+Where to start: https://business.google.com
+   1. Have ready: business name, address or service area, phone, hours, category.
+   2. Create a free account (free) and sign in.
+   3. Search Google Business Profile for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Use the same business name, address and phone number as on your website.
+Done when: The listing has its own public address. Google Business Profile reviews new listings before they appear, so this can take a few days.
+
+9. Bing Places for Business
+Where to start: https://www.bingplaces.com
+   1. Have ready: business name, address, phone, category.
+   2. Create a free account (free) and sign in.
+   3. Search Bing Places for Business for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Use the same business name, address and phone number as on your website.
+Done when: The listing has its own public address. Bing Places for Business reviews new listings before they appear, so this can take a few days.
+
+10. Apple Business Connect
+Where to start: https://businessconnect.apple.com
+   1. Have ready: business name, address, phone, hours.
+   2. Create a free account (free) and sign in.
+   3. Search Apple Business Connect for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Use the same business name, address and phone number as on your website.
+Done when: The listing has its own public address. Apple Business Connect reviews new listings before they appear, so this can take a few days.
+
+11. Yelp for Business
+Where to start: https://biz.yelp.com
+   1. Have ready: business name, address, phone, category.
+   2. Create a free account (free) and sign in.
+   3. Search Yelp for Business for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Use the same business name, address and phone number as on your website.
+Done when: The listing has its own public address. Yelp for Business reviews new listings before they appear, so this can take a few days.
+
+12. Trustpilot Business
+Where to start: https://business.trustpilot.com
+   1. Have ready: company name, website.
+   2. Create a free account (free) and sign in.
+   3. Search Trustpilot Business for your company and product first, so you do not create a second listing.
+   4. Add the listing. Name: Your product. Website: your website address.
+   5. Paste the Short and Long text from the box at the start of Part 2, word for word.
+   6. Pricing: link to your pricing page. Do not type price figures.
+Done when: The listing has its own public address.
+<!-- /page:guides/directory-listings -->
+
+<!-- page:guides/wikidata -->
+## How to create your company's Wikidata entry, step by step
+URL: https://aeoanalyzers.com/guides/wikidata
+
+Wikidata is a free, public database of facts that answer engines and search engines read. An entry for your company states who you are, with a source for each fact. This guide follows the steps we took for our own entries on October 15th, 2026.
+
+1. Create your Wikidata entries
+Where to start: https://www.wikidata.org (create a free account with "Create account", top right)
+   1. Create a free Wikidata account and sign in.
+   2. Search Wikidata for your company and your product first. If an item already exists, improve it instead of creating a second one.
+   3. Open https://www.wikidata.org/wiki/Special:NewItem. Label: Your company. Description: short and neutral, such as "software company in Your City, Country". Aliases: other spellings people use.
+   4. Add each statement in the company table: click "+ add statement", type the property, pick it from the list, type the value, pick it, then "+ add reference", choose "reference URL" and paste the source. Publish.
+   5. Create the product item the same way (Label: Your product) with the product table, then link the two: "product or material produced" on the company, "developer" on the product.
+   6. When each directory listing goes live, add it to the item as a "described at URL" statement with itself as the reference.
+Done when: Both items have their own Q-number (wikidata.org/wiki/Q…), and every statement has a reference.
+<!-- /page:guides/wikidata -->

@@ -106,6 +106,34 @@ export interface CoverageRow {
   verdict: CoverageVerdict;
   /** Why a page could not be read: "robots", "timeout", "HTTP 403", "not HTML", "error". */
   reason?: string;
+  /** WO-014: the page's own title and byline, when the fetched page states them. */
+  title?: string;
+  byline?: string;
+}
+
+/** WO-014: a page's title and its author or publisher, only as the page itself states them
+ *  (author meta, article:author, JSON-LD author/publisher name). Never inferred. */
+export function pageTitleAndByline(html: string): { title?: string; byline?: string } {
+  const h = String(html || '');
+  const dec = (t: string) => t.replace(/&amp;/g, '&').replace(/&#39;|&#039;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&#8211;|&ndash;/g, '–').replace(/&#8212;|&mdash;/g, '—').replace(/\s+/g, ' ').trim();
+  const meta = (k: string) => { const tag = h.match(new RegExp(`<meta[^>]+(?:name|property)=["']${k}["'][^>]*>`, 'i')); const c = tag?.[0].match(/content=["']([^"']*)["']/i); return c ? dec(c[1]) : ''; };
+  const title = meta('og:title') || dec(h.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1] || '');
+  let byline = meta('author') || meta('article:author');
+  if (!byline || /^https?:/i.test(byline)) {
+    byline = '';
+    const rx = /<script[^>]+application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi; let m: RegExpExecArray | null;
+    while (!byline && (m = rx.exec(h))) {
+      try {
+        const j = JSON.parse(m[1]); const nodes = (Array.isArray(j) ? j : [j]).flatMap((x: any) => (Array.isArray(x?.['@graph']) ? x['@graph'] : [x]));
+        for (const n of nodes) {
+          if (!/Article|BlogPosting|NewsArticle|Review|WebPage/i.test(String(n?.['@type']))) continue;
+          const a = Array.isArray(n.author) ? n.author[0] : n.author;
+          if (a && typeof a.name === 'string' && a.name.trim()) { byline = dec(a.name); break; }
+        }
+      } catch { /* skip */ }
+    }
+  }
+  return { ...(title ? { title: title.slice(0, 200) } : {}), ...(byline && !/^https?:/i.test(byline) ? { byline: byline.slice(0, 120) } : {}) };
 }
 export interface SourceCoverage {
   fetchedAt: string;          // ISO date of the fetch, never the sweep date

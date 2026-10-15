@@ -34,6 +34,10 @@ import { OWNER_ORDER, OWNER_DESC, nextSweepLine } from '../lib/ownerTags';
 import { measuredAfterView, PANEL_DIFFERS, MEASURED_AFTER, fmtDay, type RecordEntry, type SweepFigures } from '../lib/theRecord';
 import { figuresFrom, previousSweepFigures } from '../lib/recordStore';
 import { RecordPanel } from './RecordPanel';
+import { GuidePanel, type GuideAccess } from './GuidePanel';
+import { buildGuide, guideRecordActions, type BusinessType, type GuideScore } from '../lib/stepGuide';
+import { latestScoreDetail, rememberedBusinessType } from '../lib/guideData';
+import type { SiteFacts } from '../lib/truthRecord';
 import { safeJsonParse } from '../services/geminiService';
 
 // --- URL-first auto-extract (UX-PRINCIPLES §1–2 / SWEEP-UX-REDESIGN commit a) ---
@@ -227,6 +231,24 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
     return () => { live = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result?.domain, result?.generatedAt, recordEnabled]);
+  // WO-014: the step-by-step guide — site facts from the sweep snapshot or the latest coverage
+  // check, and the domain's latest AEO Score, all stored data.
+  const [siteFacts, setSiteFacts] = useState<SiteFacts | null>(null);
+  const [guideScore, setGuideScore] = useState<GuideScore | null>(null);
+  const guideAccess: GuideAccess = isAdmin || isPaidUser ? (recordEnabled ? 'full' : 'sweep-only') : 'none';
+  useEffect(() => {
+    setGuideScore(null);
+    if (!result || result.quickCheck || guideAccess === 'none') return;
+    let live = true;
+    latestScoreDetail(result.domain).then((s) => { if (live) setGuideScore(s); }).catch(() => {});
+    return () => { live = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result?.domain, result?.generatedAt, guideAccess]);
+  const guideFor = (r: SweepResponse, type: BusinessType | null) => buildGuide({
+    domain: r.domain, date: new Date(), brand: r.brand, site: truth?.site || siteFacts, score: guideScore,
+    split: buildSweepCover(reportInputs(r)).split ?? null, coverage: sourceCoverage, category: coreCategory || null,
+    businessType: type ?? (rememberedBusinessType(r.domain) as BusinessType | null), record: recordEnabled ? recordEntries : null,
+  });
   const nowFigures = (r: SweepResponse | null): SweepFigures | null => r ? figuresFrom(r.generatedAt, r.summary as any, r.runs, r.domain, ownedDomains, sourceCoverage) : null;
   async function runCoverage(id: string) {
     setCoverageState('running');
@@ -235,7 +257,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
       const r = await fetch('/api/source-coverage', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ sweepId: id }) });
       const j = await r.json();
       if (!r.ok || !j.sourceCoverage) throw new Error(j.error || 'failed');
-      setSourceCoverage(j.sourceCoverage); setCoverageState('idle');
+      setSourceCoverage(j.sourceCoverage); if (j.siteFacts) setSiteFacts(j.siteFacts); setCoverageState('idle');
     } catch { setCoverageState('error'); }
   }
   const [bots, setBots] = useState<any | null>(null);
@@ -380,6 +402,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
         setAuthority(aggregateAuthorityGap(scored, sweep.domain));
         setSavedDate(sweep.created_at);
         setSourceCoverage((sweep.full_result?.sourceCoverage as SourceCoverage | undefined) ?? null);
+        setSiteFacts((sweep.full_result?.truth?.site || sweep.full_result?.siteFacts || null) as SiteFacts | null);
         setCurrentSweepId(savedSweepId);
         latestScoreFor(sweep.domain).then(setReadiness).catch(() => setReadiness(null));
         setDomain(sweep.domain);
@@ -538,7 +561,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
 
   async function run() {
     if (!paidViewer) return; // WO-007: the server refuses too (402); this saves the round trip
-    setError(null); setResult(null); setAuthority(null); setFidelity(null); setEntityLinking(null); setPageFactDensity(null); setTruth(null); setSourceCoverage(null); setCurrentSweepId(null); setRunning(true);
+    setError(null); setResult(null); setAuthority(null); setFidelity(null); setEntityLinking(null); setPageFactDensity(null); setTruth(null); setSourceCoverage(null); setSiteFacts(null); setCurrentSweepId(null); setRunning(true);
     try {
       const d = normDomain(domain);
       const expand = (q: string) => q.replace(/\{domain\}/g, d);
@@ -1499,7 +1522,11 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
 
           {/* WO-012 G: the Record. */}
           {result && !result.quickCheck && result.persisted && (
-            <RecordPanel domain={result.domain} enabled={!!recordEnabled} actions={recordActions(reportInputs(result))} onEntries={setRecordEntries} />
+            <RecordPanel domain={result.domain} enabled={!!recordEnabled} actions={(() => { const a = [...recordActions(reportInputs(result)), ...guideRecordActions(guideFor(result, null))]; return a.filter((x, i) => a.findIndex((y) => y.key === x.key) === i); })()} onEntries={setRecordEntries} />
+          )}
+          {/* WO-014: the step-by-step guide. */}
+          {result && !result.quickCheck && (
+            <GuidePanel domain={result.domain} access={guideAccess} build={async (t) => guideFor(result, t)} />
           )}
 
           {/* Content depth (E2): study-backed levers that make a page citable. */}

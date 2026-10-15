@@ -37,7 +37,7 @@ export async function addRecord(e: RecordEntry): Promise<void> {
 /** The previous stored sweep of the same domain, before `beforeIso`, as figures. */
 export async function previousSweepFigures(domain: string, beforeIso: string, ownedDomains: string[]): Promise<SweepFigures | null> {
   const d = normalizeDomain(domain);
-  const { data, error } = await supabaseQuery('citation_sweeps', `domain=eq.${encodeURIComponent(d)}&created_at=lt.${encodeURIComponent(beforeIso)}&select=id,created_at,summary,full_result&order=created_at.desc&limit=1`, 8000);
+  const { data, error } = await supabaseQuery('citation_sweeps', `domain=ilike.${encodeURIComponent(d)}&created_at=lt.${encodeURIComponent(beforeIso)}&select=id,created_at,summary,full_result&order=created_at.desc&limit=1`, 8000);
   if (error || !Array.isArray(data) || !data[0]) return null;
   const s = data[0];
   const { data: rows } = await supabaseQuery('sweep_results', `sweep_id=eq.${s.id}&query_type=eq.branded&select=engine,query_type,sources,truncated,transcript`, 8000);

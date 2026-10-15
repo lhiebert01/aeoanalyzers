@@ -20,7 +20,7 @@ export async function latestScoreFor(domain: string): Promise<{ score: number } 
 export async function latestSweepFor(domain: string): Promise<LatestSweepFigure | null> {
   const want = normalizeDomain(domain);
   if (!want) return null;
-  const { data, error } = await supabaseQuery('citation_sweeps', `select=summary,created_at&domain=eq.${encodeURIComponent(want)}&order=created_at.desc&limit=1`, 8000);
+  const { data, error } = await supabaseQuery('citation_sweeps', `select=summary,created_at&domain=ilike.${encodeURIComponent(want)}&order=created_at.desc&limit=1`, 8000);
   if (error || !Array.isArray(data) || !data[0]?.summary?.engines) return null;
   const engines: any[] = data[0].summary.engines;
   const n = engines.reduce((a, e) => a + (Number(e.categoryRuns) || 0), 0);

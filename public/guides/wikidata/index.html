@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>How to create your company's Wikidata entry, step by step | AEO Analyzers</title>
+<meta name="description" content="Free step-by-step guide to a Wikidata entry for your company and product: search first, create the item, add each statement with a source.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://aeoanalyzers.com/guides/wikidata">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AEO Analyzers">
+<meta property="og:title" content="How to create your company's Wikidata entry, step by step">
+<meta property="og:description" content="Free step-by-step guide to a Wikidata entry for your company and product: search first, create the item, add each statement with a source.">
+<meta property="og:url" content="https://aeoanalyzers.com/guides/wikidata">
+<meta property="og:image" content="https://aeoanalyzers.com/aeo-og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@Lindsay_Hiebert">
+<meta name="twitter:creator" content="@Lindsay_Hiebert">
+<meta name="twitter:title" content="How to create your company's Wikidata entry, step by step">
+<meta name="twitter:description" content="Free step-by-step guide to a Wikidata entry for your company and product: search first, create the item, add each statement with a source.">
+<meta name="twitter:image" content="https://aeoanalyzers.com/aeo-og.png">
+<meta name="theme-color" content="#08343B">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to create your company's Wikidata entry, step by step",
+  "description": "Free step-by-step guide to a Wikidata entry for your company and product: search first, create the item, add each statement with a source.",
+  "url": "https://aeoanalyzers.com/guides/wikidata",
+  "totalTime": "PT30M",
+  "inLanguage": "en-US",
+  "author": {
+    "@type": "Person",
+    "@id": "https://pigenai.com/#lindsay",
+    "name": "Lindsay Hiebert"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "@id": "https://pigenai.com/#org",
+    "name": "PIGENAI LLC",
+    "url": "https://pigenai.com"
+  },
+  "dateModified": "2026-10-15",
+  "step": [
+    {
+      "@type": "HowToSection",
+      "position": 1,
+      "name": "Create your Wikidata entries",
+      "itemListElement": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "text": "Create a free Wikidata account and sign in."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "text": "Search Wikidata for your company and your product first. If an item already exists, improve it instead of creating a second one."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "text": "Open https://www.wikidata.org/wiki/Special:NewItem. Label: Your company. Description: short and neutral, such as \"software company in Your City, Country\". Aliases: other spellings people use."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "text": "Add each statement in the company table: click \"+ add statement\", type the property, pick it from the list, type the value, pick it, then \"+ add reference\", choose \"reference URL\" and paste the source. Publish."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 5,
+          "text": "Create the product item the same way (Label: Your product) with the product table, then link the two: \"product or material produced\" on the company, \"developer\" on the product."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 6,
+          "text": "When each directory listing goes live, add it to the item as a \"described at URL\" statement with itself as the reference."
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+:root{
+  --paper:#E7ECEE; --card:#FFFFFF; --ink:#0E1216; --muted:#3F4952; --hair:#C4CDD3;
+  --teal:#0B6E7A; --teal-deep:#08343B; --teal-tint:#E6F0F1;
+  --good:#137A4D; --good-tint:#E3F1E9; --warn:#B5820A; --gap:#B23A2E; --gap-tint:#F7E7E4;
+  --panel:#EBF0F2; --edge:#9FADB6;
+  --shadow:0 1px 2px rgba(20,26,31,.06), 0 18px 50px rgba(20,26,31,.12);
+  --card-shadow:0 1px 2px rgba(20,26,31,.06), 0 6px 18px rgba(20,26,31,.10);
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+/* Committed LIGHT theme — matches the aeoanalyzers.com site (dark text on white).
+   No prefers-color-scheme flip, so every visitor sees the same page the live site does. */
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:26px 20px 40px}
+
+/* ---- site header + footer: give the page a clear way back to the app ---- */
+.sitebar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:11px clamp(16px,4vw,28px);background:var(--card);border-bottom:1px solid var(--edge)}
+.sitebar .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
+.sitebar .brand .mk{display:inline-flex;width:27px;height:27px;border-radius:7px;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.sitebar .snav{display:flex;align-items:center;gap:6px}
+.sitebar .snav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:8px 12px;border-radius:9px}
+.sitebar .snav a:hover{color:var(--ink);background:var(--panel)}
+.sitebar .snav a.primary{background:var(--teal-deep);color:#EAF4F5}
+.sitebar .snav a.primary:hover{color:#fff}
+.sitefoot{border-top:1px solid var(--edge);background:var(--card);margin-top:44px}
+.sitefoot .fin{max-width:960px;margin:0 auto;padding:24px clamp(16px,4vw,28px);display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.sitefoot .fnav{display:flex;flex-wrap:wrap;gap:8px 22px}
+.sitefoot a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+.sitefoot a:hover{color:var(--ink)}
+.sitefoot .fcop{color:var(--muted);font-size:12.5px}
+@media(max-width:520px){.sitebar .snav a:not(.primary){display:none}}
+
+/* ---- bento card ---- */
+.bento{background:var(--card);border:1px solid var(--edge);border-radius:22px;box-shadow:var(--shadow);margin-top:38px}
+.ribbon{background:var(--teal-deep);color:#EAF4F5;text-align:center;font-size:12.5px;font-weight:600;
+  letter-spacing:.03em;padding:10px 18px;border-radius:21px 21px 0 0}
+.ribbon b{color:#fff}
+.pad{padding:0 clamp(24px,4.5vw,54px) 40px}
+
+header{padding:40px 0 24px;border-bottom:1px solid var(--hair)}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4.6vw,42px);line-height:1.1;
+  text-wrap:balance;margin:12px 0 14px;letter-spacing:-.01em}
+.doctitle{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4.6vw,42px);line-height:1.1;
+  text-wrap:balance;margin:12px 0 14px;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:13.5px;margin:0}
+.meta span{white-space:nowrap}
+h2{font-family:var(--serif);font-weight:600;font-size:23px;margin:42px 0 14px;letter-spacing:-.01em}
+p{margin:0 0 14px;max-width:76ch}
+.lead{font-size:17.5px;max-width:80ch}
+strong{color:var(--ink)}
+
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:24px 0 6px}
+.tile{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:18px 18px 16px;box-shadow:var(--card-shadow)}
+.tile .lab{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile .num{font-family:var(--serif);font-size:40px;font-weight:600;line-height:1;margin:10px 0 6px;font-variant-numeric:tabular-nums}
+.tile .note{font-size:12.5px;color:var(--muted);line-height:1.45}
+.tile.good{border-top:3px solid var(--good)} .tile.good .num{color:var(--good)}
+.tile.warn{border-top:3px solid var(--warn)} .tile.warn .num{color:var(--warn)}
+.tile.gap{border-top:3px solid var(--gap)}  .tile.gap .num{color:var(--gap)}
+
+.results{background:var(--panel);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--card-shadow);padding:6px 24px 18px;margin-top:30px}
+.results h2{margin:22px 0 4px}
+.rq{font-family:var(--serif);font-size:19px;font-weight:600;margin:0 0 12px;padding-bottom:14px;border-bottom:1px solid var(--edge);max-width:none;line-height:1.35}
+.rq .yes{color:var(--good);font-weight:700}
+.rq .no{color:var(--gap);font-weight:700}
+ul.find{list-style:none;padding:0;margin:6px 0 0;max-width:82ch}
+ul.find li{position:relative;padding:9px 0 9px 26px;border-bottom:1px solid var(--hair);font-size:15.5px}
+ul.find li:last-child{border-bottom:0}
+ul.find li::before{content:"";position:absolute;left:2px;top:16px;width:8px;height:8px;border-radius:2px;background:var(--teal)}
+ul.find li.bad::before{background:var(--gap)}
+
+.callouts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+.callout{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:18px;box-shadow:var(--card-shadow);border-top:2px solid var(--teal)}
+.callout .k{font-family:var(--serif);font-size:17.5px;font-weight:600;color:var(--teal);margin:0 0 6px;line-height:1.25}
+.callout p{font-size:14px;margin:0 0 10px;color:var(--ink);max-width:none}
+.callout .vs{font-size:13.5px;color:var(--ink);border-top:1px dashed var(--edge);padding-top:9px;margin:0}
+.callout .vs b{color:var(--gap);font-weight:600}
+.callout.span{grid-column:1 / -1}
+
+ol.fixes{counter-reset:f;list-style:none;padding:0;margin:6px 0 0;max-width:82ch}
+ol.fixes li{position:relative;padding:18px 0 18px 46px;border-bottom:1px solid var(--edge)}
+ol.fixes li:last-child{border-bottom:0}
+ol.fixes li::before{counter-increment:f;content:counter(f);position:absolute;left:0;top:12px;
+  width:30px;height:30px;border-radius:50%;background:var(--teal-tint);color:var(--teal);
+  font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+ol.fixes b{display:block;margin-bottom:3px}
+ol.fixes span{color:var(--muted);font-size:14px}
+
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--hair);color:var(--muted);font-size:12.5px}
+footer b{color:var(--ink)}
+footer p{max-width:none}
+.samplenote{max-width:960px;margin:16px auto 0;padding:0 20px;text-align:center;
+  color:var(--muted);font-size:12.5px;letter-spacing:.02em}
+.samplenote b{color:var(--ink)}
+/* ---- POSSE blog masthead + outro ---- */
+.post{max-width:720px;margin:6px auto 4px;padding:0 8px}
+.posteyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.posttitle{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5.6vw,48px);line-height:1.06;
+  letter-spacing:-.015em;text-wrap:balance;margin:12px 0 12px}
+.postmeta{color:var(--muted);font-size:13px;margin:0 0 24px;letter-spacing:.02em}
+.postbody p{font-size:17px;max-width:68ch;margin:0 0 16px;color:var(--ink)}
+.postbody .postlead{font-size:19.5px;line-height:1.5}
+.jumpcue{max-width:68ch;margin:20px 0 0;color:var(--muted);font-size:13.5px;
+  border-top:1px solid var(--edge);padding-top:16px}
+.jumpcue b{color:var(--ink)}
+.postoutro{max-width:780px;margin:36px auto 0;padding:32px clamp(22px,4.5vw,44px);
+  background:var(--teal-tint);border:1px solid var(--edge);border-radius:20px;box-shadow:var(--card-shadow)}
+.postoutro .eyebrow{margin-bottom:8px;display:block}
+.postoutro h3{font-family:var(--serif);font-weight:600;font-size:clamp(25px,4vw,34px);line-height:1.08;
+  letter-spacing:-.015em;text-wrap:balance;margin:0 0 16px}
+.postoutro p{font-size:16.5px;max-width:72ch;margin:0 0 14px;color:var(--ink)}
+.postoutro .bigline{font-size:19px;line-height:1.45}
+.postoutro .hl{color:var(--teal);font-weight:700}
+.cta{display:inline-block;background:var(--teal-deep);color:#EAF4F5;font-weight:600;font-size:15px;
+  text-decoration:none;padding:11px 22px;border-radius:11px}
+.cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.ilink{color:var(--teal);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.ilink:hover{text-decoration-thickness:2px}
+@media(max-width:560px){.score{grid-template-columns:1fr}.callouts{grid-template-columns:1fr}}
+/* ---- G1: follow-the-series email capture (Honest-Zero) ---- */
+.followseries{max-width:780px;margin:18px auto 0;padding:20px clamp(22px,4.5vw,34px);
+  display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;justify-content:space-between;
+  background:var(--card);border:1px solid var(--edge);border-radius:16px;box-shadow:var(--card-shadow)}
+.followseries .fs-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:6px}
+.followseries .fs-line{font-size:15px;line-height:1.5;color:var(--ink);margin:0;max-width:60ch}
+.followseries .fs-cta{display:inline-block;white-space:nowrap;background:var(--card);color:var(--teal-deep);
+  border:1.5px solid var(--teal-deep);font-weight:600;font-size:14.5px;text-decoration:none;padding:10px 18px;border-radius:11px}
+.followseries .fs-cta:hover{background:var(--teal-deep);color:#EAF4F5}
+.followseries .fs-cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+
+.ledger{overflow-x:auto;margin:18px 0 6px}
+.ledger table{border-collapse:collapse;width:100%;min-width:560px;background:var(--card);
+  box-shadow:var(--card-shadow);border-radius:10px;overflow:hidden}
+.ledger th{background:var(--panel);color:var(--muted);font-size:12px;letter-spacing:.09em;
+  text-transform:uppercase;text-align:left;padding:11px 14px;border-bottom:1px solid var(--hair)}
+.ledger td{padding:13px 14px;border-bottom:1px solid var(--hair);vertical-align:top;font-size:15px}
+.ledger tr:last-child td{border-bottom:0}
+.ledger .mo{font-weight:700;color:var(--ink);white-space:nowrap}
+.ledger .fig{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:17px}
+.ledger .fig.up{color:var(--good)} .ledger .fig.flat{color:var(--teal-deep)}
+.ledger .nn{display:block;font-weight:600;font-size:12px;color:var(--muted)}
+.ledger .when{color:var(--muted);white-space:nowrap;font-size:14px}
+.ledgernote{font-size:14.5px;color:var(--muted);margin:4px 0 0}
+.ledgernote .tag{display:inline-block;background:var(--teal-tint);color:var(--teal-deep);
+  font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  padding:2px 7px;border-radius:5px;margin-right:7px;vertical-align:1px}
+.lessons{margin:18px 0 0;padding:0;list-style:none}
+.lessons li{background:var(--card);box-shadow:var(--card-shadow);border-radius:10px;
+  padding:14px 16px;margin:0 0 10px}
+.lessons b{display:block;color:var(--ink);margin-bottom:3px}
+.lessons span{color:var(--muted);font-size:14.5px}
+
+.postfig{margin:26px 0 8px}
+.postfig img{width:100%;height:auto;display:block;border-radius:10px;
+  box-shadow:var(--card-shadow);background:#08343B}
+.postfig figcaption{font-size:14px;color:var(--muted);margin-top:10px;max-width:70ch}
+
+.postbody .bigline{font-family:var(--serif);font-size:21px;line-height:1.4;color:var(--ink);
+  border-left:3px solid var(--teal);padding:2px 0 2px 16px;margin:22px 0}
+.postbody .hl{color:var(--teal);font-weight:700}
+
+.posthero{margin:24px 0 6px}
+.posthero img{border-radius:14px}
+
+.ledgerstrip{display:flex;flex-wrap:wrap;align-items:center;gap:18px 30px;
+  background:var(--card);border:1px solid var(--edge);border-left:4px solid var(--teal);
+  border-radius:14px;box-shadow:var(--card-shadow);padding:16px 20px;margin:0 0 22px}
+.ledgerstrip .ls-lab{font-size:11.5px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--teal);margin:0 0 8px}
+.ledgerstrip .ls-figs{display:flex;gap:26px;flex-wrap:wrap}
+.ledgerstrip .ls-fig{display:flex;flex-direction:column}
+.ledgerstrip .ls-n{font-size:27px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
+.ledgerstrip .ls-n.good{color:var(--good)} .ledgerstrip .ls-n.gap{color:var(--gap)}
+.ledgerstrip .ls-k{font-size:12.5px;color:var(--muted);margin-top:5px}
+.ledgerstrip .ls-txt{flex:1 1 260px;font-size:14.5px;color:var(--muted);margin:0}
+.ledgerstrip .ls-go{display:inline-block;background:var(--teal-deep);color:#EAF4F5;text-decoration:none;
+  font-weight:700;font-size:14px;padding:10px 16px;border-radius:10px;white-space:nowrap}
+.ledgerstrip .ls-go:hover{color:#fff}
+
+.corrections{background:#F9EDEA;border:1px solid #D9A9A1;border-left:5px solid #B23A2E;
+  border-radius:12px;margin:0 0 22px;color:#0E1216;overflow:hidden}
+.corrections>summary{list-style:none;cursor:pointer;padding:13px 18px;font-size:14.5px;
+  line-height:1.5;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.corrections>summary::-webkit-details-marker{display:none}
+.corrections>summary::after{content:"Show \002B";margin-left:auto;white-space:nowrap;
+  color:#8E2C22;font-weight:800;font-size:13px;letter-spacing:.03em}
+.corrections[open]>summary::after{content:"Hide \2212"}
+.corrections>summary:hover{background:#F5E2DE}
+.corrections .c-tag{display:inline-block;background:#B23A2E;color:#fff;font-size:11px;
+  font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:3px 8px;border-radius:5px}
+.corrections .c-body{padding:2px 18px 10px;border-top:1px solid #D9A9A1}
+.corrections .c-body p{font-size:15px;line-height:1.55;margin:12px 0 4px;max-width:78ch}
+.corrections ol.fixes li::before{background:#B23A2E;color:#fff}
+
+/* ---- /evidence: wider page, and a table you can actually read across ---- */
+.wrap{max-width:1180px}
+.ledger{margin:18px 0 6px}
+.ledger table{min-width:980px;table-layout:fixed}
+.ledger th,.ledger td{border-right:1px solid var(--hair)}
+.ledger th:last-child,.ledger td:last-child{border-right:0}
+.ledger thead th{border-bottom:2px solid var(--edge);font-size:11.5px;letter-spacing:.07em;
+  line-height:1.35;padding:12px 14px;vertical-align:bottom}
+.ledger td{padding:15px 14px}
+.ledger tbody tr:nth-child(even){background:var(--panel)}
+.ledger .ledgernote{font-size:14.5px;line-height:1.55;margin:0}
+.ledger .fig{font-size:19px}
+@media(max-width:1000px){.ledger table{min-width:820px}}
+</style>
+<style>
+.guide{font-family:Calibri,Carlito,"Segoe UI",Arial,sans-serif;color:#0f172a;line-height:1.5;max-width:760px;overflow-wrap:anywhere}
+.guide h1{font-size:26px;margin:0 0 4px}.guide .sub{color:#334155;margin:0 0 18px}
+.guide h2{font-size:20px;margin:28px 0 8px;padding-bottom:4px;border-bottom:3px solid #1f7a4d}
+.guide h3{font-size:16px;margin:20px 0 6px}
+.guide .owner{display:inline-block;font-size:12px;font-weight:700;border:1px solid #1f7a4d;color:#14532d;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+.guide .box{background:#eef7f1;border:1px solid #b7dcc5;border-radius:8px;padding:10px 14px;margin:10px 0}
+.guide .box.rules{background:#f8fafc;border-color:#cbd5e1}
+.guide .box p{margin:2px 0}.guide .box .bt{font-weight:700;margin-bottom:4px}
+.guide pre{background:#eef7f1;border:1px solid #b7dcc5;border-radius:8px;padding:10px;white-space:pre-wrap;word-break:break-word;font-size:12px}
+.guide .where,.guide .done{margin:6px 0}.guide .done{font-weight:600}
+.guide table{border-collapse:collapse;width:100%;font-size:13px;margin:8px 0}
+.guide th{background:#0b1f17;color:#fff;text-align:left;padding:6px}.guide td{border:1px solid #cbd5e1;padding:6px;vertical-align:top}
+.guide .note{color:#1e293b;font-style:italic}
+@media (max-width:640px){.guide table{display:block;overflow-x:auto;max-width:100%}}
+@media print{.guide a{color:#0f172a}.guide h2{break-after:avoid}.guide table,.guide .box{break-inside:avoid}}
+.guide{max-width:68ch}.guide h2{font-size:22px}.dl{display:inline-block;margin:6px 0 18px;padding:8px 14px;border:2px solid #0f172a;border-radius:10px;font-weight:700;color:#0f172a;text-decoration:none}</style>
+</head>
+<body>
+<header class="sitebar">
+  <a class="brand" href="https://aeoanalyzers.com/"><span class="mk">A</span> AEO Analyzers</a>
+  <nav class="snav">
+    <a href="https://aeoanalyzers.com/">Home</a>
+    <a href="/blog/">Blog</a>
+    <a class="primary" href="https://aeoanalyzers.com/">Start free →</a>
+  </nav>
+</header>
+<div class="wrap">
+  <article class="post">
+    <div class="posteyebrow">AEO Analyzers &middot; Free step-by-step guide</div>
+    <h1 class="posttitle">How to create your company's Wikidata entry, step by step</h1>
+    <p class="postmeta">Sign-up pages checked October 15th, 2026</p>
+    <div class="postbody">
+      <p class="postlead">Wikidata is a free, public database of facts that answer engines and search engines read. An entry for your company states who you are, with a source for each fact. This guide follows the steps we took for our own entries on October 15th, 2026.</p>
+      <p>Our own example: <a class="ilink" href="https://www.wikidata.org/wiki/Q141739225">AEO Analyzers (Q141739225)</a>, developed by <a class="ilink" href="https://www.wikidata.org/wiki/Q141739140">PIGENAI LLC (Q141739140)</a>. Every statement on both carries a reference.</p>
+      
+      <p><a class="dl" href="/guides/wikidata-guide.docx" download>Download this guide (Word)</a></p>
+      <p>No method can guarantee that an engine will recommend you. These are steps that put you where engines look. Customers on Pro and Business get this guide filled in with their own facts, the directories engines cite for their category, and a tracking table their Record fills in.</p>
+      <div class="guide"><h2>Your Wikidata entry, step by step <span class="owner">Outreach</span></h2>
+<p>Wikidata is a free, public database of facts that answer engines and search engines read. Your entry states who you are, with a source for each fact.</p>
+<h3>Company item: Your company</h3><table><thead><tr><th>Property</th><th>Value</th><th>Reference URL</th></tr></thead><tbody><tr><td>instance of</td><td>business (or the closest type)</td><td>your website address</td></tr><tr><td>legal form</td><td>your legal form, e.g. limited liability company</td><td>your website address</td></tr><tr><td>country</td><td>your country</td><td>your website address</td></tr><tr><td>headquarters location</td><td>your city</td><td>your website address</td></tr><tr><td>official website</td><td>your website address</td><td>your website address</td></tr><tr><td>product or material produced</td><td>your product's item</td><td>your website address</td></tr></tbody></table>
+<h3>Product item: Your product</h3><table><thead><tr><th>Property</th><th>Value</th><th>Reference URL</th></tr></thead><tbody><tr><td>instance of</td><td>web application, software, or the closest type</td><td>your website address</td></tr><tr><td>developer</td><td>your company's item</td><td>your website address</td></tr><tr><td>country of origin</td><td>your country</td><td>your website address</td></tr><tr><td>official website</td><td>your website address</td><td>your website address</td></tr></tbody></table>
+<h3>1. Create your Wikidata entries (about 30 minutes)</h3>
+<p class="where"><strong>Where to start:</strong> <a href="https://www.wikidata.org">https://www.wikidata.org</a> (create a free account with &quot;Create account&quot;, top right)</p>
+<ol><li>Create a free Wikidata account and sign in.</li><li>Search Wikidata for your company and your product first. If an item already exists, improve it instead of creating a second one.</li><li>Open <a href="https://www.wikidata.org/wiki/Special:NewItem">https://www.wikidata.org/wiki/Special:NewItem</a>. Label: Your company. Description: short and neutral, such as &quot;software company in Your City, Country&quot;. Aliases: other spellings people use.</li><li>Add each statement in the company table: click &quot;+ add statement&quot;, type the property, pick it from the list, type the value, pick it, then &quot;+ add reference&quot;, choose &quot;reference URL&quot; and paste the source. Publish.</li><li>Create the product item the same way (Label: Your product) with the product table, then link the two: &quot;product or material produced&quot; on the company, &quot;developer&quot; on the product.</li><li>When each directory listing goes live, add it to the item as a &quot;described at URL&quot; statement with itself as the reference.</li></ol>
+<p class="note">Wikidata keeps entries only when independent sources back them up, so list on directories first (Part 2) and add each live listing as a reference afterward.</p>
+<p class="note">Descriptions must be short and neutral, never promotional.</p>
+<p class="note">Wikipedia is different: it does not accept articles a company writes about itself.</p>
+<p class="done">Done when: Both items have their own Q-number (wikidata.org/wiki/Q…), and every statement has a reference.</p>
+<h2>Tracking table</h2><p>Fill this in as you go. Marking a step done in your Record, with its date and the address once live, fills this table the next time you download the guide. Downloading does not mark anything done.</p>
+<table><thead><tr><th>Step</th><th>Owner</th><th>Where</th><th>Address once live</th><th>Date done</th><th>In your Record?</th></tr></thead><tbody><tr><td>Create your Wikidata entries</td><td>Outreach</td><td>Wikidata</td><td></td><td></td><td>Record on Pro and Business</td></tr></tbody></table></div>
+      <p>The other free guide: <a class="ilink" href="/guides/directory-listings">directory listings, step by step</a>. How the steps fit together: <a class="ilink" href="/get-recommended">How AI engines choose who to recommend</a>.</p>
+    </div>
+  </article>
+</div>
+<footer class="sitefoot">
+  <div class="fin">
+    <nav class="fnav">
+      <a href="https://aeoanalyzers.com/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="https://aeoanalyzers.com/privacy">Privacy</a>
+      <a href="https://aeoanalyzers.com/terms">Terms</a>
+      <a href="https://aeoanalyzers.com/#contact">Contact</a>
+    </nav>
+    <div class="fcop">© 2026 AEO Analyzers · PI GenAI LLC</div>
+  </div>
+</footer>
+</body>
+</html>
