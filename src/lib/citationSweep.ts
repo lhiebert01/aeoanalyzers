@@ -709,6 +709,8 @@ export interface SweepScorecard {
   competitorsAutoDetected: boolean;
   brandedRuns: number;
   categoryRuns: number;
+  /** Grounded category answers that recommended the customer (the numerator of the rate). */
+  categoryCited: number;
   /** Runs excluded because the engine call failed (429/5xx/timeout). Not a real zero;
    *  reported for transparency (WO-AEO-SWEEP-MEMORY-001). */
   erroredRuns: number;
@@ -838,6 +840,7 @@ export function sweepScorecard(
     competitorsAutoDetected,
     brandedRuns,
     categoryRuns,
+    categoryCited,
     erroredRuns,
     plainSummary,
   };

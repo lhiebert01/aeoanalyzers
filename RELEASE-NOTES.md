@@ -2,7 +2,14 @@
 
 ## Current pricing (15 Oct 2026)
 
-Prices and plan names in the entries below are as of each entry's date. Current: Free (3 free checks), Day Pass $29 (24 hours; 3 Citation Sweeps on the four-engine panel, 25 AEO analyses), Pro Optimizer $149/month (8 sweeps, five-engine panel with Grok, 100 analyses), Business Authority $599/month (20 sweeps, 200 analyses). Source of truth: https://aeoanalyzers.com/pricing.
+Prices, plan names and product descriptions in the entries below are as of each entry's date (the product is no longer described as a "simulation"; it asks the real engines and stores every answer). Current: Free (3 free checks), Day Pass $29 (24 hours; 3 Citation Sweeps on the four-engine panel, 25 AEO analyses), Pro Optimizer $149/month (8 sweeps, five-engine panel with Grok, 100 analyses), Business Authority $599/month (20 sweeps, 200 analyses). Source of truth: https://aeoanalyzers.com/pricing.
+
+## WO-AEO-REPORT-SOURCE-COVERAGE-012 — 15 October 2026 (Measure. Act. Record.)
+- **Page one of both reports** shows "Ready to be cited" (the AEO Score, what your site controls) beside "Recommended by engines" (category answers with their denominator, engines and date). Never blended; "Not yet measured" with a link when one is missing; the bridging sentence at 86+ and under 10%.
+- **Source coverage**: the recurring pages engines read for the category questions (2+ answers; 3 per site, 40 per sweep), fetched without JavaScript under an honest user agent with robots.txt respected; Yes / No / Could not read; runs after every new sweep and on demand for stored ones. Corroboration in branded answers and the vendor base per question and segment.
+- **Owner tags**: every action is Site, Content or Outreach, with the figure the next sweep shows; reports group Site, then Content, then Outreach.
+- **The Record** (Pro and Business): mark done, add your own, CSV download, Word section; the next sweep of the domain opens with "Measured after these actions." (migration `20261015_wo012_action_records.sql`).
+- **/get-recommended** published; /best-aeo-tools and /aeo-buyers-standard point to /pricing for our prices; homepage carries no price.
 
 ## v1.8.x — August 1–5, 2026
 

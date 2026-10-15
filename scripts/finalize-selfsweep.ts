@@ -6,20 +6,27 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { scoreRun } from '../src/lib/citationSweep.js';
 import { accuracyWhenNamed } from '../src/lib/fidelity.js';
+import { coverageCounts } from '../src/lib/sourceCoverage.js';
+import { runSourceCoverage } from '../api/_lib/sourceFetch.js';
 const [raw, out, label] = process.argv.slice(2);
 const d = JSON.parse(readFileSync(raw, 'utf8'));
 const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
 const comps = [{ name: 'Profound', domain: 'tryprofound.com' }, { name: 'Otterly AI', domain: 'otterly.ai' }, { name: 'Peec AI', domain: 'peec.ai' }];
 const runs = d.runs.map((r: any) => ({ ...r, costUsd: 0 }));
 const awn = accuracyWhenNamed(runs.map((r: any) => scoreRun(r, client, comps)).filter((r: any) => r.queryType === 'branded'), d.truth);
+// WO-012 D: from the 25 Oct 2026 self-sweep on, Source coverage is read on the day the sweep is filed
+// (page fetches only, no engine calls) and carried on the baseline for the /evidence monthly row.
+const cov = await runSourceCoverage(runs.map((r: any) => scoreRun(r, client, comps)), client.domain, client.brand);
+const cc = coverageCounts(cov);
 const doc = {
   runTimestampUtc: d.truthReadAtUtc, runLabel: label, panelVersion: 'v1.1', enginePanel: d.panel || 'v1.1', reps: 5, concurrency: 1,
   seriesNote: 'Pinned panel v1.1, four engines, five runs per question, sequential, reserve-before-spend budget guard; 0 errored runs. Cost is not recorded in committed baselines.',
   domain: d.domain, brand: d.brand, competitors: comps,
   truth: d.truth, truthReadAtUtc: d.truthReadAtUtc,
   accuracyWhenNamed: awn && { accurate: awn.accurate, named: awn.named, pct: awn.pct, checked: awn.checked },
+  sourceCoverage: { fetchedAt: cov.fetchedAt, named: cc.yes, recurringPages: cc.n, couldNotRead: cc.unreadable, distinctSites: cov.distinctSites, rows: cov.rows },
   summary: { ...d.summary, totalCostUsd: 0, engines: d.summary.engines.map((e: any) => ({ ...e, costUsd: 0 })) },
   runs,
 };
 writeFileSync(out, JSON.stringify(doc, null, 1));
-console.log(`wrote ${out} — ${runs.length} runs, accuracy-when-named ${awn?.accurate}/${awn?.named}`);
+console.log(`wrote ${out} — ${runs.length} runs, accuracy-when-named ${awn?.accurate}/${awn?.named}, named on ${cc.yes} of ${cc.n} recurring pages (${cc.unreadable} could not be read)`);

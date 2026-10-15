@@ -10,6 +10,7 @@
 // The monthly re-sweep line makes the measurement loop a product behavior.
 
 import { generateSchema, isOwnedDomain, brandDomainMismatch, publishableCollisions } from './schemaGenerator';
+import { OWNER_ORDER, OWNER_DESC, nextSweepLine, type OwnerTag, type WatchFigure } from './ownerTags';
 
 export interface SweepActionInputs {
   /** Branded retrievability %, or null if unmeasured. Weak → structural fix path. */
@@ -160,55 +161,74 @@ export function displayQuestion(question: string, location?: string | null): str
   return question.replace(new RegExp(`\\s+in\\s+${esc}\\s*$`, 'i'), '');
 }
 
+/** WO-012 C: one action block, owned by exactly one team, with the figure to watch. */
+export interface AgendaBlock { owner: OwnerTag; title: string; lines: string[]; watch: WatchFigure; key: string }
+
+export const MEASURE_AGAIN = '**Measure again after changes, on the same questions and the same engines.** The next sweep\'s figures sit beside the dates of what you did. That shows timing, not cause.';
+
+/** The agenda as owner-tagged blocks. Each block's `title` is the action; `lines` its detail. */
+export function sweepAgendaBlocks(inp: SweepActionInputs): AgendaBlock[] {
+  const out: AgendaBlock[] = [];
+  if (inp.brandedRetrievabilityPct !== null && inp.brandedRetrievabilityPct < WEAK_RETRIEVABILITY) {
+    out.push({ key: 'run-aeo-score', owner: 'Site', watch: 'discovery',
+      title: `Engines can't reliably find you by name (${inp.brandedRetrievabilityPct}%). Run the AEO Score on ${inp.domain} and implement its handoff.`,
+      lines: ['The structural fixes (schema, entity graph, answerable copy) are what an engine needs to retrieve and describe you.'] });
+  }
+  if (inp.hasFidelityOrCollision) {
+    out.push({ key: 'identity-markup', owner: 'Site', watch: 'accuracy',
+      title: inp.collisions.length
+        ? `Engines are confusing you with other entities (${inp.collisions.slice(0, 5).join(', ')}). Make your identity unambiguous.`
+        : 'An engine asserted something inaccurate about you. Make your identity unambiguous.',
+      lines: ['Paste this into your site `<head>`:', '', ...remediationSnippet(inp.domain, inp.brand, inp.collisions, inp.served)] });
+  }
+  if (inp.categoryWinPct !== null && inp.categoryWinPct < 100 && inp.losingCategoryQuestions.length) {
+    const losing = inp.losingCategoryQuestions.slice(0, 12);
+    const wantsList = losing.filter((q) => answerShape(q) === 'recommendation');
+    const wantsAdvice = losing.filter((q) => answerShape(q) === 'advice');
+    const lines: string[] = [];
+    for (const q of wantsList) lines.push(`- Write the page that answers: "${displayQuestion(q, inp.location)}"`);
+    if (wantsAdvice.length) {
+      lines.push('');
+      lines.push(`**Read these ${wantsAdvice.length === 1 ? 'one' : `${wantsAdvice.length}`} differently.** ${wantsAdvice.length === 1 ? 'This question reads' : 'These read'} as a request for a procedure rather than for a shortlist, so an engine tends to answer ${wantsAdvice.length === 1 ? 'it' : 'them'} with steps and name no vendor at all. A zero here is weaker evidence than a zero on the questions above — it may mean the answer was never shaped like a recommendation, not that you lost a comparison. Worth a page for the reader; not worth reading as a citation loss:`);
+      for (const q of wantsAdvice) lines.push(`- Write the page that answers: "${displayQuestion(q, inp.location)}"`);
+    }
+    out.push({ key: 'content-agenda', owner: 'Content', watch: 'citation',
+      title: `You aren't recommended on the questions buyers actually ask (${inp.categoryWinPct}% category win). Turn each losing question into a page that answers it head-on.`,
+      lines });
+    out.push({ key: 'do-now-listings', owner: 'Outreach', watch: 'coverage',
+      title: "This month's authority checklist (Do-now tier)",
+      lines: [inp.doNowAuthorities.length
+        ? `Get an accurate, current listing or profile on ${inp.doNowAuthorities.slice(0, 6).join(', ')}, each cited in your own category answers this month, shown with its count and the engines that cited it, so you can judge whether it fits your business.`
+        : 'No self-serve listings appeared in your sources this month.'] });
+  }
+  return out;
+}
+
+/** Markdown for a set of owner-tagged actions, grouped Site, Content, Outreach. */
+export function renderOwnerGroups(actions: { owner: OwnerTag; title: string; lines: string[]; watch: WatchFigure }[]): string[] {
+  const out: string[] = [];
+  for (const owner of OWNER_ORDER) {
+    const mine = actions.filter((a) => a.owner === owner);
+    if (!mine.length) continue;
+    out.push(`### ${owner} — ${OWNER_DESC[owner]}`);
+    out.push('');
+    for (const a of mine) {
+      out.push(`**${a.title}** _(Owner: ${owner})_`);
+      out.push('');
+      if (a.lines.length) { out.push(...a.lines); out.push(''); }
+      out.push(`_${nextSweepLine(a.watch)}_`);
+      out.push('');
+    }
+  }
+  return out;
+}
+
 export function buildSweepActionAgenda(inp: SweepActionInputs, opts: { heading?: boolean } = {}): string[] {
   const out: string[] = [];
   // The dashboard's md/docx already opened this section with the Do-now plan, so it passes
   // heading:false — the Nybsys 2026-09-30 docx carried the heading twice.
   if (opts.heading !== false) { out.push('## What to do about these results'); out.push(''); }
-
-  // Retrievability weak → the structural fix path (AEO Score).
-  if (inp.brandedRetrievabilityPct !== null && inp.brandedRetrievabilityPct < WEAK_RETRIEVABILITY) {
-    out.push(`**Engines can't reliably find you by name (${inp.brandedRetrievabilityPct}%).** Run the AEO Score on ${inp.domain} and implement its handoff — the structural fixes (schema, entity graph, answerable copy) are what raise retrievability.`);
-    out.push('');
-  }
-
-  // Fidelity drift / entity collision → paste-ready remediation.
-  if (inp.hasFidelityOrCollision) {
-    out.push(inp.collisions.length
-      ? `**Engines are confusing you with other entities (${inp.collisions.slice(0, 5).join(', ')}).** Make your identity unambiguous — paste this into your site \`<head>\`:`
-      : '**An engine asserted something inaccurate about you.** Make your identity unambiguous — paste this into your site `<head>`:');
-    out.push('');
-    for (const line of remediationSnippet(inp.domain, inp.brand, inp.collisions, inp.served)) out.push(line);
-    out.push('');
-  }
-
-  // Category 0%/low → losing questions as a content agenda + authority checklist.
-  if (inp.categoryWinPct !== null && inp.categoryWinPct < 100 && inp.losingCategoryQuestions.length) {
-    const losing = inp.losingCategoryQuestions.slice(0, 12);
-    const wantsList = losing.filter((q) => answerShape(q) === 'recommendation');
-    const wantsAdvice = losing.filter((q) => answerShape(q) === 'advice');
-    out.push(`**You aren't recommended on the questions buyers actually ask (${inp.categoryWinPct}% category win).** Turn each losing question into a page that answers it head-on — this is your content agenda:`);
-    if (wantsList.length) {
-      // The winnable set: the buyer asked to be handed candidates, so a page that
-      // answers the question is a page that can be one of them.
-      for (const q of wantsList) out.push(`- Write the page that answers: "${displayQuestion(q, inp.location)}"`);
-    }
-    if (wantsAdvice.length) {
-      out.push('');
-      out.push(`**Read these ${wantsAdvice.length === 1 ? 'one' : `${wantsAdvice.length}`} differently.** ${wantsAdvice.length === 1 ? 'This question reads' : 'These read'} as a request for a procedure rather than for a shortlist, so an engine tends to answer ${wantsAdvice.length === 1 ? 'it' : 'them'} with steps and name no vendor at all. A zero here is weaker evidence than a zero on the questions above — it may mean the answer was never shaped like a recommendation, not that you lost a comparison. Worth a page for the reader; not worth reading as a citation loss:`);
-      for (const q of wantsAdvice) out.push(`- Write the page that answers: "${displayQuestion(q, inp.location)}"`);
-    }
-    out.push('');
-    if (inp.doNowAuthorities.length) {
-      out.push(`**This month's authority checklist (Do-now tier):** get an accurate, current listing/profile on ${inp.doNowAuthorities.slice(0, 6).join(', ')} — each cited in your own category answers this month, shown with its count and the engines that cited it, so you can judge whether it fits your business.`);
-    } else {
-      // WO-AEO-REPORT-POLISH-001 G1: never a generic roster.
-      out.push('**This month\'s authority checklist (Do-now tier):** No self-serve listings appeared in your sources this month.');
-    }
-    out.push('');
-  }
-
-  // Always: the monthly loop as product behavior.
-  out.push('**Re-sweep after changes — same questions, same way — to verify movement.** Cause (your readiness) leads effect (engine citations) by crawl-and-authority cycles; the re-sweep is how you watch the gap close.');
+  out.push(...renderOwnerGroups(sweepAgendaBlocks(inp)));
+  out.push(MEASURE_AGAIN);
   return out;
 }

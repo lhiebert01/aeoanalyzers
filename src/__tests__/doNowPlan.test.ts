@@ -492,8 +492,8 @@ describe('the pitch step is actually wired into both renderers', () => {
   });
 
   it('both surfaces print which layer a step moves', () => {
-    expect(lib()).toContain("out.push(`- Moves: ${step.moves ===");
-    expect(src()).toContain('<span className="text-zinc-400">Moves:</span>');
+    expect(lib()).toContain("`- Moves: ${MOVES[step.moves]}`"); // WO-012 C: owner-grouped plan
+    expect(src()).toContain('<span className="text-zinc-600">Moves:</span>');
   });
 });
 

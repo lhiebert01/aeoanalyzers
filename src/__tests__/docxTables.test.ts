@@ -66,20 +66,34 @@ describe('docx tables render outside Microsoft Word', () => {
           scoreBreakdown: { entity: 80, density: 70, clarity: 90, structure: 85 },
           contentRewrites: [{ page: 'Home', current: 'fast', proposed: 'loads in 1.2s' }],
           queryContentGap: { generatedQuestions: [{ question: 'What is it?', answerQuality: 'partial' }] },
+          implementationChecklist: [
+            { priority: 'High', category: 'Authority', action: 'Claim your G2 listing' },
+            { priority: 'High', category: 'Schema', action: 'Add Organization JSON-LD' },
+          ],
         } as any,
         'https://lanternpost.app',
-        'Lindsay Hiebert'
+        'Lindsay Hiebert',
+        { cited: 0, n: 200, engines: 4, at: '2026-10-13T12:00:00Z' }
       );
     } finally {
       (Packer as any).toBlob = originalToBlob;
     }
 
     const xml = await documentXml(captured);
+    // WO-012 A + C, by tag-stripped paragraph text (Word splits strings across runs).
+    const text = xml.split(/<w:p[ >]/).map((p: string) => (p.match(/<w:t[^>]*>([^<]*)<\/w:t>/g) || []).map((t: string) => t.replace(/<[^>]+>/g, '')).join('')).join('\n');
+    expect(text).toContain('Ready to be cited');
+    expect(text).toContain('0 of 200 category answers, four engines, October 13th');
+    expect(text).toContain('Being ready to be cited does not by itself put you on the shortlist.');
+    expect(text.indexOf('Site — your web team')).toBeLessThan(text.indexOf('Outreach — PR and partnerships'));
+    expect(text).toContain('Claim your G2 listing (Owner: Outreach)');
+    expect(text).toContain('What the next sweep shows: Source coverage');
     const gs = grids(xml);
     // Score-rating, score-breakdown, content-rewrite and knowledge-gap tables.
     // Lane C: + the cover's headline tiles and the four-dimension bar block (22 narrow
     // shaded cells by design — shading, not text, so the >700 rule does not apply to it).
-    expect(gs.length).toBe(6);
+    // WO-012 A: + the page-one split ("Ready to be cited" beside "Recommended by engines").
+    expect(gs.length).toBe(7);
     for (const grid of gs) {
       expect(grid).not.toContain('w:w="100"/>');
       const widths = [...grid.matchAll(/w:w="(\d+)"/g)].map((m) => Number(m[1]));
@@ -87,7 +101,7 @@ describe('docx tables render outside Microsoft Word', () => {
       // A4 (11906) minus the 2×1440 default margins.
       expect(widths.reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(9026);
     }
-    expect((xml.match(/<w:tblLayout w:type="fixed"\/>/g) || []).length).toBe(6);
+    expect((xml.match(/<w:tblLayout w:type="fixed"\/>/g) || []).length).toBe(7);
   });
 });
 

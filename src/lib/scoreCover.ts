@@ -2,11 +2,14 @@
 // AnalysisResult only. Same CoverInput shape as the Sweep (lib/reportCover.ts) so the two
 // reports look like siblings. Every number here traces to a field on the result.
 import type { AnalysisResult } from '../services/geminiService';
-import { scoreMeaning, weakestDimension, DIMENSION_LABEL, scoreTier, type CoverInput } from './reportCover';
+import { scoreMeaning, weakestDimension, DIMENSION_LABEL, scoreTier, recommendedLine, type CoverInput } from './reportCover';
+
+/** WO-012 A: the domain's latest Citation Sweep, for page one ("Recommended by engines"). */
+export interface LatestSweepFigure { cited: number; n: number; engines: number; at: string }
 
 const WEIGHT: Record<'entity' | 'density' | 'clarity' | 'structure', string> = { entity: '30% of score', density: '30% of score', clarity: '20% of score', structure: '20% of score' };
 
-export function buildScoreCover(result: AnalysisResult, analyzedUrl: string, preparedBy: string, date: string): CoverInput {
+export function buildScoreCover(result: AnalysisResult, analyzedUrl: string, preparedBy: string, date: string, latestSweep?: LatestSweepFigure | null): CoverInput {
   const domain = (() => { try { return new URL(analyzedUrl.startsWith('http') ? analyzedUrl : `https://${analyzedUrl}`).hostname; } catch { return analyzedUrl; } })();
   const weak = weakestDimension(result.scoreBreakdown);
   const weakestCriterion = [...result.criteria].sort((a, b) => a.score - b.score)[0] || null;
@@ -28,6 +31,12 @@ export function buildScoreCover(result: AnalysisResult, analyzedUrl: string, pre
   const firstThree = [...result.criteria].sort((a, c) => a.score - c.score).slice(0, 3).map((c) => ({ what: c.name, section: 'Top 3 Priorities' }));
   if (critical) firstThree.unshift({ what: 'Unblock the citation-critical AI crawlers at the site root', section: 'AI Crawler Access' });
   return {
+    split: {
+      readiness: { score: typeof result.score === 'number' ? result.score : null },
+      recommended: latestSweep && latestSweep.n
+        ? { pct: Math.round((100 * latestSweep.cited) / latestSweep.n), line: recommendedLine(latestSweep.cited, latestSweep.n, latestSweep.engines, latestSweep.at) }
+        : { pct: null, line: '' },
+    },
     title: 'AEO Analysis Report',
     brand: null,
     domain,

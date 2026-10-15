@@ -45,7 +45,7 @@
 *   **Q: I have a Shopify store. Does this work for me?**
     *   **A**: Absolutely. Shopify stores often rely on themes that might have outdated or missing Schema.org structures. AEO Analyzers helps you identify these gaps so you can win the "recommendation" in AI shopping assistants.
 *   **Q: Why do I need a separate tool for this? Can't I just use my SEO tool?**
-    *   **A**: Traditional SEO tools are built to analyze links and keywords for search engines. AEO Analyzers is built to simulate how an AI agent "reasons" through your content to determine its authority and citation likelihood.
+    *   **A**: Traditional SEO tools are built to analyze links and keywords for search engines. AEO Analyzers is built for answer engines: the AEO Score checks whether your site is ready to be cited, and a Citation Sweep asks the real engines your buyers' questions and stores every answer.
 *   **Q: Is this just for Google Gemini?**
     *   **A**: No. While we use Gemini as our analysis engine, the principles of AEO (Semantic HTML, Schema.org, Content Clarity) are universal across all major LLMs, including ChatGPT and Perplexity.
 *   **Q: How often should I run an analysis?**

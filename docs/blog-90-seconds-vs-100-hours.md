@@ -1,3 +1,5 @@
+> Product names, descriptions and prices in this document are as of its date. The current product is described at https://aeoanalyzers.com and current pricing is at https://aeoanalyzers.com/pricing.
+
 # Your Web Team Spends Hundreds of Hours on What We Do in 90 Seconds — And We Do It Better
 
 **By Lindsay Hiebert, Founder of AEO Analyzers**

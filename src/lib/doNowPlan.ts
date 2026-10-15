@@ -67,6 +67,8 @@ export interface DoNowInputs {
 
 export type Problem = 'not-found' | 'found-but-misdescribed' | 'found-and-accurate' | 'found-accuracy-unmeasured' | 'mixed' | 'unmeasured';
 
+import type { OwnerTag } from './ownerTags';
+
 export interface DoNowStep {
   n: number;
   what: string;
@@ -86,6 +88,8 @@ export interface DoNowStep {
    *  none of them does not belong on the list at all (rule 4). Rendered to the customer,
    *  so they can see why a step is where it is in the order. */
   moves: 'discovery' | 'accuracy' | 'citation';
+  /** WO-012 C: exactly one owner, so the report routes itself. */
+  owner: OwnerTag;
 }
 
 export interface DoNowPlan {
@@ -195,6 +199,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
 
   if (discovery) {
     add({
+      owner: 'Site',
       what: 'Submit to Bing Webmaster Tools',
       impact: 1,
       moves: 'discovery',
@@ -206,6 +211,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
       doesNotChange: 'Whether they recommend you. Being retrievable is not being recommended.',
     });
     add({
+      owner: 'Site',
       what: 'Submit to Google Search Console',
       impact: 2,
       moves: 'discovery',
@@ -217,6 +223,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
       doesNotChange: 'Citation. If you submit and expect to start being cited, you will conclude this tool was wrong.',
     });
     add({
+      owner: 'Site',
       what: 'Set up IndexNow',
       impact: 6,
       moves: 'discovery',
@@ -239,6 +246,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
 
   if ((input.collisions || []).length) {
     add({
+      owner: 'Outreach',
       what: 'Create a Wikidata item for the organization',
       impact: 2,
       moves: 'accuracy',
@@ -268,6 +276,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
   const pitch = (input.pitchTargets || []).filter((t) => t.citations >= 2).slice(0, 6);
   if (pitch.length) {
     add({
+      owner: 'Outreach',
       what: `Get named on the pages that already answer your category questions — start with ${pitch.slice(0, 3).map((t) => t.domain).join(', ')}`,
       impact: 3,
       moves: 'citation',
@@ -294,6 +303,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     // at one or two hits this is a lead, and printing it as an action sells motion.
     if (/(^|\.)g2\.com$/i.test(d.domain) && d.citations >= 3) {
       add({
+        owner: 'Outreach',
         what: 'Claim or create your G2 vendor listing',
       impact: 8,
       moves: 'citation',
@@ -307,6 +317,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     }
     if (/(^|\.)linkedin\.com$/i.test(d.domain)) {
       add({
+        owner: 'Outreach',
         what: 'Point your LinkedIn company page and founder profile at the domain',
       impact: 5,
       moves: 'citation',
@@ -320,6 +331,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
     }
     if (/(^|\.)reddit\.com$/i.test(d.domain)) {
       add({
+        owner: 'Outreach',
         what: 'Participate where the question is already being asked on Reddit',
       impact: 4,
       moves: 'citation',

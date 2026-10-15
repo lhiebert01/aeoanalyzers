@@ -258,7 +258,7 @@ async function renderRoute(page, route, marker) {
       console.warn(`[prerender] ${route}: marker "${marker}" absent after render — skipping.`);
       return;
     }
-    if (!marker && !/Secure your|Citation|Simulation/i.test(html)) {
+    if (!marker && !/Secure your|Citation/i.test(html)) {
       console.warn(`[prerender] ${route}: rendered HTML lacks expected content — skipping overwrite.`);
       return;
     }

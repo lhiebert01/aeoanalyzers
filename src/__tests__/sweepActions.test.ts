@@ -17,7 +17,9 @@ const base = {
 describe('buildSweepActionAgenda', () => {
   it('always ends with the monthly re-sweep instruction', () => {
     const md = buildSweepActionAgenda(base).join('\n');
-    expect(md).toMatch(/Re-sweep after changes — same questions, same way/);
+    expect(md).toMatch(/Measure again after changes, on the same questions and the same engines/);
+    expect(md).toMatch(/That shows timing, not cause\./);
+    expect(md).not.toMatch(/Cause \(your readiness\)|because of|resulted in|thanks to/i);
   });
 
   it('a healthy result yields ONLY the re-sweep line — no false action sections', () => {
@@ -49,7 +51,12 @@ describe('buildSweepActionAgenda', () => {
     }).join('\n');
     expect(md).toMatch(/Write the page that answers: "best AEO tools"/);
     expect(md).toMatch(/Write the page that answers: "top answer engine optimization software"/);
-    expect(md).toMatch(/Do-now tier\):.*reddit\.com, g2\.com/);
+    expect(md).toMatch(/Do-now tier\)[\s\S]*reddit\.com, g2\.com/);
+    // WO-012 C: grouped by owner, each action tagged once with the figure to watch.
+    expect(md.indexOf('### Content —')).toBeLessThan(md.indexOf('### Outreach —'));
+    expect(md).toMatch(/_\(Owner: Content\)_/);
+    expect(md).toMatch(/_\(Owner: Outreach\)_/);
+    expect(md).toMatch(/What the next sweep shows: Source coverage/);
   });
 });
 

@@ -185,14 +185,8 @@ function softwareApplicationNode() {
     creator: { '@id': FOUNDER_ID },
     description: APP_DESCRIPTION,
     disambiguatingDescription: DISAMBIGUATION,
-    // Real, public pricing (Free / $29 Day Pass / $149 Pro / $599 Business), 13 Oct 2026.
-    offers: {
-      '@type': 'AggregateOffer',
-      priceCurrency: 'USD',
-      lowPrice: '0',
-      highPrice: '599',
-      offerCount: '4',
-    },
+    // No offers on the homepage (WO-012 E3, founder 15 Oct 2026): prices live only on /pricing,
+    // so an engine reading any other page is pointed there instead of quoting a stale figure.
     featureList: [
       'AI Crawler-Access Audit',
       'AI-Powered AEO Analysis',

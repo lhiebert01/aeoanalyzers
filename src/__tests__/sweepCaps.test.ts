@@ -97,8 +97,8 @@ describe('prices are consistent on every surface we own (13 Oct 2026)', () => {
   it('no surface carries a retired price', () => {
     for (const f of surfaces) expect(read(f), f).not.toMatch(/\$(24|49|199)\b/);
   });
-  it('served JSON-LD tops out at the Business price', () => {
-    expect(read('src/lib/json-ld.ts')).toMatch(/highPrice: '599'/);
+  it('homepage JSON-LD carries no offers: prices live only on /pricing', () => {
+    expect(read('src/lib/json-ld.ts')).not.toMatch(/AggregateOffer|highPrice/); // WO-012 E3: prices only on /pricing
   });
   it('"five-engine panel on Pro and Business" appears exactly once on the pricing page', () => {
     expect(read('src/components/Payments.tsx').match(/five-engine panel on Pro and Business/gi) || []).toHaveLength(1);

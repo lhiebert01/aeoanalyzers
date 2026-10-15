@@ -18,7 +18,7 @@ import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType, C
 import { extractTruthRecord, withSiteRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
 import { doNowChecklist } from '../lib/doNowChecklist';
-import { buildSweepReport, buildSweepCover, pitchTargetsFrom, ALIAS, type SweepResponse, type SweepReportInputs } from '../lib/sweepReport';
+import { recordActions, buildSweepReport, buildSweepCover, pitchTargetsFrom, ALIAS, type SweepResponse, type SweepReportInputs } from '../lib/sweepReport';
 import { CoverCard } from './CoverCard';
 import { SearchConsolePanel } from './SearchConsolePanel';
 import { accuracyWhenNamed } from '../lib/fidelity';
@@ -28,6 +28,12 @@ import { otherPanels, describeDenominator, buildSeries, pooledFromSummary, resco
 import { extractBeliefs, flaggedWrongValues, flaggedSiteValues, ENGINE_LABEL as BELIEF_ENGINE } from '../lib/beliefs';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
 import { getAccessToken, supabaseQuery, supabaseUpdate } from '../supabase';
+import { coverageHeadline, coverageAction, corroboration, corroborationLine, vendorBase, vendorBaseLine, type SourceCoverage } from '../lib/sourceCoverage';
+import { latestScoreFor } from '../lib/latestFigures';
+import { OWNER_ORDER, OWNER_DESC, nextSweepLine } from '../lib/ownerTags';
+import { measuredAfterView, PANEL_DIFFERS, MEASURED_AFTER, fmtDay, type RecordEntry, type SweepFigures } from '../lib/theRecord';
+import { figuresFrom, previousSweepFigures } from '../lib/recordStore';
+import { RecordPanel } from './RecordPanel';
 import { safeJsonParse } from '../services/geminiService';
 
 // --- URL-first auto-extract (UX-PRINCIPLES §1–2 / SWEEP-UX-REDESIGN commit a) ---
@@ -162,7 +168,7 @@ const ENGINE_LABEL: Record<string, string> = {
   claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', grok: 'Grok',
 };
 
-export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPanel, onOpenAnalyzer, savedSweepId, onBackToHistory }: { onUpgrade?: () => void; isAdmin?: boolean; isPaidUser?: boolean; planPanel?: PanelVersion; onOpenAnalyzer?: () => void; savedSweepId?: string | null; onBackToHistory?: () => void }) {
+export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPanel, onOpenAnalyzer, savedSweepId, onBackToHistory, recordEnabled }: { onUpgrade?: () => void; isAdmin?: boolean; isPaidUser?: boolean; planPanel?: PanelVersion; onOpenAnalyzer?: () => void; savedSweepId?: string | null; onBackToHistory?: () => void; recordEnabled?: boolean }) {
   const [domain, setDomain] = useState('');
   const [brand, setBrand] = useState('');
   const [coreCategory, setCoreCategory] = useState('');
@@ -205,6 +211,33 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
   }
   const [pageFactDensity, setPageFactDensity] = useState<FactDensityAudit | null>(null);
   const [truth, setTruth] = useState<TruthRecord | null>(null);
+  // WO-012 B: Source coverage (dated by its fetch) and page one's "Ready to be cited".
+  const [sourceCoverage, setSourceCoverage] = useState<SourceCoverage | null>(null);
+  const [coverageState, setCoverageState] = useState<'idle' | 'running' | 'error'>('idle');
+  const [currentSweepId, setCurrentSweepId] = useState<string | null>(null);
+  const [readiness, setReadiness] = useState<{ score: number } | null>(null);
+  // WO-012 G: the Record for this domain, and the previous sweep's figures.
+  const [recordEntries, setRecordEntries] = useState<RecordEntry[]>([]);
+  const [previousFigures, setPreviousFigures] = useState<SweepFigures | null>(null);
+  useEffect(() => {
+    setPreviousFigures(null);
+    if (!recordEnabled || !result || result.quickCheck) return;
+    let live = true;
+    previousSweepFigures(result.domain, result.generatedAt, ownedDomains).then((f) => { if (live) setPreviousFigures(f); }).catch(() => {});
+    return () => { live = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result?.domain, result?.generatedAt, recordEnabled]);
+  const nowFigures = (r: SweepResponse | null): SweepFigures | null => r ? figuresFrom(r.generatedAt, r.summary as any, r.runs, r.domain, ownedDomains, sourceCoverage) : null;
+  async function runCoverage(id: string) {
+    setCoverageState('running');
+    try {
+      const token = getAccessToken();
+      const r = await fetch('/api/source-coverage', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ sweepId: id }) });
+      const j = await r.json();
+      if (!r.ok || !j.sourceCoverage) throw new Error(j.error || 'failed');
+      setSourceCoverage(j.sourceCoverage); setCoverageState('idle');
+    } catch { setCoverageState('error'); }
+  }
   const [bots, setBots] = useState<any | null>(null);
   const [openRun, setOpenRun] = useState<number | null>(null);
   const [expandAll, setExpandAll] = useState(false);
@@ -346,6 +379,9 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
         fetchSeries(sweep.domain, sweep);
         setAuthority(aggregateAuthorityGap(scored, sweep.domain));
         setSavedDate(sweep.created_at);
+        setSourceCoverage((sweep.full_result?.sourceCoverage as SourceCoverage | undefined) ?? null);
+        setCurrentSweepId(savedSweepId);
+        latestScoreFor(sweep.domain).then(setReadiness).catch(() => setReadiness(null));
         setDomain(sweep.domain);
         setBrand(sweep.brand || '');
         // Feed the scorecard the SAME entered competitors (not auto-detect) so cited-instead
@@ -502,7 +538,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
 
   async function run() {
     if (!paidViewer) return; // WO-007: the server refuses too (402); this saves the round trip
-    setError(null); setResult(null); setAuthority(null); setFidelity(null); setEntityLinking(null); setPageFactDensity(null); setTruth(null); setRunning(true);
+    setError(null); setResult(null); setAuthority(null); setFidelity(null); setEntityLinking(null); setPageFactDensity(null); setTruth(null); setSourceCoverage(null); setCurrentSweepId(null); setRunning(true);
     try {
       const d = normDomain(domain);
       const expand = (q: string) => q.replace(/\{domain\}/g, d);
@@ -524,6 +560,9 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || `sweep failed (${res.status})`);
       setResult(json);
+      // WO-012 B8: Source coverage runs automatically at the end of every new sweep.
+      if (json.sweepId) { setCurrentSweepId(json.sweepId); runCoverage(json.sweepId); }
+      latestScoreFor(d).then(setReadiness).catch(() => setReadiness(null));
       setRescoreNoteText(null);
       fetchSeries(d, { id: 'live', panel: (json.summary?.panel?.version as PanelVersion) || panel, domain: d, created_at: new Date().toISOString(), category: coreCategory.trim() || null, category_queries: (json.runs || []).filter((x: any) => x.queryType === 'category').map((x: any) => x.query).filter((q: string, i: number, a: string[]) => a.indexOf(q) === i) });
       setAuthority(aggregateAuthorityGap(json.runs || [], d));
@@ -555,7 +594,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
   // Lane C: the report is ONE pure function (lib/sweepReport.ts) shared by the .md, the .docx,
   // the saved view and the PDF — a test regenerates the founder's Nybsys report from stored runs.
   function reportInputs(r: SweepResponse): SweepReportInputs {
-    return { result: r, competitors: parseCompetitors(competitors), fidelity, entityLinking, authority, bots, truth, pageFactDensity, ownedDomains, isAdmin: !!isAdmin, savedView, category: coreCategory || null };
+    return { result: r, competitors: parseCompetitors(competitors), fidelity, entityLinking, authority, bots, truth, pageFactDensity, ownedDomains, isAdmin: !!isAdmin, savedView, category: coreCategory || null, readiness, sourceCoverage, record: recordEnabled ? { entries: recordEntries, previous: previousFigures, now: nowFigures(r) } : null };
   }
   function buildReport(r: SweepResponse): string { return buildSweepReport(reportInputs(r)); }
 
@@ -979,6 +1018,31 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
 
           {/* Lane C: the executive summary — the same CoverInput the .md/.docx page 1 renders. */}
           {scorecard && result && <CoverCard cover={buildSweepCover(reportInputs(result))} />}
+          {/* WO-012 G: "Measured after these actions." — timing beside figures, never cause. */}
+          {recordEnabled && result && previousFigures && (() => {
+            const v = measuredAfterView(recordEntries, previousFigures, nowFigures(result)!);
+            if (!v) return null;
+            const table = (cols: { label: string; rows: [string, string][] }[]) => (
+              <table className="w-full text-xs mt-2">
+                <thead><tr className="text-left text-zinc-700 border-b border-zinc-200"><th className="py-1 pr-3">Figure</th>{cols.map((c) => <th key={c.label} className="py-1 pr-3">{c.label}</th>)}</tr></thead>
+                <tbody>{cols[0].rows.map(([label], i) => <tr key={label} className="border-b border-zinc-100"><td className="py-1 pr-3 text-zinc-900">{label}</td>{cols.map((c) => <td key={c.label} className="py-1 pr-3 text-zinc-800">{c.rows[i][1]}</td>)}</tr>)}</tbody>
+              </table>
+            );
+            return (
+              <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
+                <h3 className="font-bold">{MEASURED_AFTER}</h3>
+                <ul className="text-sm text-zinc-800 mt-2 space-y-1">{v.done.map((e) => <li key={e.id || e.title}><b>{fmtDay(e.done_at)}</b>: {e.title} ({e.owner_tag})</li>)}</ul>
+                {v.same ? table([v.previous, v.now]) : (
+                  <>
+                    <p className="text-sm text-zinc-900 font-semibold mt-3">{PANEL_DIFFERS}</p>
+                    {table([{ label: `${v.previous.label} (${v.previous.panel})`, rows: v.previous.rows }])}
+                    {table([{ label: `${v.now.label} (${v.now.panel})`, rows: v.now.rows }])}
+                  </>
+                )}
+                <p className="text-xs italic text-zinc-700 mt-2">The dates show when things were done and when the figures were measured; they do not show cause.</p>
+              </div>
+            );
+          })()}
 
           {/* WO-006 Items B + C: which engines produced these numbers, and under what conditions — on the
               face of every result, not in a footnote. */}
@@ -1364,6 +1428,80 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
             </div>
           )}
 
+          {/* WO-012 B: Source coverage — the pages engines read for the category questions, and
+              whether each names you; corroboration in the branded answers; the vendor-naming base. */}
+          {result && !result.quickCheck && (() => {
+            const cor = corroboration(result.runs, result.domain, ownedDomains);
+            const base = vendorBase(result.runs, { domain: result.domain, brand: result.brand || undefined }, parseCompetitors(competitors));
+            const hl = sourceCoverage ? coverageHeadline(sourceCoverage) : null;
+            const label = { yes: 'Yes', no: 'No', unreadable: 'Could not read' } as const;
+            return (
+              <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
+                <h3 className="font-bold flex items-center gap-2 mb-1"><Search className="w-4 h-4 text-zinc-500" />Source coverage</h3>
+                {hl ? (
+                  <>
+                    <p className="text-sm text-zinc-900 font-semibold">{hl.headline}</p>
+                    <p className="text-sm text-zinc-700 mt-1">{hl.sites}</p>
+                    {sourceCoverage!.rows.length > 0 && (
+                      <div className="overflow-x-auto mt-3">
+                        <table className="w-full text-xs">
+                          <thead><tr className="text-left text-zinc-600 border-b border-zinc-200"><th className="py-1 pr-3">Site</th><th className="py-1 pr-3">Times cited</th><th className="py-1 pr-3">Engines citing</th><th className="py-1 pr-3">Page read</th><th className="py-1 pr-3">Names you</th><th className="py-1">Fetched</th></tr></thead>
+                          <tbody>
+                            {sourceCoverage!.rows.map((r) => (
+                              <tr key={r.url} className="border-b border-zinc-100 align-top">
+                                <td className="py-1.5 pr-3 text-zinc-900">{r.host}</td>
+                                <td className="py-1.5 pr-3 tabular-nums text-zinc-800">{r.timesCited}</td>
+                                <td className="py-1.5 pr-3 text-zinc-800">{r.engines.map((e) => BELIEF_ENGINE[e] || e).join(', ')}</td>
+                                <td className="py-1.5 pr-3 break-all"><a className="underline text-zinc-800" href={r.url} target="_blank" rel="noopener noreferrer nofollow">{r.url}</a></td>
+                                <td className="py-1.5 pr-3 font-semibold text-zinc-900">{label[r.verdict]}{r.reason ? <span className="font-normal text-zinc-600"> ({r.reason})</span> : null}</td>
+                                <td className="py-1.5 text-zinc-700">{new Date(sourceCoverage!.fetchedAt).toISOString().slice(0, 10)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                    {(() => { const act = coverageAction(sourceCoverage!); return act ? (
+                      <div className="mt-4 rounded-2xl border border-zinc-200 p-4">
+                        <p className="font-bold text-sm">{act.title} <span className="ml-1 inline-block rounded-full border border-zinc-300 px-2 py-0.5 text-[11px] font-semibold text-zinc-800 align-middle">Outreach</span></p>
+                        <ul className="mt-2 text-xs text-zinc-800 space-y-1 break-all">{act.items.map((it) => <li key={it}>{it}</li>)}</ul>
+                        <p className="mt-2 text-xs italic text-zinc-700">{nextSweepLine('coverage')}</p>
+                      </div>
+                    ) : null; })()}
+                    {currentSweepId && <button type="button" onClick={() => runCoverage(currentSweepId)} disabled={coverageState === 'running'} className="mt-3 text-xs font-semibold underline text-zinc-800">{coverageState === 'running' ? 'Checking the pages…' : 'Check source coverage again today'}</button>}
+                  </>
+                ) : (
+                  <div className="text-sm text-zinc-700">
+                    {coverageState === 'running' ? 'Reading the pages the engines cited for your category questions…'
+                      : currentSweepId ? <button type="button" onClick={() => runCoverage(currentSweepId)} className="font-semibold underline text-zinc-900">Check source coverage</button>
+                      : 'Source coverage runs on a saved sweep.'}
+                    {coverageState === 'error' && <span className="block text-zinc-700 mt-1">The check could not be completed. Try again.</span>}
+                  </div>
+                )}
+                <div className="mt-4 pt-3 border-t border-zinc-100">
+                  <p className="text-sm text-zinc-800">{corroborationLine(cor)}</p>
+                  {cor.hosts.length > 0 && <p className="text-xs text-zinc-700 mt-1">{cor.hosts.join(', ')}</p>}
+                </div>
+                {base.perQuestion.length > 0 && (
+                  <div className="mt-4 pt-3 border-t border-zinc-100">
+                    <p className="text-xs font-bold uppercase tracking-wider text-zinc-600 mb-2">How many answers named any vendor</p>
+                    <ul className="text-xs text-zinc-800 space-y-1">
+                      {base.perSegment.map((r) => <li key={'s' + r.label}><b>{r.label}:</b> {vendorBaseLine(r)}</li>)}
+                    </ul>
+                    <ul className="text-xs text-zinc-700 space-y-1 mt-2">
+                      {base.perQuestion.map((r) => <li key={'q' + r.label}>“{r.label}”: {vendorBaseLine(r)}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          {/* WO-012 G: the Record. */}
+          {result && !result.quickCheck && result.persisted && (
+            <RecordPanel domain={result.domain} enabled={!!recordEnabled} actions={recordActions(reportInputs(result))} onEntries={setRecordEntries} />
+          )}
+
           {/* Content depth (E2): study-backed levers that make a page citable. */}
           {pageFactDensity && pageFactDensity.flags.length > 0 && (
             <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
@@ -1401,17 +1539,20 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                       <p key={i} className="text-sm text-zinc-700 mb-2" dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') }} />
                     ))}
                     {plan.gatedNote && <p className="text-sm text-zinc-500 italic mt-2">{plan.gatedNote}</p>}
-                    {plan.steps.map((step) => (
+                    {/* WO-012 C: grouped by owner (Site, Content, Outreach), one tag each. */}
+                    {OWNER_ORDER.flatMap((o) => plan.steps.filter((st) => st.owner === o)).map((step, i, all) => (
                       <div key={step.n} className="mt-4 pt-4 border-t border-zinc-100">
-                        <p className="font-bold text-sm">{step.n}. {step.what}</p>
+                        {(i === 0 || all[i - 1].owner !== step.owner) && <p className="text-xs font-bold uppercase tracking-wider text-zinc-700 mb-2">{step.owner} — {OWNER_DESC[step.owner]}</p>}
+                        <p className="font-bold text-sm">{i + 1}. {step.what} <span className="ml-1 inline-block rounded-full border border-zinc-300 px-2 py-0.5 text-[11px] font-semibold text-zinc-800 align-middle">{step.owner}</span></p>
                         <p className="text-sm text-zinc-600 mt-1">{step.explainer}</p>
                         <ul className="mt-2 space-y-1 text-sm text-zinc-700">
-                          <li><span className="text-zinc-400">Moves:</span> {step.moves === 'citation' ? 'citation win — being the answer' : step.moves === 'discovery' ? 'discovery — being retrievable at all' : 'accuracy — what they say about you'}</li>
-                          <li><span className="text-zinc-400">Why it matters for AI answers:</span> {step.why}</li>
-                          {step.link && <li><span className="text-zinc-400">Link:</span> <span className="break-all">{step.link}</span></li>}
-                          <li><span className="text-zinc-400">Time:</span> {step.time}</li>
-                          <li><span className="text-zinc-400">What changes:</span> {step.changes}</li>
-                          <li><span className="text-zinc-400">What does NOT change:</span> {step.doesNotChange}</li>
+                          <li><span className="text-zinc-600">Moves:</span> {step.moves === 'citation' ? 'citation win — being the answer' : step.moves === 'discovery' ? 'discovery — being retrievable at all' : 'accuracy — what they say about you'}</li>
+                          <li><span className="text-zinc-600">Why it matters for AI answers:</span> {step.why}</li>
+                          {step.link && <li><span className="text-zinc-600">Link:</span> <span className="break-all">{step.link}</span></li>}
+                          <li><span className="text-zinc-600">Time:</span> {step.time}</li>
+                          <li><span className="text-zinc-600">What changes:</span> {step.changes}</li>
+                          <li><span className="text-zinc-600">What does NOT change:</span> {step.doesNotChange}</li>
+                          <li className="italic text-zinc-700">{nextSweepLine(step.moves)}</li>
                         </ul>
                       </div>
                     ))}

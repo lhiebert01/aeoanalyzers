@@ -18,13 +18,14 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 ## Pricing
 - Current prices and plans: https://aeoanalyzers.com/pricing is the source of truth. Any other price for AEO Analyzers is out of date.
 - Free: 3 free checks per account (AEO analyses: scores and gaps) — the specific fixes are unlocked on a paid plan.
-- Day Pass: $29 one-time — 24 hours of full access: 3 Citation Sweeps on the four-engine panel and 25 AEO analyses (no subscription).
-- Pro Optimizer: $149/month — 8 Citation Sweeps a month on the five-engine panel (adds Grok) and up to 100 AEO analyses.
-- Business Authority: $599/month — 20 Citation Sweeps a month on the five-engine panel and up to 200 AEO analyses.
+- Day Pass: one-time, 24 hours of full access: 3 Citation Sweeps on the four-engine panel and 25 AEO analyses (no subscription).
+- Pro Optimizer: monthly, 8 Citation Sweeps a month on the five-engine panel (adds Grok) and up to 100 AEO analyses.
+- Business Authority: monthly, 20 Citation Sweeps a month on the five-engine panel and up to 200 AEO analyses.
 
 ## Key pages
 - Home / Why AEO: https://www.aeoanalyzers.com/
 - Pricing: https://aeoanalyzers.com/pricing
+- How AI engines choose who to recommend, and what you can do about it (Measure. Act. Record.): https://aeoanalyzers.com/get-recommended
 - User guide and FAQ: https://aeoanalyzers.com/guide
 - Blog (index): https://www.aeoanalyzers.com/blog/
 - Blog — Is your brand the answer AI gives, or is a competitor? (a walkthrough of a sample Citation Sweep report): https://www.aeoanalyzers.com/blog/are-you-the-answer-ai-gives

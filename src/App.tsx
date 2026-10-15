@@ -1046,6 +1046,7 @@ export default function App() {
                 isAdmin={isAdmin}
                 isPaidUser={isPaidUser}
                 planPanel={subStatus === 'pro' || subStatus === 'business' ? 'v1.2' : 'v1.1'}
+                recordEnabled={isAdmin || subStatus === 'pro' || subStatus === 'business'}
                 onOpenAnalyzer={() => navigateTo('analyzer')}
                 savedSweepId={savedSweepId}
                 onBackToHistory={() => { setSavedSweepId(null); setView('history'); window.history.pushState({}, '', '/'); window.scrollTo(0, 0); }}

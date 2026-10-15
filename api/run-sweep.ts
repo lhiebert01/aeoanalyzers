@@ -478,6 +478,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     for (const e of summary.engines) e.costUsd = (e.costUsd || 0) * COST_SCALE;
 
     let persisted = false;
+    let sweepId: string | null = null;
     if (persist) {
       try {
         // WO-AEO-MOBILE-HISTORY-001: capture a compact point-in-time snapshot of the
@@ -489,11 +490,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // WO-004: accuracy-when-named counts travel with the stored summary so History can show them.
         const awn = snapshot ? accuracyWhenNamed(runs.filter((r) => r.queryType === 'branded'), snapshot.truth) : null;
         const storedSummary = awn ? { ...summary, accuracyWhenNamed: { accurate: awn.accurate, named: awn.named } } : summary;
-        persisted = await persistSweep({
+        sweepId = await persistSweep({
           domain, brand, userId, summary: storedSummary, runs, fullResult: snapshot,
           // WO-INTEGRITY-002 A1: persist the entered config so the rebuild re-scores against it.
           category, competitors, brandedQueries, categoryQueries, ownedDomains,
         });
+        persisted = !!sweepId;
       } catch {
         persisted = false; // never fail the sweep on a persistence error
       }
@@ -543,6 +545,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       summary: outSummary,
       runs: outRuns, // full transcripts for drill-down
       persisted,
+      sweepId, // WO-012 B8: the app runs Source coverage on it as soon as the sweep is back
       generatedAt: new Date().toISOString(),
     });
   } catch (err: any) {
@@ -564,10 +567,10 @@ async function persistSweep(input: {
   competitors?: Competitor[];
   brandedQueries?: string[];
   categoryQueries?: string[];
-}): Promise<boolean> {
+}): Promise<string | null> {
   const url = process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) return false;
+  if (!url || !serviceKey) return null;
 
   const headers = {
     apikey: serviceKey,
@@ -605,10 +608,10 @@ async function persistSweep(input: {
     sweepRes = await insertSweep({ ...baseRow, full_result: input.fullResult ?? null });
     if (!sweepRes.ok && input.fullResult) sweepRes = await insertSweep(baseRow); // … then bare
   }
-  if (!sweepRes.ok) return false;
+  if (!sweepRes.ok) return null;
   const [sweep] = await sweepRes.json();
   const sweepId = sweep?.id;
-  if (!sweepId) return false;
+  if (!sweepId) return null;
 
   const rows = input.runs.map((r) => ({
     sweep_id: sweepId,
@@ -638,7 +641,7 @@ async function persistSweep(input: {
     const bare = rows.map(({ truncated, grounding, ...base }) => base);
     rowsRes = await insertRows(bare);
   }
-  return rowsRes.ok;
+  return rowsRes.ok ? String(sweepId) : null;
 }
 
 /** WO-AEO-MOBILE-HISTORY-001: fetch the client's own site once and extract the compact,

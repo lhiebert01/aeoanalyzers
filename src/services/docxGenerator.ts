@@ -1,6 +1,7 @@
 import type { AnalysisResult } from './geminiService';
 import { categoryFromAnswerQuality, type GapCategory } from '../lib/queryGap';
-import { buildScoreCover } from '../lib/scoreCover';
+import { buildScoreCover, type LatestSweepFigure } from '../lib/scoreCover';
+import { groupChecklist, OWNER_DESC, nextSweepLine } from '../lib/ownerTags';
 import { buildCover, DIRECTIVE } from '../lib/reportCover';
 import { mdToDocxChildren } from './mdToDocx';
 
@@ -18,7 +19,8 @@ function docxGapStatus(cat: GapCategory): string {
 export async function generateDocxReport(
   result: AnalysisResult,
   analyzedUrl: string,
-  displayName: string
+  displayName: string,
+  latestSweep: LatestSweepFigure | null = null
 ): Promise<void> {
   const {
     Document,
@@ -111,7 +113,7 @@ export async function generateDocxReport(
   //    block, "what this means" from a template and the stored numbers, first three actions.
   {
     const D = await import('docx');
-    const coverMd = buildCover(buildScoreCover(result, analyzedUrl, displayName, date)).join('\n') + '\n' + DIRECTIVE.pagebreak + '\n';
+    const coverMd = buildCover(buildScoreCover(result, analyzedUrl, displayName, date, latestSweep)).join('\n') + '\n' + DIRECTIVE.pagebreak + '\n';
     children.push(...mdToDocxChildren(D, coverMd, { contentWidth: CONTENT_W }));
   }
 
@@ -686,9 +688,11 @@ export async function generateDocxReport(
     children.push(
       sectionHeading('Appendix E: Implementation Checklist'),
       bodyText(
-        'A prioritized checklist of all actions needed to maximize your AEO score. Work through High priority items first, then Medium, then Low.'
+        'Every action, grouped by who owns it: Site (your web team), then Content (your writers), then Outreach (PR and partnerships). Within each group, High priority first.'
       ),
-      ...result.implementationChecklist.map(item =>
+      ...groupChecklist(result.implementationChecklist).flatMap(g => [
+        new Paragraph({ children: [new TextRun({ text: `${g.owner} — ${OWNER_DESC[g.owner]}`, bold: true, size: 24, color: '1a1a2e' })], spacing: { before: 200, after: 100 } }),
+        ...g.items.map(item =>
         new Paragraph({
           children: [
             new TextRun({ text: `[ ] `, size: 22, font: 'Courier New', color: '333333' }),
@@ -700,10 +704,12 @@ export async function generateDocxReport(
             }),
             new TextRun({ text: `${item.category}: `, bold: true, size: 22, color: '1a1a2e' }),
             new TextRun({ text: item.action, size: 22, color: '333333' }),
+            new TextRun({ text: ` (Owner: ${g.owner})`, italics: true, size: 20, color: '333333' }),
           ],
           spacing: { after: 80 },
-        })
-      ),
+        })),
+        new Paragraph({ children: [new TextRun({ text: nextSweepLine(g.watch), italics: true, size: 20, color: '333333' })], spacing: { after: 160 } }),
+      ]),
       spacer()
     );
   }

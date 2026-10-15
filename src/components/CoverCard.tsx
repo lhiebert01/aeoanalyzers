@@ -1,6 +1,6 @@
 // WO-AEO-REPORT-POLISH-001 Lane C — the executive summary on screen, from the same CoverInput
 // the .md/.docx page 1 renders (lib/reportCover.ts), so the screen and the download agree.
-import type { CoverInput } from '../lib/reportCover';
+import { SPLIT, splitBridge, type CoverInput } from '../lib/reportCover';
 
 export function CoverCard({ cover }: { cover: CoverInput }) {
   return (
@@ -10,6 +10,28 @@ export function CoverCard({ cover }: { cover: CoverInput }) {
         <h2 className="text-2xl font-black text-zinc-900 mt-1">{cover.title}</h2>
         <div className="text-sm text-zinc-500 mt-1">{[cover.brand, cover.domain, cover.date, cover.preparedBy ? `Prepared by ${cover.preparedBy}` : null].filter(Boolean).join(' · ')}</div>
       </div>
+      {/* WO-012 A: readiness and recommendation, side by side, never blended. */}
+      {cover.split && (() => {
+        const sp = cover.split; const bridge = splitBridge(sp);
+        return (
+          <div className="px-6 sm:px-8 py-5 border-b border-zinc-100">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="rounded-2xl border border-zinc-200 p-4">
+                <div className="text-xs font-bold text-zinc-700">{SPLIT.ready}</div>
+                <div className="text-3xl font-black text-zinc-900 mt-1">{sp.readiness.score === null ? SPLIT.notYet : `${sp.readiness.score}/100`}</div>
+                <div className="text-xs text-zinc-600 mt-1">{sp.readiness.score === null ? <a className="underline" href="/">Run an AEO Score</a> : SPLIT.readySub}</div>
+              </div>
+              <div className="rounded-2xl border border-zinc-200 p-4">
+                <div className="text-xs font-bold text-zinc-700">{SPLIT.rec}</div>
+                <div className="text-3xl font-black text-zinc-900 mt-1">{sp.recommended.pct === null ? SPLIT.notYet : `${sp.recommended.pct}%`}</div>
+                <div className="text-xs text-zinc-600 mt-1">{sp.recommended.pct === null ? <a className="underline" href="/sweeps">Run a Citation Sweep</a> : sp.recommended.line}</div>
+              </div>
+            </div>
+            {bridge && <p className="text-sm text-zinc-800 mt-3">{bridge}</p>}
+            <p className="text-sm text-zinc-800 mt-2"><b>{SPLIT.nextTitle}:</b> <a className="underline" href={SPLIT.nextUrl}>{SPLIT.nextText}</a></p>
+          </div>
+        );
+      })()}
       <div className="grid sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-zinc-100">
         {cover.headlines.map((h) => (
           <div key={h.plain} className="px-6 py-5 border-t-4 border-emerald-600">

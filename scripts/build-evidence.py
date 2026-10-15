@@ -107,6 +107,19 @@ LESSONS = [
 
 GH = 'https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/baselines'
 
+# WO-012 D: from the 25 Oct 2026 self-sweep on, each monthly row adds the Source coverage line,
+# read from the committed baseline (scripts/finalize-selfsweep.ts files it). No backfill: earlier
+# months have no coverage on their baseline, so they print nothing.
+def coverage_line(m):
+    try:
+        sc = json.load(open(f"docs/baselines/{m['file']}", encoding='utf-8')).get('sourceCoverage')
+    except Exception:
+        sc = None
+    if not sc:
+        return ''
+    return f" Named on {sc['named']} of {sc['recurringPages']} recurring pages engines read for our category questions."
+
+
 def rows():
     out = []
     for i, m in enumerate(MONTHS):
@@ -118,7 +131,7 @@ def rows():
           <td><span class="fig flat">{round(100 * m['acc'][0] / m['acc'][1])}%</span><span class="nn">{m['acc'][0]} of {m['acc'][1]} named</span></td>
           <td><span class="fig flat">{m['c']}%</span><span class="nn">N={m['cn']}</span></td>
           <td class="when">{m['measured']}<br><a class="ilink" href="{GH}/{m['file']}">transcripts</a></td>
-          <td><p class="ledgernote">{tag}{m['note']}</p></td>
+          <td><p class="ledgernote">{tag}{m['note']}{coverage_line(m)}</p></td>
         </tr>""")
     return '\n'.join(out)
 

@@ -24,7 +24,45 @@ export interface CoverBar { label: string; pct: number | null; detail: string }
 export interface CoverNamed { name: string; count: number; seeded?: boolean }
 export interface CoverAction { what: string; section: string }
 
+/** WO-012 A: page one opens with two figures side by side, never blended. */
+export interface CoverSplit {
+  /** The AEO Score, or null when the domain has none yet. */
+  readiness: { score: number | null };
+  /** The latest sweep's category recommendation rate on its named panel, with its denominator
+   *  ("0 of 200 category answers, four engines, October 13th"); null pct = no sweep yet. */
+  recommended: { pct: number | null; line: string };
+}
+export const SPLIT = {
+  ready: 'Ready to be cited',
+  readySub: 'AEO Score · What your site controls.',
+  rec: 'Recommended by engines',
+  notYet: 'Not yet measured',
+  runSweep: 'Run a Citation Sweep: https://aeoanalyzers.com/sweeps',
+  runScore: 'Run an AEO Score: https://aeoanalyzers.com',
+  bridge: 'Being ready to be cited does not by itself put you on the shortlist. The pages engines read for your category questions are listed under Source coverage.',
+  nextTitle: 'What to do next',
+  nextText: 'How AI engines choose who to recommend, and what you can do about it',
+  nextUrl: 'https://aeoanalyzers.com/get-recommended',
+} as const;
+
+/** The bridging sentence: only when the site is ready (86+) and engines recommend it under 10%. */
+export function splitBridge(sp: CoverSplit): string | null {
+  const { score } = sp.readiness, { pct } = sp.recommended;
+  return score !== null && score >= 86 && pct !== null && pct < 10 ? SPLIT.bridge : null;
+}
+
+const ORD = (d: number) => (d % 100 >= 11 && d % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][d % 10] || 'th');
+const ENGINE_WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six'];
+/** "0 of 200 category answers, four engines, October 13th" */
+export function recommendedLine(cited: number, n: number, engines: number, at: string | Date): string {
+  const d = new Date(at);
+  const date = `${d.toLocaleDateString('en-US', { month: 'long', timeZone: 'UTC' })} ${d.getUTCDate()}${ORD(d.getUTCDate())}`;
+  return `${cited} of ${n} category answers, ${ENGINE_WORDS[engines] || engines} engine${engines === 1 ? '' : 's'}, ${date}`;
+}
+
 export interface CoverInput {
+  /** WO-012 A: readiness and recommendation, side by side, at the top of page one. */
+  split?: CoverSplit;
   title: string;
   brand?: string | null;
   domain: string;
@@ -59,6 +97,21 @@ export function buildCover(c: CoverInput): string[] {
   const meta = [c.brand ? `**${c.brand}**` : null, c.domain, c.date, c.preparedBy ? `Prepared by ${c.preparedBy}` : null].filter(Boolean).join(' · ');
   out.push(meta);
   out.push('');
+
+  if (c.split) {
+    const sp = c.split;
+    out.push('<!-- cover:split -->');
+    out.push(`| ${SPLIT.ready} | ${SPLIT.rec} |`);
+    out.push('|---|---|');
+    out.push(`| **${sp.readiness.score === null ? SPLIT.notYet : `${sp.readiness.score}/100`}** | **${sp.recommended.pct === null ? SPLIT.notYet : `${sp.recommended.pct}%`}** |`);
+    out.push(`| ${sp.readiness.score === null ? SPLIT.runScore : SPLIT.readySub} | ${cell(sp.recommended.pct === null ? SPLIT.runSweep : sp.recommended.line)} |`);
+    out.push('');
+    const bridge = splitBridge(sp);
+    if (bridge) { out.push(bridge); out.push(''); }
+    // Plain URL: the Word renderer has no link syntax, and the other report lines print bare URLs too.
+    out.push(`**${SPLIT.nextTitle}:** ${SPLIT.nextText}: ${SPLIT.nextUrl}`);
+    out.push('');
+  }
 
   const hs = c.headlines.slice(0, 3);
   if (hs.length) {

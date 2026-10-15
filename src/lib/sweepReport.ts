@@ -21,13 +21,17 @@ import type { TruthRecord } from './truthRecord';
 import type { FactDensityAudit } from './factDensity';
 import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, flaggedSiteValues } from './beliefs';
 import { buildDoNowPlan, type DoNowStep } from './doNowPlan';
-import { buildSweepActionAgenda, displayQuestion } from './sweepActions';
+import { displayQuestion, sweepAgendaBlocks, renderOwnerGroups, MEASURE_AGAIN, type SweepActionInputs } from './sweepActions';
+import { coverageHeadline, coverageAction, corroboration, corroborationLine, vendorBase, vendorBaseLine } from './sourceCoverage';
+import type { WatchFigure, OwnerTag } from './ownerTags';
+import { measuredAfter, recordSection, type RecordEntry, type SweepFigures } from './theRecord';
 import { doNowChecklist } from './doNowChecklist';
-import { buildCover, sweepMeaning, DIRECTIVE, type CoverInput } from './reportCover';
+import { buildCover, sweepMeaning, DIRECTIVE, type CoverInput, recommendedLine } from './reportCover';
 import { pawcSplit, mentionsClient, PROMINENT_FOOTNOTE } from './pawcSplit';
 import { describeDenominator } from './sweepDisclosure';
 import { accuracyWhenNamed } from './fidelity';
 import { stripCost, sanitizeCustomerExport } from './customerSafe';
+import type { SourceCoverage } from './sourceCoverage';
 import { panelOf, panelDisclosure, testConditionsLines } from './panel';
 import { classifyIntent, intentMixLine, INTENT_LABEL } from './queryIntent';
 
@@ -58,6 +62,12 @@ export interface SweepReportInputs {
   preparedBy?: string | null;
   /** WO-006: the category noun, so intent tags ignore requirements that are part of the category itself. */
   category?: string | null;
+  /** WO-012 A: the domain's latest AEO Score, for page one ("Ready to be cited"). */
+  readiness?: { score: number } | null;
+  /** WO-012 B: Source coverage, dated by its fetch. */
+  sourceCoverage?: SourceCoverage | null;
+  /** WO-012 G: the Record (Pro/Business) and the figures of this sweep and the previous one. */
+  record?: { entries: RecordEntry[]; previous: SweepFigures | null; now: SweepFigures | null } | null;
   /** Injected so a rebuilt report is reproducible in a test. */
   now?: Date;
 }
@@ -104,6 +114,33 @@ function plan(inp: SweepReportInputs) {
   });
 }
 
+function agendaInputs(inp: SweepReportInputs): SweepActionInputs {
+  const { result: r, fidelity, entityLinking, authority, truth, ownedDomains } = inp;
+  const sc = sweepScorecard(r.runs, { domain: r.domain, brand: r.brand || undefined }, inp.competitors);
+  return {
+    brandedRetrievabilityPct: sc.brandedRetrievabilityPct,
+    categoryWinPct: sc.categoryRecommendationWinPct,
+    hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
+    collisions: entityLinking?.collisions ?? [],
+    losingCategoryQuestions: losingQuestions(r),
+    location: ((r.summary as any)?.panel?.location ?? null) as string | null,
+    doNowAuthorities: authority ? doNowChecklist(authority.authorityDomains) : [],
+    brand: r.brand || undefined,
+    domain: r.domain,
+    served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs, ownedDomains } : undefined,
+  };
+}
+
+/** WO-012 G: every action this sweep's report lists, keyed, for "Mark done". */
+export function recordActions(inp: SweepReportInputs): { key: string; title: string; owner: OwnerTag }[] {
+  const cov = inp.sourceCoverage ? coverageAction(inp.sourceCoverage) : null;
+  return [
+    ...plan(inp).steps.map((st) => ({ key: `plan:${st.what.slice(0, 80)}`, title: st.what, owner: st.owner })),
+    ...sweepAgendaBlocks(agendaInputs(inp)).map((b) => ({ key: `agenda:${b.key}`, title: b.title, owner: b.owner })),
+    ...(cov ? [{ key: 'coverage:no-pages', title: cov.title, owner: 'Outreach' as const }] : []),
+  ];
+}
+
 /** Lane D — the prominent/mentioned split over the answers that name the client. */
 export function splitFor(r: SweepResponse, runs: SweepRunResult[]) {
   return pawcSplit(runs.map((x) => x.transcript || ''), mentionsClient({ domain: r.domain, brand: r.brand }));
@@ -144,6 +181,10 @@ export function buildSweepCover(inp: SweepReportInputs): CoverInput {
     ? p.steps.slice(0, 3).map((s: DoNowStep) => ({ what: s.what, section: 'Action plan' }))
     : losingQuestions(r).slice(0, 3).map((q) => ({ what: `Write the page that answers: “${displayQuestion(q, ((r.summary as any)?.panel?.location ?? null) as string | null)}”`, section: 'Action plan' }));
   return {
+    split: {
+      readiness: { score: inp.readiness?.score ?? null },
+      recommended: { pct: sc.categoryRuns ? sc.categoryRecommendationWinPct : null, line: recommendedLine(sc.categoryCited, sc.categoryRuns, r.engines.length, r.generatedAt) },
+    },
     title: `Citation Sweep Report — ${r.domain}`,
     brand: r.brand,
     domain: r.domain,
@@ -179,6 +220,10 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
 
   // ── Page 1: the cover ──
   out.push(...buildCover(buildSweepCover(inp)));
+  if (inp.record?.previous && inp.record.now) {
+    const ma = measuredAfter(inp.record.entries, inp.record.previous, inp.record.now);
+    if (ma.length) { out.push(...ma); out.push(''); }
+  }
   // The self-describing header lines (kept from the original report, so a saved-view download
   // still states what it is and when it was rebuilt).
   out.push(`Generated: ${new Date(r.generatedAt || now).toISOString().slice(0, 16).replace('T', ' ')} UTC`);
@@ -310,7 +355,42 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
     out.push('');
   }
 
-  // ── Action plan ──
+  // ── Source coverage (WO-012 B) ──
+  {
+    const cov = inp.sourceCoverage;
+    out.push('## Source coverage');
+    if (cov) {
+      const hl = coverageHeadline(cov);
+      out.push(hl.headline);
+      out.push('');
+      out.push(hl.sites);
+      out.push('');
+      if (cov.rows.length) {
+        const label = { yes: 'Yes', no: 'No', unreadable: 'Could not read' } as const;
+        out.push('| Site | Times cited | Engines citing | Page read | Names you | Fetched |');
+        out.push('|---|---|---|---|---|---|');
+        for (const row of cov.rows) out.push(`| ${row.host} | ${row.timesCited} | ${row.engines.map((e) => ENGINE_LABEL[e] || e).join(', ')} | ${row.url} | ${label[row.verdict]}${row.reason ? ` (${row.reason})` : ''} | ${cov.fetchedAt.slice(0, 10)} |`);
+        out.push('');
+      }
+    } else {
+      out.push('_Not checked for this sweep yet. Use "Check source coverage" on the saved sweep; the result is dated by the day the pages are read._');
+      out.push('');
+    }
+    const cor = corroboration(r.runs, r.domain, ownedDomains);
+    out.push(corroborationLine(cor) + (cor.hosts.length ? ` ${cor.hosts.join(', ')}.` : ''));
+    out.push('');
+    const base = vendorBase(r.runs, { domain: r.domain, brand: r.brand || undefined }, inp.competitors);
+    if (base.perQuestion.length) {
+      out.push('### How many answers named any vendor');
+      out.push('_A question answered with steps and no vendor is not a lost shortlist. The headline rate keeps its own denominator._');
+      for (const row of base.perSegment) out.push(`- **${row.label}:** ${vendorBaseLine(row)}`);
+      out.push('');
+      for (const row of base.perQuestion) out.push(`- “${row.label}”: ${vendorBaseLine(row)}`);
+      out.push('');
+    }
+  }
+
+  // ── Action plan (WO-012 C: grouped by owner) ──
   out.push(DIRECTIVE.pagebreak);
   out.push('## Action plan');
   out.push('');
@@ -318,34 +398,23 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
     const p = plan(inp);
     for (const line of p.situation) { out.push(line); out.push(''); }
     if (p.gatedNote) { out.push(p.gatedNote); out.push(''); }
-    for (const step of p.steps) {
-      out.push(`**${step.n}. ${step.what}**`);
-      out.push('');
-      out.push(step.explainer);
-      out.push('');
-      out.push(`- Moves: ${step.moves === 'citation' ? 'citation win — being the answer' : step.moves === 'discovery' ? 'discovery — being retrievable at all' : 'accuracy — what engines say once they find you'}`);
-      out.push(`- Why it matters for AI answers: ${step.why}`);
-      if (step.link) out.push(`- Link: ${step.link}`);
-      out.push(`- Time: ${step.time}`);
-      out.push(`- What changes: ${step.changes}`);
-      out.push(`- What does NOT change: ${step.doesNotChange}`);
-      out.push('');
-    }
+    const MOVES = { citation: 'citation win — being the answer', discovery: 'discovery — being retrievable at all', accuracy: 'accuracy — what engines say once they find you' } as const;
+    const actions = [
+      ...p.steps.map((step) => ({
+        owner: step.owner, watch: step.moves as WatchFigure, title: step.what,
+        lines: [step.explainer, '', `- Moves: ${MOVES[step.moves]}`, `- Why it matters for AI answers: ${step.why}`, ...(step.link ? [`- Link: ${step.link}`] : []), `- Time: ${step.time}`, `- What changes: ${step.changes}`, `- What does NOT change: ${step.doesNotChange}`],
+      })),
+      ...sweepAgendaBlocks(agendaInputs(inp)),
+      ...(() => { const a = inp.sourceCoverage ? coverageAction(inp.sourceCoverage) : null; return a ? [{ owner: 'Outreach' as const, watch: 'coverage' as const, title: a.title, lines: a.items.map((i) => `- ${i}`) }] : []; })(),
+    ];
+    out.push(...renderOwnerGroups(actions));
     if (p.noChannelNote) { out.push(p.noChannelNote); out.push(''); }
+    out.push(MEASURE_AGAIN);
+    out.push('');
   }
-  for (const line of buildSweepActionAgenda({
-    brandedRetrievabilityPct: sc.brandedRetrievabilityPct,
-    categoryWinPct: sc.categoryRecommendationWinPct,
-    hasFidelityOrCollision: (fidelity?.citedDrifted ?? 0) > 0 || (entityLinking?.collisions.length ?? 0) > 0,
-    collisions: entityLinking?.collisions ?? [],
-    losingCategoryQuestions: losingQuestions(r),
-    location: ((r.summary as any)?.panel?.location ?? null) as string | null,
-    doNowAuthorities: authority ? doNowChecklist(authority.authorityDomains) : [],
-    brand: r.brand || undefined,
-    domain: r.domain,
-    served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs, ownedDomains } : undefined,
-  }, { heading: false })) out.push(line);
-  out.push('');
+
+  // ── The Record (WO-012 G), oldest first ──
+  if (inp.record?.entries.length) out.push(...recordSection(inp.record.entries));
 
   // ── Methodology ──
   out.push(DIRECTIVE.pagebreak);

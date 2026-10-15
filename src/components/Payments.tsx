@@ -273,6 +273,8 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
             </table>
           </div>
           <p className="text-zinc-600 text-sm mt-4">Each sweep is up to 15 question-runs on every engine in its panel, for example 5 questions × 3 runs, or 12 questions × 1 run.</p>
+          {/* WO-012 B8/G/H: Source coverage on every paid plan; the Record on Pro and Business. */}
+          <p className="text-zinc-700 text-sm mt-2">Every paid sweep includes Source coverage: the pages the engines read for your category questions, and whether each names you. The Record, a dated list of what you did beside each sweep's figures, is included on Pro and Business. How the three fit together: <a href="/get-recommended" className="underline font-semibold text-zinc-900">How AI engines choose who to recommend, and what you can do about it</a>.</p>
         </div>
         <div className="grid grid-cols-1 gap-4">
           <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm">

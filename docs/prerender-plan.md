@@ -1,3 +1,5 @@
+> Product names, descriptions and prices in this document are as of its date. The current product is described at https://aeoanalyzers.com and current pricing is at https://aeoanalyzers.com/pricing.
+
 # Prerender Plan — Make aeoanalyzers.com crawlable by AI engines
 
 **Status:** implemented in the PR that adds `scripts/prerender.mjs`.

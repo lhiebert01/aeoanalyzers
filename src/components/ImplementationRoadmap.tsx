@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CoverCard } from './CoverCard';
-import { buildScoreCover } from '../lib/scoreCover';
+import { buildScoreCover, type LatestSweepFigure } from '../lib/scoreCover';
+import { latestSweepFor } from '../lib/latestFigures';
+import { groupChecklist, OWNER_DESC, nextSweepLine } from '../lib/ownerTags';
 import { motion } from 'motion/react';
 import {
   FileText,
@@ -59,6 +61,13 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, 
     : 'wordpress';
   const [platform, setPlatform] = useState<'wordpress' | 'shopify' | 'hubspot' | 'wix' | 'custom'>(initialPlatform);
   const [downloading, setDownloading] = useState(false);
+  // WO-012 A: page one shows the domain's latest sweep beside the score ("Not yet measured" if none).
+  const [latestSweep, setLatestSweep] = useState<LatestSweepFigure | null>(null);
+  useEffect(() => {
+    let live = true;
+    if (analyzedUrl) latestSweepFor(analyzedUrl).then((f) => { if (live) setLatestSweep(f); }).catch(() => {});
+    return () => { live = false; };
+  }, [analyzedUrl]);
 
   const handleDownloadReport = async () => {
     setDownloading(true);
@@ -67,7 +76,8 @@ export default function ImplementationRoadmap({ isPaid, onUpgrade, analyzedUrl, 
       await generateDocxReport(
         analysisResult,
         analyzedUrl || 'Unknown URL',
-        cleanDisplayName
+        cleanDisplayName,
+        latestSweep
       );
     } catch (err) {
       console.error('Error generating DOCX report:', err);
@@ -303,7 +313,11 @@ ${analysisResult.queryContentGap.generatedQuestions.map(q => {
 
 ` : ''}${analysisResult.implementationChecklist && analysisResult.implementationChecklist.length > 0 ? `## Implementation checklist
 
-${analysisResult.implementationChecklist.map(item => `- [ ] [${item.priority.toUpperCase()}] ${item.category}: ${item.action}`).join('\n')}
+${groupChecklist(analysisResult.implementationChecklist).map(g => `### ${g.owner} — ${OWNER_DESC[g.owner]}
+
+${g.items.map(item => `- [ ] [${item.priority.toUpperCase()}] ${item.category}: ${item.action} (Owner: ${g.owner})`).join('\n')}
+
+_${nextSweepLine(g.watch)}_`).join('\n\n')}
 
 ---
 
@@ -421,7 +435,7 @@ ${cleanDisplayName}`;
         {activeTab === 'summary' && (
           <div className="space-y-12">
             {/* Lane C: the same executive summary the Word report opens with (page 1). */}
-            <CoverCard cover={buildScoreCover(analysisResult, analyzedUrl || 'Unknown URL', cleanDisplayName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))} />
+            <CoverCard cover={buildScoreCover(analysisResult, analyzedUrl || 'Unknown URL', cleanDisplayName, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), latestSweep)} />
             <div className="grid md:grid-cols-2 gap-12">
               <div className="space-y-6">
                 <h3 className="text-xl font-bold flex items-center gap-2">

@@ -59,7 +59,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     },
     {
       q: "How much does AEO Analyzers cost, and what are Citation Sweeps limited to?",
-      a: "Start free — a full AEO analysis: your score, the four sub-scores and the formula, crawler access, index coverage, and every gap named. Citation Sweeps and the fixes are paid. Day Pass is $29 for 24 hours (includes 3 sweeps), Pro is $149/month (8 sweeps/month), and Business is $599/month (20 sweeps/month). Every sweep stores its transcripts."
+      a: "Start free — a full AEO analysis: your score, the four sub-scores and the formula, crawler access, index coverage, and every gap named. Citation Sweeps and the fixes are paid: a Day Pass for 24 hours (3 sweeps), Pro (8 sweeps a month) or Business (20 sweeps a month). Current prices are on the pricing page, aeoanalyzers.com/pricing. Every sweep stores its transcripts."
     },
     {
       q: "How is this different from other AEO tools?",
@@ -146,9 +146,9 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-zinc-400 text-sm mt-6 max-w-2xl mx-auto"
+          className="text-zinc-600 text-sm mt-6 max-w-2xl mx-auto"
         >
-          Your AEO score and gaps are <strong>free</strong>. Unlock every fix — paste-ready schema, content rewrites, and the full Word report — with a <strong>$29 Day Pass</strong> (24 hours, no subscription) or a plan.
+          Your AEO score and gaps are <strong>free</strong>. Unlock every fix — paste-ready schema, content rewrites, and the full Word report — with a <strong>Day Pass</strong> (24 hours, no subscription) or a plan. <a href="/pricing" className="underline font-semibold text-zinc-900">See pricing</a>.
         </motion.p>
         {/* Founder-approved 13 Oct 2026 (WO-006 positioning + independence lines). Verbatim. */}
         <p className="text-zinc-800 text-lg md:text-xl font-semibold mt-10 max-w-2xl mx-auto">A URL, a few minutes, and every transcript behind every number. You decide what to fix, and who fixes it.</p>
@@ -197,7 +197,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
                   </div>
                   <div>
                     <h4 className="font-bold text-lg mb-1">The Solution</h4>
-                    <p className="text-zinc-500">AEO Analyzers doesn't stop at a number. Your free audit pinpoints <em>why</em> AI overlooks you; a $29 Day Pass (or a plan) unlocks the cure — paste-ready JSON-LD (verified vs. guessed), content rewrites, a prioritized checklist, and a Word report your developer can ship today.</p>
+                    <p className="text-zinc-500">AEO Analyzers doesn't stop at a number. Your free audit pinpoints <em>why</em> AI overlooks you; a Day Pass (or a plan) unlocks the cure — paste-ready JSON-LD (verified vs. guessed), content rewrites, a prioritized checklist, and a Word report your developer can ship today.</p>
                   </div>
                 </div>
               </div>
@@ -256,6 +256,8 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         {/* Sep 7 2026: dropped the "AI-crawler telemetry" promise — no customer-facing
             way to connect a domain exists yet (see Payments.tsx). Drift monitoring ships. */}
         <p className="text-center text-zinc-600 text-sm mt-8 max-w-2xl mx-auto">Plus answer-drift comparison across your re-runs — so you know what the engines say about you, and whether it changed. <strong className="text-zinc-600">The AEO analysis is free</strong> &mdash; your score, your sub-scores and every gap named. <strong className="text-zinc-600">Citation Sweeps are paid</strong>: four engines, or five with Grok on Pro and Business, repeated runs, every answer stored as a transcript.</p>
+        {/* WO-012 H: the one homepage change — link the Measure. Act. Record. page. */}
+        <p className="text-center text-sm mt-4"><a href="/get-recommended" className="underline font-semibold text-zinc-900">How AI engines choose who to recommend, and what you can do about it &rarr;</a></p>
       </section>
 
       {/* Trust & Authority Section */}
@@ -373,13 +375,8 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
   "name": "AEO Analyzers",
   "operatingSystem": "Web",
   "applicationCategory": "BusinessApplication",
-  "offers": {
-    "@type": "AggregateOffer",
-    "priceCurrency": "USD",
-    "lowPrice": "0",
-    "highPrice": "599",
-    "offerCount": "4"
-  }
+  "url": "https://aeoanalyzers.com",
+  "publisher": { "@id": "https://pigenai.com/#org" }
 }`}
             </pre>
             <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
