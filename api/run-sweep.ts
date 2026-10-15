@@ -26,10 +26,10 @@ import { SCORING_VERSION } from '../src/lib/sweepDisclosure.js';
 import { accuracyWhenNamed } from '../src/lib/fidelity.js';
 import { extractTruthRecord, type TruthRecord } from '../src/lib/truthRecord.js';
 import { COST_SCALE } from '../src/lib/costEstimate.js';
-import { CostGuard, PLAN_PANEL, PLAN_SWEEPS, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, type PaidTier } from '../src/lib/sweepCaps.js';
+import { CostGuard, NOT_ASKED, PLAN_PANEL, PLAN_SWEEPS, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, type PaidTier } from '../src/lib/sweepCaps.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
 import { planSweep } from '../src/lib/sweepPlan.js';
-import { alertSweepEngineFail, markEngineHealthy } from './_lib/engineAlert.js';
+import { alertSweepEngineFail } from './_lib/engineAlert.js';
 
 // Vercel Fluid Compute allows long runs; a full sweep is many sequential calls.
 export const config = { maxDuration: 300 };
@@ -357,13 +357,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const deadline = Date.now() + Number(process.env.SWEEP_BUDGET_MS || 270_000);
     // Perplexity's low rate limit was the 429 source — cap its in-flight calls while the
     // other engines keep the global concurrency.
+    // Grok is capped too: each in-flight Grok call reserves its worst case ($0.90), so a
+    // dozen at once would hold more than the whole sweep ceiling.
     const engineLimiter = makeEngineLimiter({
       perplexity: Number(process.env.SWEEP_PERPLEXITY_CONCURRENCY || 3),
+      grok: Number(process.env.SWEEP_GROK_CONCURRENCY || 4),
     });
     // Hard spend ceiling, in true provider dollars, enforced BEFORE each call: $1.50 on
-    // v1.1, $4.00 on v1.2, never more than what is left of the plan's monthly allowance.
-    // A call the ceiling forbids is never made; it is recorded as an errored run (excluded
-    // from every score and badged), so a capped sweep is visibly partial, never a fake zero.
+    // v1.1, $6.00 on v1.2, never more than what is left of the plan's monthly allowance.
+    // The reservation is taken once the engine has a free slot; near the ceiling a call
+    // waits for in-flight calls to settle. A call that still cannot fit is never made; it is
+    // recorded as an errored run (excluded from every score and badged), so a capped sweep
+    // is visibly partial, never a fake zero.
     const capUsd = access.monthlyCapUsd != null
       ? effectiveSweepCapUsd(panelVersion, access.monthlyCapUsd, access.spentThisMonthUsd || 0)
       : sweepCapUsd(panelVersion);
@@ -373,18 +378,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         engine: t.engine, query: t.query, queryType: t.queryType, runIndex: t.runIndex,
         transcript: '', sources: [], costUsd: 0,
       };
-      const reservation = guard.tryReserve(t.engine);
-      if (reservation === null) {
-        return scoreRun({ ...base, errored: true, transcript: '[error: not asked — this sweep reached its spend ceiling]' }, { domain, brand }, competitors);
-      }
+      let reservation: number | null = null;
       let booked = false;
       try {
-        const answer = await engineLimiter(t.engine, () =>
-          callWithRetry(
+        const answer = await engineLimiter(t.engine, async () => {
+          reservation = await guard.reserveWhenAffordable(t.engine);
+          if (reservation === null) return null;
+          return callWithRetry(
             () => withTimeout(ENGINE_ADAPTERS[t.engine](t.query), SWEEP_CALL_TIMEOUT_MS, `${t.engine}:${t.queryType}`),
             deadline,
-          ),
-        );
+          );
+        });
+        if (answer === null || reservation === null) {
+          return scoreRun({ ...base, errored: true, transcript: NOT_ASKED }, { domain, brand }, competitors);
+        }
         // Mark cut-off answers so scoring excludes them: trust the engine's own
         // finish_reason (answer.truncated), and fall back to a text heuristic for
         // engines/paths that don't report it (WO-QA-003 A1).
@@ -398,7 +405,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // The call FAILED after bounded retries (429/5xx/timeout/missing key). Record an
         // ERRORED run — excluded from every score and badged, never counted as a real
         // "not cited" (WO-AEO-SWEEP-MEMORY-001).
-        if (!booked) guard.settle(t.engine, reservation, 0);
+        if (!booked && reservation !== null) guard.settle(t.engine, reservation, 0);
         return scoreRun(
           { ...base, errored: true, transcript: `[error: ${err?.message || err}]` },
           { domain, brand },
@@ -426,10 +433,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         (eng as any).errored = true;
         (eng as any).status = 'unavailable'; // UI renders "Service unavailable", not 0%
         (eng as any).errorSample = (erroredRuns[0].transcript || '').slice(0, 200);
-        await alertSweepEngineFail(eng.engine, engRuns.length, (eng as any).errorSample);
-      } else if (erroredRuns.length < engRuns.length) {
-        markEngineHealthy(eng.engine);
       }
+      // Founder decision 14 Oct 2026: ONE failed answer is enough to email. Calls our own
+      // spend ceiling declined are not engine failures and never alert.
+      const failed = erroredRuns.filter((r) => r.transcript !== NOT_ASKED);
+      if (failed.length) await alertSweepEngineFail(eng.engine, failed.length, engRuns.length, (failed[0].transcript || '').slice(0, 200));
     }
 
     // Cost obfuscation (founder ruling, Sep 7 2026). Provider token cost is

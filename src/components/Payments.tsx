@@ -15,7 +15,7 @@ const PLANS = [
       'Grounded vs. memory split (searched answers kept apart from recalled ones)',
       'Historical series: the same questions re-run and compared over time',
       'All exports: Word, PDF and data',
-      'Up to 200 AEO analyses & fixes / mo'
+      'Up to 100 AEO analyses & fixes / mo'
     ],
     buttonText: 'Upgrade to Pro',
     popular: true
@@ -239,7 +239,7 @@ export default function Payments({ user, userProfile, onAuthRequired, onContact 
       {/* Entitlements & add-ons — make caps and extras explicit */}
       <div className="mt-16 max-w-4xl mx-auto">
         <h3 className="text-2xl font-bold tracking-tight text-center mb-2">What's included — and what counts as a Sweep</h3>
-        <p className="text-zinc-500 text-center mb-8 max-w-2xl mx-auto">The AEO diagnostic (score + fixes) is included on every paid plan, up to 200 analyses a month per account. <strong className="text-zinc-700">Citation Sweeps</strong> — the live multi-engine measurement — are the metered entitlement.</p>
+        <p className="text-zinc-600 text-center mb-8 max-w-2xl mx-auto">The AEO diagnostic (score + fixes) is included on every paid plan: up to 100 analyses a month on Pro and 200 on Business, and a Day Pass draws on the 200-a-month account limit. <strong className="text-zinc-700">Citation Sweeps</strong> — the live multi-engine measurement — are the metered entitlement.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white border border-zinc-300 rounded-2xl p-6 shadow-sm">
             <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Included Citation Sweeps</div>

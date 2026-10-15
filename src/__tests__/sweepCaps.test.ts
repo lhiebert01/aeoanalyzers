@@ -1,23 +1,29 @@
 import { describe, it, expect } from 'vitest';
-import { CostGuard, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, PLAN_PANEL, ANALYSES_PER_MONTH } from '../lib/sweepCaps';
+import { CostGuard, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, PLAN_PANEL, analysesPerMonth } from '../lib/sweepCaps';
 
 describe('spend caps (pricing decision 13 Oct 2026)', () => {
-  it('per-sweep caps are $1.50 on v1.1 and $4.00 on v1.2', () => {
+  it('per-sweep caps are $1.50 on v1.1 and $6.00 on v1.2 (raised 14 Oct 2026)', () => {
     expect(sweepCapUsd('v1.1')).toBe(1.5);
-    expect(sweepCapUsd('v1.2')).toBe(4);
+    expect(sweepCapUsd('v1.2')).toBe(6);
   });
   it('monthly cap = plan sweeps × the plan panel cap', () => {
     expect(monthlyCostCapUsd('daypass')).toBeCloseTo(4.5);
-    expect(monthlyCostCapUsd('Pro')).toBe(32);
-    expect(monthlyCostCapUsd('Business')).toBe(80);
+    expect(monthlyCostCapUsd('Pro')).toBe(48);
+    expect(monthlyCostCapUsd('Business')).toBe(120);
     expect(PLAN_PANEL).toEqual({ daypass: 'v1.1', Pro: 'v1.2', Business: 'v1.2' });
-    expect(ANALYSES_PER_MONTH).toBe(200);
+  });
+  it('analyses per month: Pro 100, Business 200, everyone else the 200 account limit', () => {
+    expect(analysesPerMonth('Pro')).toBe(100);
+    expect(analysesPerMonth('Business')).toBe(200);
+    expect(analysesPerMonth('daypass')).toBe(200);
+    expect(analysesPerMonth('free')).toBe(200);
+    expect(analysesPerMonth(undefined)).toBe(200);
   });
   it('a sweep never gets more than what is left of the month', () => {
-    expect(effectiveSweepCapUsd('v1.2', 32, 0)).toBe(4);
-    expect(effectiveSweepCapUsd('v1.2', 32, 30)).toBe(2);
-    expect(effectiveSweepCapUsd('v1.2', 32, 32)).toBe(0);
-    expect(effectiveSweepCapUsd('v1.2', 32, 40)).toBe(0);
+    expect(effectiveSweepCapUsd('v1.2', 48, 0)).toBe(6);
+    expect(effectiveSweepCapUsd('v1.2', 48, 46)).toBe(2);
+    expect(effectiveSweepCapUsd('v1.2', 48, 48)).toBe(0);
+    expect(effectiveSweepCapUsd('v1.2', 48, 60)).toBe(0);
   });
   it('reserves before spending: below, at and above the cap', () => {
     const g = new CostGuard(0.2, { grok: 0.1 });
@@ -34,6 +40,33 @@ describe('spend caps (pricing decision 13 Oct 2026)', () => {
     const r = g.tryReserve('grok')!; g.settle('grok', r, 0.4);
     expect(g.tryReserve('grok')).toBe(0.4);
     expect(g.tryReserve('grok')).toBeNull(); // 0.4 spent + 0.4 reserved + 0.4 > 1
+  });
+  it('near the cap a call waits for in-flight calls to settle instead of being skipped', async () => {
+    const g = new CostGuard(1, { grok: 0.6 });
+    const a = g.tryReserve('grok')!;                  // 0.6 in flight
+    let got: number | null | undefined;
+    const p = g.reserveWhenAffordable('grok').then((r) => { got = r; });
+    await Promise.resolve(); expect(got).toBeUndefined(); // 0.6 + 0.6 > 1: waiting, not skipped
+    g.settle('grok', a, 0.3);                          // spent 0.3, nothing reserved
+    await p;
+    expect(got).toBe(0.6);                             // 0.3 + 0.6 <= 1
+    expect(g.skipped).toBe(0);
+  });
+  it('a call that cannot fit with nothing in flight is skipped, never made', async () => {
+    const g = new CostGuard(1, { grok: 0.6 });
+    const a = g.tryReserve('grok')!; g.settle('grok', a, 0.5);
+    expect(await g.reserveWhenAffordable('grok')).toBeNull(); // 0.5 + 0.6 > 1
+    expect(g.skipped).toBe(1);
+  });
+  it('the ceiling holds with 15 Grok calls racing at $0.876 each', async () => {
+    const g = new CostGuard(6);
+    await Promise.all(Array.from({ length: 15 }, async () => {
+      const r = await g.reserveWhenAffordable('grok');
+      if (r === null) return;
+      await new Promise((res) => setTimeout(res, 1));
+      g.settle('grok', r, 0.876);
+    }));
+    expect(g.spent).toBeLessThanOrEqual(6);
   });
   it('a zero cap refuses every call', () => {
     expect(new CostGuard(0).tryReserve('gemini')).toBeNull();

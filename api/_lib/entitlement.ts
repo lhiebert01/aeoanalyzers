@@ -15,7 +15,7 @@ const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com']
 
 export async function isPaidRequest(
   req: VercelRequest,
-): Promise<{ paid: boolean; userId: string | null; determined: boolean; admin?: boolean }> {
+): Promise<{ paid: boolean; userId: string | null; determined: boolean; admin?: boolean; tier?: string }> {
   const supaUrl = process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const anon = process.env.VITE_SUPABASE_ANON_KEY;
@@ -50,14 +50,17 @@ export async function isPaidRequest(
     const sub = row?.subscription_status || 'free';
     const dayPassActive = row?.report_pass_until && new Date(row.report_pass_until) > new Date();
     const paid = sub === 'Business' || sub === 'Pro' || !!dayPassActive;
-    return { paid, userId, determined: true };
+    // The plan decides the analyses allowance; a subscription outranks a Day Pass.
+    const tier = sub === 'Business' || sub === 'Pro' ? sub : dayPassActive ? 'daypass' : 'free';
+    return { paid, userId, determined: true, tier };
   } catch {
     return { paid: false, userId: null, determined: false }; // transient error → fail open (protect payers)
   }
 }
 
 /**
- * Analyses are capped at ANALYSES_PER_MONTH per account (pricing decision 13 Oct 2026).
+ * Analyses are capped per account per month by plan (analysesPerMonth: Pro 100, Business 200,
+ * otherwise the 200 account limit; founder decisions 13–14 Oct 2026).
  * Counts this calendar month's saved analyses (analysis_history). Returns null when under
  * the cap or when the count can't be read (fail open: the free score must not break on a
  * transient Supabase error), otherwise the number already used.
