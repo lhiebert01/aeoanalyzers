@@ -26,7 +26,7 @@ import SweepDashboard from './components/SweepDashboard';
 import { ScoreVsSweepCard, CrossLink } from './components/ScoreVsSweepCard';
 import { isAllZeroAnalysis, ALL_ZERO_BANNER } from './lib/inputSafety';
 import { SCORE_VS_SWEEP } from './content/scoreVsSweep';
-import { getOrganizationJsonLd, getWebSiteJsonLd, getBreadcrumbJsonLd } from './lib/json-ld';
+import { getOrganizationJsonLd, getWebSiteJsonLd, getBreadcrumbJsonLd, getPricingJsonLd } from './lib/json-ld';
 
 type View = 'analyzer' | 'sweeps' | 'history' | 'payments' | 'settings' | 'auth' | 'admin' | 'guide' | 'landing' | 'privacy' | 'terms' | 'press';
 
@@ -880,6 +880,7 @@ export default function App() {
                 title="Pricing - AEO Analyzers"
                 description="AEO Analyzers pricing: your AEO score and gaps are free. Unlock every fix — paste-ready schema, content rewrites and the full Word report — with a $29 Day Pass, or a Pro or Business plan."
                 canonical="https://aeoanalyzers.com/pricing"
+                jsonLd={getPricingJsonLd()}
               />
               <Payments
                 user={user}

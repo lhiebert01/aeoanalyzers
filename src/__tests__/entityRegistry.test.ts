@@ -28,3 +28,23 @@ describe('entity registry ↔ structured data', () => {
     for (const r of rows) expect(r).toMatch(/\| \| planned \(founder, Oct 16\) \|/);
   });
 });
+
+describe('/pricing states its prices in machine-readable form, and only /pricing', () => {
+  it('offers equal the visible prices and the current site record; the homepage graph carries none', async () => {
+    const { getPricingJsonLd } = await import('../lib/json-ld');
+    const { ownSiteRecordAt } = await import('../lib/siteFacts');
+    const ld: any = getPricingJsonLd();
+    const prices = ld.offers.map((o: any) => Number(o.price));
+    expect(prices).toEqual([29, 149, 599]);
+    expect(ld['@id']).toBe(node('SoftwareApplication')['@id']);
+    const rec = ownSiteRecordAt('aeoanalyzers.com', new Date())!.prices.map((p) => p.amount).filter((a) => a > 0);
+    expect(prices).toEqual(rec);
+    const page = readFileSync('src/components/Payments.tsx', 'utf8');
+    for (const p of prices) expect(page).toContain(`$${p}`);
+    expect(ld.offers.filter((o: any) => o.priceSpecification?.unitCode === 'MON').map((o: any) => o.name)).toEqual(['Pro Optimizer', 'Business Authority']);
+    expect(JSON.stringify(getGraphJsonLd())).not.toMatch(/"offers"|"price"/);
+    const app = readFileSync('src/App.tsx', 'utf8');
+    expect((app.match(/getPricingJsonLd\(\)/g) || []).length).toBe(1);
+    expect(app.slice(app.indexOf('getPricingJsonLd()') - 400, app.indexOf('getPricingJsonLd()'))).toContain('canonical="https://aeoanalyzers.com/pricing"');
+  });
+});

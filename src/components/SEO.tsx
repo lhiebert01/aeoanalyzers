@@ -17,9 +17,6 @@ const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https
 const DEFAULT_TITLE = 'AEO Analyzers | Be the Answer AI Gives';
 const DEFAULT_DESCRIPTION = 'AEO Analyzers scores how citable your site is by ChatGPT, Gemini, Perplexity & Claude — then proves it with live Citation Sweeps and the exact fixes.';
 const DEFAULT_AUTHOR = 'Lindsay Hiebert';
-// WO-012 E5: Bing Webmaster Tools meta verification. Empty until the founder supplies the
-// msvalidate.01 value (Bing WMT → Settings → Verify ownership → HTML meta tag). Public, not a secret.
-const BING_SITE_VERIFICATION = '';
 
 const SEO: React.FC<SEOProps> = ({
   title,
@@ -81,7 +78,6 @@ const SEO: React.FC<SEOProps> = ({
 
       {/* Robots */}
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-      {BING_SITE_VERIFICATION && <meta name="msvalidate.01" content={BING_SITE_VERIFICATION} />}
       <meta name="googlebot" content="index, follow" />
       <meta name="bingbot" content="index, follow" />
 

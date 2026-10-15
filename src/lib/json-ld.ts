@@ -203,6 +203,38 @@ function softwareApplicationNode() {
   };
 }
 
+// /pricing only (founder, 15 Oct 2026): the one page that states prices also states them in
+// machine-readable form, because engines still quote our pre-14-Oct prices. Never on any other
+// page (WO-012 E3). Values match /pricing's visible table and siteFacts' current record.
+export const PRICING_OFFERS = [
+  { name: 'Day Pass', price: 29, monthly: false, description: '24 hours of full access: 3 Citation Sweeps on the four-engine panel and 25 AEO analyses. No subscription.' },
+  { name: 'Pro Optimizer', price: 149, monthly: true, description: '8 Citation Sweeps a month on the five-engine panel (adds Grok) and up to 100 AEO analyses.' },
+  { name: 'Business Authority', price: 599, monthly: true, description: '20 Citation Sweeps a month on the five-engine panel and up to 200 AEO analyses.' },
+] as const;
+
+export function getPricingJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    '@id': APP_ID,
+    name: 'AEO Analyzers',
+    url: SITE_URL,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    publisher: { '@id': ORG_ID },
+    offers: PRICING_OFFERS.map((o) => ({
+      '@type': 'Offer',
+      name: o.name,
+      description: o.description,
+      price: String(o.price),
+      priceCurrency: 'USD',
+      url: `${SITE_URL}/pricing`,
+      availability: 'https://schema.org/InStock',
+      ...(o.monthly ? { priceSpecification: { '@type': 'UnitPriceSpecification', price: String(o.price), priceCurrency: 'USD', unitCode: 'MON', referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' } } } : {}),
+    })),
+  };
+}
+
 // 0. The connected @graph — the preferred, single-block form (all nodes linked
 //    by @id). Use this on the primary landing page.
 export function getGraphJsonLd() {
