@@ -29,26 +29,12 @@ import { COST_SCALE } from '../src/lib/costEstimate.js';
 import { CostGuard, PLAN_PANEL, PLAN_SWEEPS, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, type PaidTier } from '../src/lib/sweepCaps.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
 import { planSweep } from '../src/lib/sweepPlan.js';
+import { alertSweepEngineFail } from './_lib/engineAlert.js';
 
 // Vercel Fluid Compute allows long runs; a full sweep is many sequential calls.
 export const config = { maxDuration: 300 };
 
 const ALL_ENGINES: Engine[] = ['claude', 'openai', 'perplexity', 'gemini', 'grok'];
-
-// Throttled sweep-engine-down alert: ONE loud, greppable line at most once per
-// ~72h per running instance, so a dead/expired engine key is visible without
-// firing on every sweep. Wire a Vercel log-alert on "[SWEEP-ENGINE-FAIL]".
-let lastSweepEngineFailAlert = 0;
-const SWEEP_ENGINE_FAIL_ALERT_MS = 72 * 60 * 60 * 1000; // ~3 days
-function alertSweepEngineFail(engine: string, total: number, sample: string) {
-  const now = Date.now();
-  if (now - lastSweepEngineFailAlert < SWEEP_ENGINE_FAIL_ALERT_MS) return;
-  lastSweepEngineFailAlert = now;
-  console.error(
-    `[SWEEP-ENGINE-FAIL] engine=${engine} — ALL ${total} runs errored (reported as UNAVAILABLE, NOT a real 0%). ` +
-      `Likely a bad/expired key or config. Sample: ${sample}`,
-  );
-}
 
 const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com'];
 // WO-AEO-TIER-LEAK-007, founder ruling Sep 8 2026, stated three times and once
@@ -440,7 +426,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         (eng as any).errored = true;
         (eng as any).status = 'unavailable'; // UI renders "Service unavailable", not 0%
         (eng as any).errorSample = (erroredRuns[0].transcript || '').slice(0, 200);
-        alertSweepEngineFail(eng.engine, engRuns.length, (eng as any).errorSample);
+        await alertSweepEngineFail(eng.engine, engRuns.length, (eng as any).errorSample);
       }
     }
 
