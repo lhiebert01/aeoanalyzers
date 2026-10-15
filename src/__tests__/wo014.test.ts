@@ -168,3 +168,26 @@ describe('catalog, public pages and page bylines', () => {
     expect(pageTitleAndByline('<title>X</title><meta name="author" content="https://x.com/someone">')).toEqual({ title: 'X' });
   });
 });
+
+describe('tier behavior, as rendered', () => {
+  it('Free, Day Pass (score report and sweep), Pro/Business', async () => {
+    const React = await import('react');
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const { GuidePanel } = await import('../components/GuidePanel');
+    const build = async () => buildGuide(base);
+    const r = (props: any) => renderToStaticMarkup(React.createElement(GuidePanel, { domain: 'acmebooks.com', build, ...props }));
+    const free = r({ access: 'none' });
+    expect(free).toContain('Your personalized guide is included on Pro and Business.');
+    expect(free).toContain('href="/guides/directory-listings"'); expect(free).toContain('href="/guides/wikidata"');
+    expect(free).not.toContain('Download your step-by-step guide');
+    const dayPassScore = r({ access: 'none', dayPassNote: true });
+    expect(dayPassScore).toContain('download it from your Citation Sweep report');
+    const dayPassSweep = r({ access: 'sweep-only' });
+    expect(dayPassSweep).toContain('Download your step-by-step guide (Word)');
+    expect(dayPassSweep).toContain('The Record, which fills the guide');
+    const pro = r({ access: 'full' });
+    expect(pro).toContain('Download your step-by-step guide (Word)');
+    expect(pro).not.toContain('Your Day Pass includes');
+    for (const h of [free, dayPassScore, dayPassSweep, pro]) expect(h).not.toMatch(/\$\d/);
+  });
+});
