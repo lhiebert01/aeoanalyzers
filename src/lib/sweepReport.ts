@@ -212,7 +212,7 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
   if (fidelity && (fidelity.citedAccurate > 0 || fidelity.citedDrifted > 0)) {
     out.push('### Fidelity — is AI accurate about you?');
     out.push(`Of the answers that named you, **${fidelity.citedAccurate}** got your facts right${fidelity.citedDrifted > 0 ? ` and **${fidelity.citedDrifted}** drifted (asserted a fact your site contradicts)` : ' — no fabricated facts detected'}.`);
-    for (const iss of fidelity.issues) out.push(`- ${iss.wrong ? `"${iss.wrong}": ` : ''}${iss.detail}`);
+    for (const iss of fidelity.issues) out.push(`- ${iss.type === 'price_mismatch' ? 'Price claim ' : ''}${iss.wrong ? `"${iss.wrong}": ` : ''}${iss.detail}`);
     out.push('');
   }
   if (entityLinking && entityLinking.collisions.length > 0) {
@@ -224,7 +224,7 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
   }
   if (entityLinking?.retrievedAlongside?.length) {
     out.push('### Retrieved alongside you');
-    out.push('Engines pulled these up for your name; your answer was still correct.');
+    out.push(entityLinking.alongsideAnswersAccurate ? 'Engines pulled these up for your name; your answer was still correct.' : 'Engines pulled these up for your name; no answer described you as them.');
     for (const a of entityLinking.retrievedAlongside) out.push(`- ${a.entity} (${a.source})`);
     out.push('');
   }

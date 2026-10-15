@@ -1184,7 +1184,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
               {entityLinking?.retrievedAlongside && entityLinking.retrievedAlongside.length > 0 && (
                 <div className="mt-4 border-t border-zinc-200 pt-3">
                   <p className="text-sm font-bold text-zinc-800">Retrieved alongside you</p>
-                  <p className="text-xs text-zinc-600 mt-1">Engines pulled these up for your name; your answer was still correct.</p>
+                  <p className="text-xs text-zinc-600 mt-1">{entityLinking.alongsideAnswersAccurate ? 'Engines pulled these up for your name; your answer was still correct.' : 'Engines pulled these up for your name; no answer described you as them.'}</p>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {entityLinking.retrievedAlongside.map((a) => (
                       <a key={a.entity} href={a.source} target="_blank" rel="noopener noreferrer" className="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-white text-zinc-700 border border-zinc-300 hover:underline">{a.entity}</a>

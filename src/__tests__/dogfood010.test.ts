@@ -68,6 +68,9 @@ describe('A — described accurately now covers prices, allowance and retired na
     expect(price.status).toBe('Contradicts your site');
     expect(price.siteValue).toContain('$149/mo Pro Optimizer');
     expect(rows.some((r) => /^mo /.test(r.claim))).toBe(false);
+    // the same answer with its line breaks flattened (how stored transcripts often read)
+    const flat = extractBeliefs([{ engine: 'claude', queryType: 'branded', transcript: CLAUDE.replace(/\n/g, ' ') } as any], 'AEO Analyzers', flaggedWrongValues(fidelity), flaggedSiteValues(fidelity));
+    expect(flat.filter((r) => r.field === 'Price').map((r) => r.claim).sort()).toEqual(['$199/mo Business', '$24 Day Pass', '$49/mo Pro']);
   });
 });
 
@@ -78,15 +81,18 @@ describe('B — retrieved alongside is not confusion', () => {
     const rep = detectEntityLinkingFailures([{ cited: true, transcript: 'AEO Analyzers, founded by Lindsay Hiebert.', sources: ['https://aeoanalyzers.com', wiki] }], { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' }, truth);
     expect(rep.collisions).toEqual([]);
     expect(rep.retrievedAlongside?.map((a) => a.entity)).toEqual(['Wikipedia: aea investors']);
+    expect(rep.alongsideAnswersAccurate).toBe(true);
   });
   it('it is confusion when the answer names the other entity', () => {
     const rep = detectEntityLinkingFailures([{ cited: true, transcript: 'AEO Analyzers, part of AEA Investors.', sources: [wiki] }], { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' }, truth);
     expect(rep.collisions).toEqual(['Wikipedia: aea investors']);
   });
-  it('it stays confusion when the answer was not accurate about you', () => {
+  it('an unrelated inaccuracy (a stale price of your own) does not turn it into confusion', () => {
     const t2 = withSiteRecord(BASE, 'aeoanalyzers.com', AFTER)!;
     const rep = detectEntityLinkingFailures([{ cited: true, transcript: CLAUDE, sources: [wiki] }], { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' }, t2);
-    expect(rep.collisions).toEqual(['Wikipedia: aea investors']);
+    expect(rep.collisions).toEqual([]);
+    expect(rep.retrievedAlongside?.map((a) => a.entity)).toEqual(['Wikipedia: aea investors']);
+    expect(rep.alongsideAnswersAccurate).toBe(false);
   });
 });
 
@@ -121,5 +127,16 @@ describe('E — the AEO Score report does not contradict its own scan', () => {
     const out = applyAccuracyGuards(result, { type: 'saas', signals: [] } as any);
     expect(out.implementationChecklist!.map((i: any) => i.priority)).toEqual(['MEDIUM']);
     expect(out.recommendations).toEqual(['Tighten H2 answers']);
+  });
+});
+
+describe('A — price evidence survives the export sanitizer; cost never does', () => {
+  it('a Price row, a Price claim and the checked-prices line pass; a cost line is still removed', async () => {
+    const { findLeaks } = await import('../lib/customerSafe');
+    expect(findLeaks('| **Price:** $49/mo Pro | Claude | 1 | Contradicts your site — your site: $149/mo Pro Optimizer |')).toEqual([]);
+    expect(findLeaks('Price: $24 Day PassChatGPT2Single-source')).toEqual([]);
+    expect(findLeaks('- Price claim "$49/mo Pro": The engine quotes "$49/mo Pro".')).toEqual([]);
+    expect(findLeaks('Sweep cost: $1.90')[0]?.cls).toBe('currency-figure');
+    expect(findLeaks('Engine spend this month $12.40')[0]?.cls).toBe('currency-figure');
   });
 });

@@ -40,9 +40,11 @@ export interface EntityLinkingReport {
   flags: EntityLinkingFlag[];
   /** Deduped colliding-entity labels for the "engines are confusing you with: …" callout. */
   collisions: string[];
-  /** WO-010 B: pages an engine pulled up for your name in an answer that was still correct
-   *  about you and never mentioned them. Not confusion; listed so nothing is hidden. */
+  /** WO-010 B: pages an engine pulled up for your name that no answer named or linked. Not
+   *  confusion; listed so nothing is hidden. `answersAccurate` is true when every answer that
+   *  pulled one up was accurate about you ("your answer was still correct"). */
   retrievedAlongside?: { entity: string; source: string }[];
+  alongsideAnswersAccurate?: boolean;
 }
 
 // Finance / market-data hosts. A solo SaaS cited via one of these on a ticker path
@@ -169,15 +171,24 @@ export function detectEntityLinkingFailures(
   /** WO-AEO-REPORT-POLISH-001 G2: near-name domains the OWNER confirmed are theirs. Never a collision. */
   owned?: string[]
 ): EntityLinkingReport {
-  // WO-010 B: confusion needs evidence in the answer itself. A page that sat only in an answer's
-  // sources, when that answer named you and stated nothing your site contradicts, was retrieved
-  // alongside you: the engine searched your name, found it, and still described you correctly.
-  // It counts as confusion when the answer text names it or links it, or when the answer was not
-  // accurate about you (or accuracy could not be checked).
+  // WO-010 B: confusion needs evidence in the answer itself: the answer names the other entity
+  // or links it (and so may pin its facts on you). When the site's own record was captured, a page
+  // that sat only in an answer's sources was retrieved alongside you: the engine searched your
+  // name and pulled it up. An identity error in that answer (a fabricated founder: possibly the
+  // other entity's fact pinned on you) keeps it a finding; a stale price, allowance or product
+  // name of your own does not.
   const fullTruth = truth && 'brandName' in truth ? (truth as TruthRecord) : null;
-  const accurate = (r: { cited?: boolean; transcript?: string }) =>
-    !!fullTruth && !!r.cited && classifyRunFidelity(true, r.transcript || '', fullTruth).state === 'cited-accurate';
+  const OWN_STALE = new Set(['price_mismatch', 'retired_name', 'allowance_mismatch']);
+  const fidelityOf = (r: { cited?: boolean; transcript?: string }) => (fullTruth && r.cited ? classifyRunFidelity(true, r.transcript || '', fullTruth) : null);
+  const accurate = (r: { cited?: boolean; transcript?: string }) => fidelityOf(r)?.state === 'cited-accurate';
+  /** An identity error (a fabricated founder) may be another entity's fact pinned on you; a stale
+   *  price, allowance or product name of your own is not. */
+  const identityError = (r: { cited?: boolean; transcript?: string }) => {
+    const f = fidelityOf(r);
+    return !f || (f.state === 'cited-drifted' && f.issues.some((i) => i.severity === 'high' && !OWN_STALE.has(i.type)));
+  };
   const alongside = new Map<string, string>();
+  let allAccurate = true;
   const keys = brandKeys(client);
   const declared = new Set((truth?.sameAs || []).map((u) => registrable(parseUrl(u).host)));
   for (const d of owned || []) declared.add(registrable(String(d || '').toLowerCase().replace(/^www\./, '')));
@@ -204,7 +215,9 @@ export function detectEntityLinkingFailures(
 
     if (flag) {
       const named = inText || mentionsEntity(run.transcript || '', flag.collidingEntity);
-      if (!named && accurate(run)) { if (!alongside.has(flag.collidingEntity)) alongside.set(flag.collidingEntity, url); return; }
+      // Without a snapshot of the site, an answer's accuracy cannot be shown, so a page in its
+      // sources stays a finding, as before.
+      if (!named && fullTruth && !identityError(run)) { if (!alongside.has(flag.collidingEntity)) alongside.set(flag.collidingEntity, url); if (!accurate(run)) allAccurate = false; return; }
       const key = `${flag.kind}|${flag.collidingEntity}`;
       if (!seen.has(key)) { seen.add(key); flags.push(flag); }
     }
@@ -217,5 +230,5 @@ export function detectEntityLinkingFailures(
 
   const collisions = [...new Set(flags.map((f) => f.collidingEntity))];
   const retrievedAlongside = [...alongside].filter(([e]) => !collisions.includes(e)).map(([entity, source]) => ({ entity, source }));
-  return { flags, collisions, ...(retrievedAlongside.length ? { retrievedAlongside } : {}) };
+  return { flags, collisions, ...(retrievedAlongside.length ? { retrievedAlongside, alongsideAnswersAccurate: allAccurate } : {}) };
 }

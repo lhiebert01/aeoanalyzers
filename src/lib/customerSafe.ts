@@ -44,6 +44,14 @@ const RULES: { cls: LeakClass; re: RegExp; verbatimToo: boolean }[] = [
   { cls: 'admin-marker', re: /\badmin(?:-only)?\b|COST_SCALE|\bisAdmin\b|\binternal only\b/i, verbatimToo: true },
 ];
 
+// WO-010 A: a customer's own published prices, and the prices an engine quoted about them, are
+// evidence, not our cost. Exactly three line shapes carry them, all built from the site's pricing
+// page and the stored answers, never from a cost field: a beliefs-table Price row, a "Price claim"
+// fidelity line, and the accuracy definition's "your prices (…)" list. Only the currency-figure
+// rule is relaxed for them; every other rule still applies.
+// Matched in Markdown and in the text extracted from the Word and PDF (markup gone, cells joined).
+const PRICE_EVIDENCE = /^(?:\| )?(?:\*\*)?Price:(?:\*\*)? |^(?:- )?Price claim "|^Contradicts your site — your site: |Checked: .*your prices \(/;
+
 // The verbatim appendix starts at its heading — in Markdown ("## Appendix …") and in text extracted
 // from the Word or PDF, where the "##" is gone.
 const APPENDIX = /^\s*(?:##\s+)?Appendix — transcripts/;
@@ -58,7 +66,7 @@ export function findLeaks(text: string, opts: { otherCustomerDomains?: string[] 
   const others = (opts.otherCustomerDomains || []).map((d) => d.toLowerCase());
   for (const line of text.split('\n')) {
     if (APPENDIX.test(line)) verbatim = true;
-    for (const r of RULES) if ((!verbatim || r.verbatimToo) && r.re.test(line)) out.push({ cls: r.cls, line });
+    for (const r of RULES) if ((!verbatim || r.verbatimToo) && r.re.test(line) && !(r.cls === 'currency-figure' && PRICE_EVIDENCE.test(line))) out.push({ cls: r.cls, line });
     if (!verbatim) for (const d of others) if (line.toLowerCase().includes(d)) out.push({ cls: 'other-customer', line });
   }
   return out;
