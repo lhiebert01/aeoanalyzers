@@ -140,3 +140,24 @@ describe('A — price evidence survives the export sanitizer; cost never does', 
     expect(findLeaks('Engine spend this month $12.40')[0]?.cls).toBe('currency-figure');
   });
 });
+
+describe('X handle: a meta-tag handle is not a profile', () => {
+  it('drops the dogfood candidate x.com/aeoanalyzers (never linked on the page) and the node it leaves empty', async () => {
+    const { dropUnlinkedSocialSameAs } = await import('../services/geminiService');
+    const candidate = JSON.stringify({ '@context': 'https://schema.org', '@graph': [{ '@type': 'Organization', '@id': 'https://aeoanalyzers.com/#organization', sameAs: ['https://x.com/aeoanalyzers'], _meta: { provenance: 'inferred' } }] });
+    const page = '<meta name="twitter:site" content="@aeoanalyzers"><a href="https://www.linkedin.com/in/lindsayhiebert/">LinkedIn</a>';
+    expect(dropUnlinkedSocialSameAs(candidate, page)).toEqual({ schema: '', dropped: ['https://x.com/aeoanalyzers'] });
+  });
+  it('keeps a profile the page really links, and every non-social sameAs', async () => {
+    const { dropUnlinkedSocialSameAs } = await import('../services/geminiService');
+    const block = JSON.stringify({ '@type': 'Person', name: 'L', sameAs: ['https://x.com/Lindsay_Hiebert', 'https://www.linkedin.com/in/lindsayhiebert/'] });
+    expect(dropUnlinkedSocialSameAs(block, '"sameAs":["https://x.com/Lindsay_Hiebert"]').dropped).toEqual([]);
+  });
+  it('the site names the founder\'s account, never @aeoanalyzers', async () => {
+    const { readFileSync } = await import('node:fs');
+    const seo = readFileSync('src/components/SEO.tsx', 'utf8');
+    expect(seo).toContain('content="@Lindsay_Hiebert"');
+    expect(seo).not.toMatch(/@aeoanalyzers\b(?!\.)/i);
+    expect(readFileSync('src/lib/json-ld.ts', 'utf8')).toContain("'https://x.com/Lindsay_Hiebert'");
+  });
+});

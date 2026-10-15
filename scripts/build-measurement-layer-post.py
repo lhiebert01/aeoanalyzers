@@ -97,7 +97,7 @@ ld = {"@context": "https://schema.org", "@type": "BlogPosting",
       "datePublished": "2026-10-14", "dateModified": "2026-10-14",
       "author": {"@type": "Person", "@id": "https://pigenai.com/#lindsay", "name": "Lindsay Hiebert",
                  "jobTitle": "Founder and CEO, PIGENAI LLC",
-                 "sameAs": ["https://www.linkedin.com/in/lindsayhiebert/"]},
+                 "sameAs": ["https://www.linkedin.com/in/lindsayhiebert/", "https://x.com/Lindsay_Hiebert"]},
       "publisher": {"@type": "Organization", "@id": "https://pigenai.com/#org", "name": "PIGENAI LLC",
                     "url": "https://pigenai.com", "logo": {"@type": "ImageObject", "url": SITE + "/aeo-og.png"}},
       "image": {"@type": "ImageObject", "url": OG, "width": 1200, "height": 630},
@@ -131,6 +131,8 @@ page = f'''<!doctype html>
 <meta property="og:image:alt" content="{alt}">
 <meta property="article:published_time" content="2026-10-14">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@Lindsay_Hiebert">
+<meta name="twitter:creator" content="@Lindsay_Hiebert">
 <meta name="twitter:title" content="{t1}">
 <meta name="twitter:description" content="{d}">
 <meta name="twitter:image" content="{OG}">

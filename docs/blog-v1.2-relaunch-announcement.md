@@ -210,7 +210,7 @@ Your first analysis: https://www.aeoanalyzers.com
 
 ### Twitter/X Thread
 
-1/ We just re-launched @AEOAnalyzers with the biggest update yet.
+1/ We just re-launched AEO Analyzers with the biggest update yet.
 
 6 new advanced diagnostics. A transparent score formula. A downloadable professional report.
 

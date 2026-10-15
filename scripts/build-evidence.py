@@ -217,6 +217,8 @@ PAGE = f"""<!doctype html>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@Lindsay_Hiebert">
+<meta name="twitter:creator" content="@Lindsay_Hiebert">
 <meta name="twitter:title" content="The Honest-Zero ledger: our own numbers, every month">
 <meta name="twitter:description" content="{META_DESC}">
 <meta name="twitter:image" content="https://aeoanalyzers.com/og-evidence-ledger.png">

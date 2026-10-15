@@ -38,6 +38,8 @@ def page(slug, title, desc, og_title, ld, eyebrow, h1, body):
 <meta property="og:url" content="https://aeoanalyzers.com/{slug}">
 <meta property="og:image" content="https://aeoanalyzers.com/aeo-og.png">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@Lindsay_Hiebert">
+<meta name="twitter:creator" content="@Lindsay_Hiebert">
 <meta name="twitter:title" content="{og_title}">
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="https://aeoanalyzers.com/aeo-og.png">
@@ -129,7 +131,7 @@ meth_ld = {"@context": "https://schema.org", "@type": "TechArticle", "headline":
            "dateModified": REVIEWED, "author": PERSON, "publisher": ORG, "isPartOf": {"@type": "WebSite", "@id": "https://aeoanalyzers.com/#website", "url": "https://aeoanalyzers.com"}}
 about_ld = {"@context": "https://schema.org", "@type": "AboutPage", "url": "https://aeoanalyzers.com/about", "dateModified": REVIEWED,
             "mainEntity": {**PERSON, "jobTitle": "Founder & Sole Creator, AEO Analyzers", "worksFor": ORG,
-                           "sameAs": ["https://www.linkedin.com/in/lindsayhiebert/", "https://www.credly.com/badges/c0bbd19c-c33d-4f32-94d9-36a622fe853f/public_url"]}}
+                           "sameAs": ["https://www.linkedin.com/in/lindsayhiebert/", "https://www.credly.com/badges/c0bbd19c-c33d-4f32-94d9-36a622fe853f/public_url", "https://x.com/Lindsay_Hiebert"]}}
 
 import os
 for slug, html in [

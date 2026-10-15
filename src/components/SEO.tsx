@@ -69,8 +69,8 @@ const SEO: React.FC<SEOProps> = ({
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@aeoanalyzers" />
-      <meta name="twitter:creator" content="@aeoanalyzers" />
+      <meta name="twitter:site" content="@Lindsay_Hiebert" />
+      <meta name="twitter:creator" content="@Lindsay_Hiebert" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />

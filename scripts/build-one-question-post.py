@@ -65,7 +65,7 @@ tail=ch[ch.index('    <p class="samplenote">'):]   # samplenote → followseries
 ld={"@context":"https://schema.org","@type":"Article","headline":h1,"description":desc,
     "datePublished":"2026-10-01","dateModified":"2026-10-01",
     "author":{"@type":"Person","@id":"https://pigenai.com/#lindsay","name":"Lindsay Hiebert",
-              "sameAs":["https://www.linkedin.com/in/lindsayhiebert/","https://www.credly.com/badges/c0bbd19c-c33d-4f32-94d9-36a622fe853f/public_url"]},
+              "sameAs":["https://www.linkedin.com/in/lindsayhiebert/","https://www.credly.com/badges/c0bbd19c-c33d-4f32-94d9-36a622fe853f/public_url","https://x.com/Lindsay_Hiebert"]},
     "publisher":{"@type":"Organization","@id":"https://pigenai.com/#org","name":"PIGENAI LLC","url":"https://pigenai.com",
                  "logo":{"@type":"ImageObject","url":"https://aeoanalyzers.com/aeo-og.png"}},
     "mainEntityOfPage":{"@type":"WebPage","@id":URL},
@@ -95,6 +95,8 @@ page=f'''<!doctype html>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@Lindsay_Hiebert">
+<meta name="twitter:creator" content="@Lindsay_Hiebert">
 <meta name="twitter:title" content="{html.escape(h1,quote=True)}">
 <meta name="twitter:description" content="{d}">
 <meta name="twitter:image" content="https://aeoanalyzers.com/blog/one-question-is-not-a-measurement/img/og-one-question-1200x630.png">

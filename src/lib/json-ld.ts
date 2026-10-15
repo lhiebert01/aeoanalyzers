@@ -130,6 +130,9 @@ function founderNode() {
     sameAs: [
       'https://www.linkedin.com/in/lindsayhiebert/',
       'https://www.credly.com/badges/c0bbd19c-c33d-4f32-94d9-36a622fe853f/public_url',
+      // The founder's own X account (founder, 15 Oct 2026). On the Person, never the
+      // Organization: there is no company account, and sameAs asserts identity.
+      'https://x.com/Lindsay_Hiebert',
     ],
     hasCredential: {
       '@type': 'EducationalOccupationalCredential',

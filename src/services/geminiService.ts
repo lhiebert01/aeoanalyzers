@@ -757,6 +757,38 @@ export async function analyzeWebsite(url: string, html: string, crawler?: Crawle
  * regardless of what the model returned. The prompts ask for the right behavior;
  * these guards guarantee it (the LLM is not trusted to be perfectly compliant).
  */
+const SOCIAL_PROFILE = /^https?:\/\/(?:www\.)?(?:x|twitter)\.com\//i;
+
+/** Remove X/Twitter sameAs URLs that do not appear in the page itself; drop a node left with
+ *  nothing but its type, id and provenance note, and return "" when no node remains. */
+export function dropUnlinkedSocialSameAs(block: string, pageHtml: string): { schema: string; dropped: string[] } {
+  let parsed: any;
+  try { parsed = JSON.parse(block); } catch { return { schema: block, dropped: [] }; }
+  const page = String(pageHtml || '').toLowerCase();
+  const dropped: string[] = [];
+  const clean = (node: any): any => {
+    if (!node || typeof node !== 'object' || Array.isArray(node)) return node;
+    if (node.sameAs !== undefined) {
+      const list = (Array.isArray(node.sameAs) ? node.sameAs : [node.sameAs]).filter((u: unknown) => {
+        const keep = typeof u !== 'string' || !SOCIAL_PROFILE.test(u) || page.includes(u.toLowerCase().replace(/\/+$/, ''));
+        if (!keep) dropped.push(String(u));
+        return keep;
+      });
+      if (list.length) node.sameAs = list; else delete node.sameAs;
+    }
+    return node;
+  };
+  const empty = (n: any) => n && typeof n === 'object' && Object.keys(n).every((k) => ['@type', '@id', '_meta', '@context'].includes(k));
+  if (Array.isArray(parsed?.['@graph'])) {
+    parsed['@graph'] = parsed['@graph'].map(clean).filter((n: any) => !empty(n));
+    if (!dropped.length) return { schema: block, dropped };
+    return { schema: parsed['@graph'].length ? JSON.stringify(parsed, null, 2) : '', dropped };
+  }
+  const one = clean(parsed);
+  if (!dropped.length) return { schema: block, dropped };
+  return { schema: empty(one) ? '' : JSON.stringify(one, null, 2), dropped };
+}
+
 export function applyAccuracyGuards(
   result: AnalysisResult,
   brand: ReturnType<typeof classifySiteType>,
@@ -901,6 +933,18 @@ export function applyAccuracyGuards(
         const { schema, stripped } = sanitizeSchemaBlock(block, pageText);
         result[key] = schema;
         stripped.forEach((s) => removed.push({ field: `${key}.${s.field}`, reason: s.reason }));
+      }
+    }
+    // 1b. An X/Twitter profile in sameAs must appear on the page as a URL. A handle in a
+    //     twitter:site meta tag is not proof the account exists: the 15 Oct 2026 dogfood
+    //     suggested x.com/aeoanalyzers, a profile that has never existed.
+    for (const key of ['schemaSnippet', 'verifiedSchema', 'candidateSchema', 'comprehensiveSchema'] as const) {
+      const block = result[key];
+      if (typeof block !== 'string' || !block.trim()) continue;
+      const { schema, dropped } = dropUnlinkedSocialSameAs(block, pageHtml);
+      if (dropped.length) {
+        result[key] = schema;
+        removed.push({ field: `${key}.sameAs`, reason: `social profile not linked on the page: ${dropped.join(', ')}` });
       }
     }
     // Keep the back-compat paste target pointed at the sanitized verified block.
