@@ -9,4 +9,7 @@ create table if not exists public.gsc_connections (
   connected_at  timestamptz not null default now()
 );
 alter table public.gsc_connections enable row level security;
+-- Server-only (service role): no API access for anon or authenticated (explicit, as required from Oct 30, 2026).
+revoke all on public.gsc_connections from anon, authenticated;
+grant select, insert, update, delete on public.gsc_connections to service_role;
 comment on table public.gsc_connections is 'WO-006: Search Console OAuth refresh tokens, server-only (no client policy).';

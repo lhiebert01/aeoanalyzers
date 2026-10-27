@@ -48,3 +48,5 @@ coexist (Next.js route + static file + plugin), flag which one actually wins.
 
 ## Cost is never exported (founder ruling, Oct 8 2026)
 Engine/sweep cost shows on screen only, and only to the admin emails. **No export carries a cost for anyone** — Markdown, Word, PDF, executive report, page. Any report change must keep `src/__tests__/reportIntegrity003.test.ts` "exports carry no sweep cost even when built by an admin" green; it builds a real report as admin and fails on any dollar figure.
+
+Supabase (from Oct 30, 2026): every CREATE TABLE/VIEW in public must include, in the same migration, explicit GRANTs for the API roles it needs, ENABLE ROW LEVEL SECURITY, and its policies; serial sequences need GRANT USAGE, SELECT; RPC functions need GRANT EXECUTE. New objects get no API access by default. Run npm run check:grants before committing.

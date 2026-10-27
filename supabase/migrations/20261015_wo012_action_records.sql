@@ -44,3 +44,8 @@ create policy "paid owner writes records" on public.action_records
 
 comment on table public.action_records is
   'WO-012 G: the Record. Done and own actions per customer domain, dated. Timing only, never cause.';
+
+-- Explicit API grants (required from Oct 30, 2026): the signed-in owner through RLS above, and the service role.
+revoke all on public.action_records from anon;
+grant select, insert, update, delete on public.action_records to authenticated;
+grant select, insert, update, delete on public.action_records to service_role;

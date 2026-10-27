@@ -128,6 +128,7 @@ BEGIN
   RETURN lower(user_email) IN ('lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com');
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+GRANT EXECUTE ON FUNCTION public.is_admin(text) TO anon, authenticated, service_role;
 
 -- Step 2: Drop existing admin policy if it exists (ignore error if not)
 DROP POLICY IF EXISTS "Admins can read all users" ON public.users;

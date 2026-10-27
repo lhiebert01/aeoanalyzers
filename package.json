@@ -12,7 +12,9 @@
     "test": "vitest run",
     "indexnow": "node scripts/indexnow-ping.mjs",
     "indexnow:all": "node scripts/indexnow-ping.mjs --all",
-    "lint:engines": "tsx scripts/lint-engine-count.ts"
+    "lint:engines": "tsx scripts/lint-engine-count.ts",
+    "check:grants": "node scripts/check-migration-grants.mjs",
+    "pretest": "npm run check:grants"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.112.5",
