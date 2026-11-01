@@ -11,6 +11,11 @@ read_time: 5-minute read
 ---
 Every month we ask AI answer engines the same twelve questions about our own product, five times each, with web search on, and publish what they say. Two of the questions use our name. Ten are the questions a buyer asks when they want a tool and have never heard of us. Four months in, those two halves tell two different stories, and the gap between them is the most useful thing we have measured.
 
+STATS
+- 78% | found by name, November (31 of 40)
+- 0 of 800 | recommended to category buyers, August to November
+- 0 of 40 | most-read category pages that name us
+
 ## Found by name: this is the part a website controls
 
 Asked about AEO Analyzers by name, the engines returned our site in 55% of answers in August, 80% in September, 88% in October and 78% in November, 40 answers each month. (August is the restated figure; the ledger explains why.) In November our own site was among the sources cited in 31 of those 40 answers. Claude, Perplexity and Gemini returned it every time. ChatGPT returned it 1 time in 10, against 5 of 10 in October.

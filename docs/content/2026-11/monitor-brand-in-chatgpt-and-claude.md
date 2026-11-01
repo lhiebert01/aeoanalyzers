@@ -4,7 +4,7 @@ kind: answer
 eyebrow: AEO Analyzers · How to
 title: How to monitor whether your brand appears in ChatGPT and Claude responses
 seo_title: Monitor Your Brand in ChatGPT and Claude | AEO Analyzers
-description: Ask the questions buyers ask, with web search on, five times each. Score found, accurate and recommended separately, and repeat every month.
+description: Ask the questions buyers ask, with web search on, five times each. Score found by name versus recommended (and accuracy) separately, every month.
 date: 2026-11-01
 display_date: November 1, 2026
 read_time: 6-minute read

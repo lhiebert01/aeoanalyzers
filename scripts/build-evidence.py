@@ -493,13 +493,13 @@ def patch(path, jobs, css=None, once_marker=None):
 # 1. Blog index — the number goes at the TOP, where a reader lands, not in the footer aside.
 #    Monthly refresh: the strip is REGENERATED every run (it was write-once, so October would
 #    have left September's figures on the blog index).
-_bi = open('public/blog/index.html', encoding='utf-8').read()
-if 'class="ledgerstrip"' in _bi:
-    _a = _bi.index('  <div class="ledgerstrip">'); _b = _bi.index('  <div class="posts">')
-    open('public/blog/index.html', 'w', encoding='utf-8').write(_bi[:_a] + STRIP + _bi[_b:])
-    print('  refreshed public/blog/index.html strip')
+# WO-016: the blog index is sectioned by scripts/build-blog-chrome.mjs, which places this strip at
+# the top of "The Honest-Zero ledger" section. This script writes the strip to docs/ledger-strip.html
+# every run (monthly figures) and no longer edits the index's layout itself.
+open('docs/ledger-strip.html', 'w', encoding='utf-8').write(STRIP)
+print('  wrote docs/ledger-strip.html (placed by build-blog-chrome.mjs)')
 patch('public/blog/index.html',
-      [('  <div class="posts">', STRIP + '  <div class="posts">'),
+      [
        ('<a href="/blog/i-scored-zero#the-ledger">the running ledger</a>',
         '<a href="/evidence">the running ledger</a>')],
       css=STRIP_CSS, once_marker='class="ledgerstrip"')

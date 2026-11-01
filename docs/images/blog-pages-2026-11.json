@@ -1,0 +1,393 @@
+{
+  "_note": "WO-016 page plan. section = blog index section. hero = [SUBJECT] for the text-free hero prompt. figures = embedded explanatory images: kind 'code' is built in code (exact labels), 'existing' reuses a file. under = the heading text (h2) the figure sits directly under ('lead' = after the opening paragraph). Data figures must come from the named source with its date.",
+  "sections": [
+    "Start here",
+    "How to",
+    "The Honest-Zero ledger",
+    "Buyer series",
+    "Behind the scenes"
+  ],
+  "pages": [
+    {
+      "path": "/aeo-buyers-guide",
+      "slug": "aeo-buyers-guide",
+      "section": "Start here",
+      "hero": "an open checklist of seven separate panels, the first one softly lit",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "seven-requirements",
+          "spec": "Seven requirements as seven rounded panels in a row/grid: Observe, Diagnose, Remediate, Verify, Receipts, Scale, Economics. No numbers.",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/what-should-an-aeo-tool-do",
+      "slug": "what-should-an-aeo-tool-do",
+      "section": "Start here",
+      "hero": "three separated panels of light standing side by side",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "three-layers",
+          "spec": "the rebuilt three-layers visual (see /blog/how-it-works)",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/blog/why-ai-doesnt-mention-you",
+      "slug": "why-ai-doesnt-mention-you",
+      "section": "Start here",
+      "hero": "a soft beam sweeping across a wide field of cards, lighting only the first ten",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "what-the-engine-reads",
+          "spec": "Diagram 'What the engine reads': a search returns ten results (positions 1-10, lit); the engine reads those; a page at position 68 (dim, far right) is never reached. Caption: our own Search Console figure for /best-aeo-tools, average position 68 over the three months to November 1st, 2026.",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/monitor-brand-in-chatgpt-and-claude",
+      "slug": "monitor-brand-in-chatgpt-and-claude",
+      "section": "How to",
+      "hero": "a ring of identical question cards orbiting one central card",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "six-steps",
+          "spec": "Six numbered step cards: 1 Write two kinds of questions; 2 Ask with web search on, five times each; 3 Keep every answer and its sources; 4 Score found, accurate, recommended separately; 5 Read the sources behind category answers; 6 Repeat monthly, same questions, same engines.",
+          "under": "Step 1: write two kinds of questions"
+        },
+        {
+          "kind": "existing",
+          "id": "shot-stored-answer",
+          "file": "/img/blog/2026-11/shot-stored-answer.webp",
+          "w": 1600,
+          "h": 1000,
+          "under": "Step 3: keep every answer and its sources",
+          "alt": "Screenshot of the stored answers in a saved AEO Analyzers sweep of aeoanalyzers.com, November 1st, 2026: one Perplexity answer to \"who is aeoanalyzers.com\" opened in full and marked cited, above a list of other stored answers, each with its engine, question and cited or not cited.",
+          "caption": "A stored answer from our own November 1st, 2026 sweep, as the engine wrote it. Other companies' names are replaced with neutral labels and page addresses are hidden."
+        }
+      ]
+    },
+    {
+      "path": "/track-brand-mentions-across-ai-answer-engines",
+      "slug": "track-brand-mentions-across-ai-answer-engines",
+      "section": "How to",
+      "hero": "four parallel lanes of cards, one lane mostly dim",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "per-engine-nov",
+          "spec": "Table graphic 'Found by name, November 1st, 2026 (our own measurement)': Claude 10 of 10; Perplexity 10 of 10; Gemini 10 of 10; ChatGPT 1 of 10. Source: docs/baselines/aeoanalyzers-2026-11-01.json.",
+          "under": "Track per engine, not as one number"
+        },
+        {
+          "kind": "code",
+          "id": "mention-citation-recommendation",
+          "spec": "Three boxes: Mention (your name is in the answer text) · Citation (your domain is among the sources) · Recommendation (named as an option for a buyer's category question).",
+          "under": "Separate a mention from a citation"
+        }
+      ]
+    },
+    {
+      "path": "/score-pages-for-answer-engine-readiness",
+      "slug": "score-pages-for-answer-engine-readiness",
+      "section": "How to",
+      "hero": "a page outline being scanned by three soft beams of light",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "reach-read-attribute",
+          "spec": "Three panels: Reach (crawler allowed, page indexable) · Read (content in the HTML, clear headings, quotable passages) · Attribute (structured data, stable @id, linked profiles).",
+          "under": "What \"answer engine readiness\" means"
+        },
+        {
+          "kind": "existing",
+          "id": "shot-aeo-score",
+          "file": "/img/blog/2026-11/shot-aeo-score.webp",
+          "w": 1600,
+          "h": 1000,
+          "under": "How to use the score",
+          "alt": "Screenshot of the AEO Score result for aeoanalyzers.com, November 1st, 2026: AEO Score 88, Citation Readiness 90% (a technical-readiness estimate, not a measured citation rate), a written summary, and the score formula with Entity 95, Density 80, Clarity 90 and Structure 85.",
+          "caption": "Our own AEO Score result, November 1st, 2026. The score reads the page; what the engines actually say is measured separately."
+        }
+      ]
+    },
+    {
+      "path": "/diagnose-dropped-out-of-perplexity-citations",
+      "slug": "diagnose-dropped-out-of-perplexity-citations",
+      "section": "How to",
+      "hero": "one card that has slipped out of a neatly lit row of cards",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "answers-sources-naming",
+          "spec": "Flow: Stored answers → Cited pages (ranked by how often) → Which of them name you. Label 'Illustrative example' if any counts shown; prefer no counts.",
+          "under": "3. What does Perplexity cite instead?"
+        }
+      ]
+    },
+    {
+      "path": "/ai-answers-get-facts-wrong-about-my-brand",
+      "slug": "ai-answers-get-facts-wrong-about-my-brand",
+      "section": "How to",
+      "hero": "a row of aligned cards where one card has a subtly mismatched edge",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "said-vs-site",
+          "spec": "Two columns. 'What the engine said' : \"an AI simulation engine\" (Claude, 10 of 10 by-name answers, November 1st, 2026). 'What our site says': \"AEO Analyzers measures what AI answer engines say when buyers ask for a recommendation.\" Label: 'Our own data, November 1st, 2026'.",
+          "under": "A real example, from our own measurement"
+        }
+      ]
+    },
+    {
+      "path": "/competitive-prompt-benchmarking",
+      "slug": "competitive-prompt-benchmarking",
+      "section": "How to",
+      "hero": "several rows of identical cards side by side, with a few cards in one row glowing",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "prompt-engine-run-grid",
+          "spec": "Grid: prompts (rows) × engines (columns) × 5 runs (small dots); a side tally 'who got named'. Label 'Illustrative example', no company names (use 'Your brand', 'Company A', 'Company B').",
+          "under": "What to require from a tool"
+        }
+      ]
+    },
+    {
+      "path": "/guides/directory-listings",
+      "slug": "guide-directory-listings",
+      "section": "How to",
+      "hero": "a tidy grid of directory cards, a few of them lit",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "listing-loop",
+          "spec": "Three steps: Find the directories engines cite in your answers → List with the same name, description and link everywhere → Check the next sweep. No numbers.",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/guides/wikidata",
+      "slug": "guide-wikidata",
+      "section": "How to",
+      "hero": "one central card linked by fine lines to several surrounding nodes",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "one-entity",
+          "spec": "One entity node (your company) linked to: website, LinkedIn, Crunchbase, directory listings — 'one name, one identifier, linked profiles'. No numbers.",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/evidence",
+      "slug": "evidence",
+      "section": "The Honest-Zero ledger",
+      "hero": "a long calendar row of cards receding into the distance",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "ledger-chart",
+          "spec": "Chart Aug–Nov 2026: found by name 55%, 80%, 88%, 78% (N=40 each, August restated) as a line/bars; recommended to buyers 0 of 200 each month as a flat baseline labeled '0 of 200'. Source: docs/baselines (the ledger).",
+          "under": "Every month so far"
+        }
+      ]
+    },
+    {
+      "path": "/blog/found-not-recommended",
+      "slug": "found-not-recommended",
+      "section": "The Honest-Zero ledger",
+      "hero": "two paths leaving one doorway: one lit and reaching a set of cards, the other ending at a closed set of cards",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "ledger-chart",
+          "spec": "same ledger chart",
+          "under": "Found by name: this is the part a website controls"
+        },
+        {
+          "kind": "code",
+          "id": "named-0-of-40",
+          "spec": "Stat tile: 'Named on 0 of 40' / 'most-read pages for our category questions, November 1st, 2026 (4 could not be read)'.",
+          "under": "Where a recommendation comes from"
+        }
+      ]
+    },
+    {
+      "path": "/blog/i-scored-zero",
+      "slug": "i-scored-zero",
+      "section": "The Honest-Zero ledger",
+      "hero": "a lit library of cards with one small card highlighted",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "ledger-chart",
+          "spec": "same ledger chart",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/blog/reading-isnt-citing",
+      "slug": "reading-isnt-citing",
+      "section": "The Honest-Zero ledger",
+      "hero": "a lit library of cards with one small card highlighted, seen from a different angle",
+      "figures": [
+        {
+          "kind": "existing",
+          "id": "visual-4",
+          "file": "/blog/how-it-works/visual-4-reading-isnt-citing.png",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/blog/the-fifth-engine",
+      "slug": "the-fifth-engine",
+      "section": "Buyer series",
+      "hero": "five rounded frames in a row, the fifth edged in green",
+      "figures": [
+        {
+          "kind": "existing",
+          "id": "existing-panel",
+          "file": "keep the page's current panel image",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/blog/the-measurement-layer",
+      "slug": "the-measurement-layer",
+      "section": "Buyer series",
+      "hero": "three separated panels of light, seen at an angle",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "three-layers",
+          "spec": "the rebuilt three-layers visual",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/blog/one-question-is-not-a-measurement",
+      "slug": "one-question-is-not-a-measurement",
+      "section": "Buyer series",
+      "hero": "a grid of small cards, some lit and some dim",
+      "figures": [
+        {
+          "kind": "existing",
+          "id": "visual-3",
+          "file": "/blog/how-it-works/visual-3-why-several-runs.png",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/aeo-buyers-standard",
+      "slug": "aeo-buyers-standard",
+      "section": "Buyer series",
+      "hero": "an open checklist of seven panels arranged in two rows",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "seven-requirements",
+          "spec": "same seven requirements graphic",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/best-aeo-tools",
+      "slug": "best-aeo-tools",
+      "section": "Buyer series",
+      "hero": "an open checklist of seven panels with a ruler-like guide beside it",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "seven-requirements",
+          "spec": "same seven requirements graphic",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/blog/how-it-works",
+      "slug": "how-it-works",
+      "section": "Behind the scenes",
+      "hero": "a horizontal stream of glowing cards flowing through five gates",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "pipeline",
+          "spec": "rebuild visual-1-pipeline in code: same five stages and wording, chip mark logo, engine names as plain text (no engine logos), 'the engines on your plan × every question × several runs' instead of '4 engines', no '90-second' subtitle",
+          "under": "replace visual-1"
+        },
+        {
+          "kind": "code",
+          "id": "three-layers",
+          "spec": "rebuild visual-2: same panels and wording, neutral placeholders 'Your brand', 'Another company', 'Another company', label 'Illustrative example'",
+          "under": "replace visual-2"
+        }
+      ]
+    },
+    {
+      "path": "/blog/what-you-actually-get",
+      "slug": "what-you-actually-get",
+      "section": "Behind the scenes",
+      "hero": "five stacked layers of cards",
+      "figures": [
+        {
+          "kind": "existing",
+          "id": "visual-5",
+          "file": "/blog/how-it-works/visual-5-attainability-ladder.png",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/blog/are-you-the-answer-ai-gives",
+      "slug": "are-you-the-answer-ai-gives",
+      "section": "Behind the scenes",
+      "hero": "two round gauges facing each other, with no markings",
+      "figures": [
+        {
+          "kind": "existing",
+          "id": "visual-6",
+          "file": "/blog/how-it-works/visual-6-fix-prove.png",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/get-recommended",
+      "slug": "get-recommended",
+      "section": "Start here",
+      "hero": "three flat stepping stones crossing calm water, each one a little brighter",
+      "figures": [
+        {
+          "kind": "code",
+          "id": "measure-act-record",
+          "spec": "Three panels: Measure (what the engines say, stored) → Act (the steps, in order, with owners) → Record (dated actions beside the next measurement; timing, not cause).",
+          "under": "lead"
+        }
+      ]
+    },
+    {
+      "path": "/blog/how-to",
+      "slug": "how-to",
+      "section": "How to",
+      "hero": "a tidy shelf of instruction cards, neatly spaced",
+      "figures": []
+    }
+  ]
+}

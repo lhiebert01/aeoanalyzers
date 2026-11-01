@@ -15,9 +15,9 @@
 <meta property="og:title" content="How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis">
 <meta property="og:description" content="The pipeline, drawn: read your site, ask five answer engines on Pro and Business (four on the Day Pass), score three layers, keep every transcript.">
 <meta property="og:url" content="https://aeoanalyzers.com/blog/how-it-works">
-<meta property="og:image" content="https://aeoanalyzers.com/og-blog-how-it-works.png">
-<meta property="og:image:type" content="image/png">
-<meta property="og:image:alt" content="AEO Analyzers blog card: How AEO Analyzers Works — the 90-second tour of a hundred-hour analysis">
+<meta property="og:image" content="https://aeoanalyzers.com/img/blog/2026-11/og-how-it-works-2026-11.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:alt" content="AEO Analyzers: How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis. A path of glowing teal-green and purple tiles running through a series of light grey arches.">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -25,7 +25,7 @@
 <meta name="twitter:creator" content="@Lindsay_Hiebert">
 <meta name="twitter:title" content="How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis">
 <meta name="twitter:description" content="The pipeline, drawn: read your site, ask five answer engines on Pro and Business (four on the Day Pass), score three layers, keep every transcript.">
-<meta name="twitter:image" content="https://aeoanalyzers.com/og-blog-how-it-works.png">
+<meta name="twitter:image" content="https://aeoanalyzers.com/img/blog/2026-11/og-how-it-works-2026-11.jpg">
 <meta name="theme-color" content="#08343B">
 <script type="application/ld+json">
 {
@@ -112,22 +112,61 @@ strong{color:var(--ink)}
   border:1.5px solid var(--teal-deep);font-weight:600;font-size:14.5px;text-decoration:none;padding:10px 18px;border-radius:11px}
 .followseries .fs-cta:hover{background:var(--teal-deep);color:#EAF4F5}
 .followseries .fs-cta:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+/*wo016*/
+.sitebar.wo{display:flex;align-items:center;gap:14px;flex-wrap:nowrap}
+.sitebar.wo .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px;color:var(--ink);text-decoration:none;flex:none}
+.sitebar.wo .mainnav{display:flex;align-items:center;gap:2px;margin-left:auto}
+.sitebar.wo .mainnav>a,.sitebar.wo .res>summary{color:#2A333B;text-decoration:none;font-size:13.5px;font-weight:650;padding:8px 10px;border-radius:9px;cursor:pointer;list-style:none;white-space:nowrap}
+.sitebar.wo .res>summary::-webkit-details-marker{display:none}
+.sitebar.wo .mainnav>a:hover,.sitebar.wo .res>summary:hover{color:var(--ink);background:var(--panel)}
+.sitebar.wo .mainnav>a[aria-current]{color:var(--ink);background:var(--panel)}
+.sitebar.wo .res{position:relative}
+.sitebar.wo .resmenu{position:absolute;top:110%;left:0;background:var(--card);border:1px solid var(--edge);border-radius:12px;box-shadow:var(--card-shadow);padding:6px;min-width:180px;z-index:40}
+.sitebar.wo .resmenu a,.sitebar.wo .mmenu a{display:block;color:var(--ink);text-decoration:none;font-size:14px;font-weight:600;padding:9px 12px;border-radius:8px}
+.sitebar.wo .resmenu a:hover,.sitebar.wo .mmenu a:hover{background:var(--panel)}
+.sitebar.wo .startfree{flex:none;background:var(--teal-deep);color:#EAF4F5;text-decoration:none;font-weight:700;font-size:14px;padding:8px 13px;border-radius:9px}
+.sitebar.wo .mnav{display:none;position:relative}
+.sitebar.wo .mnav>summary{list-style:none;cursor:pointer;font-weight:700;font-size:14px;color:var(--ink);padding:8px 12px;border:1px solid var(--edge);border-radius:9px}
+.sitebar.wo .mnav>summary::-webkit-details-marker{display:none}
+.sitebar.wo .mmenu{position:absolute;right:0;top:115%;background:var(--card);border:1px solid var(--edge);border-radius:12px;box-shadow:var(--card-shadow);padding:6px;min-width:220px;z-index:40}
+@media(max-width:1020px){.sitebar.wo .mainnav{display:none}.sitebar.wo .mnav{display:block;margin-left:auto}}
+@media(max-width:420px){.sitebar.wo .startfree{display:none}}
+.crumbs{font-size:13.5px;color:#2A333B;margin:6px 0 10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.crumbs a{color:#0B5560;text-decoration:underline;text-underline-offset:2px}
+.crumbs span[aria-current]{color:var(--ink);font-weight:600}
+.backlink{display:inline-block;font-size:14px;font-weight:650;color:#0B5560;text-decoration:none;margin:0 0 12px}
+.backlink:hover{text-decoration:underline}
+.posthero{margin:16px 0 22px}
+.posthero img,.postfig img{width:100%;height:auto;display:block;border-radius:14px;background:#0A0F1C}
+.postfig{margin:22px 0 26px}
+.postfig figcaption{font-size:14px;color:#2A333B;margin-top:9px;line-height:1.5;max-width:70ch}
+.postend{margin:34px 0 0;padding:22px 0 0;border-top:1px solid var(--edge)}
+.prevnext{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0 22px}
+.prevnext a{display:block;border:1px solid var(--edge);border-radius:12px;padding:12px 14px;text-decoration:none;color:var(--ink);background:var(--card)}
+.prevnext a small{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#2A333B;margin-bottom:4px}
+.prevnext .next{text-align:right;grid-column:2}
+.morein h2{font-size:17px;margin:0 0 10px}
+.morein ul{list-style:none;padding:0;margin:0 0 18px;display:grid;gap:8px}
+.morein a{color:#0B5560;font-weight:600}
+@media(max-width:620px){.prevnext{grid-template-columns:1fr}.prevnext .next{grid-column:1;text-align:left}}
+/*/wo016*/
 </style>
 <link rel="alternate" type="application/rss+xml" title="AEO Analyzers Blog" href="https://aeoanalyzers.com/blog/feed.xml">
-</head>
+
+<meta name="twitter:image:alt" content="AEO Analyzers: How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis. A path of glowing teal-green and purple tiles running through a series of light grey arches.">
+<!--wo016:breadcrumb-ld--><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://aeoanalyzers.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://aeoanalyzers.com/blog/"},{"@type":"ListItem","position":3,"name":"Behind the scenes","item":"https://aeoanalyzers.com/blog/#behind-the-scenes"},{"@type":"ListItem","position":4,"name":"How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis","item":"https://aeoanalyzers.com/blog/how-it-works"}]}</script><!--/wo016:breadcrumb-ld--></head>
 <body>
-<header class="sitebar">
-  <a class="brand" href="https://aeoanalyzers.com/"><span class="mk">A</span> AEO Analyzers</a>
-  <nav class="snav">
-    <a href="https://aeoanalyzers.com/">Home</a>
-    <a href="/blog/">Blog</a>
-    <a class="primary" href="https://aeoanalyzers.com/">Start free →</a>
-  </nav>
-</header>
+<!--wo016:header--><header class="sitebar wo">
+  <a class="brand" href="/"><svg aria-hidden="true" width="27" height="27" viewBox="0 0 40 40"><rect width="40" height="40" rx="12" fill="#18181B"/><g transform="translate(8 8)" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v2M12 2v2M17 20v2M17 2v2M2 12h2M2 17h2M2 7h2M20 12h2M20 17h2M20 7h2M7 20v2M7 2v2"/><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></g></svg><span>AEO Analyzers</span></a>
+  <nav class="mainnav" aria-label="Main"><a href="/">Why AEO?</a><a href="/aeo-checker">Free AEO Checker</a><a href="/analyzer">Analyzer</a><a href="/sweeps">Sweeps</a><a href="/history">History</a><a href="/pricing">Pricing</a><details class="res"><summary>Resources</summary><div class="resmenu"><a href="/guide">User guide</a><a href="/blog/how-to">How to guides</a></div></details><a href="/blog/" aria-current="page">Blog</a></nav>
+  <a class="startfree" href="/aeo-checker">Start free →</a>
+  <details class="mnav"><summary aria-label="Menu">Menu</summary><div class="mmenu"><a href="/">Why AEO?</a><a href="/aeo-checker">Free AEO Checker</a><a href="/analyzer">Analyzer</a><a href="/sweeps">Sweeps</a><a href="/history">History</a><a href="/pricing">Pricing</a><a href="/guide">User guide</a><a href="/blog/how-to">How to guides</a><a href="/blog/">Blog</a></div></details>
+</header><!--/wo016:header-->
 <div class="wrap">
   <article class="post">
-    <div class="posteyebrow">AEO Analyzers · Behind the scenes</div>
-    <h1 class="posttitle">How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis</h1>
+                
+    <!--wo016:crumbs--><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">›</span><a href="/blog/">Blog</a><span aria-hidden="true">›</span><a href="/blog/#behind-the-scenes">Behind the scenes</a><span aria-hidden="true">›</span><span aria-current="page">How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis</span></nav><a class="backlink" href="/blog/">← Back to the blog</a><!--/wo016:crumbs--><div class="posteyebrow">AEO Analyzers · Behind the scenes</div>
+    <h1 class="posttitle">How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis</h1><!--wo016:hero--><figure class="posthero"><img src="/img/blog/2026-11/how-it-works-hero.webp" alt="A path of glowing teal-green and purple tiles running through a series of light grey arches." width="1600" height="900" fetchpriority="high" decoding="async"></figure><!--/wo016:hero-->
     <div class="postbody">
       <p style="margin:0 0 10px;font-size:14px;color:var(--muted)"><strong style="color:var(--ink)">Updated 15 October 2026:</strong> Pro and Business sweeps now ask five engines, adding Grok. The method is otherwise unchanged.</p>
       <p class="postlead">This one shows its work — every question it asked, every engine it asked, every answer it got back, stored so you can re-run it yourself. Here is the whole pipeline, end to end, in about the time it takes to read this page.</p>
@@ -135,8 +174,7 @@ strong{color:var(--ink)}
       <p>What a web team would spend a hundred hours reasoning through by hand — which questions your buyers ask AI, which engines answer them, who gets named — the analysis works through in about ninety seconds, and then leaves the receipts.</p>
 
       <figure class="fig">
-        <img src="/blog/how-it-works/visual-1-pipeline.png" width="1672" height="941" loading="lazy"
-          alt="A five-stage pipeline: AEO Analyzers reads your site to propose brand, category, competitors and questions; forms 12 buyer questions in three kinds; asks each question several times with web search on, across five answer engines on Pro and Business and four on the Day Pass, keeping search-grounded answers separate from from-memory ones; scores three layers with an accuracy and look-alike check and a sample size on every number; and returns a scorecard, stored transcripts, and an action plan. A loop arrow returns to the interrogation stage: re-sweep monthly, same questions, same way.">
+        <img src="/img/blog/2026-11/fig-pipeline.webp" alt="The AEO Analyzers pipeline in five stages. 1 Your domain: we read your site and propose brand, category, competitors and draft questions; you confirm. 2 The questions: your buyer questions, in three kinds: about-you, category and head-to-head. 3 The interrogation: the engines on your plan (ChatGPT, Claude, Perplexity, Gemini, plus Grok on Pro and Business) × every question × several runs, web search on, with search-grounded and answered-from-memory answers kept separate. 4 The measurement: found by name, recommended to buyers and who's cited instead, with an accuracy check, look-alike detection, and sample size and confidence on every number. 5 The deliverables: a scorecard, stored transcripts and an action plan (code fixes, content agenda, tiered source list). A loop returns to stage 3: re-sweep monthly, same questions, same way, and watch the number move." width="1600" height="983" loading="lazy" decoding="async">
         <figcaption class="figcap">The pipeline, at a glance — five stages, and a loop back to the start. <a class="ilink" href="/evidence">What it produces, month by month, is published here.</a><br>Diagram drawn August 2026 for the four-engine panel; Pro and Business now add Grok as a fifth engine.</figcaption>
       </figure>
 
@@ -145,8 +183,7 @@ strong{color:var(--ink)}
       <p>Then the questions: twelve a real buyer would type, in three kinds. <strong>About you</strong> — are you found when named. <strong>Category</strong> — are you recommended when nobody names you. <strong>Head-to-head</strong> — the alternatives-and-versus questions. These are the questions your buyers ask AI before they ever reach your site.</p>
 
       <figure class="fig">
-        <img src="/blog/how-it-works/visual-2-three-layers.png" width="1774" height="887" loading="lazy"
-          alt="Three panels naming the three things a Citation Sweep measures: whether AI finds you when buyers ask you by name, whether AI recommends you when buyers ask about the category, and which competitors get cited in your place. The example answers are illustrative.">
+        <img src="/img/blog/2026-11/fig-three-layers.webp" alt="Illustrative example of the three layers AEO Analyzers measures, in three panels. 1, Found by name? When someone asks AI about your brand by name, does it return the right information and cite your site? The example answer to &quot;What is Your brand?&quot; describes the brand and links your site, with a check mark. We score: did it find you by name and cite you? 2, Recommended? When someone asks for recommendations in your category, are you among the answers? The example list reads Another company, Another company, then &quot;Your brand?&quot; with a question mark. We score: did it recommend you for the category? 3, Who's cited instead? The example list reads Another company three times, with a cross. We score: who is cited instead of you, and how often? Placeholder names, not a real answer." width="1600" height="1149" loading="lazy" decoding="async">
         <figcaption class="figcap">The three layers we measure — found by name, recommended, and who's cited instead. (Example answers are illustrative.)</figcaption>
       </figure>
 
@@ -194,7 +231,10 @@ strong{color:var(--ink)}
       <p><em>Updated October 2026: Pro and Business ask five answer engines, now including Grok. See <a href="/blog/the-fifth-engine">We added a fifth AI engine</a>.</em></p>
     </div>
     <p class="samplenote"><em>Diagram example answers, grid values, and gauge readings are illustrative — labeled as such — not measured results. AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PIGENAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</em></p>
-  </article>
+        
+  <!--wo016:end--><div class="postend"><a class="backlink" href="/blog/">← Back to the blog</a>
+      <nav class="prevnext" aria-label="More in Behind the scenes"><a class="next" href="/blog/what-you-actually-get"><small>Next in Behind the scenes →</small>What You Actually Get: The Action Plan Inside Every Citation Sweep</a></nav>
+      <div class="morein"><h2>More in Behind the scenes</h2><ul><li><a href="/blog/what-you-actually-get">What You Actually Get: The Action Plan Inside Every Citation Sweep</a></li><li><a href="/blog/are-you-the-answer-ai-gives">Is your brand the answer AI gives — or is a competitor?</a></li></ul></div></div><!--/wo016:end--></article>
 
   <div class="postoutro">
     <span class="eyebrow">See yours</span>

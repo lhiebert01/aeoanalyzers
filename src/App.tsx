@@ -214,7 +214,7 @@ export default function App() {
     // Leaving (or re-entering) Sweeps via nav drops any saved-sweep view so the
     // run form shows fresh — the saved view is only reached via a History "View".
     setSavedSweepId(null);
-    const path = newView === 'privacy' ? '/privacy' : newView === 'terms' ? '/terms' : newView === 'checker' ? '/aeo-checker' : '/';
+    const path = newView === 'privacy' ? '/privacy' : newView === 'terms' ? '/terms' : newView === 'checker' ? '/aeo-checker' : newView === 'analyzer' ? '/analyzer' : newView === 'history' ? '/history' : newView === 'sweeps' ? '/sweeps' : newView === 'payments' ? '/pricing' : newView === 'guide' ? '/guide' : '/';
     window.history.pushState({}, '', path);
     window.scrollTo(0, 0);
   };
@@ -242,6 +242,8 @@ export default function App() {
       else if (path === '/guide') setView('guide');
       else if (path === '/press') setView('press');
       else if (path === '/aeo-checker') setView('checker');
+      else if (path === '/analyzer') setView('analyzer');
+      else if (path === '/history') setView('history');
       else if (path === '/sweeps') {
         // Deep-link / back-forward to a saved sweep view.
         const saved = new URLSearchParams(window.location.search).get('saved');
@@ -330,7 +332,9 @@ export default function App() {
           //
           // Now: keep any PUBLIC view, reset only the signed-in ones, and read the
           // current value functionally so no stale closure can decide it.
-          setView((current) => (PUBLIC_VIEWS.includes(current) ? current : 'landing'));
+          // WO-016: the static pages' header links to /analyzer, /sweeps and /history. A guest there
+          // gets the free checker (analyzer) or the sign-in page (sweeps, history), not the homepage.
+          setView((current) => (PUBLIC_VIEWS.includes(current) ? current : current === 'analyzer' ? 'checker' : current === 'sweeps' || current === 'history' ? 'auth' : 'landing'));
         }
       } catch (err) {
         console.error('[Auth] Unexpected error in handleSession:', err);

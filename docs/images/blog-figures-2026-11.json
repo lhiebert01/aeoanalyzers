@@ -1,0 +1,116 @@
+{
+  "seven-requirements": {
+    "file": "/img/blog/2026-11/fig-seven-requirements.webp",
+    "w": 1600,
+    "h": 859,
+    "alt": "Seven rounded panels, one per purchasing requirement for an AEO tool: Observe (can it measure the outcome you actually care about?), Diagnose (can it tell you why the result happened?), Remediate (does it tell you what to change?), Verify (can it prove the fix worked?), Receipts (can you inspect the evidence?), Scale (does it fit the operating problem you actually have?) and Economics (what are you actually paying for?).",
+    "caption": "The seven purchasing requirements from the AEO Buyer’s Standard: Observe, Diagnose, Remediate, Verify, Receipts, Scale and Economics."
+  },
+  "three-layers": {
+    "file": "/img/blog/2026-11/fig-three-layers.webp",
+    "alsoAt": "/blog/how-it-works/visual-2-three-layers-v2.webp",
+    "w": 1600,
+    "h": 1105,
+    "alt": "Illustrative example of the three layers AEO Analyzers measures, in three panels. 1, Found by name? When someone asks AI about your brand by name, does it return the right information and cite your site? The example answer to \"What is Your brand?\" describes the brand and links your site, with a check mark. We score: did it find you by name and cite you? 2, Recommended? When someone asks for recommendations in your category, are you among the answers? The example list reads Another company, Another company, then \"Your brand?\" with a question mark. We score: did it recommend you for the category? 3, Who's cited instead? The example list reads Another company three times, with a cross. We score: who is cited instead of you, and how often? Placeholder names, not a real answer.",
+    "caption": "Illustrative example. The three layers a sweep reports separately: found by name, recommended for the category, and who is cited instead. Placeholder names, not a real answer."
+  },
+  "what-the-engine-reads": {
+    "file": "/img/blog/2026-11/fig-what-the-engine-reads.webp",
+    "w": 1600,
+    "h": 930,
+    "alt": "Diagram titled \"What the engine reads\". An answer engine at the top shines a beam down onto ten lit search-result cards numbered 1 to 10, labeled \"Reads positions 1 to 10\". A dashed gap marked \"11 to 67\" leads to a dim card far to the right numbered 68, labeled \"Our /best-aeo-tools page, average position 68, never reached\". Position 68 is our own Search Console average for /best-aeo-tools over the three months to November 1st, 2026.",
+    "caption": "The engine reads the top of the results. Position 68 is our own Search Console average for /best-aeo-tools over the three months to November 1st, 2026."
+  },
+  "six-steps": {
+    "file": "/img/blog/2026-11/fig-six-steps.webp",
+    "w": 1600,
+    "h": 822,
+    "alt": "Six numbered step cards: 1 Write two kinds of questions; 2 Ask with web search on, five times each; 3 Keep every answer and its sources; 4 Score found, accurate, recommended separately; 5 Read the sources behind category answers; 6 Repeat monthly, same questions, same engines.",
+    "caption": "Six steps for monitoring a brand in AI answers: two kinds of questions, web search on, five runs each, every answer stored, three separate scores, and the same panel every month."
+  },
+  "per-engine-nov": {
+    "file": "/img/blog/2026-11/fig-per-engine-nov.webp",
+    "w": 1600,
+    "h": 766,
+    "alt": "Table titled \"Found by name, November 1st, 2026\", our own measurement, ten answers per engine shown as dots. Claude: 10 of 10; Perplexity: 10 of 10; Gemini: 10 of 10; ChatGPT: 1 of 10.",
+    "caption": "Found by name per engine on November 1st, 2026, our own measurement: one engine found us once in ten tries while the other three found us every time. Source: docs/baselines/aeoanalyzers-2026-11-01.json."
+  },
+  "mention-citation-recommendation": {
+    "file": "/img/blog/2026-11/fig-mention-citation-recommendation.webp",
+    "w": 1600,
+    "h": 776,
+    "alt": "Three boxes. Mention: your name is in the answer text (example: \"tools such as Your brand track this\"). Citation: your domain is among the sources (example source list with your site second). Recommendation: named as an option for a buyer's category question (example list with Your brand first). Illustrative example with placeholder names.",
+    "caption": "Illustrative example. A mention, a citation and a recommendation are three different outcomes; a tool should count each one separately."
+  },
+  "reach-read-attribute": {
+    "file": "/img/blog/2026-11/fig-reach-read-attribute.webp",
+    "w": 1600,
+    "h": 694,
+    "alt": "Three panels in order. Reach (can the engine get to the page?): crawler allowed, page indexable. Read (can it understand and quote it?): content in the HTML, clear headings, quotable passages. Attribute (can it tell whose page it is?): structured data, stable @id, linked profiles.",
+    "caption": "Answer engine readiness in three parts: Reach, Read and Attribute."
+  },
+  "answers-sources-naming": {
+    "file": "/img/blog/2026-11/fig-answers-sources-naming.webp",
+    "w": 1600,
+    "h": 772,
+    "alt": "Illustrative flow in three steps: stored answers, each kept with its sources; the cited pages ranked by how often the engine cites them (bars of decreasing length, no counts); and which of those pages name you (one page marked \"Names you\", the others \"Does not\"). No real counts or pages shown.",
+    "caption": "Illustrative example. Start from the stored answers, rank the pages the engine cites, then read which of those pages name you."
+  },
+  "said-vs-site": {
+    "file": "/img/blog/2026-11/fig-said-vs-site.webp",
+    "w": 1600,
+    "h": 742,
+    "alt": "Two columns labeled \"Our own data, November 1st, 2026\". Left, what the engine said: \"AI simulation engine\" — Claude, in 10 of 10 by-name answers about AEO Analyzers. Right, what our site says: \"Measures what AI answer engines say when buyers ask for a recommendation.\" A not-equal sign between them.",
+    "caption": "Our own data, November 1st, 2026: Claude called AEO Analyzers an \"AI simulation engine\" in 10 of 10 by-name answers; our own description says something else. Source: stored answers in docs/baselines/aeoanalyzers-2026-11-01.json."
+  },
+  "prompt-engine-run-grid": {
+    "file": "/img/blog/2026-11/fig-prompt-engine-run-grid.webp",
+    "w": 1600,
+    "h": 705,
+    "alt": "Illustrative grid of example questions (rows) by engines (columns), each cell holding five dots for five runs, colored by the company named first. Side tally \"Who got named\" out of 80 runs: Company A 36, Company B 23, Your brand 12, nobody named 9. Placeholder questions, engines and companies; not real results.",
+    "caption": "Illustrative example. Benchmarking means every prompt on every engine, several runs each, tallied by who got named. Placeholder names, not real results."
+  },
+  "listing-loop": {
+    "file": "/img/blog/2026-11/fig-listing-loop.webp",
+    "w": 1600,
+    "h": 695,
+    "alt": "Three steps in a loop: 1 Find the directories engines cite in your answers; 2 List with the same name, description and link everywhere; 3 Check the next sweep; then start again from step 1.",
+    "caption": "The directory-listing loop: find the directories the engines cite, list consistently, and check the next sweep."
+  },
+  "one-entity": {
+    "file": "/img/blog/2026-11/fig-one-entity.webp",
+    "w": 1600,
+    "h": 890,
+    "alt": "One central node, \"Your entity record: one name, one identifier\", linked by dotted lines to four profiles: Website, Professional profile, Company database and Directory listings. Every profile uses the same name and links back to the same identifier.",
+    "caption": "One name, one identifier, linked profiles: your website, professional profile, company database and directory listings all point back to the same entity record."
+  },
+  "ledger-chart": {
+    "file": "/img/blog/2026-11/fig-ledger-chart.webp",
+    "w": 1600,
+    "h": 1128,
+    "alt": "Bar chart of AEO Analyzers' own monthly measurement, August to November 2026. Found by name (share of 40 by-name answers that found our site): August 55% (restated), September 80%, October 88%, November 78%. Recommended to buyers (category answers that cited our site): 0 of 200 in every month. Source: panel v1.1, stored answers.",
+    "caption": "Found by name rose from 55% in August (restated) to 80%, 88% and 78% (N=40 each), while recommended to buyers stayed at 0 of 200 every month. Source: AEO Analyzers’ own monthly measurement (panel v1.1), stored answers."
+  },
+  "named-0-of-40": {
+    "file": "/img/blog/2026-11/fig-named-0-of-40.webp",
+    "w": 1600,
+    "h": 665,
+    "alt": "Stat tile: \"Named on 0 of 40\" most-read pages for our category questions, November 1st, 2026 (4 could not be read). A grid of 40 squares: 36 outlined squares for pages that do not name us and 4 hatched squares for pages that could not be read; none filled.",
+    "caption": "On November 1st, 2026, none of the 40 pages the engines read most for our category questions named AEO Analyzers (4 could not be read). Source: our own measurement, docs/baselines/aeoanalyzers-2026-11-01.json."
+  },
+  "measure-act-record": {
+    "file": "/img/blog/2026-11/fig-measure-act-record.webp",
+    "w": 1600,
+    "h": 658,
+    "alt": "Three panels: Measure (what the engines say, stored; every answer kept with its sources) leads to Act (the steps, in order, with owners) leads to Record (dated actions beside the next measurement; timing, not cause).",
+    "caption": "Measure what the engines say, act on the steps in order, and record dated actions beside the next measurement. The record shows timing, not cause."
+  },
+  "pipeline": {
+    "file": "/img/blog/2026-11/fig-pipeline.webp",
+    "alsoAt": "/blog/how-it-works/visual-1-pipeline-v2.webp",
+    "w": 1600,
+    "h": 953,
+    "alt": "The AEO Analyzers pipeline in five stages. 1 Your domain: we read your site and propose brand, category, competitors and draft questions; you confirm. 2 The questions: your buyer questions, in three kinds: about-you, category and head-to-head. 3 The interrogation: the engines on your plan (ChatGPT, Claude, Perplexity, Gemini, plus Grok on Pro and Business) × every question × several runs, web search on, with search-grounded and answered-from-memory answers kept separate. 4 The measurement: found by name, recommended to buyers and who's cited instead, with an accuracy check, look-alike detection, and sample size and confidence on every number. 5 The deliverables: a scorecard, stored transcripts and an action plan (code fixes, content agenda, tiered source list). A loop returns to stage 3: re-sweep monthly, same questions, same way, and watch the number move.",
+    "caption": "How a Citation Sweep runs: your domain, your buyer questions, the engines on your plan with web search on, the measurement, and the deliverables, then the same sweep again each month."
+  }
+}

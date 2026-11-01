@@ -127,6 +127,10 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         >
           <strong>AEO Analyzers is answer engine optimization (AEO) software — a tool that measures whether ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, retrieve your site, describe it accurately, and cite it for category questions.</strong> Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. AEO Analyzers shows you exactly <em>why</em> AI overlooks you and gives you the fixes — then you re-run the sweep to check, with live Citation Sweeps across ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, showing who they actually cite. Diagnose in ~90 seconds; measure the outcome for real.
         </motion.p>
+        {/* Founder ruling, 1 Nov 2026: the promise line, true today (no outcome claim). */}
+        <p className="text-zinc-900 text-lg md:text-xl max-w-2xl mx-auto -mt-8 mb-14 leading-relaxed font-semibold">
+          AEO Analyzers shows you exactly where AI engines stand on your business, what to do next, and keeps a dated record of what changed afterward, so you can see what works instead of guessing.
+        </p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

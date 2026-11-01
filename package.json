@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsx scripts/lint-engine-count.ts && tsx scripts/lint-entity-name.ts && node scripts/check-no-orphan-modules.mjs && node scripts/build-blog-feed.mjs && vite build && node scripts/prerender.mjs && node scripts/check-prerender.mjs",
+    "build": "tsx scripts/lint-engine-count.ts && tsx scripts/lint-entity-name.ts && node scripts/check-no-orphan-modules.mjs && node scripts/build-blog-chrome.mjs && node scripts/build-blog-feed.mjs && vite build && node scripts/prerender.mjs && node scripts/check-prerender.mjs",
     "build:nopre": "vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit",

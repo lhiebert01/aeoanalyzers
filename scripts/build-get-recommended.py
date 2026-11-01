@@ -122,6 +122,7 @@ page = f"""<!doctype html>
     <div class="posteyebrow">AEO Analyzers &middot; Measure. Act. Record.</div>
     <h1 class="posttitle">{inline(TITLE)}</h1>
     <p class="postmeta">Last reviewed {REVIEWED}</p>
+    <p class="postlead" style="font-weight:600">AEO Analyzers shows you exactly where AI engines stand on your business, what to do next, and keeps a dated record of what changed afterward, so you can see what works instead of guessing.</p>
     <div class="postbody">
 {BODY}
     </div>

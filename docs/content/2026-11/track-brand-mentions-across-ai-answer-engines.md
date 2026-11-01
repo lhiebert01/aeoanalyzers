@@ -4,7 +4,7 @@ kind: answer
 eyebrow: AEO Analyzers · How to
 title: How to track and analyze brand mentions across AI answer engines
 seo_title: Track Brand Mentions Across AI Answer Engines | AEO Analyzers
-description: Track AI answer engine mentions per engine, per question type and per month, with every answer stored. What to count and how to read the trend.
+description: Track found by name versus recommended in AI answer engines, per engine and per month, with every answer stored. What to count, how to read it.
 date: 2026-11-01
 display_date: November 1, 2026
 read_time: 5-minute read

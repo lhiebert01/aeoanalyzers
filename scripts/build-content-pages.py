@@ -27,7 +27,18 @@ ch = open(CHASSIS, encoding='utf-8').read()
 CSS = ch[ch.index('<style>'):ch.index('</style>') + 8]
 CSS = CSS.replace('</style>', '.posth3{font-size:18.5px;font-weight:700;line-height:1.35;color:var(--ink);margin:24px 0 8px;max-width:68ch}\n'
                   '.postbody ul,.postbody ol{font-size:17px;line-height:1.6;color:var(--ink);max-width:68ch;margin:0 0 16px;padding-left:22px}\n'
-                  '.postbody li{margin:0 0 6px}\n</style>')
+                  '.postbody li{margin:0 0 6px}\n'
+                  '.shortans{background:#E3F1EF;border:1px solid #9CC9C2;border-left:5px solid #0B5560;border-radius:12px;padding:16px 18px;color:#0E1216}\n'
+                  '.stepcard{position:relative;background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:16px 18px 6px 64px;margin:18px 0;box-shadow:var(--card-shadow)}\n'
+                  '.stepcard .stepn{position:absolute;left:16px;top:16px;width:34px;height:34px;border-radius:50%;background:#0B5560;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}\n'
+                  '.stepcard .posth2{margin-top:2px}\n'
+                  'details.faq{border:1px solid var(--edge);border-radius:12px;background:var(--card);margin:10px 0;padding:0 16px;max-width:68ch}\n'
+                  'details.faq summary{cursor:pointer;font-weight:700;font-size:17px;padding:13px 0;color:var(--ink)}\n'
+                  'details.faq p{margin:0 0 14px}\n'
+                  '.stattiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0 22px;max-width:68ch}\n'
+                  '.stat{background:var(--card);border:1px solid var(--edge);border-radius:12px;padding:14px 16px}\n'
+                  '.stat .v{display:block;font-size:26px;font-weight:800;color:#0E1216;font-variant-numeric:tabular-nums}\n'
+                  '.stat .k{display:block;font-size:13.5px;color:#2A333B;margin-top:4px}\n</style>')
 BAR = ch[ch.index('<body>'):ch.index('<div class="wrap">')]
 TAIL = ch[ch.index('    <p class="samplenote">'):]
 
@@ -58,14 +69,44 @@ def render(path):
     url = SITE + meta['slug']
     out, faq, first = [], [], True
     blocks = [b.strip() for b in re.split(r'\n\s*\n', body.strip()) if b.strip()]
+    # WO-016 C: readable pages. "Short answer" -> callout; "## Step N: ..." sections -> step cards;
+    # "## Questions people ask" -> accordion (FAQPage structured data from the same text);
+    # a "STATS" block ("- value | label" lines) -> stat tiles.
+    in_step, in_faq = False, False
+    def close_step():
+        nonlocal in_step
+        if in_step: out.append('      </section>'); in_step = False
     for i, b in enumerate(blocks):
         if b.startswith('### '):
-            out.append(f'      <h3 class="posth3">{inline(b[4:])}</h3>')
-            if meta['kind'] == 'answer' and i + 1 < len(blocks):
-                faq.append((plain(b[4:]), plain(blocks[i + 1])))
+            q, _, rest = b[4:].partition('\n')
+            if in_faq and rest.strip():
+                faq.append((plain(q), plain(rest.strip())))
+                out.append(f'      <details class="faq"><summary>{inline(q)}</summary><p>{inline(rest.strip())}</p></details>')
+                continue
+            if in_faq and i + 1 < len(blocks):
+                continue  # rendered with its answer below
+            out.append(f'      <h3 class="posth3">{inline(q)}</h3>')
+            continue
+        if in_faq and i > 0 and blocks[i - 1].startswith('### '):
+            q = blocks[i - 1][4:]
+            faq.append((plain(q), plain(b)))
+            out.append(f'      <details class="faq"><summary>{inline(q)}</summary><p>{inline(b)}</p></details>')
             continue
         if b.startswith('## '):
-            out.append(f'      <h2 class="posth2">{inline(b[3:])}</h2>')
+            close_step()
+            h = b[3:]
+            in_faq = h.strip().lower() == 'questions people ask'
+            m = re.match(r'Step (\d+): (.+)', h)
+            if m:
+                out.append(f'      <section class="stepcard"><span class="stepn" aria-hidden="true">{m.group(1)}</span>')
+                out.append(f'      <h2 class="posth2">{inline(h)}</h2>')
+                in_step = True
+            else:
+                out.append(f'      <h2 class="posth2">{inline(h)}</h2>')
+            continue
+        if b.startswith('STATS'):
+            tiles = [x[2:].split(' | ', 1) for x in b.split('\n')[1:] if x.startswith('- ')]
+            out.append('      <div class="stattiles">' + ''.join(f'<div class="stat"><span class="v">{inline(v)}</span><span class="k">{inline(k)}</span></div>' for v, k in tiles) + '</div>')
             continue
         if b.startswith('- '):
             out.append('      <ul>')
@@ -79,11 +120,13 @@ def render(path):
             out.append('      </ol>')
             continue
         if first:
-            out.append(f'      <p class="postlead">{inline(b)}</p>')
+            cls = 'postlead shortans' if b.startswith('**Short answer:**') else 'postlead'
+            out.append(f'      <p class="{cls}">{inline(b)}</p>')
             out.append(f'      <p class="postmeta">Lindsay Hiebert, PIGENAI LLC &middot; {meta["display_date"]} &middot; {meta["read_time"]}</p>')
             first = False
         else:
             out.append(f'      <p>{inline(b)}</p>')
+    close_step()
     article = '\n'.join(out)
 
     graph = [{"@type": "BlogPosting" if meta['kind'] == 'post' else "Article", "headline": meta['title'],

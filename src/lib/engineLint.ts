@@ -53,6 +53,9 @@ export function classify(file: string, sentence: string, line: number, allow: Al
 
 /** Published text of an HTML page: visible text, meta descriptions, alt text and JSON-LD strings. */
 export function htmlText(html: string): string {
+  // Injected navigation (breadcrumb, previous/next, "More in") repeats page titles that are linted
+  // on their own pages; it is not copy, so it is not checked twice (WO-016).
+  html = html.replace(/<!--wo016:(end|crumbs)-->[\s\S]*?<!--\/wo016:\1-->/g, ' ');
   const dec = (t: string) => t.replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&rsquo;|&#8217;|&#39;/g, '’').replace(/&ldquo;|&rdquo;|&quot;/g, '"').replace(/&mdash;/g, '—').replace(/&ndash;/g, '–').replace(/&middot;/g, '·').replace(/&[a-z]+;/g, ' ');
   const extra: string[] = [];
   for (const m of html.matchAll(/<meta[^>]+(?:name|property)=["'](?:description|og:description|twitter:description|og:title|twitter:title|og:image:alt|twitter:image:alt)["'][^>]*>/gi)) { const c = m[0].match(/content=["']([^"']*)["']/i); if (c) extra.push(dec(c[1]) + '.'); }
