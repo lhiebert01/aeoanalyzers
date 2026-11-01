@@ -32,7 +32,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "AEO Analyzers Honest-Zero series: monthly answer-engine visibility measurement",
-  "description": "Our own answer-engine visibility, re-measured every month and published whatever it says. October 2026: found by name 88% of 40 runs, recommended to category buyers 0% of 200. Same twelve-question panel, five runs each, four engines, every answer stored.",
+  "description": "Our own answer-engine visibility, re-measured every month and published whatever it says. November 2026: found by name 78% of 40 runs, recommended to category buyers 0% of 200. Same twelve-question panel, five runs each, four engines, every answer stored.",
   "url": "https://aeoanalyzers.com/evidence",
   "license": "https://aeoanalyzers.com/terms",
   "isAccessibleForFree": true,
@@ -43,7 +43,7 @@
   },
   "temporalCoverage": "2026-08-01/2026-10-08",
   "variableMeasured": [
-    { "@type": "PropertyValue", "name": "Branded retrievability", "value": 88, "unitText": "PERCENT",
+    { "@type": "PropertyValue", "name": "Branded retrievability", "value": 78, "unitText": "PERCENT",
       "description": "Share of branded runs in which the engine reached aeoanalyzers.com. N=40." },
     { "@type": "PropertyValue", "name": "Described accurately when named", "value": 100, "unitText": "PERCENT",
       "description": "Of the answers that named AEO Analyzers, the share that stated nothing its own site contradicts on its brand name and founder. N=40." },
@@ -285,11 +285,11 @@ footer p{max-width:none}
       One row a month: how often they find us when asked by name, how often they recommend us
       to someone who never said the name, how many answers each figure came from, and what
       changed. It is updated whether the news is good or not, which is the entire point of it.</p>
-      <p class="postmeta">Latest measurement: October 2026, measured 8 Oct 2026</p>
+      <p class="postmeta">Latest measurement: November 2026, measured 1 Nov 2026</p>
     </div>
 
-    <div class="score" aria-label="Latest measurement: October 2026, 240 stored answers across four answer engines">
-      <div class="tile good"><div class="lab">Found by name</div><div class="num">88%</div><div class="note">N=40 &middot; 80% in September, 55% in August</div></div>
+    <div class="score" aria-label="Latest measurement: November 2026, 240 stored answers across four answer engines">
+      <div class="tile good"><div class="lab">Found by name</div><div class="num">78%</div><div class="note">N=40 &middot; 88% in October, 80% in September, 55% in August</div></div>
       <div class="tile gap"><div class="lab">Recommended to buyers</div><div class="num">0%</div><div class="note">N=200 &middot; unchanged since the first measurement</div></div>
       <div class="tile"><div class="lab">Answers stored</div><div class="num">240</div><div class="note">four engines &middot; every one re-readable</div></div>
     </div>
@@ -329,11 +329,19 @@ footer p{max-width:none}
         </tr>
         <tr>
           <td class="mo">October 2026</td>
-          <td><span class="fig up">88%</span><span class="nn">N=40</span></td>
+          <td><span class="fig flat">88%</span><span class="nn">N=40</span></td>
           <td><span class="fig flat">100%</span><span class="nn">40 of 40 named</span></td>
           <td><span class="fig flat">0%</span><span class="nn">N=200</span></td>
           <td class="when">8 Oct 2026<br><a class="ilink" href="https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/baselines/aeoanalyzers-2026-10-08.json">transcripts</a></td>
           <td><p class="ledgernote">Found by name rose to 88%. Claude, which returned the site 2 times in 10 in September, returned it 10 times in 10. ChatGPT went the other way, from 10 of 10 to 5 of 10. Recommended to category buyers: still zero &mdash; &ldquo;aeoanalyzers&rdquo; appears in none of the 200 answers. None of the 40 answers that named us gave a wrong brand name or invented a founder; September&rsquo;s invented co-founder did not recur.</p></td>
+        </tr>
+        <tr>
+          <td class="mo">November 2026</td>
+          <td><span class="fig flat">78%</span><span class="nn">N=40</span></td>
+          <td><span class="fig flat">75%</span><span class="nn">30 of 40 named</span></td>
+          <td><span class="fig flat">0%</span><span class="nn">N=200</span></td>
+          <td class="when">1 Nov 2026<br><a class="ilink" href="https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/baselines/aeoanalyzers-2026-11-01.json">transcripts</a></td>
+          <td><p class="ledgernote">Found by name: 78% (31 of 40). ChatGPT returned the site 1 time in 10, against 5 of 10 in October; Claude, Perplexity and Gemini returned it every time. Recommended to category buyers: still zero &mdash; &ldquo;aeoanalyzers&rdquo; appears in none of the 200 answers. Described accurately in 30 of 40: Claude called the product an &ldquo;AI simulation engine&rdquo;, a name the site retired on October 15th, in all ten of its answers, and quoted earlier prices in some of them (counted under the rule of November 1st, which matches a retired name in any letter case). Dated actions between the October and November measurements, from our Record: October 14th, the Measurement Layer post; October 15th, the price cleanup, the fifth-engine post, the Expo one-pager, Wikidata entries for the company and the product, and the AlternativeTo listing. Named on 0 of 40 recurring pages engines read for our category questions.</p></td>
         </tr>
           </tbody>
         </table>
@@ -345,10 +353,12 @@ footer p{max-width:none}
       visible rather than hidden.</p>
       <p class="ledgernote"><strong>Described accurately when named</strong> was added in October 2026. Of
       the answers that named us, it is the share that stated nothing our own site contradicts &mdash; and
-      it checks exactly two things, our brand name and our founder, as our site publishes them. It sits
-      beside &ldquo;found by name&rdquo; and replaces nothing. For August and September the site&rsquo;s
-      facts were not captured at the time, so those months are checked against the site as read on
-      8 October 2026; the brand name and founder it checks have not changed.</p>
+      it checks our brand name and our founder, as our site publishes them; from October 15th, 2026 it also
+      checks our published prices, our free allowance and product names the site has retired, so November
+      is the first month counted under that wider check. It sits beside &ldquo;found by name&rdquo; and
+      replaces nothing. For August and September the site&rsquo;s facts were not captured at the time, so
+      those months are checked against the site as read on 8 October 2026; the brand name and founder it
+      checks have not changed.</p>
 
       <h2 class="posth2" id="panel-test-2026-10-13">One more run, 13 October 2026: four engines, then five</h2>
       <p>On 13 October 2026 we asked the same pinned questions again, five runs each, and added Grok as a
@@ -385,13 +395,17 @@ footer p{max-width:none}
         </ul>
       </div>
 
+      <h2 class="posth2" id="across-other-companies">Across other companies</h2>
+      <p>In the latest four-engine sweep of each of 11 companies we have measured (July 26 to October 8, 2026; 48 to 84 stored answers each), the median company was found by name in 100% of answers and recommended in 28% of category answers. For 6 of the 11, the found-by-name rate was at least 50 points above the recommendation rate. Companies are not named, and our own products are not included. Every figure is re-scored from that company&rsquo;s stored answers under the scoring rules of October 15th, 2026.</p>
+      <p class="ledgernote">Every company&rsquo;s counts, with its sweep date and denominators: <a class="ilink" href="https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/baselines/benchmark-found-vs-recommended-2026-10-15.json">the data file</a>.</p>
+
       <h2 class="posth2">What we have learned so far</h2>
       <ul class="lessons">
         <li><b>Most of our &ldquo;AI crawler traffic&rdquo; was not AI crawlers.</b><span>We logged bots by the name they gave us. Anyone can call themselves GPTBot, and vulnerability scanners do while asking for credential files. Three-quarters of everything we had counted as crawling was that. The published 265 became 36 once we counted only fetches of pages that exist. Lesson: a count is only as honest as the thing it trusts &mdash; verify the bot, not the name.</span></li>
         <li><b>Ingestion is not indexing, and now we can show it.</b><span>Anthropic&rsquo;s training crawler has fetched our pages 75 times since July. Its search crawler, the one that decides whether Claude can find you, has come twice. Claude is the one engine that answers &ldquo;I couldn&rsquo;t find aeoanalyzers.com&rdquo;. Being read into a model&rsquo;s memory does nothing for whether it can look you up.</span></li>
         <li><b>A number has to survive its own scorer.</b><span>Correcting how we score a &ldquo;the search ran, the site was not found&rdquo; answer changed our own history. We would rather restate a published figure in public than keep a flattering one that no longer means what it did.</span></li>
-        <li><b>Being found and being recommended move independently.</b><span>Found by name has moved every month: 55% in August, 80% in September, 88% in October. Recommended to buyers has not moved at all. Two different problems with two different fixes, which is why they are never blended into one score.</span></li>
-        <li><b>The sources the engines draw on keep changing.</b><span>Across the same 200 category questions, the number of distinct sites cited as sources was 296 in August, 215 in September and 264 in October. The doors move; none of them is ours yet.</span></li>
+        <li><b>Being found and being recommended move independently.</b><span>Found by name has moved every month: 55% in August, 80% in September, 88% in October, 78% in November. Recommended to buyers has not moved at all. Two different problems with two different fixes, which is why they are never blended into one score.</span></li>
+        <li><b>The sources the engines draw on keep changing.</b><span>Across the same 200 category questions, the number of distinct sites cited as sources was 296 in August, 215 in September, 264 in October and 256 in November. The doors move; none of them is ours yet.</span></li>
       </ul>
 
       <h2 class="posth2">How to check any of it</h2>

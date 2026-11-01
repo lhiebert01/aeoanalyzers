@@ -40,11 +40,15 @@ def category(f):
             if m: hosts.add(m.group(1).lower())
     return round(100 * len(hits) / len(rs)), len(rs), named, len(hosts)
 
-AUG_F, SEP_F, OCT_F = 'aeoanalyzers-SERIES-ANCHOR-2026-08-01.json', 'aeoanalyzers-2026-09-01.json', 'aeoanalyzers-2026-10-08.json'
+AUG_F, SEP_F, OCT_F, NOV_F = 'aeoanalyzers-SERIES-ANCHOR-2026-08-01.json', 'aeoanalyzers-2026-09-01.json', 'aeoanalyzers-2026-10-08.json', 'aeoanalyzers-2026-11-01.json'
 ab, an = branded(AUG_F); ac, acn, anamed, ahosts = category(AUG_F)
 sb, sn = branded(SEP_F); sc, scn, snamed, shosts = category(SEP_F)
 ob, on = branded(OCT_F); oc, ocn, onamed, ohosts = category(OCT_F)
-total = len(json.load(open(f'{BASE}/{OCT_F}'))['runs'])
+nb, nn = branded(NOV_F); nc, ncn, nnamed, nhosts = category(NOV_F)
+total = len(json.load(open(f'{BASE}/{NOV_F}'))['runs'])
+
+def found_by_engine(f, e):
+    return sum(1 for r in runs(f, 'branded') if r['engine'] == e and r.get('domainCited') and not NOT_FOUND.search(r.get('transcript') or ''))
 
 def accuracy(f):
     # WO-AEO-BRANDED-ACCURACY-004: counts are computed in TypeScript from the transcripts and the
@@ -52,15 +56,17 @@ def accuracy(f):
     # (publishedFigures.test.ts); this page only renders the stored, gate-verified counts.
     a = json.load(open(f'{BASE}/{f}'))['accuracyWhenNamed']
     return a['accurate'], a['named']
-aa, aan = accuracy(AUG_F); sa, san = accuracy(SEP_F); oa, oan = accuracy(OCT_F)
-assert (oa, oan, sa, san, aa, aan) == (40, 40, 31, 32, 40, 40), (oa, oan, sa, san, aa, aan)
+aa, aan = accuracy(AUG_F); sa, san = accuracy(SEP_F); oa, oan = accuracy(OCT_F); na, nan = accuracy(NOV_F)
+assert (na, nan, oa, oan, sa, san, aa, aan) == (30, 40, 40, 40, 31, 32, 40, 40), (na, nan, oa, oan, sa, san, aa, aan)
 
 # The latest month, everywhere the page or a summary card quotes "now".
-lb, ln, lc, lcn, lhosts = ob, on, oc, ocn, ohosts
+lb, ln, lc, lcn, lhosts = nb, nn, nc, ncn, nhosts
 
-assert (ab, sb, ob) == (55, 80, 88), (ab, sb, ob)
-assert (ac, sc, oc) == (0, 0, 0) and (anamed, snamed, onamed) == (0, 0, 0)
-assert (ahosts, shosts, ohosts) == (296, 215, 264)
+assert (ab, sb, ob, nb) == (55, 80, 88, 78), (ab, sb, ob, nb)
+assert (ac, sc, oc, nc) == (0, 0, 0, 0) and (anamed, snamed, onamed, nnamed) == (0, 0, 0, 0)
+assert (ahosts, shosts, ohosts, nhosts) == (296, 215, 264, 256)
+n_gpt, o_gpt = found_by_engine(NOV_F, 'openai'), found_by_engine(OCT_F, 'openai')
+assert (n_gpt, o_gpt) == (1, 5), (n_gpt, o_gpt)
 
 MONTHS = [
  dict(month='August 2026', measured='1 Aug 2026', b=ab, bn=an, c=ac, cn=acn, acc=(aa, aan), file=AUG_F, restated=True,
@@ -80,6 +86,16 @@ MONTHS = [
             f"to category buyers: still zero &mdash; &ldquo;aeoanalyzers&rdquo; appears in none of the {ocn} "
             f"answers. None of the {oan} answers that named us gave a wrong brand name or invented a founder; "
             "September&rsquo;s invented co-founder did not recur.")),
+ dict(month='November 2026', measured='1 Nov 2026', b=nb, bn=nn, c=nc, cn=ncn, acc=(na, nan), file=NOV_F, restated=False,
+      note=(f"Found by name: {nb}% ({round(nb * nn / 100)} of {nn}). ChatGPT returned the site {n_gpt} time in 10, against "
+            f"{o_gpt} of 10 in October; Claude, Perplexity and Gemini returned it every time. Recommended to category "
+            f"buyers: still zero &mdash; &ldquo;aeoanalyzers&rdquo; appears in none of the {ncn} answers. Described "
+            f"accurately in {na} of {nan}: Claude called the product an &ldquo;AI simulation engine&rdquo;, a name the site "
+            "retired on October 15th, in all ten of its answers, and quoted earlier prices in some of them (counted under "
+            "the rule of November 1st, which matches a retired name in any letter case). Dated actions between the October "
+            "and November measurements, from our Record: October 14th, the Measurement Layer post; October 15th, the price "
+            "cleanup, the fifth-engine post, the Expo one-pager, Wikidata entries for the company and the product, and the "
+            "AlternativeTo listing.")),
 ]
 
 LESSONS = [
@@ -98,11 +114,11 @@ LESSONS = [
   "own history. We would rather restate a published figure in public than keep a flattering one that "
   "no longer means what it did."),
  ("Being found and being recommended move independently.",
-  f"Found by name has moved every month: {ab}% in August, {sb}% in September, {ob}% in October. Recommended to buyers has not moved at all. Two "
+  f"Found by name has moved every month: {ab}% in August, {sb}% in September, {ob}% in October, {nb}% in November. Recommended to buyers has not moved at all. Two "
   "different problems with two different fixes, which is why they are never blended into one score."),
  ("The sources the engines draw on keep changing.",
   f"Across the same {scn} category questions, the number of distinct sites cited as sources was "
-  f"{ahosts} in August, {shosts} in September and {ohosts} in October. The doors move; none of them is ours yet."),
+  f"{ahosts} in August, {shosts} in September, {ohosts} in October and {nhosts} in November. The doors move; none of them is ours yet."),
 ]
 
 GH = 'https://github.com/lhiebert01/aeoanalyzers/blob/main/docs/baselines'
@@ -123,7 +139,8 @@ def coverage_line(m):
 def rows():
     out = []
     for i, m in enumerate(MONTHS):
-        tone = 'up' if i == len(MONTHS) - 1 else 'flat'
+        # Green only when the latest month actually rose; a fall is shown plainly, not dressed as a gain.
+        tone = 'up' if i == len(MONTHS) - 1 and i > 0 and m['b'] > MONTHS[i - 1]['b'] else 'flat'
         tag = ' <span class="tag">restated</span>' if m['restated'] else ''
         out.append(f"""        <tr>
           <td class="mo">{m['month']}</td>
@@ -150,6 +167,23 @@ pt5 = _pt_figs(lambda r: True)
 pt_acc = (_pt['accuracyWhenNamed']['accurate'], _pt['accuracyWhenNamed']['named'])
 assert pt4 == (75, 40, 0, 200) and pt5 == (80, 50, 0, 249) and pt_acc == (50, 50), (pt4, pt5, pt_acc)
 # The exhibit quoted in /blog/the-measurement-layer: one stored, search-grounded category answer.
+# ---- WO-012 F: across other companies (approved for publication by the founder, 2026-11-01). ----
+BM_F = 'benchmark-found-vs-recommended-2026-10-15.json'
+_bm = json.load(open(f'{BASE}/{BM_F}'))['companies']
+import statistics as _st
+_bf = [100 * c['foundByName']['cited'] / c['foundByName']['n'] for c in _bm]
+_br = [100 * c['recommended']['cited'] / c['recommended']['n'] for c in _bm]
+bm_n, bm_found, bm_rec = len(_bm), round(_st.median(_bf)), round(_st.median(_br))
+bm_gap = sum(1 for f, r in zip(_bf, _br) if f - r >= 50)
+bm_lo, bm_hi = min(c['storedAnswers'] for c in _bm), max(c['storedAnswers'] for c in _bm)
+bm_from, bm_to = min(c['sweepDate'] for c in _bm), max(c['sweepDate'] for c in _bm)
+# The approved wording carries these exact figures; a change in the data must fail the build.
+assert (bm_n, bm_found, bm_rec, bm_gap, bm_lo, bm_hi, bm_from, bm_to) == (11, 100, 28, 6, 48, 84, '2026-07-26', '2026-10-08'), (bm_n, bm_found, bm_rec, bm_gap, bm_lo, bm_hi, bm_from, bm_to)
+BENCH = f"""      <h2 class="posth2" id="across-other-companies">Across other companies</h2>
+      <p>In the latest four-engine sweep of each of {bm_n} companies we have measured (July 26 to October 8, 2026; {bm_lo} to {bm_hi} stored answers each), the median company was found by name in {bm_found}% of answers and recommended in {bm_rec}% of category answers. For {bm_gap} of the {bm_n}, the found-by-name rate was at least 50 points above the recommendation rate. Companies are not named, and our own products are not included. Every figure is re-scored from that company&rsquo;s stored answers under the scoring rules of October 15th, 2026.</p>
+      <p class="ledgernote">Every company&rsquo;s counts, with its sweep date and denominators: <a class="ilink" href="{GH}/{BM_F}">the data file</a>.</p>
+"""
+
 EX_Q = 'how to monitor if my brand appears in ChatGPT and Claude responses'
 _ex = [r for r in _pt['runs'] if r['engine'] == 'perplexity' and r['queryType'] == 'category'
        and r['query'] == EX_Q and r['runIndex'] == 3]
@@ -163,7 +197,7 @@ EX_SOURCES = '\n'.join(f'          <li><a class="ilink" href="{_h.escape(u)}" re
 
 LATEST = MONTHS[-1]
 CARDS = f"""    <div class="score" aria-label="Latest measurement: {LATEST['month']}, {total} stored answers across four answer engines">
-      <div class="tile good"><div class="lab">Found by name</div><div class="num">{lb}%</div><div class="note">N={ln} &middot; {sb}% in September, {ab}% in August</div></div>
+      <div class="tile good"><div class="lab">Found by name</div><div class="num">{lb}%</div><div class="note">N={ln} &middot; {ob}% in October, {sb}% in September, {ab}% in August</div></div>
       <div class="tile gap"><div class="lab">Recommended to buyers</div><div class="num">{lc}%</div><div class="note">N={lcn} &middot; unchanged since the first measurement</div></div>
       <div class="tile"><div class="lab">Answers stored</div><div class="num">{total}</div><div class="note">four engines &middot; every one re-readable</div></div>
     </div>"""
@@ -306,10 +340,12 @@ PAGE = f"""<!doctype html>
       visible rather than hidden.</p>
       <p class="ledgernote"><strong>Described accurately when named</strong> was added in October 2026. Of
       the answers that named us, it is the share that stated nothing our own site contradicts &mdash; and
-      it checks exactly two things, our brand name and our founder, as our site publishes them. It sits
-      beside &ldquo;found by name&rdquo; and replaces nothing. For August and September the site&rsquo;s
-      facts were not captured at the time, so those months are checked against the site as read on
-      8 October 2026; the brand name and founder it checks have not changed.</p>
+      it checks our brand name and our founder, as our site publishes them; from October 15th, 2026 it also
+      checks our published prices, our free allowance and product names the site has retired, so November
+      is the first month counted under that wider check. It sits beside &ldquo;found by name&rdquo; and
+      replaces nothing. For August and September the site&rsquo;s facts were not captured at the time, so
+      those months are checked against the site as read on 8 October 2026; the brand name and founder it
+      checks have not changed.</p>
 
       <h2 class="posth2" id="panel-test-2026-10-13">One more run, 13 October 2026: four engines, then five</h2>
       <p>On 13 October 2026 we asked the same pinned questions again, five runs each, and added Grok as a
@@ -337,6 +373,7 @@ PAGE = f"""<!doctype html>
         </ul>
       </div>
 
+{BENCH}
       <h2 class="posth2">What we have learned so far</h2>
       <ul class="lessons">
 {chr(10).join(f'        <li><b>{t}</b><span>{b}</span></li>' for t, b in LESSONS)}
@@ -459,7 +496,7 @@ if True:  # regenerated every run (monthly refresh); the first run also handed t
 
     <div class="postbody">
       <p style="margin:2px 0 18px;font-size:14px;color:var(--muted)"><strong style="color:var(--ink)">{LATEST['month']}, measured {LATEST['measured']}.</strong>
-      Found by name: {lb}% in October, {sb}% in September, {ab}% in August. Recommended to buyers
+      Found by name: {lb}% in November, {ob}% in October, {sb}% in September, {ab}% in August. Recommended to buyers
       did not move at all. Those are two different problems, so they are never blended into one
       score. The word &ldquo;aeoanalyzers&rdquo; appears in none of the {lcn} category answers
       &mdash; absent, not ranked last. On 13 October we re-measured on the same four engines and
@@ -479,6 +516,11 @@ if True:  # regenerated every run (monthly refresh); the first run also handed t
       learned, lives in one place.</p>
       <a class="ls-go" href="/evidence">See the full ledger &rarr;</a>
     </div>
+
+    <div class="postbody">
+      <p><em>Updated October 2026: Pro and Business ask five answer engines, now including Grok. See <a href="/blog/the-fifth-engine">We added a fifth AI engine</a>.</em></p>
+    </div>
+
 
 """
     h1 = h1[:start] + REPLACEMENT + h1[end:]

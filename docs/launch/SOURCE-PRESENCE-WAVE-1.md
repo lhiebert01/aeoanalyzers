@@ -104,7 +104,7 @@ No parasite pages, no Perplexity-Pages seeding, no paid placements dressed as ed
 |---|---|---|---|
 | Wikidata, PIGENAI LLC | live | 2026-10-15 | https://www.wikidata.org/wiki/Q141739140 |
 | Wikidata, AEO Analyzers | live | 2026-10-15 | https://www.wikidata.org/wiki/Q141739225 |
-| AlternativeTo | live | 2026-10-15 | https://alternativeto.net/software/aeo-analyzers/ |
+| AlternativeTo | live (approval confirmed 2026-11-01) | 2026-10-15 | https://alternativeto.net/software/aeo-analyzers/ |
 | G2, Slashdot / SourceForge | planned (founder, Oct 16) | | |
 | Crunchbase, LinkedIn company page | planned (founder, week of Oct 19) | | |
 

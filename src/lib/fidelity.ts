@@ -183,7 +183,8 @@ export function sitePublishedIssues(transcript: string, truth: TruthRecord): Fid
     }
   }
   for (const name of truth.retiredNames || []) {
-    if (new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(text)) {
+    // Case-insensitive (scoring rules 2026-11-01): "an AI simulation engine" is the retired name too.
+    if (new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(text)) {
       out.push({ type: 'retired_name', field: 'product name', wrong: name, correct: truth.brandName ? [truth.brandName] : [],
         detail: `The engine calls the product "${name}", a name the site no longer uses.`, source: 'the site\'s own record of retired names', severity: 'high' });
     }

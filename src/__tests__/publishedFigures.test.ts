@@ -65,12 +65,14 @@ describe('the ledger matches what the stored transcripts actually say', () => {
     expect(categoryPct(SEP)).toEqual({ pct: 0, n: 200 });
   });
 
-  // The summary cards always show the LATEST month (October from 8 Oct 2026); September's row stays in the table.
+  // The summary cards always show the LATEST month (November from 1 Nov 2026); earlier rows stay in the table.
   it('publishes the recomputed latest-month figure on BOTH surfaces', () => {
-    const { pct } = brandedPct('aeoanalyzers-2026-10-08.json');
+    const { pct } = brandedPct('aeoanalyzers-2026-11-01.json');
+    const prev = brandedPct('aeoanalyzers-2026-10-08.json').pct;
     expect(page,   'Part 1 summary card').toContain(`<div class="num">${pct}%</div>`);
     expect(ledger, '/evidence summary card').toContain(`<div class="num">${pct}%</div>`);
-    expect(ledger, '/evidence table row').toContain(`<span class="fig up">${pct}%</span>`);
+    // Green ("up") only when the latest month actually rose; a fall is shown plainly.
+    expect(ledger, '/evidence table row').toContain(`<span class="fig ${pct > prev ? 'up' : 'flat'}">${pct}%</span>`);
   });
 
   it('publishes the recomputed August figure in the ledger table', () => {
@@ -93,7 +95,7 @@ describe('the ledger matches what the stored transcripts actually say', () => {
 
   it('the ledger declares itself a Dataset with both measures and their N', () => {
     expect(ledger).toContain('"@type": "Dataset"');
-    const L = 'aeoanalyzers-2026-10-08.json';
+    const L = 'aeoanalyzers-2026-11-01.json';
     expect(ledger).toContain(`"value": ${brandedPct(L).pct}`);
     expect(ledger).toContain(`N=${brandedPct(L).n}`);
     expect(ledger).toContain(`N=${categoryPct(L).n}`);
@@ -101,8 +103,8 @@ describe('the ledger matches what the stored transcripts actually say', () => {
 
   it('states the month-over-month move as the arithmetic actually gives it', () => {
     // From October the summary states each month's figure rather than one delta.
-    const L = 'aeoanalyzers-2026-10-08.json';
-    expect(page).toContain(`Found by name: ${brandedPct(L).pct}% in October, ${brandedPct(SEP).pct}% in September, ${brandedPct(AUG).pct}% in August.`);
+    const L = 'aeoanalyzers-2026-11-01.json';
+    expect(page).toContain(`Found by name: ${brandedPct(L).pct}% in November, ${brandedPct('aeoanalyzers-2026-10-08.json').pct}% in October, ${brandedPct(SEP).pct}% in September, ${brandedPct(AUG).pct}% in August.`);
     expect(page).not.toContain('rose 27 points');   // the figure we nearly shipped
   });
 
@@ -252,22 +254,31 @@ describe('October 2026 row', () => {
     expect(categoryPct(OCT)).toEqual({ pct: 0, n: 200 });
   });
   it('the ledger renders exactly those figures, and the summaries point at October', () => {
-    expect(ledger).toMatch(/October 2026<\/td>\s*<td><span class="fig up">88%<\/span><span class="nn">N=40<\/span><\/td>/);
+    expect(ledger).toMatch(/October 2026<\/td>\s*<td><span class="fig flat">88%<\/span><span class="nn">N=40<\/span><\/td>/);
     expect(ledger).toMatch(/<span class="fig flat">100%<\/span><span class="nn">40 of 40 named<\/span>/);
-    expect(readFileSync(root('public/blog/index.html'), 'utf8')).toContain('<span class="ls-n good">88%</span>');
-    expect(page).toContain('<span class="ls-n good">88%</span>');
+    // From 1 Nov 2026 the summaries point at November (78% of 40).
+    expect(readFileSync(root('public/blog/index.html'), 'utf8')).toContain('<span class="ls-n good">78%</span>');
+    expect(page).toContain('<span class="ls-n good">78%</span>');
+    expect(ledger).toMatch(/November 2026<\/td>\s*<td><span class="fig flat">78%<\/span><span class="nn">N=40<\/span><\/td>/);
   });
   it('accuracy-when-named on the page recomputes from transcripts + stored site facts, for every month', async () => {
     const { accuracyWhenNamed } = await import('../lib/fidelity');
     const { scoreRun } = await import('../lib/citationSweep');
     const client = { domain: 'aeoanalyzers.com', brand: 'AEO Analyzers' };
     const comps = [{ name: 'Profound' }, { name: 'Otterly AI' }, { name: 'Peec AI' }];
-    for (const [f, truthKey, shown] of [[AUG, 'truthForAccuracy', '40 of 40'], [SEP, 'truthForAccuracy', '31 of 32'], [OCT, 'truth', '40 of 40']] as const) {
+    for (const [f, truthKey, shown] of [[AUG, 'truthForAccuracy', '40 of 40'], [SEP, 'truthForAccuracy', '31 of 32'], [OCT, 'truth', '40 of 40'], ['aeoanalyzers-2026-11-01.json', 'truth', '30 of 40']] as const) {
       const d = load(f);
       const a = accuracyWhenNamed(d.runs.map((r: any) => scoreRun(r, client, comps)).filter((r: any) => r.queryType === 'branded'), d[truthKey])!;
       expect(`${a.accurate} of ${a.named}`).toBe(shown);
       expect(ledger).toContain(`<span class="nn">${shown} named</span>`);
     }
+  });
+  it('a retired product name counts in any letter case (scoring rules 2026-11-01)', async () => {
+    const { sitePublishedIssues } = await import('../lib/fidelity');
+    const truth: any = { brandName: 'AEO Analyzers', founders: [], sameAs: [], facts: [], retiredNames: ['AI Simulation Engine'] };
+    expect(sitePublishedIssues('AEO Analyzers is an AI simulation engine.', truth).map((i) => i.type)).toEqual(['retired_name']);
+    expect(sitePublishedIssues('AEO Analyzers is an AI Simulation Engine.', truth).map((i) => i.type)).toEqual(['retired_name']);
+    expect(sitePublishedIssues('AEO Analyzers measures answer engines.', truth)).toEqual([]);
   });
   it('no committed baseline carries a cost figure (the repo is public)', () => {
     const { readdirSync } = require('node:fs') as typeof import('node:fs');

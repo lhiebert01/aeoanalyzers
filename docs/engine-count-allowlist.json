@@ -3,7 +3,7 @@
  "entries": [
   {
    "file": "public/aeo-buyers-guide/index.html",
-   "text": "or Gemini is failing to retrieve, describe, cite or choose its site — an",
+   "text": "or Gemini is failing to retrieve, describe, cite or choose its site \u2014 an",
    "class": "GENERAL",
    "note": "buyer example"
   },
@@ -15,7 +15,7 @@
   },
   {
    "file": "public/best-aeo-tools/index.html",
-   "text": "h, in our September 2026 measurement — 200 recorded answers — and counted ho",
+   "text": "h, in our September 2026 measurement \u2014 200 recorded answers \u2014 and counted ho",
    "class": "DATED",
    "note": "September 2026 measurement"
   },
@@ -27,7 +27,7 @@
   },
   {
    "file": "public/blog/are-you-the-answer-ai-gives/index.html",
-   "text": "They’ll ask ChatGPT, Gemini, or Perplexity “what’s the best",
+   "text": "They\u2019ll ask ChatGPT, Gemini, or Perplexity \u201cwhat\u2019s the best",
    "class": "GENERAL",
    "note": "buyer behavior / market description"
   },
@@ -39,7 +39,7 @@
   },
   {
    "file": "public/blog/are-you-the-answer-ai-gives/index.html",
-   "text": "60 live queries · ChatGPT · Gemini · Perplexity · Claud",
+   "text": "60 live queries \u00b7 ChatGPT \u00b7 Gemini \u00b7 Perplexity \u00b7 Claud",
    "class": "ILLUSTRATIVE",
    "note": "labeled Meridian Payroll sample"
   },
@@ -65,7 +65,7 @@
    "file": "public/blog/feed.xml",
    "text": "Twelve questions on four engines produce a plan.",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/blog/feed.xml",
@@ -87,51 +87,51 @@
   },
   {
    "file": "public/blog/i-scored-zero/index.html",
-   "text": "ry time — 98% branded retrievability across the store",
+   "text": "ry time \u2014 98% branded retrievability across the store",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/blog/i-scored-zero/index.html",
    "text": "measured five times per query, across all four engines.",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/blog/i-scored-zero/index.html",
    "text": "July 2026, four answer engines.",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/blog/i-scored-zero/index.html",
    "text": "cross the same four engines.",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/blog/i-scored-zero/index.html",
-   "text": "rs stored 240 four engines · every one re-readable",
+   "text": "rs stored 240 four engines \u00b7 every one re-readable",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/blog/i-scored-zero/index.html",
    "text": "ctober we re-measured on the same four engines and again with a fifth added; t",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/blog/index.html",
    "text": "ns across three segments and four engines are the smallest unit that produces a p",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/blog/index.html",
-   "text": "n by name 98%, recommended to buyers 0% — measured fi",
+   "text": "n by name 98%, recommended to buyers 0% \u2014 measured fi",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/blog/one-question-is-not-a-measurement/index.html",
@@ -279,7 +279,7 @@
   },
   {
    "file": "public/evidence/index.html",
-   "text": "Answers stored 240 four engines · every one re-readable",
+   "text": "Answers stored 240 four engines \u00b7 every one re-readable",
    "class": "DATED",
    "note": "ledger records"
   },
@@ -345,9 +345,9 @@
   },
   {
    "file": "public/llms-full.txt",
-   "text": "- Blog — One question is not a measurement (why twelve buyer questions on four e",
+   "text": "- Blog \u2014 One question is not a measurement (why twelve buyer questions on four e",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/llms-full.txt",
@@ -389,7 +389,7 @@
    "file": "public/llms-full.txt",
    "text": "th on the same four engines.",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/llms-full.txt",
@@ -399,19 +399,19 @@
   },
   {
    "file": "public/llms.txt",
-   "text": "- Blog — One question is not a measurement (why twelve buyer questions on four e",
+   "text": "- Blog \u2014 One question is not a measurement (why twelve buyer questions on four e",
    "class": "DATED",
-   "note": "July–October 2026 measurements and the series of record"
+   "note": "July\u2013October 2026 measurements and the series of record"
   },
   {
    "file": "public/methodology/index.html",
-   "text": "Panel v1.1 — ChatGPT, Claude, Perplexity and Gemini — is our",
+   "text": "Panel v1.1 \u2014 ChatGPT, Claude, Perplexity and Gemini \u2014 is our",
    "class": "DATED",
    "note": "series of record (panel v1.1) / the new series start, not a plan claim"
   },
   {
    "file": "public/methodology/index.html",
-   "text": "example, one question across four engines, three runs each — medium from 6 to 11, and low under 6.",
+   "text": "example, one question across four engines, three runs each \u2014 medium from 6 to 11, and low under 6.",
    "class": "ILLUSTRATIVE",
    "note": "worked example of N"
   },
@@ -447,7 +447,7 @@
   },
   {
    "file": "src/components/PersonasAndFAQ.tsx",
-   "text": "r site so AI answer engines — ChatGPT, Gemini, Perplexity, Claude — find, trust, and",
+   "text": "r site so AI answer engines \u2014 ChatGPT, Gemini, Perplexity, Claude \u2014 find, trust, and",
    "class": "GENERAL",
    "note": "market description, examples or crawler reference"
   },
@@ -459,7 +459,7 @@
   },
   {
    "file": "src/components/PressKit.tsx",
-   "text": "nAI LLC — July 2026** — AEO Analyzers today released the ne",
+   "text": "nAI LLC \u2014 July 2026** \u2014 AEO Analyzers today released the ne",
    "class": "DATED",
    "note": "July 2026 press release text"
   },
@@ -489,7 +489,7 @@
   },
   {
    "file": "src/components/PressKit.tsx",
-   "text": "nAI LLC — July 2026</strong> — AEO Analyzers today released",
+   "text": "nAI LLC \u2014 July 2026</strong> \u2014 AEO Analyzers today released",
    "class": "DATED",
    "note": "July 2026 press release text"
   },
@@ -525,7 +525,7 @@
   },
   {
    "file": "src/lib/execReport.ts",
-   "text": "a quick, no-strings AI-visibility check on ${d.domain} — what ChatGPT, Claude,",
+   "text": "a quick, no-strings AI-visibility check on ${d.domain} \u2014 what ChatGPT, Claude,",
    "class": "DATED",
    "note": "names the panel that specific courtesy report ran (v1.1)"
   },
@@ -543,7 +543,7 @@
   },
   {
    "file": "src/services/docxGenerator.ts",
-   "text": "readable \"business card\" — telling AI engines exactly what your",
+   "text": "readable \"business card\" \u2014 telling AI engines exactly what your",
    "class": "GENERAL",
    "note": "market description, examples or crawler reference"
   },
@@ -552,6 +552,18 @@
    "text": "I-powered search engines like Google Gemini, ChatGPT, and Perplexity are replacing",
    "class": "GENERAL",
    "note": "market description, examples or crawler reference"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "ChatGPT returned the site 1 time in 10, against 5 of 10 in October",
+   "class": "DATED",
+   "note": "November 2026 ledger row (dated measurement on panel v1.1)"
+  },
+  {
+   "file": "public/evidence/index.html",
+   "text": "In the latest four-engine sweep of each of 11 companies",
+   "class": "DATED",
+   "note": "benchmark of dated four-engine sweeps (July to October 2026)"
   }
  ]
 }

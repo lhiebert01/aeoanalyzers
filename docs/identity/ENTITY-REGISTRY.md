@@ -27,7 +27,7 @@ Aliases: PIGENAI LLC → PIGENAI, PI GenAI LLC. AEO Analyzers → AEOAnalyzers, 
 ## Listings (directories and profiles)
 | Listing | URL | Status | Date live | Added to Wikidata as a reference? |
 |---|---|---|---|---|
-| AlternativeTo | https://alternativeto.net/software/aeo-analyzers/ | live | 2026-10-15 | not yet (founder adds "described at URL" on Q141739225) |
+| AlternativeTo | https://alternativeto.net/software/aeo-analyzers/ | live | 2026-10-15 | not yet (founder adds "described at URL" on Q141739225); submitted 2026-10-15, publicly reachable 2026-10-15, approval confirmed 2026-11-01 |
 | Crunchbase | | planned (founder, week of Oct 19) | | |
 | G2 | | planned (founder, Oct 16) | | |
 | Slashdot / SourceForge | | planned (founder, Oct 16) | | |
@@ -43,3 +43,4 @@ Pricing model: Freemium, linked to https://aeoanalyzers.com/pricing. No price fi
 - 2026-10-15 — Wikidata items Q141739140 and Q141739225 created by the founder; registry created (WO-013).
 - 2026-10-15 — AlternativeTo submitted by the founder (priority review); G2 and Slashdot planned Oct 16; Crunchbase and LinkedIn moved to the week of Oct 19. No listing is live yet, so no listing URL is in sameAs.
 - 2026-10-15 — AlternativeTo live (https://alternativeto.net/software/aeo-analyzers/, platform Online, developer PIGENAI LLC); added to the SoftwareApplication sameAs on aeoanalyzers.com (product node only). Long text updated to the five-first wording (founder ruling 10:07 CT, WO-008); the AlternativeTo description still carries the earlier four-first text until the founder edits it.
+- 2026-11-01 — AlternativeTo approval confirmed by the founder (submissions queue empty). The listing page states it was added and last updated 2026-10-15; it was publicly reachable when first checked that day, so the live date stays 2026-10-15. Entered in the founder's Record (submitted and live, both 2026-10-15).

@@ -1,0 +1,151 @@
+{
+ "_note": "WO-012 F held benchmark, approved for publication by the founder 2026-11-01 (11-company version). Latest four-engine sweep (ChatGPT, Claude, Perplexity, Gemini) of each company we have measured, 40+ stored answers, re-scored 2026-10-15 under the scoring rules of that date from stored answers only. Companies are not named. Excluded: aeoanalyzers.com and every PIGENAI portfolio site. Includes one related party (the founder's employer). Domains are kept privately, never in this public repository.",
+ "rescoredAt": "2026-10-15",
+ "scoringRules": "2026-10-15",
+ "panel": "v1.1 engines (ChatGPT, Claude, Perplexity, Gemini)",
+ "companies": [
+  {
+   "n": 1,
+   "sweepDate": "2026-07-26",
+   "storedAnswers": 60,
+   "foundByName": {
+    "cited": 24,
+    "n": 24
+   },
+   "recommended": {
+    "cited": 30,
+    "n": 36
+   }
+  },
+  {
+   "n": 2,
+   "sweepDate": "2026-08-22",
+   "storedAnswers": 48,
+   "foundByName": {
+    "cited": 7,
+    "n": 7
+   },
+   "recommended": {
+    "cited": 4,
+    "n": 30
+   }
+  },
+  {
+   "n": 3,
+   "sweepDate": "2026-09-30",
+   "storedAnswers": 48,
+   "foundByName": {
+    "cited": 8,
+    "n": 8
+   },
+   "recommended": {
+    "cited": 0,
+    "n": 28
+   }
+  },
+  {
+   "n": 4,
+   "sweepDate": "2026-10-08",
+   "storedAnswers": 84,
+   "foundByName": {
+    "cited": 22,
+    "n": 24
+   },
+   "recommended": {
+    "cited": 24,
+    "n": 31
+   }
+  },
+  {
+   "n": 5,
+   "sweepDate": "2026-10-08",
+   "storedAnswers": 84,
+   "foundByName": {
+    "cited": 24,
+    "n": 24
+   },
+   "recommended": {
+    "cited": 29,
+    "n": 31
+   }
+  },
+  {
+   "n": 6,
+   "sweepDate": "2026-10-08",
+   "storedAnswers": 84,
+   "foundByName": {
+    "cited": 24,
+    "n": 24
+   },
+   "recommended": {
+    "cited": 9,
+    "n": 32
+   }
+  },
+  {
+   "n": 7,
+   "sweepDate": "2026-10-08",
+   "storedAnswers": 84,
+   "foundByName": {
+    "cited": 24,
+    "n": 24
+   },
+   "recommended": {
+    "cited": 35,
+    "n": 46
+   }
+  },
+  {
+   "n": 8,
+   "sweepDate": "2026-10-08",
+   "storedAnswers": 84,
+   "foundByName": {
+    "cited": 24,
+    "n": 24
+   },
+   "recommended": {
+    "cited": 5,
+    "n": 39
+   }
+  },
+  {
+   "n": 9,
+   "sweepDate": "2026-10-08",
+   "storedAnswers": 84,
+   "foundByName": {
+    "cited": 24,
+    "n": 24
+   },
+   "recommended": {
+    "cited": 3,
+    "n": 32
+   }
+  },
+  {
+   "n": 10,
+   "sweepDate": "2026-10-08",
+   "storedAnswers": 84,
+   "foundByName": {
+    "cited": 22,
+    "n": 24
+   },
+   "recommended": {
+    "cited": 6,
+    "n": 31
+   }
+  },
+  {
+   "n": 11,
+   "sweepDate": "2026-10-08",
+   "storedAnswers": 84,
+   "foundByName": {
+    "cited": 22,
+    "n": 24
+   },
+   "recommended": {
+    "cited": 22,
+    "n": 35
+   }
+  }
+ ]
+}
