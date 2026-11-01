@@ -33,3 +33,14 @@ describe('L-ENGINE-1', () => {
     expect(() => execSync('npx tsx scripts/lint-engine-count.ts', { stdio: 'pipe' })).not.toThrow();
   });
 });
+
+describe('share images carry no engine count in their pixels', () => {
+  it('no page uses a retired share image (four-engine list / sample score in the pixels)', () => {
+    const { execSync: ex } = require('node:child_process') as typeof import('node:child_process');
+    const hits = ex(`git grep -l -E '(og:image|twitter:image)" content="[^"]*(aeo-og\\.png|aeo-og-sweep-2026c\\.png)' -- public || true`, { encoding: 'utf8' }).trim();
+    expect(hits).toBe('');
+    const seo = readFileSync('src/components/SEO.tsx', 'utf8');
+    expect(seo).toContain("ogImage = '/og-home-2026-11.jpg'");
+    expect(seo).not.toMatch(/sample AEO Score of 88/);
+  });
+});

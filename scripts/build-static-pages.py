@@ -36,13 +36,17 @@ def page(slug, title, desc, og_title, ld, eyebrow, h1, body):
 <meta property="og:title" content="{og_title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:url" content="https://aeoanalyzers.com/{slug}">
-<meta property="og:image" content="https://aeoanalyzers.com/aeo-og.png">
+<meta property="og:image" content="https://aeoanalyzers.com/og-home-2026-11.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AEO Analyzers: Be the Answer AI Gives. Measure what AI answer engines say about you, act on it, and keep a dated record. Three stacked answer cards on a navy background.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@Lindsay_Hiebert">
 <meta name="twitter:creator" content="@Lindsay_Hiebert">
 <meta name="twitter:title" content="{og_title}">
 <meta name="twitter:description" content="{desc}">
-<meta name="twitter:image" content="https://aeoanalyzers.com/aeo-og.png">
+<meta name="twitter:image" content="https://aeoanalyzers.com/og-home-2026-11.jpg">
+<meta name="twitter:image:alt" content="AEO Analyzers: Be the Answer AI Gives. Measure what AI answer engines say about you, act on it, and keep a dated record. Three stacked answer cards on a navy background.">
 <meta name="theme-color" content="#08343B">
 <script type="application/ld+json">
 {json.dumps(ld, indent=2, ensure_ascii=False)}

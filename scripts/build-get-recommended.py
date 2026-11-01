@@ -102,13 +102,17 @@ page = f"""<!doctype html>
 <meta property="og:title" content="{esc(TITLE)}">
 <meta property="og:description" content="{esc(DESC)}">
 <meta property="og:url" content="https://aeoanalyzers.com/{SLUG}">
-<meta property="og:image" content="https://aeoanalyzers.com/aeo-og.png">
+<meta property="og:image" content="https://aeoanalyzers.com/og-home-2026-11.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AEO Analyzers: Be the Answer AI Gives. Measure what AI answer engines say about you, act on it, and keep a dated record. Three stacked answer cards on a navy background.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@Lindsay_Hiebert">
 <meta name="twitter:creator" content="@Lindsay_Hiebert">
 <meta name="twitter:title" content="{esc(TITLE)}">
 <meta name="twitter:description" content="{esc(DESC)}">
-<meta name="twitter:image" content="https://aeoanalyzers.com/aeo-og.png">
+<meta name="twitter:image" content="https://aeoanalyzers.com/og-home-2026-11.jpg">
+<meta name="twitter:image:alt" content="AEO Analyzers: Be the Answer AI Gives. Measure what AI answer engines say about you, act on it, and keep a dated record. Three stacked answer cards on a navy background.">
 <meta name="theme-color" content="#08343B">
 {''.join(f'<script type="application/ld+json">{chr(10)}{json.dumps(x, indent=2, ensure_ascii=False)}{chr(10)}</script>{chr(10)}' for x in ld)}{CSS}
 <style>.postbody ul{{max-width:68ch;margin:0 0 16px;padding-left:22px}}.postbody li{{font-size:17px;margin:0 0 8px;color:var(--ink)}}.postbody .posth3{{font-size:18px;font-weight:700;margin:22px 0 6px;color:var(--ink)}}</style>

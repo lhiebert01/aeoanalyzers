@@ -24,7 +24,8 @@ const SEO: React.FC<SEOProps> = ({
   keywords = ['AEO', 'Answer Engine Optimization', 'AI Search', 'Brand Citations', 'SEO for AI', 'LLM Optimization', 'Gemini SEO', 'ChatGPT SEO', 'Perplexity SEO', 'Grok SEO', 'AI Search Optimization', 'Generative Engine Optimization', 'GEO', 'AI Citation', 'AI Attribution', 'Semantic SEO', 'Knowledge Graph Optimization'],
   canonical,
   ogType = 'website',
-  ogImage = '/aeo-og-sweep-2026c.png',
+  // Nov 2026 share card: text set in code over a text-free image; no engine count, no number in the pixels.
+  ogImage = '/og-home-2026-11.jpg',
   author = DEFAULT_AUTHOR,
   publishedDate = '2026-03-22T00:00:00Z',
   jsonLd,
@@ -60,7 +61,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:image:type" content={imageType} />
-      <meta property="og:image:alt" content="AEO Analyzers: Be the Answer AI Gives. A sample AEO Score of 88 out of 100, with a citation estimate and the top recommendations." />
+      <meta property="og:image:alt" content="AEO Analyzers: Be the Answer AI Gives. Measure what AI answer engines say about you, act on it, and keep a dated record. Three stacked answer cards on a navy background." />
       <meta property="og:locale" content="en_US" />
       
       {/* Article Metadata (if applicable) */}
@@ -74,7 +75,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
-      <meta name="twitter:image:alt" content="AEO Analyzers: Be the Answer AI Gives. A sample AEO Score of 88 out of 100, with a citation estimate and the top recommendations." />
+      <meta name="twitter:image:alt" content="AEO Analyzers: Be the Answer AI Gives. Measure what AI answer engines say about you, act on it, and keep a dated record. Three stacked answer cards on a navy background." />
 
       {/* Robots */}
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
