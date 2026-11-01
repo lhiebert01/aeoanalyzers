@@ -6,7 +6,7 @@
 // "Could not read", never a "No". No engine call is made; nothing here is customer-facing cost.
 import {
   brandMatchers, namesYou, planSourceCoverage,
-  type CoverageRow, type SourceCoverage, pageTitleAndByline } from '../../src/lib/sourceCoverage.js';
+  type CoverageRow, type SourceCoverage, pageTitleAndByline, pageContactRoute, pageSellsProduct } from '../../src/lib/sourceCoverage.js';
 import type { SweepRunResult } from '../../src/lib/citationSweep.js';
 
 export const SOURCE_COVERAGE_UA = 'AEOAnalyzersBot/1.0 (+https://aeoanalyzers.com/methodology; source coverage check)';
@@ -59,7 +59,7 @@ function visibleText(html: string): string {
     .replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ');
 }
 
-type Verdict = Pick<CoverageRow, 'verdict' | 'reason' | 'title' | 'byline'>;
+type Verdict = Pick<CoverageRow, 'verdict' | 'reason' | 'title' | 'byline' | 'contact' | 'sellsProduct'>;
 
 export async function checkPage(url: string, matchers: RegExp[], robotsCache: Map<string, Promise<{ allow: string[]; disallow: string[] } | null>>): Promise<Verdict> {
   let u: URL;
@@ -78,7 +78,8 @@ export async function checkPage(url: string, matchers: RegExp[], robotsCache: Ma
       const type = r.headers.get('content-type') || '';
       if (type && !/html|xml|text\/plain/i.test(type)) return { verdict: 'unreadable', reason: 'not HTML' };
       const html = await r.text();
-      return { verdict: namesYou(visibleText(html), matchers) ? 'yes' : 'no', ...pageTitleAndByline(html) };
+      const contact = pageContactRoute(html, url);
+      return { verdict: namesYou(visibleText(html), matchers) ? 'yes' : 'no', ...pageTitleAndByline(html), ...(contact ? { contact } : {}), sellsProduct: pageSellsProduct(html, url) };
     } catch (err: any) {
       const timeout = err?.name === 'TimeoutError' || err?.name === 'AbortError';
       if (attempt === 0 && !timeout) continue; // one retry on a network error
@@ -86,6 +87,18 @@ export async function checkPage(url: string, matchers: RegExp[], robotsCache: Ma
     }
   }
   return { verdict: 'unreadable', reason: 'error' };
+}
+
+const homeCache = new Map<string, Promise<boolean>>();
+/** The publisher's own homepage shows self-serve software signals (robots-respecting, once per site). */
+export function homeSellsProduct(url: string, robotsCache: Map<string, Promise<{ allow: string[]; disallow: string[] } | null>>): Promise<boolean> {
+  let origin: string; try { origin = new URL(url).origin; } catch { return Promise.resolve(false); }
+  if (!homeCache.has(origin)) homeCache.set(origin, (async () => {
+    const rules = await (robotsCache.get(origin) || Promise.resolve(null));
+    if (rules && !robotsAllows(rules, '/')) return false;
+    try { const r = await get(origin + '/'); if (!r.ok) return false; return pageSellsProduct(await r.text(), origin + '/', true); } catch { return false; }
+  })());
+  return homeCache.get(origin)!;
 }
 
 /** Run the pass over a sweep's stored runs. `fetchedAt` is today: pages change. */
@@ -104,6 +117,8 @@ export async function runSourceCoverage(
       const p = plan.pages[i];
       const h = hostInfo.get(p.host)!;
       const v = await checkPage(p.url, matchers, robotsCache);
+      // WO-015: a vendor's blog page often carries no product links; its homepage does.
+      if (v.verdict !== 'unreadable' && !v.sellsProduct) v.sellsProduct = await homeSellsProduct(p.url, robotsCache);
       rows[i] = { host: p.host, timesCited: h.timesCited, engines: h.engines, url: p.url, ...v };
     }
   }));

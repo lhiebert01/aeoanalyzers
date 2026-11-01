@@ -441,7 +441,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const summary = aggregateSweep(runs, { domain, brand }, competitors);
-    (summary as any).panel = { version: panelVersion, engines, location };
+    // WO-015: a separate question series (the differentiator questions) is never compared with the
+    // main series; the Record and "Moving first" compare like with like.
+    const series = body.series === 'differentiator' ? 'differentiator' : 'main';
+    (summary as any).panel = { version: panelVersion, engines, location, series };
     if (guard.skipped) {
       console.warn(`[run-sweep] spend ceiling reached: ${guard.skipped} call(s) not made (ceiling $${capUsd.toFixed(2)}, tier ${access.tier})`);
       (summary as any).spendCeilingReached = { callsNotMade: guard.skipped };

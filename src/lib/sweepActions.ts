@@ -211,14 +211,19 @@ export function sweepAgendaBlocks(inp: SweepActionInputs): AgendaBlock[] {
     const wantsList = losing.filter((q) => answerShape(q) === 'recommendation');
     const wantsAdvice = losing.filter((q) => answerShape(q) === 'advice');
     const lines: string[] = [];
-    for (const q of wantsList) lines.push(`- Write the page that answers: "${displayQuestion(q, inp.location)}"`);
+    // WO-015: a shortlist question is answered from the pages the engines read for it, not from a
+    // page of your own; those go to the outreach lanes. Procedure questions get a page.
+    if (wantsList.length) {
+      lines.push(`**Shortlist questions (${wantsList.length}).** The engines answer these from the pages they read for them, so the work is off your site: listings, publishing and pitches (Lanes 1 to 3 in "Your next steps"):`);
+      for (const q of wantsList) lines.push(`- "${displayQuestion(q, inp.location)}"`);
+    }
     if (wantsAdvice.length) {
       lines.push('');
-      lines.push(`**Read these ${wantsAdvice.length === 1 ? 'one' : `${wantsAdvice.length}`} differently.** ${wantsAdvice.length === 1 ? 'This question reads' : 'These read'} as a request for a procedure rather than for a shortlist, so an engine tends to answer ${wantsAdvice.length === 1 ? 'it' : 'them'} with steps and name no vendor at all. A zero here is weaker evidence than a zero on the questions above — it may mean the answer was never shaped like a recommendation, not that you lost a comparison. Worth a page for the reader; not worth reading as a citation loss:`);
+      lines.push(`**Read these ${wantsAdvice.length === 1 ? 'one' : `${wantsAdvice.length}`} differently.** ${wantsAdvice.length === 1 ? 'This question reads' : 'These read'} as a request for a procedure rather than for a shortlist, so an engine tends to answer ${wantsAdvice.length === 1 ? 'it' : 'them'} with steps and name no vendor at all. A zero here is weaker evidence than a zero on the questions above — it may mean the answer was never shaped like a recommendation, not that you lost a comparison. These are the ones worth an answer-first page of your own:`);
       for (const q of wantsAdvice) lines.push(`- Write the page that answers: "${displayQuestion(q, inp.location)}"`);
     }
     if (losing.length) out.push({ key: 'content-agenda', owner: 'Content', watch: 'citation',
-      title: `You aren't recommended on the questions buyers actually ask (${inp.categoryWinPct}% category win). Turn each losing question into a page that answers it head-on.`,
+      title: `You aren't recommended on the questions buyers actually ask (${inp.categoryWinPct}% category win). Answer the procedure questions on your own site; win the shortlist questions off it.`,
       lines });
     if (comparisons.length) out.push({ key: 'comparison-outreach', owner: 'Outreach', watch: 'coverage',
       title: `${comparisons.length === 1 ? 'One question compares' : `${comparisons.length} questions compare`} two named competitors. That is outreach, not a page.`,

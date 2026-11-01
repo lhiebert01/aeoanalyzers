@@ -16,6 +16,7 @@
 import puppeteer from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { wilsonInterval, confidenceLabel } from '../src/lib/citationSweep';
 
 const BASE = 'docs/baselines';
 const OUT = 'public/img/blog/2026-11';
@@ -153,6 +154,20 @@ const I = {
   folder: '<path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>',
   chat: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
   sparkle: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',
+  net: '<circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 6.8l3.3 3.9M7 17.2l3.3-3.9M14 11l3.3-3.9M14 13l3.3 3.9M7 6h10M7 18h10"/>',
+  dots: '<circle cx="5" cy="6" r="1"/><circle cx="11" cy="4" r="1"/><circle cx="17" cy="7" r="1"/><circle cx="8" cy="11" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="20" cy="14" r="1"/><circle cx="5" cy="16" r="1"/><circle cx="11" cy="18" r="1"/><circle cx="17" cy="19" r="1"/>',
+  help: '<path d="M4 5h16v11H9l-5 4z"/><path d="M9.8 8.6a2.3 2.3 0 1 1 3.1 2.1c-.6.3-.9.7-.9 1.3v.4"/><path d="M12 14.6h.01"/>',
+  radar: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6"/><circle cx="16" cy="15" r=".8"/>',
+  bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  mountain: '<path d="M2 20l7-11 4 6 2-3 7 8z"/><path d="M9 9V3l4 1.5L9 6"/>',
+  handshake: '<path d="M2 11l4-4 4 2 3-2 3 1 6 4"/><path d="M6 13l4 4c.8.8 2 .8 2.8 0M9 12l4 4c.8.8 2 .8 2.8 0M12 11l3.5 3.5c.8.8 2 .8 2.8 0L22 11"/>',
+  shield: '<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/>',
+  code: '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 6l-3 12"/>',
+  chart: '<path d="M4 20V14M10 20V9M16 20V4M2 20h20"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/><circle cx="12" cy="12" r="7"/>',
+  toolbox: '<rect x="3" y="8" width="18" height="12" rx="1.5"/><path d="M9 8V5h6v3M3 13h18M11 12h2v3h-2z"/>',
+  hammer: '<path d="M4 7l4-4 3 1 2 2-1 1 1 1-3 3-1-1-1 1-2-2z"/><path d="M11 11l9 9-2 2-9-9"/>',
+  screwdriver: '<path d="M14 3l7 7-3 3-7-7z"/><path d="M12 9l-8 8 3 3 8-8M4 17l-1 4 4-1"/>',
 };
 
 const header = (title: string, sub?: string, pill?: string) => `
@@ -607,6 +622,267 @@ const figs: Fig[] = [];
     id: 'pipeline', also: `${HIW}/visual-1-pipeline-v2.webp`, html,
     alt: `The AEO Analyzers pipeline in five stages. 1 Your domain: we read your site and propose brand, category, competitors and draft questions; you confirm. 2 The questions: your buyer questions, in three kinds: about-you, category and head-to-head. 3 The interrogation: the engines on your plan (${V11.join(', ')}, plus ${EXTRA.join(', ')} on Pro and Business) × every question × several runs, web search on, with search-grounded and answered-from-memory answers kept separate. 4 The measurement: found by name, recommended to buyers and who's cited instead, with an accuracy check, look-alike detection, and sample size and confidence on every number. 5 The deliverables: a scorecard, stored transcripts and an action plan (code fixes, content agenda, tiered source list). A loop returns to stage 3: re-sweep monthly, same questions, same way, and watch the number move.`,
     caption: 'How a Citation Sweep runs: your domain, your buyer questions, the engines on your plan with web search on, the measurement, and the deliverables, then the same sweep again each month.',
+  });
+}
+
+// 17. why-several-runs (rebuild of how-it-works visual-3; illustrative grid, stats computed from it)
+{
+  const engines = V11; // panel v1.1 engine names, plain text
+  // 1 = cited, 0 = not cited. Same pattern as the original visual.
+  const G = ['10101', '01010', '10111', '11001'];
+  assertEq('runs grid rows = engines', G.length, engines.length);
+  const runsN = 5;
+  const total = G.length * runsN;
+  const cited = G.join('').split('').filter((c) => c === '1').length;
+  const pct = Math.round((100 * cited) / total);
+  const wi = wilsonInterval(cited, total);
+  const conf = confidenceLabel(total);
+  assertEq('why-several-runs numbers', [cited, total, pct, wi.low, wi.high, conf], [12, 20, 60, 39, 78, 'high confidence']);
+  const yes = `<svg width="64" height="64" viewBox="0 0 50 50" aria-hidden="true"><path d="M12 26l9 9 17-19" fill="none" stroke="${C.teal}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const no = `<svg width="52" height="52" viewBox="0 0 50 50" aria-hidden="true"><path d="M13 13l24 24M37 13L13 37" fill="none" stroke="#7D899E" stroke-width="5.5" stroke-linecap="round"/></svg>`;
+  const cell = (c: string) => `<div style="height:104px;border-radius:16px;display:flex;align-items:center;justify-content:center;${c === '1'
+    ? `background:${C.tealDeep};border:2px solid ${C.teal}` : `background:${C.panel2};border:2px solid ${C.line}`}">${c === '1' ? yes : no}</div>`;
+  const grid = `<div style="display:grid;grid-template-columns:250px repeat(${runsN},1fr);gap:12px;align-items:center">
+    <span></span>${Array.from({ length: runsN }, (_, i) => `<span style="text-align:center;font-weight:700;font-size:22px;color:${C.teal}">Run ${i + 1}</span>`).join('')}
+    ${engines.map((e, r) => `<div style="height:104px;display:flex;flex-direction:column;justify-content:center;padding-left:22px;border-radius:16px;background:${C.panel};border:2px solid ${C.line}">
+      <span style="font-weight:700;font-size:26px;color:${C.white}">${e}</span><span style="font-size:19px;color:${C.grey}">web search on</span></div>${G[r].split('').map(cell).join('')}`).join('')}</div>`;
+  const dots = Array.from({ length: total }, (_, i) => `<span style="width:20px;height:20px;border-radius:50%;display:inline-block;${i < cited ? `background:${C.teal}` : 'border:3px solid #5A6A8C'}"></span>`).join('');
+  const stat = (lbl: string, body: string, extra = '') => `<div style="flex:1;padding:0 28px;${extra}"><p style="font-weight:700;font-size:19px;letter-spacing:.06em;text-transform:uppercase;color:${C.teal};margin-bottom:12px">${lbl}</p>${body}</div>`;
+  const html = `${header('Why several runs?', 'A single answer is random. The pattern is a measurement.', ILL)}
+  <div class="row" style="gap:24px;align-items:stretch">
+    <div class="panel" style="width:300px;padding:26px 24px;display:flex;flex-direction:column">
+      <p style="font-weight:700;font-size:19px;letter-spacing:.06em;text-transform:uppercase;color:${C.teal}">The same question</p>
+      <p style="font-size:26px;line-height:1.35;color:${C.white};margin:14px 0 18px">“What are the best AI visibility tools?”</p>
+      <div style="display:flex;gap:10px;align-items:center;font-size:20px;color:${C.grey};padding-top:16px;border-top:1px solid ${C.line}">${ICON(I.search, C.teal, 26)}Web search: on</div>
+      <p style="font-size:20px;line-height:1.45;color:${C.grey};margin-top:22px">Asked ${runsN} times on each of ${engines.length} engines.</p>
+    </div>
+    <div style="flex:1">${grid}</div>
+    <div class="panel" style="width:230px;padding:26px 22px;display:flex;flex-direction:column;gap:18px;justify-content:center">
+      <div><div style="display:flex;gap:8px;align-items:center">${ICON(I.check, C.teal, 30)}<span style="font-weight:700;font-size:19px;letter-spacing:.04em;color:${C.teal}">CITED</span></div>
+        <p style="font-size:19px;line-height:1.4;margin-top:8px">Your brand is cited in the answer.</p></div>
+      <div style="border-top:1px solid ${C.line}"></div>
+      <div><div style="display:flex;gap:8px;align-items:center"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#7D899E" stroke-width="1.7"/><path d="M9 9l6 6M15 9l-6 6" stroke="#7D899E" stroke-width="1.7" stroke-linecap="round"/></svg><span style="font-weight:700;font-size:19px;letter-spacing:.04em;color:${C.white}">NOT CITED</span></div>
+        <p style="font-size:19px;line-height:1.4;margin-top:8px">You are not cited in the answer.</p></div>
+    </div>
+  </div>
+  <div class="panel" style="display:flex;margin-top:28px;padding:30px 0">
+    ${stat('Total answers', `<p style="font-weight:700;font-size:54px;line-height:1;color:${C.white}">${total}</p><p style="font-size:20px;margin-top:10px">${engines.length} engines × ${runsN} runs</p>`)}
+    ${stat('Cite rate', `<div style="display:flex;gap:20px;align-items:center"><p style="font-weight:700;font-size:54px;line-height:1;color:${C.teal}">${pct}%</p><p style="font-size:20px;line-height:1.35;color:${C.white}">${cited} of ${total} answers<br>cited you</p></div>
+      <div style="display:grid;grid-template-columns:repeat(10,20px);gap:8px;margin-top:16px">${dots}</div>`, `border-left:1px solid ${C.line};flex:1.5`)}
+    ${stat('Range and confidence', `<div style="position:relative;height:14px;border-radius:7px;background:${C.panel2};border:1px solid ${C.line};margin:22px 0 8px">
+        <div style="position:absolute;top:-1px;bottom:-1px;left:${wi.low}%;width:${wi.high - wi.low}%;background:${C.purple};border-radius:7px"></div>
+        <div style="position:absolute;top:-6px;left:calc(${pct}% - 12px);width:24px;height:24px;border-radius:50%;background:${C.teal};border:3px solid ${C.bg}"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:18px;color:${C.muted}"><span>0%</span><span>100%</span></div>
+      <p style="font-size:20px;line-height:1.4;color:${C.white};margin-top:10px">${wi.low}% to ${wi.high}% (95% range)<br>sample size ${total} · ${conf}</p>`, `border-left:1px solid ${C.line};flex:1.6`)}
+  </div>
+  ${footer('Illustrative example: not real results. The range is a Wilson 95% interval, the same method the sweep report uses.')}`;
+  figs.push({
+    id: 'why-several-runs', html,
+    alt: `Illustrative example titled "Why several runs? A single answer is random. The pattern is a measurement." The same question, "What are the best AI visibility tools?", with web search on, asked ${runsN} times on each of ${engines.length} engines (${engines.join(', ')}). A grid of ${total} answers marks each run cited (check) or not cited (cross): ${engines.map((e, r) => `${e} ${G[r].split('').map((c) => (c === '1' ? 'cited' : 'not cited')).join(', ')}`).join('; ')}. Total answers: ${total} (${engines.length} engines × ${runsN} runs). Cite rate: ${pct}%, ${cited} of ${total} answers cited you. Range and confidence: ${wi.low}% to ${wi.high}% (95% range), sample size ${total}, ${conf}. Not real results; the range is a Wilson 95% interval, the same method the sweep report uses.`,
+    caption: `Illustrative example. One answer can go either way; ${total} answers give a cite rate (${pct}% here) with a range (${wi.low}% to ${wi.high}%) and a sample size. Not real results.`,
+  });
+}
+
+// 18. reading-isnt-citing (rebuild of how-it-works visual-4)
+{
+  const step = (ic: string, col: string, t: string, d: string) => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px">
+    <p style="font-weight:700;font-size:19px;letter-spacing:.05em;text-transform:uppercase;color:${C.white};min-height:54px;display:flex;align-items:flex-end;justify-content:center">${t}</p>
+    <div style="width:116px;height:116px;border-radius:50%;background:${C.panel2};border:2px solid ${col};display:flex;align-items:center;justify-content:center">${ICON(ic, col, 60)}</div>
+    <p style="font-size:20px;line-height:1.35;color:${C.grey}">${d}</p></div>`;
+  const join = (steps: string[], col: string) => steps.join(`<div style="flex:none;padding-top:92px">${ARROW(44, col)}</div>`);
+  const span = (col: string, txt: string, label: string, ic: string) => `<div style="display:flex;align-items:center;gap:16px;margin:26px 0 22px">
+    <div style="flex:1;border-top:2px solid ${col}"></div>${ICON(ic, col, 28)}<span style="font-weight:700;font-size:19px;letter-spacing:.06em;color:${txt}">${label}</span><div style="flex:1;border-top:2px solid ${col}"></div></div>`;
+  const side = (n: number, col: string, txt: string, title: string, tag: string, d: string, steps: string, lbl: string, lic: string, boxIc: string, boxT: string, boxD: string) => `
+    <div class="panel" style="padding:32px 36px 34px;border-color:${col}88">
+      <div style="display:flex;gap:28px;align-items:baseline;flex-wrap:wrap"><h3 style="font-size:34px;color:${txt}">${n}. ${title}</h3><p style="font-size:23px;font-style:italic;font-weight:700;color:${txt}">${tag}</p></div>
+      <p style="font-size:22px;color:${C.grey};margin:8px 0 26px">${d}</p>
+      <div style="display:flex;align-items:flex-start;gap:6px">${steps}</div>
+      ${span(col, txt, lbl, lic)}
+      <div style="display:flex;gap:22px;align-items:center;background:${C.panel2};border:2px solid ${col};border-radius:16px;padding:20px 26px">
+        ${ICON(boxIc, col, 52)}<p style="font-size:22px;line-height:1.4;color:${C.white}"><b style="color:${txt}">${boxT}</b> ${boxD}</p></div>
+    </div>`;
+  const training = join([
+    step(I.bot, C.lav, 'Crawlers', 'Discover and fetch pages across the web'),
+    step(I.doc, C.lav, 'Raw pages', 'Text from across the web'),
+    step(I.layers, C.lav, 'Process and ingest', 'Clean, dedupe, chunk and ingest'),
+    step(I.net, C.lav, 'Model training', 'Patterns learned. Knowledge encoded.'),
+  ], C.lav);
+  const live = join([
+    step(I.help, C.teal, 'Buyer question', 'A real question in the moment'),
+    step(I.chat, C.teal, 'Multi-query generation', 'Different ways to search the web'),
+    step(I.radar, C.teal, 'Live retrieval', 'Search the web right now'),
+    step(I.trophy, C.teal, 'Ranking contest', 'Sources compete. Only a few win.'),
+    step(I.list, C.teal, 'Answer with citations', 'Top sources are cited in the answer'),
+  ], C.teal);
+  const html = `${header('Reading isn’t citing', `AI engines <b style="color:${C.lav}">read</b> a vast amount of the web when they train.<br>They <b class="k">cite</b> a small set of sources when they answer.`)}
+  ${side(1, C.purple, C.lav, 'Training pipeline', 'Slow. Diffuse. Months.', 'Crawlers read massive amounts of content to build a general knowledge model.', training, 'WEEKS TO MONTHS', I.clock, I.dots, 'Huge, diffuse knowledge.', 'The model has read a lot, but that doesn’t mean it will cite it.')}
+  <div style="display:flex;align-items:center;gap:20px;margin:22px 0">
+    <div style="flex:1;border-top:1px solid ${C.line}"></div>
+    <span style="font-weight:700;font-size:26px;color:${C.white};width:76px;height:76px;border-radius:50%;border:2px solid ${C.line};background:${C.bg};display:flex;align-items:center;justify-content:center">vs.</span>
+    <div style="flex:1;border-top:1px solid ${C.line}"></div></div>
+  ${side(2, C.teal, C.teal, 'Live retrieval pipeline', 'Fast. Selective. Seconds.', 'At answer time, the engine runs a real-time race to find and rank the best sources.', live, 'SECONDS, AT ANSWER TIME', I.bolt, I.list, 'Small, selective set.', 'Only the strongest, most relevant, most trustworthy sources get cited.')}
+  <div class="panel" style="display:flex;align-items:center;gap:30px;margin-top:28px;padding:28px 36px">
+    ${ICON(I.scale, C.teal, 56)}<p style="font-weight:700;font-size:26px;letter-spacing:.04em;color:${C.teal};white-space:nowrap">THE TAKEAWAY</p>
+    <div style="align-self:stretch;border-left:1px solid ${C.line}"></div>
+    <div><p style="font-size:28px;color:${C.white}">Being read during training ≠ being cited in answers.</p>
+      <p style="font-size:21px;color:${C.grey};margin-top:6px">Citation is earned in a real-time contest, not guaranteed by being in the training data.</p></div>
+  </div>
+  ${footer('We measure what happens in the live retrieval pipeline, because that’s what decides visibility.')}`;
+  figs.push({
+    id: 'reading-isnt-citing', html,
+    alt: 'Diagram titled "Reading isn\'t citing": AI engines read a vast amount of the web when they train; they cite a small set of sources when they answer. 1. Training pipeline, slow, diffuse, months: crawlers read massive amounts of content to build a general knowledge model. Four steps: Crawlers (discover and fetch pages across the web), Raw pages (text from across the web), Process and ingest (clean, dedupe, chunk and ingest), Model training (patterns learned, knowledge encoded). Weeks to months. Result: huge, diffuse knowledge; the model has read a lot, but that doesn\'t mean it will cite it. Versus 2. Live retrieval pipeline, fast, selective, seconds: at answer time, the engine runs a real-time race to find and rank the best sources. Five steps: Buyer question (a real question in the moment), Multi-query generation (different ways to search the web), Live retrieval (search the web right now), Ranking contest (sources compete, only a few win), Answer with citations (top sources are cited in the answer). Seconds, at answer time. Result: a small, selective set; only the strongest, most relevant, most trustworthy sources get cited. The takeaway: being read during training is not the same as being cited in answers; citation is earned in a real-time contest, not guaranteed by being in the training data. We measure what happens in the live retrieval pipeline, because that\'s what decides visibility.',
+    caption: 'Training reads a vast amount of the web over weeks to months; live retrieval picks a few sources at answer time. Citation is decided in the second pipeline, which is the one a sweep measures.',
+  });
+}
+
+// 19. attainability-ladder (rebuild of how-it-works visual-5)
+{
+  const tier = (n: number, col: string, txt: string, bg: string, indent: number, ic: string, title: string, lead: string, kinds: string[], chip: string, exIc: string, ex: string) => `
+    <div style="margin:0 ${indent}px 0 ${indent}px;display:flex;border-radius:20px;overflow:hidden;border:2px solid ${col};background:${bg}">
+      <div style="width:96px;flex:none;background:${txt};display:flex;align-items:center;justify-content:center"><span style="font-weight:700;font-size:64px;color:${C.bg}">${n}</span></div>
+      <div style="flex:1;display:flex;gap:24px;padding:26px 30px">${ICON(ic, txt, 64)}
+        <div style="flex:1"><h3 style="font-size:36px;letter-spacing:.03em;color:${txt}">${title}</h3>
+          <p style="font-size:23px;font-weight:700;color:${C.white};margin:8px 0 6px">${lead}</p>
+          <p style="font-size:20px;color:${C.grey}">${kinds.join(' • ')}</p>
+          <span style="display:inline-block;margin-top:14px;font-size:19px;color:${C.white};border:1.5px solid ${col};border-radius:10px;padding:5px 16px;background:${C.bg}">${chip}</span></div>
+        <div style="width:330px;flex:none;border-left:1px solid ${C.line};padding-left:26px">
+          <div style="display:flex;gap:12px;align-items:center">${ICON(exIc, txt, 36)}<p style="font-weight:700;font-size:19px;letter-spacing:.06em;color:${txt}">EXAMPLES</p></div>
+          <p style="font-size:20px;line-height:1.45;color:${C.white};margin-top:10px">${ex}</p></div>
+      </div></div>`;
+  const tip = (ic: string, col: string, t: string, d: string) => `<div style="flex:1;display:flex;gap:16px;align-items:flex-start;padding:0 24px;border-left:1px solid ${C.line}">${ICON(ic, col, 44)}
+    <div><p style="font-weight:700;font-size:19px;letter-spacing:.05em;color:${col}">${t}</p><p style="font-size:19px;line-height:1.4;color:${C.white};margin-top:4px">${d}</p></div></div>`;
+  const html = `${header('The attainability ladder', `Not every citation is equally in reach. <span class="k">Focus your effort where you can move the needle.</span>`)}
+  <div style="display:flex;gap:28px">
+    <div style="width:200px;flex:none;display:flex;flex-direction:column;align-items:center;text-align:center;font-weight:700;font-size:19px;letter-spacing:.05em;line-height:1.35">
+      <p style="color:${C.lav}">HARDER<br>TO MOVE</p>
+      <svg width="24" height="20" viewBox="0 0 24 20" style="margin-top:12px" aria-hidden="true"><path d="M2 18L12 3l10 15" fill="none" stroke="${C.grey}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div style="flex:1;border-left:3px solid ${C.grey};margin-top:-14px"></div>
+      <p style="color:${C.white};padding:14px 0">MORE TIME,<br>MORE INFLUENCE,<br>LESS CONTROL</p>
+      <div style="flex:1;border-left:3px solid ${C.grey}"></div>
+      <p style="color:${C.teal};margin-top:12px">EASIER<br>TO MOVE</p>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+      ${tier(3, C.purple, C.lav, '#171433', 56, I.mountain, 'ASPIRATIONAL', 'Labeled honestly, not assigned as homework.', ['Major publications', 'Analyst reports', 'Government and standards'], 'High authority. Low control. Long horizon.', I.target, 'Industry reports, academic research, news sites, analyst firms, standards organizations.')}
+      ${tier(2, C.cyan, C.cyan, '#0E2430', 28, I.handshake, 'EARN', 'Pitchable: roundups, communities, directories.', ['Lists', 'Reviews', 'Partnerships', 'Events', 'Guest features'], 'Relationship-based. Influenceable. Earn the spot.', I.users, 'Top tools lists, community recommendations, newsletters, podcasts, industry associations.')}
+      ${tier(1, C.teal, C.teal, C.tealDeep, 0, I.doc, 'DO NOW', 'Self-serve: your profiles, your pages.', ['Website', 'Help center', 'Docs', 'Social profiles', 'Knowledge base'], 'High control. Fastest movement. Start here.', I.check, 'Your website content, schema markup, business and review-site profiles, help docs, case studies.')}
+    </div>
+  </div>
+  <div class="panel" style="display:flex;align-items:center;margin-top:30px;padding:28px 0 28px 30px">
+    <div style="flex:1.3;display:flex;gap:18px;align-items:center;padding-right:24px">${ICON(I.target, C.teal, 56)}<p style="font-size:24px;line-height:1.35;color:${C.white}">An action plan should spend your time where movement is possible.</p></div>
+    ${tip(I.clock, C.teal, 'MAXIMIZE IMPACT', 'Focus on what you can influence and improve.')}
+    ${tip(I.chart, C.cyan, 'BUILD MOMENTUM', 'Win the early wins. Earn the next ones.')}
+    ${tip(I.mountain, C.lav, 'THINK LONG TERM', 'Pursue the big opportunities without wasting cycles.')}
+  </div>
+  ${footer('We label each opportunity by attainability so you know where movement is possible, and where it isn’t (yet).')}`;
+  figs.push({
+    id: 'attainability-ladder', html,
+    alt: 'Diagram titled "The attainability ladder": not every citation is equally in reach; focus your effort where you can move the needle. Three stacked tiers, with an axis from "easier to move" at the bottom to "harder to move" at the top: more time, more influence, less control. Tier 1, Do now: self-serve, your profiles, your pages; website, help center, docs, social profiles, knowledge base; high control, fastest movement, start here; examples: your website content, schema markup, business and review-site profiles, help docs, case studies. Tier 2, Earn: pitchable, roundups, communities, directories; lists, reviews, partnerships, events, guest features; relationship-based, influenceable, earn the spot; examples: top tools lists, community recommendations, newsletters, podcasts, industry associations. Tier 3, Aspirational: labeled honestly, not assigned as homework; major publications, analyst reports, government and standards; high authority, low control, long horizon; examples: industry reports, academic research, news sites, analyst firms, standards organizations. Below: an action plan should spend your time where movement is possible. Maximize impact: focus on what you can influence and improve. Build momentum: win the early wins, earn the next ones. Think long term: pursue the big opportunities without wasting cycles. We label each opportunity by attainability so you know where movement is possible, and where it isn\'t (yet).',
+    caption: 'The attainability ladder: Do now (your own pages and profiles), Earn (lists, communities, directories) and Aspirational (major publications and analysts), each opportunity labeled by how far it is in reach.',
+  });
+}
+
+// 20. fix-prove (rebuild of how-it-works visual-6; gauge values are illustrative)
+{
+  const gauge = (value: number, col: string, track: string, big: string, unit: string, label: string) => {
+    const cx = 210, cy = 200, r = 160;
+    const p = (t: number, rr = r) => { const a = ((150 + t * 240) * Math.PI) / 180; return [cx + rr * Math.cos(a), cy + rr * Math.sin(a)]; };
+    const arc = (t: number) => { const [x0, y0] = p(0), [x1, y1] = p(t); return `M${x0.toFixed(1)} ${y0.toFixed(1)}A${r} ${r} 0 ${t * 240 > 180 ? 1 : 0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`; };
+    const t = value / 100;
+    const ticks = Array.from({ length: 11 }, (_, i) => { const [a, b] = p(i / 10, r + 18), [c, d] = p(i / 10, r + (i % 5 ? 26 : 32)); return `<path d="M${a.toFixed(1)} ${b.toFixed(1)}L${c.toFixed(1)} ${d.toFixed(1)}" stroke="#5A6A8C" stroke-width="2.5" stroke-linecap="round"/>`; }).join('');
+    const [nx, ny] = p(t, r);
+    const [zx, zy] = p(0, r), [hx, hy] = p(1, r);
+    return `<div style="position:relative;width:420px;height:330px;margin:0 auto">
+      <svg width="420" height="330" style="position:absolute;inset:0" aria-hidden="true">
+        <path d="${arc(1)}" fill="none" stroke="${track}" stroke-width="22" stroke-linecap="round"/>
+        <path d="${arc(t)}" fill="none" stroke="${col}" stroke-width="22" stroke-linecap="round"/>${ticks}
+        <circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="15" fill="${C.white}" stroke="${C.bg}" stroke-width="4"/></svg>
+      <p style="position:absolute;left:0;right:0;top:66px;text-align:center;font-size:20px;color:${C.grey}">50</p>
+      <p style="position:absolute;left:0;right:0;top:104px;text-align:center;font-weight:700;font-size:92px;line-height:1;color:${col === C.purple ? C.lav : col}">${big}</p>
+      <p style="position:absolute;left:0;right:0;top:200px;text-align:center;font-size:26px;color:${C.grey}">${unit}</p>
+      <p style="position:absolute;left:0;right:0;top:240px;text-align:center;font-weight:700;font-size:19px;letter-spacing:.05em;color:${C.white}">${label}</p>
+      <p style="position:absolute;left:${zx - 30}px;width:60px;top:${zy + 22}px;text-align:center;font-size:20px;color:${C.grey}">0</p>
+      <p style="position:absolute;left:${hx - 30}px;width:60px;top:${hy + 22}px;text-align:center;font-size:20px;color:${C.grey}">100</p>
+      <p style="position:absolute;left:0;right:0;top:300px;text-align:center;font-size:19px;font-style:italic;color:${C.white}">${ILL}</p>
+    </div>`;
+  };
+  const pt = (ic: string, col: string, txt: string, t: string, d: string) => `<div style="display:flex;gap:18px;align-items:center;padding:14px 0;border-top:1px solid ${C.line}">
+    <div style="width:62px;height:62px;flex:none;border-radius:50%;border:2px solid ${col};display:flex;align-items:center;justify-content:center">${ICON(ic, txt, 32)}</div>
+    <div><p style="font-weight:700;font-size:22px;color:${txt}">${t}</p><p style="font-size:20px;line-height:1.4;color:${C.white}">${d}</p></div></div>`;
+  const side = (col: string, txt: string, tag: string, title: string, q: string, d: string, g: string, pts: string) => `
+    <div class="panel" style="flex:1;padding:30px 34px 22px;border-color:${col}">
+      <div style="display:flex;gap:18px;align-items:center"><span style="white-space:nowrap;font-weight:700;font-size:16px;letter-spacing:.06em;color:${txt};border:2px solid ${col};border-radius:999px;padding:6px 14px;background:${C.bg}">${tag}</span>
+        <h3 style="white-space:nowrap;font-size:34px;letter-spacing:.02em;color:${txt}">${title}</h3></div>
+      <p style="font-weight:700;font-size:25px;color:${C.white};margin-top:14px">${q}</p><p style="font-size:21px;color:${C.grey};margin-top:4px">${d}</p>
+      <div style="margin:18px 0 14px">${g}</div>${pts}</div>`;
+  const html = `<div class="hd"><div><h1 class="t"><span class="k">Fix</span> ⟷ <span class="l">Prove</span></h1><p class="s">Two sides. One system. Better visibility.</p></div><span class="pill">${ILL}</span></div>
+  <div class="row" style="gap:24px;align-items:stretch">
+    ${side(C.teal, C.teal, 'INSIDE-OUT', 'AEO SCORE', 'Is your site built to be cited?', 'This is about you and your site.',
+      gauge(88, C.teal, C.line, '88', 'out of 100', 'AEO SCORE'),
+      pt(I.code, C.teal, C.teal, 'Built to be cited', 'Schema, structure, entities, clarity, authority signals.') +
+      pt(I.wrench, C.teal, C.teal, 'Actionable fixes', 'Technical fixes, content gaps and authority building.') +
+      pt(I.doc, C.teal, C.teal, 'You control this', 'Improvements you make inside your site.'))}
+    <div style="width:300px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px">
+      <div style="position:relative;width:300px;height:170px">
+        <svg width="300" height="170" style="position:absolute;inset:0" aria-hidden="true"><path d="M4 40H210V6L296 85 210 164V130H4z" fill="${C.panel2}" stroke="${C.lav}" stroke-width="2.5" stroke-linejoin="round"/></svg>
+        <div style="position:absolute;left:22px;top:52px;font-weight:700;font-size:21px;line-height:1.55;color:${C.white};background:${C.panel2}"><p><span class="k">FIX</span> with the score</p><p><span class="l">PROVE</span> with the sweep</p></div></div>
+      <p style="font-size:21px;line-height:1.45;text-align:center;color:${C.white}">Improve what you control. Then measure what the world sees.</p>
+      <div class="panel" style="padding:24px 22px;text-align:center;border-color:${C.teal};display:flex;flex-direction:column;align-items:center;gap:10px">
+        ${ICON(I.target, C.teal, 46)}<h3 style="font-size:24px;color:${C.teal};letter-spacing:.04em">THE GOAL</h3>
+        <p style="font-size:20px;line-height:1.45;color:${C.white}">Close the gap between how your site is built and how AI engines actually cite you.</p></div>
+    </div>
+    ${side(C.purple, C.lav, 'OUTSIDE-IN', 'CITATION SWEEP', 'Are you actually cited?', 'This is about how AI engines answer buyers.',
+      gauge(12, C.purple, C.line, '12%', 'of answers', 'CITATION RATE'),
+      pt(I.search, C.purple, C.lav, 'Measure reality', 'AI engines, real questions, multiple runs, web search on.') +
+      pt(I.users, C.purple, C.lav, 'Outside-in proof', 'What gets cited, what competes, and who takes your spot.') +
+      pt(I.chart, C.purple, C.lav, 'You can prove this', 'Reproducible sweeps, transcripts, sample size and confidence.'))}
+  </div>
+  <div class="panel" style="display:flex;align-items:center;margin-top:26px;padding:26px 0">
+    <div style="flex:1;display:flex;gap:18px;align-items:center;padding:0 30px">${ICON(I.shield, C.teal, 52)}<div style="font-size:24px;line-height:1.4"><p class="k">Score tells you what to fix.</p><p style="color:${C.white}">Sweep tells you if it worked.</p></div></div>
+    <div style="flex:1.1;display:flex;gap:18px;align-items:center;padding:0 30px;border-left:1px solid ${C.line}">${ICON(I.trophy, C.lav, 52)}<div style="font-size:24px;line-height:1.4;color:${C.lav}"><p>Better structure earns the opportunity.</p><p>Better authority wins the citation.</p></div></div>
+    <div style="flex:.9;padding:0 30px;border-left:1px solid ${C.line}"><p style="font-weight:700;font-size:18px;letter-spacing:.06em;color:${C.lav}">ENGINES A SWEEP ASKS</p>
+      <p style="font-size:21px;color:${C.white};margin-top:6px">${V11.join(' · ')}</p><p style="font-size:19px;color:${C.grey};margin-top:2px">plus ${EXTRA.join(', ')} on Pro and Business</p></div>
+  </div>
+  ${footer('We use the same questions, the same way, every time, so you can track real movement over time. Gauge values are illustrative.')}`;
+  figs.push({
+    id: 'fix-prove', html,
+    alt: `Illustrative example titled "Fix ⟷ Prove: two sides, one system, better visibility." Left, inside-out, AEO Score: is your site built to be cited? This is about you and your site. A gauge labeled AEO Score reads 88 out of 100 (illustrative example). Built to be cited: schema, structure, entities, clarity, authority signals. Actionable fixes: technical fixes, content gaps and authority building. You control this: improvements you make inside your site. Middle, an arrow: fix with the score, prove with the sweep. Improve what you control, then measure what the world sees. The goal: close the gap between how your site is built and how AI engines actually cite you. Right, outside-in, Citation Sweep: are you actually cited? This is about how AI engines answer buyers. A gauge labeled citation rate reads 12% of answers (illustrative example). Measure reality: AI engines, real questions, multiple runs, web search on. Outside-in proof: what gets cited, what competes, and who takes your spot. You can prove this: reproducible sweeps, transcripts, sample size and confidence. Bottom: score tells you what to fix, sweep tells you if it worked. Better structure earns the opportunity; better authority wins the citation. Engines a sweep asks: ${V11.join(', ')}, plus ${EXTRA.join(', ')} on Pro and Business. We use the same questions, the same way, every time, so you can track real movement over time. Gauge values are illustrative.`,
+    caption: 'Illustrative example. The AEO Score shows what to fix on your own site; the Citation Sweep shows whether answer engines actually cite you. Gauge values are illustrative, not a real result.',
+  });
+}
+
+// 21. three-gates (rebuild of the primer's three-gates hero, house palette)
+{
+  const W = 1472, H = 430, ly = 250;
+  const gx = [250, 736, 1150];
+  const door = (x: number, col: string, fill: string) => {
+    const l = x - 110, r = x + 110, top = 60, bot = 400;
+    return `<path d="M${l - 26} ${bot}H${l}V${top}H${r}V${bot}H${r + 26}" fill="none" stroke="${col}" stroke-width="12" stroke-linejoin="round"/>
+      <path d="M${l + 14} ${top + 18}L${x + 40} ${top + 46}V${bot - 50}L${l + 14} ${bot - 12}z" fill="${fill}" stroke="${col}" stroke-width="5" stroke-linejoin="round"/>
+      <circle cx="${x + 22}" cy="${ly}" r="9" fill="${col}"/>`;
+  };
+  const grey = '#8C98AD';
+  const svg = `<svg width="${W}" height="${H}" style="position:absolute;left:0;top:150px" aria-hidden="true">
+    <circle cx="20" cy="${ly}" r="14" fill="${grey}"/>
+    <path d="M20 ${ly}H${gx[2] - 170}" stroke="${grey}" stroke-width="6"/>
+    <path d="M${gx[2] + 30} ${ly}H${W - 40}" stroke="${C.teal}" stroke-width="7"/>
+    <path d="M${W - 52} ${ly - 24}L${W - 6} ${ly}L${W - 52} ${ly + 24}z" fill="${C.teal}"/>
+    ${door(gx[0], grey, '#1C2538')}${door(gx[1], grey, '#1C2538')}${door(gx[2], C.teal, C.tealDeep)}</svg>`;
+  const tool = (ic: string, x: number, y: number) => `<div style="position:absolute;left:${x}px;top:${y}px">${ICON(ic, C.teal, 64)}</div>`;
+  const label = (n: number, x: number, t: string, on: boolean) => `<div style="position:absolute;left:${x - 220}px;width:440px;top:0;display:flex;flex-direction:column;align-items:center;gap:10px">
+    <span style="width:64px;height:64px;border-radius:50%;border:4px solid ${on ? C.teal : grey};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:34px;color:${on ? C.teal : C.grey}">${n}</span>
+    <p style="font-weight:700;font-size:48px;line-height:1.1;color:${on ? C.teal : C.grey}">${t}</p></div>`;
+  const html = `<div style="position:relative;width:${W}px;height:${150 + H}px">
+    ${label(1, gx[0], 'In the index?', false)}${label(2, gx[1], 'Retrieved?', false)}${label(3, gx[2], 'Cited?', true)}
+    ${svg}
+    ${tool(I.wrench, gx[2] - 250, 250)}${tool(I.gear, gx[2] - 250, 365)}${tool(I.toolbox, gx[2] - 250, 470)}
+    ${tool(I.hammer, gx[2] + 160, 250)}${tool(I.screwdriver, gx[2] + 160, 470)}
+  </div>
+  <p style="font-weight:700;font-size:64px;line-height:1.15;color:${C.white};text-align:center;margin-top:36px">Most advice is aimed at gate three.</p>
+  ${footer('Three gates, in order: in the index, retrieved, cited.')}`;
+  figs.push({
+    id: 'three-gates', html,
+    alt: 'Three gates in a row along a path, drawn as doorways. Gate 1: "In the index?" Gate 2: "Retrieved?" Gate 3: "Cited?", highlighted in green and surrounded by tools (a wrench, a gear, a toolbox, a hammer and a screwdriver), with the path continuing through it as an arrow. Below: "Most advice is aimed at gate three."',
+    caption: 'Three gates stand between a page and a citation: in the index, retrieved, cited. Most advice is aimed at gate three.',
   });
 }
 

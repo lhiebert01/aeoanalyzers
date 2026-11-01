@@ -175,6 +175,13 @@ for (const p of pages) {
     }
     const fig = FIG[fg.id];
     if (!fig) continue;
+    if (fg.under.startsWith('replace-src:')) {
+      // An existing <img> elsewhere on the page, by its exact src (WO-015: the primer's three gates).
+      const src = fg.under.slice(12);
+      const re = new RegExp(`<img src="${src.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}"[^>]*>`, 'g');
+      h = h.replace(re, `<img src="${fig.file}" alt="${esc(fig.alt)}" width="${fig.w}" height="${fig.h}" loading="lazy" decoding="async">`);
+      continue;
+    }
     if (fg.under.startsWith('replace ')) {
       const which = fg.under.slice(8); // visual-1 | visual-2
       const re = new RegExp(`<img src="/blog/how-it-works/${which}-[a-z-]+\\.(png|webp)"[^>]*>`);

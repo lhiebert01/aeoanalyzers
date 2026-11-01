@@ -3,7 +3,7 @@
 // domain exists — "Measured after these actions." Pro and Business only.
 import { useEffect, useState } from 'react';
 import { OWNER_ORDER, type OwnerTag } from '../lib/ownerTags';
-import { RECORD_GATED, recordCsv, type RecordEntry } from '../lib/theRecord';
+import { RECORD_GATED, recordCsv, METRIC_KEYS, type RecordEntry } from '../lib/theRecord';
 import { addRecord, listRecord } from '../lib/recordStore';
 
 export interface RecordAction { key: string; title: string; owner: OwnerTag }
@@ -15,7 +15,8 @@ export function RecordPanel({ domain, enabled, actions, onEntries }: { domain: s
   const [entries, setEntries] = useState<RecordEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<string | null>(null); // action key being marked done, or 'own'
-  const [form, setForm] = useState({ title: '', owner: 'Site' as OwnerTag, date: today(), note: '', link: '' });
+  const blank = { title: '', owner: 'Site' as OwnerTag, date: today(), note: '', link: '', exp: false, metricKey: '', metricArg: '', baseline: '', checks: '' };
+  const [form, setForm] = useState(blank);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -38,14 +39,18 @@ export function RecordPanel({ domain, enabled, actions, onEntries }: { domain: s
   const doneKeys = new Set(entries.filter((e) => e.action_key).map((e) => e.action_key as string));
   function start(key: string, a?: RecordAction) {
     setOpen(key); setError(null);
-    setForm({ title: a?.title || '', owner: a?.owner || 'Site', date: today(), note: '', link: '' });
+    setForm({ ...blank, title: a?.title || '', owner: a?.owner || 'Site' });
   }
   async function save(a?: RecordAction) {
     if (!form.title.trim()) { setError('Describe what was done.'); return; }
     if (form.link && !/^https?:\/\//i.test(form.link.trim())) { setError('A link starts with https://'); return; }
     setSaving(true); setError(null);
     try {
-      await addRecord({ domain, title: form.title, owner_tag: form.owner, source: a ? 'plan' : 'own', action_key: a?.key ?? null, done_at: form.date || today(), note: form.note, link: form.link });
+      const mk = form.exp && form.metricKey ? (form.metricKey.endsWith(':') ? form.metricKey + form.metricArg.trim() : form.metricKey) : null;
+      const label = mk ? `${METRIC_KEYS.find((m) => m.key === form.metricKey)?.label.replace(/ \(add [^)]*\)/, '') || mk}${form.metricKey.endsWith(':') && form.metricArg ? `: ${form.metricArg.trim()}` : ''}` : null;
+      const checks = form.checks.split(/[,\s]+/).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d));
+      await addRecord({ domain, title: form.title, owner_tag: form.owner, source: a ? 'plan' : 'own', action_key: a?.key ?? null, done_at: form.date || today(), note: form.note, link: form.link,
+        ...(mk ? { metric: label, metric_key: mk, baseline: form.baseline || null, check_dates: checks, hypothesis: `This should move ${label}${form.baseline ? ` from ${form.baseline}` : ''}.` } : {}) });
       const e = await listRecord(domain);
       setEntries(e); onEntries?.(e); setOpen(null);
     } catch (err) {
@@ -74,6 +79,20 @@ export function RecordPanel({ domain, enabled, actions, onEntries }: { domain: s
       <label className="text-xs text-zinc-800">Date done<input type="date" className={input} value={form.date} max={today()} onChange={(e) => setForm({ ...form, date: e.target.value })} /></label>
       <label className="text-xs text-zinc-800">Note (optional)<input className={input} value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} maxLength={2000} /></label>
       <label className="text-xs text-zinc-800">Link (optional)<input className={input} value={form.link} placeholder="https://" onChange={(e) => setForm({ ...form, link: e.target.value })} maxLength={2000} /></label>
+      <label className="text-xs text-zinc-800 sm:col-span-2 flex items-center gap-2"><input type="checkbox" checked={form.exp} onChange={(e) => setForm({ ...form, exp: e.target.checked })} /> Log it as an experiment (what it should move, and when to check)</label>
+      {form.exp && (
+        <>
+          <label className="text-xs text-zinc-800">What should it move?
+            <select className={input} value={form.metricKey} onChange={(e) => setForm({ ...form, metricKey: e.target.value })}>
+              <option value="">Choose a metric</option>
+              {METRIC_KEYS.map((m) => <option key={m.key} value={m.key}>{m.label}</option>)}
+            </select>
+          </label>
+          {form.metricKey.endsWith(':') && <label className="text-xs text-zinc-800">{form.metricKey === 'gsc_position:' ? 'The search query' : 'The page address'}<input className={input} value={form.metricArg} onChange={(e) => setForm({ ...form, metricArg: e.target.value })} maxLength={250} /></label>}
+          <label className="text-xs text-zinc-800">Value now (optional)<input className={input} value={form.baseline} placeholder="e.g. 16.1" onChange={(e) => setForm({ ...form, baseline: e.target.value })} maxLength={300} /></label>
+          <label className="text-xs text-zinc-800">Check on (one or more dates, YYYY-MM-DD)<input className={input} value={form.checks} placeholder="2026-11-16, 2026-11-30" onChange={(e) => setForm({ ...form, checks: e.target.value })} maxLength={120} /></label>
+        </>
+      )}
       <div className="sm:col-span-2 flex gap-3 items-center">
         <button type="button" disabled={saving} onClick={() => save(a)} className="rounded-lg bg-zinc-900 text-white text-xs font-bold px-3 py-1.5">{saving ? 'Saving…' : 'Save to the Record'}</button>
         <button type="button" onClick={() => setOpen(null)} className="text-xs underline text-zinc-800">Cancel</button>
@@ -118,6 +137,7 @@ export function RecordPanel({ domain, enabled, actions, onEntries }: { domain: s
               <li key={e.id || `${e.done_at}-${e.title}`}>
                 <b>{e.done_at}</b> · {e.title}<span className={TAG}>{e.owner_tag}</span>
                 {e.note ? <span className="text-zinc-700"> · {e.note}</span> : null}
+                {e.metric ? <span className="text-zinc-700"> · Experiment: {e.metric}{e.baseline ? `, then ${e.baseline}` : ''}{e.check_dates?.length ? `, check ${e.check_dates.join(', ')}` : ''}</span> : null}
                 {e.link ? <> · <a className="underline break-all" href={e.link} target="_blank" rel="noopener noreferrer nofollow">{e.link}</a></> : null}
               </li>
             ))}

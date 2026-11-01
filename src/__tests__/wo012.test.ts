@@ -158,7 +158,7 @@ describe('B — Source coverage', () => {
 describe('C — one owner tag per action, grouped Site → Content → Outreach', () => {
   it('the sweep report groups by owner in order and every action has one tag and one next-sweep line', () => {
     const md = buildSweepReport({ ...base, sourceCoverage: coverage });
-    const plan = md.slice(md.indexOf('## Action plan'), md.indexOf('## Methodology'));
+    const plan = md.slice(md.indexOf('## Action plan'), md.indexOf('## Your next steps'));
     const idx = OWNER_ORDER.map((o) => plan.indexOf(`### ${o} —`)).filter((i) => i >= 0);
     expect(idx).toEqual([...idx].sort((a, b) => a - b));
     const tags = plan.match(/_\(Owner: (Site|Content|Outreach)\)_/g) || [];

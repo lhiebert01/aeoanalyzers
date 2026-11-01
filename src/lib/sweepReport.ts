@@ -11,7 +11,9 @@
 // Nothing that was in the report is removed; it is reordered and re-set. Metric labels show
 // the plain-English label first and the precise label second (Lane F).
 
-import { sweepScorecard, confidenceLabel, CONFIDENCE_RULE, type SweepSummary, type SweepRunResult, type Competitor } from './citationSweep';
+import { sweepScorecard, confidenceLabel, CONFIDENCE_RULE, effectiveCompetitorSet, type SweepSummary, type SweepRunResult, type Competitor } from './citationSweep';
+import { buildFixItPlan, fixItPlanMarkdown, type PlanInput } from './fixItPlan';
+import type { SearchStanding } from './searchStanding';
 import { segmentBreakdown, winnableSegment, segmentSummaryNote, classifyQuerySegment, SEGMENT_LABEL } from './querySegment';
 import { tierForDomain, TIER_LABEL } from './authorityTiers';
 import type { AuthorityGapReport } from './authorityGap';
@@ -24,7 +26,7 @@ import { buildDoNowPlan, type DoNowStep } from './doNowPlan';
 import { displayQuestion, sweepAgendaBlocks, renderOwnerGroups, MEASURE_AGAIN, type SweepActionInputs } from './sweepActions';
 import { coverageHeadline, coverageAction, corroboration, corroborationLine, vendorBase, vendorBaseLine, coverageKind, categoryVendorDomains, COVERAGE_KIND_LABEL } from './sourceCoverage';
 import type { WatchFigure, OwnerTag } from './ownerTags';
-import { measuredAfter, recordSection, type RecordEntry, type SweepFigures } from './theRecord';
+import { measuredAfter, recordSection, experimentSection, type RecordEntry, type SweepFigures } from './theRecord';
 import { doNowChecklist } from './doNowChecklist';
 import { buildCover, sweepMeaning, DIRECTIVE, type CoverInput, recommendedLine } from './reportCover';
 import { pawcSplit, mentionsClient, PROMINENT_FOOTNOTE } from './pawcSplit';
@@ -70,6 +72,47 @@ export interface SweepReportInputs {
   record?: { entries: RecordEntry[]; previous: SweepFigures | null; now: SweepFigures | null } | null;
   /** Injected so a rebuilt report is reproducible in a test. */
   now?: Date;
+  /** WO-015: who gets "Your next steps". Pro/Business 'full', the Day Pass 'sweep-only' (its own
+   *  sweep), Free 'none' (one line). Defaults to 'none' on a free-tier result, else 'full'. */
+  planAccess?: 'none' | 'sweep-only' | 'full';
+  /** WO-015 Lane 0: the derived Search Console table for this domain, when uploaded. */
+  standing?: SearchStanding | null;
+  /** WO-015 Lane 4: the AEO Score handoff checklist (site fixes when the score is below 85). */
+  scoreChecklist?: { category: string; action: string; priority: string }[] | null;
+  businessType?: string | null;
+  /** WO-015 Moving first: last month's comparable figures. */
+  planPrevious?: PlanInput['previous'];
+  differentiatorRate?: number | null;
+}
+
+/** WO-015: an experiment metric's value in THIS report, or null when this report does not measure it. */
+export function metricNow(inp: SweepReportInputs, key: string): string | null {
+  const r = inp.result;
+  const usable = r.runs.filter((x) => !x.truncated && !String(x.transcript || '').startsWith('[error'));
+  const br = usable.filter((x) => x.queryType === 'branded');
+  const cat = usable.filter((x) => x.queryType === 'category' && x.grounding !== 'model-prior');
+  if (key === 'found_by_name') return br.length ? `${br.filter((x) => x.domainCited).length} of ${br.length}` : null;
+  if (key === 'recommended') return cat.length ? `${cat.filter((x) => x.domainCited).length} of ${cat.length}` : null;
+  if (key === 'coverage_named') return inp.sourceCoverage ? `${inp.sourceCoverage.rows.filter((x) => x.verdict === 'yes').length} of ${inp.sourceCoverage.rows.length}` : null;
+  if (key === 'd1_recommended') return inp.differentiatorRate != null ? `${inp.differentiatorRate}%` : null;
+  if (key.startsWith('gsc_position:')) { const q = key.slice(13).trim().toLowerCase(); const hit = inp.standing?.queries.find((x) => x.key.toLowerCase() === q); return hit ? String(hit.position) : null; }
+  if (key.startsWith('cited_url:')) { const u = key.slice(10).trim().replace(/\/+$/, '').toLowerCase(); const n = usable.filter((x) => (x.sources || []).some((s) => s.toLowerCase().replace(/[?#].*$/, '').replace(/\/+$/, '') === u)).length; return `cited in ${n} of ${usable.length} answers`; }
+  return null;
+}
+
+/** WO-015: the customer's plan, built once from this report's inputs. */
+export function fixItPlanFor(inp: SweepReportInputs) {
+  const r = inp.result;
+  const vendors = effectiveCompetitorSet(r.runs, { domain: r.domain, brand: r.brand || undefined }, inp.competitors).map((c) => ({ name: c.name, domain: c.domain }));
+  return buildFixItPlan({
+    domain: r.domain, brand: r.brand, runs: r.runs, vendors, truth: inp.truth, coverage: inp.sourceCoverage ?? null,
+    score: inp.readiness ? { score: inp.readiness.score, checklist: inp.scoreChecklist || [] } : null,
+    standing: inp.standing ?? null, businessType: inp.businessType ?? null, previous: inp.planPrevious ?? null,
+    differentiatorRate: inp.differentiatorRate ?? null, ownedDomains: inp.ownedDomains,
+  });
+}
+export function planAccessOf(inp: SweepReportInputs): 'none' | 'sweep-only' | 'full' {
+  return inp.planAccess ?? (inp.result.tier === 'free' || inp.result.quickCheck ? 'none' : 'full');
 }
 
 export const ENGINE_LABEL: Record<string, string> = { claude: 'Claude', openai: 'ChatGPT', perplexity: 'Perplexity', gemini: 'Gemini', grok: 'Grok' };
@@ -141,7 +184,9 @@ function agendaInputs(inp: SweepReportInputs): SweepActionInputs {
 /** WO-012 G: every action this sweep's report lists, keyed, for "Mark done". */
 export function recordActions(inp: SweepReportInputs): { key: string; title: string; owner: OwnerTag }[] {
   const cov = inp.sourceCoverage ? coverageAction(inp.sourceCoverage, vendorsFor(inp)) : null;
+  const planSteps = planAccessOf(inp) === 'none' ? [] : fixItPlanFor(inp).steps.filter((st) => st.minutes > 0).map((st) => ({ key: `next:${st.key}`, title: st.title, owner: st.owner }));
   return [
+    ...planSteps,
     ...plan(inp).steps.map((st) => ({ key: `plan:${st.what.slice(0, 80)}`, title: st.what, owner: st.owner })),
     ...sweepAgendaBlocks(agendaInputs(inp)).map((b) => ({ key: `agenda:${b.key}`, title: b.title, owner: b.owner })),
     ...(cov ? [{ key: 'coverage:no-pages', title: cov.title, owner: 'Outreach' as const }] : []),
@@ -422,7 +467,17 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
   }
 
   // ── The Record (WO-012 G), oldest first ──
-  if (inp.record?.entries.length) out.push(...recordSection(inp.record.entries));
+  if (inp.record?.entries.length) {
+    out.push(...recordSection(inp.record.entries));
+    out.push(...experimentSection(inp.record.entries, now, (key) => metricNow(inp, key)));
+  }
+
+  // ── WO-015: Your next steps (the plan, in four lanes, after Lane 0) ──
+  {
+    const access = planAccessOf(inp);
+    out.push(DIRECTIVE.pagebreak);
+    out.push(...fixItPlanMarkdown(fixItPlanFor(inp), { gated: access === 'none' }));
+  }
 
   // ── Methodology ──
   out.push(DIRECTIVE.pagebreak);

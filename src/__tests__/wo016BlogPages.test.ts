@@ -17,7 +17,7 @@ describe('WO-016: every page in the plan', () => {
       expect(hero, 'hero').not.toBeNull();
       expect(existsSync(`public${hero![1]}`), `hero file ${hero![1]}`).toBe(true);
       // Share card: a per-page file (new filename), with size, type and alt.
-      const og = h.match(/<meta property="og:image" content="https:\/\/aeoanalyzers\.com(\/img\/blog\/2026-11\/og-[a-z0-9-]+-2026-11\.jpg)">/);
+      const og = h.match(/<meta property="og:image" content="https:\/\/aeoanalyzers\.com(\/img\/blog\/2026-11\/og-[a-z0-9-]+-2026-11b?\.jpg)">/);
       expect(og, 'og:image').not.toBeNull();
       expect(existsSync(`public${og![1]}`), `og file ${og![1]}`).toBe(true);
       for (const t of ['og:image:width" content="1200', 'og:image:height" content="630', 'og:image:alt', 'twitter:image"', 'twitter:image:alt']) expect(h, t).toContain(t);

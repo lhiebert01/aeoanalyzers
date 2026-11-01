@@ -62,6 +62,8 @@ export interface GuideInput {
   businessType?: BusinessType | null;
   /** The Record's entries for this domain; null when the plan has no Record. */
   record?: RecordEntry[] | null;
+  /** WO-015: the sweep's plan ("Your next steps"), rendered first in the same order and wording. */
+  nextSteps?: { diagnosis: string; steps: { key: string; lane: number; owner: OwnerTag; title: string; lines: string[]; minutes: number; doneWhen: string; nextSweepShows: string }[]; laneTitles: Record<number, string> } | null;
   catalog?: Catalog;
 }
 
@@ -81,7 +83,7 @@ export interface GuideStep {
   notes?: string[];
 }
 export interface GuidePart {
-  id: 'site' | 'listings' | 'wikidata' | 'pages';
+  id: 'next' | 'site' | 'listings' | 'wikidata' | 'pages';
   title: string;
   owner: OwnerTag;
   intro: string[];
@@ -316,7 +318,15 @@ export function buildGuide(inp: GuideInput): Guide {
     `Name: ${product}`, `Company: ${company}`, `Website: ${website}`, `Short: ${short}`, `Long: ${long}`, `Category: ${category}`,
     `Pricing: link to ${g ? 'your pricing page' : `your pricing page on ${inp.domain}`}. Never type price figures.`,
   ];
+  // WO-015: the sweep's plan first, word for word, with the same Record keys as the report.
+  const nextPart: GuidePart[] = inp.nextSteps && inp.nextSteps.steps.length ? [{
+    id: 'next', title: 'Part 0, Your next steps', owner: 'Outreach',
+    intro: [`${inp.nextSteps.diagnosis}.`, 'From your Citation Sweep, in this order. Parts 1 to 4 below give the detail for listings, your knowledge-base entry and the pages engines read.'],
+    boxes: [], tables: [],
+    steps: inp.nextSteps.steps.map((st) => ({ key: `next:${st.key}`, owner: st.owner, title: st.title, where: inp.nextSteps!.laneTitles[st.lane] || '', minutes: st.minutes || null, steps: [...st.lines, `What the next sweep shows: ${st.nextSweepShows}`], doneWhen: st.doneWhen })),
+  }] : [];
   const parts: GuidePart[] = [
+    ...nextPart,
     { id: 'site', title: 'Part 1, Your website', owner: 'Site', intro: ['Hand this part to your web team. Highest impact first.', plat ? `Your site runs on ${plat[0].toUpperCase()}${plat.slice(1)}, so each step says where the setting lives there.` : 'Each step is written for any website; your web team will know where each setting lives.'], boxes: [{ title: 'One rule for every page', lines: [PRICE_RULE], tone: 'rules' }], tables: [], steps: siteSteps },
     { id: 'listings', title: 'Part 2, Your listings', owner: 'Outreach', intro: ['Hand Parts 2 to 4 to whoever handles PR and partnerships. Directories the engines already read for your category come first.', `Sign-up pages change; checked ${usDate(cat.verified_at)}.`, ...(needsBusinessType ? [`${FILL} your business type. Choose it in the app before downloading so this list matches your business.`] : [])], boxes: [{ title: g ? 'Copy this text (fill in your own)' : `Copy this text. ${DRAFT_LABEL}`, lines: copyBox, tone: 'copy' }, { title: 'Three rules on every site', lines: THREE_RULES, tone: 'rules' }], tables: [], steps: listingSteps },
     { id: 'wikidata', title: 'Part 3, Your knowledge-base entry', owner: 'Outreach', intro: ['Wikidata is a free, public database of facts that answer engines and search engines read. Your entry states who you are, with a source for each fact.'], boxes: [], tables: [{ title: `Company item: ${company}`, head: ['Property', 'Value', 'Reference URL'], rows: companyStatements }, ...(withProduct ? [{ title: `Product item: ${product}`, head: ['Property', 'Value', 'Reference URL'], rows: productStatements }] : [])], steps: [wikiStep] },

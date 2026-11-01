@@ -80,12 +80,6 @@
    "note": "dates the diagram; already names Pro and Business"
   },
   {
-   "file": "public/blog/how-it-works/index.html",
-   "text": "A four-by-five grid of one question asked to four AI engine",
-   "class": "ILLUSTRATIVE",
-   "note": "labeled illustrative figure"
-  },
-  {
    "file": "public/blog/i-scored-zero/index.html",
    "text": "ry time — 98% branded retrievability across the store",
    "class": "DATED",
@@ -620,16 +614,46 @@
    "note": "card text = the are-you-the-answer post's description (buyer behavior)"
   },
   {
-   "file": "public/blog/one-question-is-not-a-measurement/index.html",
-   "text": "A four-by-five grid of one question asked to four AI engines five times each.",
-   "class": "DATED",
-   "note": "figure alt: the dated panel v1.1 illustration in that post"
-  },
-  {
    "file": "public/track-brand-mentions-across-ai-answer-engines/index.html",
    "text": "Claude: 10 of 10; Perplexity: 10 of 10; Gemini: 10 of 10; ChatGPT: 1 of 10",
    "class": "DATED",
    "note": "figure alt: November 1st, 2026 per-engine by-name results (panel v1.1)"
+  },
+  {
+   "file": "public/blog/how-it-works/index.html",
+   "text": "asked 5 times on each of 4 engines (ChatGPT, Claude, Perplexity, Gemini)",
+   "class": "ILLUSTRATIVE",
+   "note": "figure alt: the rebuilt \"why several runs\" grid, labeled \"Illustrative example: not real results\" (WO-015)"
+  },
+  {
+   "file": "public/blog/how-it-works/index.html",
+   "text": "A grid of 20 answers marks each run cited (check) or not cited (cross): ChatGPT cited",
+   "class": "ILLUSTRATIVE",
+   "note": "figure alt: the rebuilt \"why several runs\" grid, labeled \"Illustrative example: not real results\" (WO-015)"
+  },
+  {
+   "file": "public/blog/how-it-works/index.html",
+   "text": "Total answers: 20 (4 engines × 5 runs)",
+   "class": "ILLUSTRATIVE",
+   "note": "figure alt: the rebuilt \"why several runs\" grid, labeled \"Illustrative example: not real results\" (WO-015)"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "asked 5 times on each of 4 engines (ChatGPT, Claude, Perplexity, Gemini)",
+   "class": "ILLUSTRATIVE",
+   "note": "figure alt: the rebuilt \"why several runs\" grid, labeled \"Illustrative example: not real results\" (WO-015)"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "A grid of 20 answers marks each run cited (check) or not cited (cross): ChatGPT cited",
+   "class": "ILLUSTRATIVE",
+   "note": "figure alt: the rebuilt \"why several runs\" grid, labeled \"Illustrative example: not real results\" (WO-015)"
+  },
+  {
+   "file": "public/blog/one-question-is-not-a-measurement/index.html",
+   "text": "Total answers: 20 (4 engines × 5 runs)",
+   "class": "ILLUSTRATIVE",
+   "note": "figure alt: the rebuilt \"why several runs\" grid, labeled \"Illustrative example: not real results\" (WO-015)"
   }
  ]
 }

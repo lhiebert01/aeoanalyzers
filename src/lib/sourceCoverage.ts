@@ -110,6 +110,45 @@ export interface CoverageRow {
   /** WO-014: the page's own title and byline, when the fetched page states them. */
   title?: string;
   byline?: string;
+  /** WO-015: a contact route found ON the fetched page (the publisher's own site): its author page,
+   *  a published email address, or its contact page. Absent means "Fill in:", never a guess. */
+  contact?: ContactRoute;
+  /** WO-015: the page's own site sells a self-serve software product (sign-up, free trial or log-in
+   *  links on the page). A pricing page alone is not this signal: agencies have pricing too. */
+  sellsProduct?: boolean;
+}
+
+/** WO-015: self-serve software signals on the fetched page: a sign-up, free-trial, start-free or
+ *  log-in link, or a link into an app subdomain. Agencies that sell services do not show these. */
+export function pageSellsProduct(html: string, pageUrl?: string, homepage = false): boolean {
+  const h = String(html || '');
+  let site = ''; try { site = new URL(pageUrl || '').hostname.replace(/^www\./, '').split('.').slice(-2).join('.'); } catch { /* no site check */ }
+  const sameSite = (href: string) => { if (!site) return true; try { return new URL(href, pageUrl).hostname.replace(/^www\./, '').endsWith(site); } catch { return false; } };
+  const anchors = [...h.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)].map((m) => ({ href: m[1], text: m[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() })).filter((a) => !a.href.startsWith('#') && !/^subscribe$/i.test(a.text));
+  // On a homepage, a call to action rendered as a button counts too (an article can mention another tool's "free trial" in its text; a homepage button is the site's own offer).
+  if (homepage && [...h.matchAll(/<button\b[^>]*>([\s\S]*?)<\/button>/gi)].some((m) => /\b(free trial|start (a |your )?free|try (it |us )?(for )?free|get started (for )?free|book a demo|request a demo|get a demo|schedule a demo|start for free|sign up for free|start (your )?trial)\b/i.test(m[1].replace(/<[^>]+>/g, ' ')))) return true;
+  // Newsletter "sign up" and generic "log in" links are not product signals (blogs and agencies
+  // have both); only software-specific calls to action and app links count.
+  return anchors.some((a) => (/\b(free trial|start (a |your )?free|try (it |us )?(for )?free|get started (for )?free|book a demo|request a demo|get a demo|schedule a demo|start for free|sign up for free|start (your )?trial)\b/i.test(a.text) && sameSite(a.href)) || (/^https?:\/\/(app|dashboard|portal)\./i.test(a.href) && sameSite(a.href)) || (/\/(signup|sign-up|trial)(\/|\?|$)/i.test(a.href) && sameSite(a.href)));
+}
+
+export interface ContactRoute { kind: 'author' | 'email' | 'contact'; value: string }
+
+/** WO-015: the contact route a page itself publishes, in order of usefulness for a pitch: the
+ *  author's page, a published email address, the site's contact page. Same site only (a link to
+ *  another domain is not the publisher's route). Never guessed or composed. */
+export function pageContactRoute(html: string, pageUrl: string): ContactRoute | undefined {
+  const h = String(html || '');
+  let base: URL; try { base = new URL(pageUrl); } catch { return undefined; }
+  const site = base.hostname.replace(/^www\./, '').split('.').slice(-2).join('.');
+  const sameSite = (href: string) => { try { const u = new URL(href, base); return /^https?:$/.test(u.protocol) && u.hostname.replace(/^www\./, '').endsWith(site) ? u.href.split('#')[0] : null; } catch { return null; } };
+  const links = [...h.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>/gi)].map((m) => ({ tag: m[0], href: m[1] }));
+  for (const l of links) if (/rel=["'][^"']*\bauthor\b/i.test(l.tag)) { const u = sameSite(l.href); if (u) return { kind: 'author', value: u }; }
+  const relAuthor = h.match(/<link[^>]+rel=["']author["'][^>]*href=["']([^"']+)["']/i); if (relAuthor) { const u = sameSite(relAuthor[1]); if (u) return { kind: 'author', value: u }; }
+  for (const l of links) if (/\/(author|authors|people|team\/[^/]+|writers?)\/[^/?#]+/i.test(l.href)) { const u = sameSite(l.href); if (u) return { kind: 'author', value: u }; }
+  for (const l of links) { const m = l.href.match(/^mailto:([^?]+)/i); if (m && /@/.test(m[1])) return { kind: 'email', value: decodeURIComponent(m[1]).trim() }; }
+  for (const l of links) if (/\/(contact|contact-us|about\/contact|tips|press)\/?$/i.test(l.href.split('?')[0])) { const u = sameSite(l.href); if (u) return { kind: 'contact', value: u }; }
+  return undefined;
 }
 
 /** WO-014: a page's title and its author or publisher, only as the page itself states them

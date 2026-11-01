@@ -13,10 +13,17 @@ Prompt:
 CREATE ONE FINAL IMAGE. Canvas 1600 × 900 px, landscape, filled edge to edge, fully opaque. STYLE: calm, precise product-marketing art, clean geometric planes, soft single light source from the upper left, gentle shadows. PALETTE ONLY: background near-black navy #0A0F1C; primary teal-green #2FD39A; secondary purple #8B7CF6; neutral light grey #C9D1DC. No other hues. SUBJECT: an open checklist of seven separate panels, the first one softly lit. COMPOSITION: subject in the right 60%; left 40% quiet, low-contrast background for text set in code; nothing important within 60 px of any edge. TEXT: none. No letters, numbers, symbols that read as text, logos, engine or company marks, people, faces, robots, brains, phones, magnifying glasses, upward arrows, rankings, trophies or podiums. FINAL CHECK: reads at thumbnail size; no text anywhere.
 ```
 
-- raw takes: private/blog-art-2026-11/aeo-buyers-guide-raw-r1.jpg, private/blog-art-2026-11/aeo-buyers-guide-raw.jpg
-- take used: `private/blog-art-2026-11/aeo-buyers-guide-raw.jpg`
+- raw takes: private/blog-art-2026-11/aeo-buyers-guide-raw-r1.jpg, private/blog-art-2026-11/aeo-buyers-guide-raw-v2.jpg, private/blog-art-2026-11/aeo-buyers-guide-raw-v3.jpg, private/blog-art-2026-11/aeo-buyers-guide-raw-v4.jpg, private/blog-art-2026-11/aeo-buyers-guide-raw.jpg
+- take used: `private/blog-art-2026-11/aeo-buyers-guide-raw-v4.jpg`
 - hero: `public/img/blog/2026-11/aeo-buyers-guide-hero.webp` (1600x900)
-- OG: `public/img/blog/2026-11/og-aeo-buyers-guide-2026-11.jpg` (1200x630)
+- OG: `public/img/blog/2026-11/og-aeo-buyers-guide-2026-11b.jpg` (1200x630)
+- note: Redo v2 (faint bars/blocks on the left read as text or code): 3 call(s). v2 rejected: eight panels, and the repeated check-and-purple-tab mark read as a logo. v3 rejected: a large light grey inset frame filled the right side. v4 used: seven plain stacked panels, top one lit, left side empty. New OG card written to a new filename (-2026-11b) because the old card is live and LinkedIn caches by URL; the old -2026-11.jpg file is left in place.
+
+Redo v2 prompt (composition sentence replaced; TEXT line extended):
+
+```
+CREATE ONE FINAL IMAGE. Canvas 1600 × 900 px, landscape, filled edge to edge, fully opaque. STYLE: calm, precise product-marketing art, clean geometric planes, soft single light source from the upper left, gentle shadows. PALETTE ONLY: background near-black navy #0A0F1C; primary teal-green #2FD39A; secondary purple #8B7CF6; neutral light grey #C9D1DC. No other hues. SUBJECT: an open checklist of seven separate panels, the first one softly lit. COMPOSITION: subject in the right 60%; left 40% an empty, plain dark navy area with no objects, lines, bars, panels or blocks of any kind; nothing important within 60 px of any edge. TEXT: none. No letters, numbers, symbols that read as text, logos, engine or company marks, people, faces, robots, brains, phones, magnifying glasses, upward arrows, rankings, trophies or podiums. No placeholder bars, lines or blocks that imitate text or code. FINAL CHECK: reads at thumbnail size; no text anywhere.
+```
 
 ## /what-should-an-aeo-tool-do
 
@@ -101,10 +108,17 @@ Prompt:
 CREATE ONE FINAL IMAGE. Canvas 1600 × 900 px, landscape, filled edge to edge, fully opaque. STYLE: calm, precise product-marketing art, clean geometric planes, soft single light source from the upper left, gentle shadows. PALETTE ONLY: background near-black navy #0A0F1C; primary teal-green #2FD39A; secondary purple #8B7CF6; neutral light grey #C9D1DC. No other hues. SUBJECT: a page outline being scanned by three soft beams of light. COMPOSITION: subject in the right 60%; left 40% quiet, low-contrast background for text set in code; nothing important within 60 px of any edge. TEXT: none. No letters, numbers, symbols that read as text, logos, engine or company marks, people, faces, robots, brains, phones, magnifying glasses, upward arrows, rankings, trophies or podiums. FINAL CHECK: reads at thumbnail size; no text anywhere.
 ```
 
-- raw takes: private/blog-art-2026-11/score-pages-for-answer-engine-readiness-raw-r1.jpg, private/blog-art-2026-11/score-pages-for-answer-engine-readiness-raw.jpg
-- take used: `private/blog-art-2026-11/score-pages-for-answer-engine-readiness-raw.jpg`
+- raw takes: private/blog-art-2026-11/score-pages-for-answer-engine-readiness-raw-r1.jpg, private/blog-art-2026-11/score-pages-for-answer-engine-readiness-raw-v2.jpg, private/blog-art-2026-11/score-pages-for-answer-engine-readiness-raw.jpg
+- take used: `private/blog-art-2026-11/score-pages-for-answer-engine-readiness-raw-v2.jpg`
 - hero: `public/img/blog/2026-11/score-pages-for-answer-engine-readiness-hero.webp` (1600x900)
-- OG: `public/img/blog/2026-11/og-score-pages-for-answer-engine-readiness-2026-11.jpg` (1200x630)
+- OG: `public/img/blog/2026-11/og-score-pages-for-answer-engine-readiness-2026-11b.jpg` (1200x630)
+- note: Redo v2 (faint bars/blocks on the left read as text or code): 1 call(s). v2 used: tilted page outline crossed by three beams, left side empty. The beams fade out just inside the left 40% (under the OG overlay; no hard edges). New OG card written to a new filename (-2026-11b) because the old card is live and LinkedIn caches by URL; the old -2026-11.jpg file is left in place.
+
+Redo v2 prompt (composition sentence replaced; TEXT line extended):
+
+```
+CREATE ONE FINAL IMAGE. Canvas 1600 × 900 px, landscape, filled edge to edge, fully opaque. STYLE: calm, precise product-marketing art, clean geometric planes, soft single light source from the upper left, gentle shadows. PALETTE ONLY: background near-black navy #0A0F1C; primary teal-green #2FD39A; secondary purple #8B7CF6; neutral light grey #C9D1DC. No other hues. SUBJECT: a page outline being scanned by three soft beams of light. COMPOSITION: subject in the right 60%; left 40% an empty, plain dark navy area with no objects, lines, bars, panels or blocks of any kind; nothing important within 60 px of any edge. TEXT: none. No letters, numbers, symbols that read as text, logos, engine or company marks, people, faces, robots, brains, phones, magnifying glasses, upward arrows, rankings, trophies or podiums. No placeholder bars, lines or blocks that imitate text or code. FINAL CHECK: reads at thumbnail size; no text anywhere.
+```
 
 ## /diagnose-dropped-out-of-perplexity-citations
 
@@ -150,10 +164,17 @@ Prompt:
 CREATE ONE FINAL IMAGE. Canvas 1600 × 900 px, landscape, filled edge to edge, fully opaque. STYLE: calm, precise product-marketing art, clean geometric planes, soft single light source from the upper left, gentle shadows. PALETTE ONLY: background near-black navy #0A0F1C; primary teal-green #2FD39A; secondary purple #8B7CF6; neutral light grey #C9D1DC. No other hues. SUBJECT: several rows of identical cards side by side, with a few cards in one row glowing. COMPOSITION: subject in the right 60%; left 40% quiet, low-contrast background for text set in code; nothing important within 60 px of any edge. TEXT: none. No letters, numbers, symbols that read as text, logos, engine or company marks, people, faces, robots, brains, phones, magnifying glasses, upward arrows, rankings, trophies or podiums. FINAL CHECK: reads at thumbnail size; no text anywhere.
 ```
 
-- raw takes: private/blog-art-2026-11/competitive-prompt-benchmarking-raw-r1.jpg, private/blog-art-2026-11/competitive-prompt-benchmarking-raw.jpg
-- take used: `private/blog-art-2026-11/competitive-prompt-benchmarking-raw.jpg`
+- raw takes: private/blog-art-2026-11/competitive-prompt-benchmarking-raw-r1.jpg, private/blog-art-2026-11/competitive-prompt-benchmarking-raw-v2.jpg, private/blog-art-2026-11/competitive-prompt-benchmarking-raw.jpg
+- take used: `private/blog-art-2026-11/competitive-prompt-benchmarking-raw-v2.jpg`
 - hero: `public/img/blog/2026-11/competitive-prompt-benchmarking-hero.webp` (1600x900)
-- OG: `public/img/blog/2026-11/og-competitive-prompt-benchmarking-2026-11.jpg` (1200x630)
+- OG: `public/img/blog/2026-11/og-competitive-prompt-benchmarking-2026-11b.jpg` (1200x630)
+- note: Redo v2 (faint bars/blocks on the left read as text or code): 1 call(s). v2 used: rows of blank card frames, three glowing in one row, left side empty. New OG card written to a new filename (-2026-11b) because the old card is live and LinkedIn caches by URL; the old -2026-11.jpg file is left in place.
+
+Redo v2 prompt (composition sentence replaced; TEXT line extended):
+
+```
+CREATE ONE FINAL IMAGE. Canvas 1600 × 900 px, landscape, filled edge to edge, fully opaque. STYLE: calm, precise product-marketing art, clean geometric planes, soft single light source from the upper left, gentle shadows. PALETTE ONLY: background near-black navy #0A0F1C; primary teal-green #2FD39A; secondary purple #8B7CF6; neutral light grey #C9D1DC. No other hues. SUBJECT: several rows of identical cards side by side, with a few cards in one row glowing. COMPOSITION: subject in the right 60%; left 40% an empty, plain dark navy area with no objects, lines, bars, panels or blocks of any kind; nothing important within 60 px of any edge. TEXT: none. No letters, numbers, symbols that read as text, logos, engine or company marks, people, faces, robots, brains, phones, magnifying glasses, upward arrows, rankings, trophies or podiums. No placeholder bars, lines or blocks that imitate text or code. FINAL CHECK: reads at thumbnail size; no text anywhere.
+```
 
 ## /guides/directory-listings
 
@@ -166,10 +187,17 @@ Prompt:
 CREATE ONE FINAL IMAGE. Canvas 1600 × 900 px, landscape, filled edge to edge, fully opaque. STYLE: calm, precise product-marketing art, clean geometric planes, soft single light source from the upper left, gentle shadows. PALETTE ONLY: background near-black navy #0A0F1C; primary teal-green #2FD39A; secondary purple #8B7CF6; neutral light grey #C9D1DC. No other hues. SUBJECT: a tidy grid of directory cards, a few of them lit. COMPOSITION: subject in the right 60%; left 40% quiet, low-contrast background for text set in code; nothing important within 60 px of any edge. TEXT: none. No letters, numbers, symbols that read as text, logos, engine or company marks, people, faces, robots, brains, phones, magnifying glasses, upward arrows, rankings, trophies or podiums. FINAL CHECK: reads at thumbnail size; no text anywhere.
 ```
 
-- raw takes: private/blog-art-2026-11/guide-directory-listings-raw.jpg
-- take used: `private/blog-art-2026-11/guide-directory-listings-raw.jpg`
+- raw takes: private/blog-art-2026-11/guide-directory-listings-raw-v2.jpg, private/blog-art-2026-11/guide-directory-listings-raw-v3.jpg, private/blog-art-2026-11/guide-directory-listings-raw.jpg
+- take used: `private/blog-art-2026-11/guide-directory-listings-raw-v3.jpg`
 - hero: `public/img/blog/2026-11/guide-directory-listings-hero.webp` (1600x900)
-- OG: `public/img/blog/2026-11/og-guide-directory-listings-2026-11.jpg` (1200x630)
+- OG: `public/img/blog/2026-11/og-guide-directory-listings-2026-11b.jpg` (1200x630)
+- note: Redo v2 (faint bars/blocks on the left read as text or code): 2 call(s). v2 rejected: cards filled with text-like placeholder lines and a logo-like ring. v3 used: grid of abstract colour tiles, three lit; left side empty. New OG card written to a new filename (-2026-11b) because the old card is live and LinkedIn caches by URL; the old -2026-11.jpg file is left in place.
+
+Redo v2 prompt (composition sentence replaced; TEXT line extended):
+
+```
+CREATE ONE FINAL IMAGE. Canvas 1600 × 900 px, landscape, filled edge to edge, fully opaque. STYLE: calm, precise product-marketing art, clean geometric planes, soft single light source from the upper left, gentle shadows. PALETTE ONLY: background near-black navy #0A0F1C; primary teal-green #2FD39A; secondary purple #8B7CF6; neutral light grey #C9D1DC. No other hues. SUBJECT: a tidy grid of directory cards, a few of them lit. COMPOSITION: subject in the right 60%; left 40% an empty, plain dark navy area with no objects, lines, bars, panels or blocks of any kind; nothing important within 60 px of any edge. TEXT: none. No letters, numbers, symbols that read as text, logos, engine or company marks, people, faces, robots, brains, phones, magnifying glasses, upward arrows, rankings, trophies or podiums. No placeholder bars, lines or blocks that imitate text or code. FINAL CHECK: reads at thumbnail size; no text anywhere.
+```
 
 ## /guides/wikidata
 
@@ -214,10 +242,17 @@ Prompt:
 CREATE ONE FINAL IMAGE. Canvas 1600 × 900 px, landscape, filled edge to edge, fully opaque. STYLE: calm, precise product-marketing art, clean geometric planes, soft single light source from the upper left, gentle shadows. PALETTE ONLY: background near-black navy #0A0F1C; primary teal-green #2FD39A; secondary purple #8B7CF6; neutral light grey #C9D1DC. No other hues. SUBJECT: two paths leaving one doorway: one lit and reaching a set of cards, the other ending at a closed set of cards. COMPOSITION: subject in the right 60%; left 40% quiet, low-contrast background for text set in code; nothing important within 60 px of any edge. TEXT: none. No letters, numbers, symbols that read as text, logos, engine or company marks, people, faces, robots, brains, phones, magnifying glasses, upward arrows, rankings, trophies or podiums. FINAL CHECK: reads at thumbnail size; no text anywhere.
 ```
 
-- raw takes: private/blog-art-2026-11/found-not-recommended-raw-r1.jpg, private/blog-art-2026-11/found-not-recommended-raw.jpg
-- take used: `private/blog-art-2026-11/found-not-recommended-raw.jpg`
+- raw takes: private/blog-art-2026-11/found-not-recommended-raw-r1.jpg, private/blog-art-2026-11/found-not-recommended-raw-v2.jpg, private/blog-art-2026-11/found-not-recommended-raw-v3.jpg, private/blog-art-2026-11/found-not-recommended-raw-v4.jpg, private/blog-art-2026-11/found-not-recommended-raw.jpg
+- take used: `private/blog-art-2026-11/found-not-recommended-raw-v3.jpg`
 - hero: `public/img/blog/2026-11/found-not-recommended-hero.webp` (1600x900)
-- OG: `public/img/blog/2026-11/og-found-not-recommended-2026-11.jpg` (1200x630)
+- OG: `public/img/blog/2026-11/og-found-not-recommended-2026-11b.jpg` (1200x630)
+- note: Redo v2 (faint bars/blocks on the left read as text or code): 3 call(s). v2 rejected: dashboard-style cards with chart and line placeholders. v4 rejected: the left 39% was a separate, darker flat panel with a hard vertical seam. v3 used: archway, lit path to an open folded purple card, second route to a closed card stack; left side uniform navy. The open card carries a few abstract teal shapes (not text-like). New OG card written to a new filename (-2026-11b) because the old card is live and LinkedIn caches by URL; the old -2026-11.jpg file is left in place.
+
+Redo v2 prompt (composition sentence replaced; TEXT line extended):
+
+```
+CREATE ONE FINAL IMAGE. Canvas 1600 × 900 px, landscape, filled edge to edge, fully opaque. STYLE: calm, precise product-marketing art, clean geometric planes, soft single light source from the upper left, gentle shadows. PALETTE ONLY: background near-black navy #0A0F1C; primary teal-green #2FD39A; secondary purple #8B7CF6; neutral light grey #C9D1DC. No other hues. SUBJECT: two paths leaving one doorway: one lit and reaching a set of cards, the other ending at a closed set of cards. COMPOSITION: subject in the right 60%; left 40% an empty, plain dark navy area with no objects, lines, bars, panels or blocks of any kind; nothing important within 60 px of any edge. TEXT: none. No letters, numbers, symbols that read as text, logos, engine or company marks, people, faces, robots, brains, phones, magnifying glasses, upward arrows, rankings, trophies or podiums. No placeholder bars, lines or blocks that imitate text or code. FINAL CHECK: reads at thumbnail size; no text anywhere.
+```
 
 ## /blog/i-scored-zero
 

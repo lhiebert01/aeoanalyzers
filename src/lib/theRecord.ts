@@ -18,6 +18,44 @@ export interface RecordEntry {
   done_at: string;
   note?: string | null;
   link?: string | null;
+  /** WO-015 experiment log: "this should move <metric> from <value>". All optional. */
+  hypothesis?: string | null;
+  metric?: string | null;
+  /** What the report reads for "now": found_by_name | recommended | coverage_named | d1_recommended |
+   *  gsc_position:<query> | cited_url:<url>. */
+  metric_key?: string | null;
+  baseline?: string | null;
+  /** YYYY-MM-DD, one or more. */
+  check_dates?: string[] | null;
+}
+
+export const METRIC_KEYS: { key: string; label: string }[] = [
+  { key: 'found_by_name', label: 'Found by name (this panel)' },
+  { key: 'recommended', label: 'Recommended to buyers (this panel)' },
+  { key: 'coverage_named', label: 'Source coverage: named on recurring pages' },
+  { key: 'd1_recommended', label: 'Differentiator questions: recommended' },
+  { key: 'gsc_position:', label: 'Search Console position for a query (add the query)' },
+  { key: 'cited_url:', label: 'Whether answers cite a page (add the address)' },
+];
+
+/** WO-015: the experiment rows for the report. On or after a check date: the metric then and now.
+ *  Before it: the date it will be checked. Never a word about cause. */
+export function experimentSection(entries: RecordEntry[], today: Date, valueOf: (key: string) => string | null): string[] {
+  const ex = entries.filter((e) => e.metric || e.hypothesis);
+  if (!ex.length) return [];
+  const day = today.toISOString().slice(0, 10);
+  const cell = (x: string | null | undefined) => String(x ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
+  const out = ['### Experiments', '_Each action with what it was expected to move, the value then, and the value on its check date. Timing only: a change beside an action is not proof of what moved it._', '', '| Action | Metric | Then | Check date | Now |', '|---|---|---|---|---|'];
+  for (const e of [...ex].sort(byDate)) {
+    const dates = (e.check_dates || []).slice().sort();
+    const due = dates.filter((d) => d <= day);
+    const next = dates.find((d) => d > day);
+    const now = due.length && e.metric_key ? valueOf(e.metric_key) : null;
+    const nowCell = due.length ? (now ?? 'not measured in this report') : `checked on ${next || '—'}`;
+    out.push(`| ${cell(e.title)} (${e.done_at}) | ${cell(e.metric || e.hypothesis)} | ${cell(e.baseline || '—')} | ${dates.join(', ') || '—'} | ${cell(nowCell)} |`);
+  }
+  out.push('');
+  return out;
 }
 
 export const RECORD_GATED = 'The Record is included on Pro and Business.';

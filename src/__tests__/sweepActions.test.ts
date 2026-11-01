@@ -49,8 +49,11 @@ describe('buildSweepActionAgenda', () => {
       losingCategoryQuestions: ['best AEO tools', 'top answer engine optimization software'],
       doNowAuthorities: ['reddit.com', 'g2.com'],
     }).join('\n');
-    expect(md).toMatch(/Write the page that answers: "best AEO tools"/);
-    expect(md).toMatch(/Write the page that answers: "top answer engine optimization software"/);
+    // WO-015: shortlist questions are listed as off-site work (Lanes 1 to 3), not as pages to write.
+    expect(md).toMatch(/Shortlist questions \(2\)/);
+    expect(md).toMatch(/- "best AEO tools"/);
+    expect(md).toMatch(/- "top answer engine optimization software"/);
+    expect(md).not.toMatch(/Write the page that answers: "best AEO tools"/);
     expect(md).toMatch(/Do-now tier\)[\s\S]*reddit\.com, g2\.com/);
     // WO-012 C: grouped by owner, each action tagged once with the figure to watch.
     expect(md.indexOf('### Content —')).toBeLessThan(md.indexOf('### Outreach —'));

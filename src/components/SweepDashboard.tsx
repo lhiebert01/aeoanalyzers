@@ -18,7 +18,12 @@ import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType, C
 import { extractTruthRecord, withSiteRecord, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
 import { doNowChecklist } from '../lib/doNowChecklist';
-import { recordActions, buildSweepReport, buildSweepCover, pitchTargetsFrom, ALIAS, type SweepResponse, type SweepReportInputs } from '../lib/sweepReport';
+import { recordActions, buildSweepReport, buildSweepCover, pitchTargetsFrom, ALIAS, fixItPlanFor, type SweepResponse, type SweepReportInputs } from '../lib/sweepReport';
+import { NextStepsPanel } from './NextStepsPanel';
+import { LANE_TITLE } from '../lib/fixItPlan';
+import { latestStandings, uploadStanding } from '../lib/searchStandingStore';
+import type { SearchStanding } from '../lib/searchStanding';
+import { effectiveCompetitorSet } from '../lib/citationSweep';
 import { CoverCard } from './CoverCard';
 import { SearchConsolePanel } from './SearchConsolePanel';
 import { accuracyWhenNamed } from '../lib/fidelity';
@@ -32,7 +37,7 @@ import { coverageHeadline, coverageAction, coverageKind, categoryVendorDomains, 
 import { latestScoreFor } from '../lib/latestFigures';
 import { OWNER_ORDER, OWNER_DESC, nextSweepLine } from '../lib/ownerTags';
 import { measuredAfterView, PANEL_DIFFERS, MEASURED_AFTER, fmtDay, type RecordEntry, type SweepFigures } from '../lib/theRecord';
-import { figuresFrom, previousSweepFigures } from '../lib/recordStore';
+import { figuresFrom, previousSweepFigures, seriesOf, seriesRates } from '../lib/recordStore';
 import { RecordPanel } from './RecordPanel';
 import { GuidePanel, type GuideAccess } from './GuidePanel';
 import { buildGuide, guideRecordActions, type BusinessType, type GuideScore } from '../lib/stepGuide';
@@ -223,11 +228,18 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
   // WO-012 G: the Record for this domain, and the previous sweep's figures.
   const [recordEntries, setRecordEntries] = useState<RecordEntry[]>([]);
   const [previousFigures, setPreviousFigures] = useState<SweepFigures | null>(null);
+  // WO-015: the question series the NEXT run belongs to (the differentiator questions are a
+  // separate series), and Lane 0's stored Search Console table.
+  const [questionSeries, setQuestionSeries] = useState<'main' | 'differentiator'>('main');
+  const [standing, setStanding] = useState<{ now: SearchStanding | null; previous: SearchStanding | null }>({ now: null, previous: null });
+  const [standingBusy, setStandingBusy] = useState(false);
+  const [standingErr, setStandingErr] = useState<string | null>(null);
+  const [d1, setD1] = useState<{ now: number | null; previous: number | null }>({ now: null, previous: null });
   useEffect(() => {
     setPreviousFigures(null);
     if (!recordEnabled || !result || result.quickCheck) return;
     let live = true;
-    previousSweepFigures(result.domain, result.generatedAt, ownedDomains).then((f) => { if (live) setPreviousFigures(f); }).catch(() => {});
+    previousSweepFigures(result.domain, result.generatedAt, ownedDomains, seriesOf(result.summary)).then((f) => { if (live) setPreviousFigures(f); }).catch(() => {});
     return () => { live = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result?.domain, result?.generatedAt, recordEnabled]);
@@ -244,10 +256,30 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
     return () => { live = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result?.domain, result?.generatedAt, guideAccess]);
+  useEffect(() => {
+    setStanding({ now: null, previous: null }); setStandingErr(null);
+    if (!result || result.quickCheck || guideAccess === 'none') return;
+    let live = true;
+    latestStandings(result.domain).then((x) => { if (live) setStanding(x); }).catch(() => {});
+    seriesRates(result.domain, 'differentiator').then((x) => { if (live) setD1(x); }).catch(() => {});
+    return () => { live = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result?.domain, guideAccess]);
+  async function onStandingUpload(file: File) {
+    if (!result) return;
+    setStandingBusy(true); setStandingErr(null);
+    try {
+      const vendorNames = effectiveCompetitorSet(result.runs, { domain: result.domain, brand: result.brand || undefined }, parseCompetitors(competitors)).map((c) => c.name);
+      const now = await uploadStanding(file, { domain: result.domain, brand: result.brand, people: truth?.founders || [], vendorNames });
+      setStanding((s) => ({ now, previous: s.now }));
+    } catch (e) { setStandingErr((e as Error).message); } finally { setStandingBusy(false); }
+  }
+  const planAccess = (): 'none' | 'sweep-only' | 'full' => (guideAccess === 'none' ? 'none' : guideAccess === 'full' ? 'full' : 'sweep-only');
   const guideFor = (r: SweepResponse, type: BusinessType | null) => buildGuide({
     domain: r.domain, date: new Date(), brand: r.brand, site: truth?.site || siteFacts, score: guideScore,
     split: buildSweepCover(reportInputs(r)).split ?? null, coverage: sourceCoverage, category: coreCategory || null,
     businessType: type ?? (rememberedBusinessType(r.domain) as BusinessType | null), record: recordEnabled ? recordEntries : null,
+    nextSteps: planAccess() === 'none' ? null : (() => { const p = fixItPlanFor(reportInputs(r)); return { diagnosis: p.diagnosis.line, steps: p.steps.filter((x) => x.minutes > 0), laneTitles: LANE_TITLE }; })(),
   });
   const nowFigures = (r: SweepResponse | null): SweepFigures | null => r ? figuresFrom(r.generatedAt, r.summary as any, r.runs, r.domain, ownedDomains, sourceCoverage) : null;
   async function runCoverage(id: string) {
@@ -578,6 +610,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
           ownedDomains, // G2 config memory
           // Only admin picks the panel; for customers the plan decides it server-side.
           panel: isAdmin ? panel : undefined, location: location.trim() || null, // WO-006
+          series: questionSeries, // WO-015: a separate question series is never compared with the main one
         }),
       });
       const json = await res.json();
@@ -617,7 +650,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
   // Lane C: the report is ONE pure function (lib/sweepReport.ts) shared by the .md, the .docx,
   // the saved view and the PDF — a test regenerates the founder's Nybsys report from stored runs.
   function reportInputs(r: SweepResponse): SweepReportInputs {
-    return { result: r, competitors: parseCompetitors(competitors), fidelity, entityLinking, authority, bots, truth, pageFactDensity, ownedDomains, isAdmin: !!isAdmin, savedView, category: coreCategory || null, readiness, sourceCoverage, record: recordEnabled ? { entries: recordEntries, previous: previousFigures, now: nowFigures(r) } : null };
+    return { result: r, competitors: parseCompetitors(competitors), fidelity, entityLinking, authority, bots, truth, pageFactDensity, ownedDomains, isAdmin: !!isAdmin, savedView, category: coreCategory || null, readiness, sourceCoverage, record: recordEnabled ? { entries: recordEntries, previous: previousFigures, now: nowFigures(r) } : null,
+      // WO-015: the plan's inputs. Day Pass gets the plan for its own sweep; Free gets one line.
+      planAccess: planAccess(), standing: standing.now, scoreChecklist: guideScore?.checklist || null, businessType: rememberedBusinessType(r.domain),
+      planPrevious: { coverageNamed: previousFigures?.coverage?.yes ?? null, standing: standing.previous, differentiatorRate: d1.previous }, differentiatorRate: d1.now };
   }
   function buildReport(r: SweepResponse): string { return buildSweepReport(reportInputs(r)); }
 
@@ -946,6 +982,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                     className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
                 </label>
                 <label className="text-xs font-semibold block text-zinc-700">From prospective buyers (unbranded, one per line)
+                  {questionSeries === 'differentiator' && (
+                    <div className="mb-2 rounded-xl border border-zinc-900 bg-zinc-50 p-3 text-sm text-zinc-900">
+                      <b>Separate series: your differentiator questions.</b> This sweep is stored as its own series and never compared with your main questions. Nothing runs until you click the run button.
+                      <button type="button" onClick={() => { setQuestionSeries('main'); setCategoryQueries(''); setBranded('who is {domain}\nwhat is {domain}'); }} className="ml-2 underline font-semibold">Back to my main questions</button>
+                    </div>
+                  )}
                   <textarea value={categoryQueries} onChange={(e) => setCategoryQueries(e.target.value)} rows={8}
                     className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
                 </label>
@@ -1523,6 +1565,11 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
           })()}
 
           {/* WO-012 G: the Record. */}
+          {/* WO-015: Your next steps (shown for every full sweep; gated by plan inside). */}
+          {result && !result.quickCheck && (
+            <NextStepsPanel plan={fixItPlanFor(reportInputs(result))} access={planAccess()} onUpload={onStandingUpload} uploading={standingBusy} uploadError={standingErr}
+              onUseDifferentiator={(qs) => { setCategoryQueries(qs.join('\n')); setBranded(''); setQuestionSeries('differentiator'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+          )}
           {result && !result.quickCheck && result.persisted && (
             <RecordPanel domain={result.domain} enabled={!!recordEnabled} actions={(() => { const a = [...recordActions(reportInputs(result)), ...guideRecordActions(guideFor(result, null))]; return a.filter((x, i) => a.findIndex((y) => y.key === x.key) === i); })()} onEntries={setRecordEntries} />
           )}

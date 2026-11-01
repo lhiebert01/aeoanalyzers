@@ -50,8 +50,12 @@ async function post(path: string, body: unknown, prefer = 'return=representation
   if (!files.length) { console.error(`no stored sweep files in ${dir}`); process.exit(1); }
 
   // Never import the same run twice: match on domain + the sweep's own date.
-  const existing: any[] = await (await fetch(`${SUPA}/rest/v1/citation_sweeps?select=domain,created_at&limit=1000`, { headers: H })).json();
-  const seen = new Set(existing.map((r: any) => `${String(r.domain).toLowerCase()}|${String(r.created_at).slice(0, 10)}`));
+  // WO-015: --series differentiator imports a separate question series; duplicates are judged
+  // within the series, and the series is stored on the sweep (summary.panel.series).
+  const si = process.argv.indexOf('--series'); const series = si > -1 ? String(process.argv[si + 1] || 'main') : 'main';
+  const existing: any[] = await (await fetch(`${SUPA}/rest/v1/citation_sweeps?select=domain,created_at,summary&limit=1000`, { headers: H })).json();
+  const seriesOfRow = (r: any) => (r?.summary?.panel?.series === 'differentiator' ? 'differentiator' : 'main');
+  const seen = new Set(existing.filter((r: any) => seriesOfRow(r) === series).map((r: any) => `${String(r.domain).toLowerCase()}|${String(r.created_at).slice(0, 10)}`));
 
   let imported = 0, skipped = 0;
   for (const f of files) {
@@ -71,6 +75,7 @@ async function post(path: string, body: unknown, prefer = 'return=representation
     const scored = runs.map((r) => scoreRun(r, { domain, brand: brand || undefined }, competitors));
     const summary = aggregateSweep(scored, { domain, brand: brand || undefined }, competitors);
 
+    if (series !== 'main') (summary as any).panel = { ...((summary as any).panel || {}), version: (summary as any).panel?.version || 'v1.1', series };
     const row = {
       user_id: userId,
       domain,
@@ -78,7 +83,7 @@ async function post(path: string, body: unknown, prefer = 'return=representation
       summary,
       total_cost_usd: summary.totalCostUsd,
       total_runs: summary.totalRuns,
-      created_at: `${runDate}T12:00:00Z`,
+      created_at: `${runDate}T${series === 'main' ? '12:00' : '12:30'}:00Z`,
       category: t.category || null,
       competitors,
       branded_queries: [...new Set(scored.filter((r) => r.queryType === 'branded').map((r) => r.query))],

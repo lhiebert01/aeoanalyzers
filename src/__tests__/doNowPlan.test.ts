@@ -334,7 +334,10 @@ describe('the instructions the report gives are ones a customer can safely follo
         ],
         doNowAuthorities: [],
       } as any).join('\n');
-      expect(agenda).toContain('Write the page that answers: "best AEO tools for agencies"');
+      // WO-015: a shortlist question is off-site work, never a page; the procedure question gets the page.
+      expect(agenda).toContain('- "best AEO tools for agencies"');
+      expect(agenda).not.toContain('Write the page that answers: "best AEO tools for agencies"');
+      expect(agenda).toContain('Write the page that answers: "why isn\'t my website showing up in Google AI Overviews and how to fix it"');
       expect(agenda).toContain('Read these');
       expect(agenda).toContain('weaker evidence');
       expect(agenda).toContain('not that you lost a comparison');

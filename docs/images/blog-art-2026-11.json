@@ -4,11 +4,11 @@
     "hero": "/img/blog/2026-11/aeo-buyers-guide-hero.webp",
     "heroW": 1600,
     "heroH": 900,
-    "heroAlt": "A stack of seven flat panels in grey and purple on a dark navy background, the top panel lit in teal-green with a check mark.",
-    "og": "/img/blog/2026-11/og-aeo-buyers-guide-2026-11.jpg",
+    "heroAlt": "A stack of seven flat panels on a dark navy background: a lit light grey panel on top, then alternating teal-green and purple panels below.",
+    "og": "/img/blog/2026-11/og-aeo-buyers-guide-2026-11b.jpg",
     "ogW": 1200,
     "ogH": 630,
-    "ogAlt": "AEO Analyzers: The AEO Buyer’s Guide: three short reads. A stack of seven flat panels in grey and purple on a dark navy background, the top panel lit in teal-green with a check mark."
+    "ogAlt": "AEO Analyzers: The AEO Buyer’s Guide: three short reads. A stack of seven flat panels on a dark navy background: a lit light grey panel on top, then alternating teal-green and purple panels below."
   },
   "/what-should-an-aeo-tool-do": {
     "slug": "what-should-an-aeo-tool-do",
@@ -59,11 +59,11 @@
     "hero": "/img/blog/2026-11/score-pages-for-answer-engine-readiness-hero.webp",
     "heroW": 1600,
     "heroH": 900,
-    "heroAlt": "An outlined page shape crossed by three soft beams of teal-green, purple and grey light on a dark navy background.",
-    "og": "/img/blog/2026-11/og-score-pages-for-answer-engine-readiness-2026-11.jpg",
+    "heroAlt": "A tilted light grey outline of a page on a dark navy background, crossed by two teal-green beams and one purple beam of light.",
+    "og": "/img/blog/2026-11/og-score-pages-for-answer-engine-readiness-2026-11b.jpg",
     "ogW": 1200,
     "ogH": 630,
-    "ogAlt": "AEO Analyzers: Is there an analyzer that scores your pages for answer engine readiness? An outlined page shape crossed by three soft beams of teal-green, purple and grey light on a dark navy background."
+    "ogAlt": "AEO Analyzers: Is there an analyzer that scores your pages for answer engine readiness? A tilted light grey outline of a page on a dark navy background, crossed by two teal-green beams and one purple beam of light."
   },
   "/diagnose-dropped-out-of-perplexity-citations": {
     "slug": "diagnose-dropped-out-of-perplexity-citations",
@@ -92,22 +92,22 @@
     "hero": "/img/blog/2026-11/competitive-prompt-benchmarking-hero.webp",
     "heroW": 1600,
     "heroH": 900,
-    "heroAlt": "Rows of identical light grey cards on dark navy, with three cards in the middle row glowing teal-green.",
-    "og": "/img/blog/2026-11/og-competitive-prompt-benchmarking-2026-11.jpg",
+    "heroAlt": "Rows of identical light grey card frames laid out in perspective on dark navy, with three cards in one row glowing teal-green.",
+    "og": "/img/blog/2026-11/og-competitive-prompt-benchmarking-2026-11b.jpg",
     "ogW": 1200,
     "ogH": 630,
-    "ogAlt": "AEO Analyzers: Competitive prompt benchmarking for AI answer engines: what it is and what to look for. Rows of identical light grey cards on dark navy, with three cards in the middle row glowing teal-green."
+    "ogAlt": "AEO Analyzers: Competitive prompt benchmarking for AI answer engines: what it is and what to look for. Rows of identical light grey card frames laid out in perspective on dark navy, with three cards in one row glowing teal-green."
   },
   "/guides/directory-listings": {
     "slug": "guide-directory-listings",
     "hero": "/img/blog/2026-11/guide-directory-listings-hero.webp",
     "heroW": 1600,
     "heroH": 900,
-    "heroAlt": "A tidy grid of light grey directory cards, a few of them lit in teal-green and purple.",
-    "og": "/img/blog/2026-11/og-guide-directory-listings-2026-11.jpg",
+    "heroAlt": "A grid of directory cards in teal-green, purple and light grey on a dark navy background, three of them lit from within.",
+    "og": "/img/blog/2026-11/og-guide-directory-listings-2026-11b.jpg",
     "ogW": 1200,
     "ogH": 630,
-    "ogAlt": "AEO Analyzers: How to list your business on directories, step by step. A tidy grid of light grey directory cards, a few of them lit in teal-green and purple."
+    "ogAlt": "AEO Analyzers: How to list your business on directories, step by step. A grid of directory cards in teal-green, purple and light grey on a dark navy background, three of them lit from within."
   },
   "/guides/wikidata": {
     "slug": "guide-wikidata",
@@ -136,11 +136,11 @@
     "hero": "/img/blog/2026-11/found-not-recommended-hero.webp",
     "heroW": 1600,
     "heroH": 900,
-    "heroAlt": "A doorway with two paths leaving it: a lit teal-green path reaching a fan of cards, and a dim purple path ending at a closed stack of cards.",
-    "og": "/img/blog/2026-11/og-found-not-recommended-2026-11.jpg",
+    "heroAlt": "A light grey archway on a dark navy background: a lit teal-green path runs from it to an open purple card on a raised block, while a short second route ends at a closed stack of purple cards.",
+    "og": "/img/blog/2026-11/og-found-not-recommended-2026-11b.jpg",
     "ogW": 1200,
     "ogH": 630,
-    "ogAlt": "AEO Analyzers: Optimizing your website gets you found. It does not get you recommended. A doorway with two paths leaving it: a lit teal-green path reaching a fan of cards, and a dim purple path ending at a closed stack of cards."
+    "ogAlt": "AEO Analyzers: Optimizing your website gets you found. It does not get you recommended. A light grey archway on a dark navy background: a lit teal-green path runs from it to an open purple card on a raised block, while a short second route ends at a closed stack of purple cards."
   },
   "/blog/i-scored-zero": {
     "slug": "i-scored-zero",
