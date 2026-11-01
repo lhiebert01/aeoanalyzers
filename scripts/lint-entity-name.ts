@@ -5,9 +5,13 @@ import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { lintEntityName } from '../src/lib/entityNameLint';
 
+const SELF = ['src/lib/entityNameLint.ts', 'scripts/lint-entity-name.ts', 'scripts/build-content-pages.py'];
+
 const files = execSync('git ls-files public src scripts index.html README.md package.json', { encoding: 'utf8' })
   .split('\n')
-  .filter((f) => f && !f.includes('__tests__') && /\.(html|txt|xml|json|md|ts|tsx|js|mjs|py|webmanifest)$/.test(f));
+  .filter((f) => f && !f.includes('__tests__') && /\.(html|txt|xml|json|md|ts|tsx|js|mjs|py|webmanifest)$/.test(f))
+  // The files that define the rule name the retired spelling in order to detect it.
+  .filter((f) => !SELF.includes(f));
 const hits = files.flatMap((f) => lintEntityName(f, readFileSync(f, 'utf8')));
 if (hits.length) {
   console.error(`L-NAME-1: the company is PIGENAI LLC. ${hits.length} line(s) use the retired "PI GenAI":`);

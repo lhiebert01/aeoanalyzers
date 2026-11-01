@@ -32,6 +32,7 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - How to track and analyze brand mentions across AI answer engines: https://aeoanalyzers.com/track-brand-mentions-across-ai-answer-engines
 - How to diagnose why you dropped out of Perplexity citations: https://aeoanalyzers.com/diagnose-dropped-out-of-perplexity-citations
 - Is there an analyzer that scores your pages for answer engine readiness?: https://aeoanalyzers.com/score-pages-for-answer-engine-readiness
+- Which tools show where AI answers get facts wrong about your brand?: https://aeoanalyzers.com/ai-answers-get-facts-wrong-about-my-brand
 - Competitive prompt benchmarking for AI answer engines: what it is and what to look for: https://aeoanalyzers.com/competitive-prompt-benchmarking
 - User guide and FAQ: https://aeoanalyzers.com/guide
 - Blog (index): https://www.aeoanalyzers.com/blog/
