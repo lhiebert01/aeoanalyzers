@@ -20,18 +20,18 @@ Aliases: PIGENAI LLC → PIGENAI, PI GenAI LLC. AEO Analyzers → AEOAnalyzers, 
 ## Structured data @ids on our sites
 | Node | @id | sameAs includes |
 |---|---|---|
-| Organization | https://pigenai.com/#org | Wikidata Q141739140, plus the listings below once live. Served in full on aeoanalyzers.com (src/lib/json-ld.ts) and on pigenai.com (separate repository). |
+| Organization | https://pigenai.com/#org | Wikidata Q141739140; Crunchbase (2026-11-01). Served in full on aeoanalyzers.com (src/lib/json-ld.ts) and on pigenai.com (separate repository; Wikidata only there). |
 | Person | https://pigenai.com/#lindsay | (as already set; X: @Lindsay_Hiebert) |
-| SoftwareApplication | https://aeoanalyzers.com/#app | Wikidata Q141739225; AlternativeTo (2026-10-15); further listings below once live |
+| SoftwareApplication | https://aeoanalyzers.com/#app | Wikidata Q141739225; AlternativeTo (2026-10-15); LinkedIn company page (2026-11-01) |
 
 ## Listings (directories and profiles)
 | Listing | URL | Status | Date live | Added to Wikidata as a reference? |
 |---|---|---|---|---|
-| AlternativeTo | https://alternativeto.net/software/aeo-analyzers/ | live | 2026-10-15 | not yet (founder adds "described at URL" on Q141739225); submitted 2026-10-15, publicly reachable 2026-10-15, approval confirmed 2026-11-01 |
-| Crunchbase | | planned (founder, week of Oct 19) | | |
+| AlternativeTo | https://alternativeto.net/software/aeo-analyzers/ | live | 2026-10-15 | yes, on AEO Analyzers (Q141739225), 2026-11-01; submitted 2026-10-15, publicly reachable 2026-10-15, approval confirmed 2026-11-01 |
+| Crunchbase | https://www.crunchbase.com/organization/pigenai-llc | live | 2026-11-01 | yes, on PIGENAI LLC (Q141739140), 2026-11-01; profile of the company, so it is on the Organization sameAs |
 | G2 | | planned (founder, Oct 16) | | |
-| Slashdot / SourceForge | | planned (founder, Oct 16) | | |
-| LinkedIn company page | | planned (founder, week of Oct 19) | | |
+| Slashdot / SourceForge | | submitted 2026-11-01 (review pending; not live yet) | | |
+| LinkedIn company page | https://www.linkedin.com/company/aeoanalyzers/ | live | 2026-11-01 | not yet; page named AEO Analyzers, so it is on the SoftwareApplication sameAs |
 | GitHub repository | https://github.com/lhiebert01/aeoanalyzers | live | | n/a |
 
 ## Canonical listing text (use word for word; no prices)
@@ -44,3 +44,4 @@ Pricing model: Freemium, linked to https://aeoanalyzers.com/pricing. No price fi
 - 2026-10-15 — AlternativeTo submitted by the founder (priority review); G2 and Slashdot planned Oct 16; Crunchbase and LinkedIn moved to the week of Oct 19. No listing is live yet, so no listing URL is in sameAs.
 - 2026-10-15 — AlternativeTo live (https://alternativeto.net/software/aeo-analyzers/, platform Online, developer PIGENAI LLC); added to the SoftwareApplication sameAs on aeoanalyzers.com (product node only). Long text updated to the five-first wording (founder ruling 10:07 CT, WO-008); the AlternativeTo description still carries the earlier four-first text until the founder edits it.
 - 2026-11-01 — AlternativeTo approval confirmed by the founder (submissions queue empty). The listing page states it was added and last updated 2026-10-15; it was publicly reachable when first checked that day, so the live date stays 2026-10-15. Entered in the founder's Record (submitted and live, both 2026-10-15).
+- 2026-11-01 — Crunchbase (PIGENAI LLC) live and added to the Organization sameAs; LinkedIn company page (AEO Analyzers) live and added to the SoftwareApplication sameAs; SourceForge/Slashdot submitted. Wikidata: Crunchbase added on Q141739140 and AlternativeTo on Q141739225 (founder). Crunchbase could not be fetched by script (Cloudflare); live per the founder.

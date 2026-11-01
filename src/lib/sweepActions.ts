@@ -35,11 +35,15 @@ export interface SweepActionInputs {
    *  only the delta (missing @id / sameAs / disambiguatingDescription) rather than a
    *  fresh Organization the page already has. */
   served?: { hasOrg?: boolean; hasOrgId?: boolean; hasDisambiguation?: boolean; sameAs?: string[]; declaredName?: string; ownedDomains?: string[] };
+  /** The sweep's competitor names, so a question comparing two of them is routed to outreach. */
+  competitorNames?: string[];
 }
 
 /** Threshold below which branded retrievability is "weak" enough to send the user
  *  to the structural (AEO Score) fix path. Named for testability. */
-export const WEAK_RETRIEVABILITY = 80;
+// 1 Nov 2026: aligned with the Do-now plan's FOUND_BY_NAME_SETTLED (90%), so the agenda never
+// contradicts the diagnosis above it.
+export const WEAK_RETRIEVABILITY = 90;
 
 /** The paste-ready disambiguation remediation — a connected @id graph + one visible
  *  unaffiliation line. Only re-expresses DETECTED values (brand, domain, colliding
@@ -153,6 +157,25 @@ export function answerShape(question: string): 'recommendation' | 'advice' {
   return 'recommendation';
 }
 
+/** 1 Nov 2026 ruling: a question that compares two named competitors ("A vs B", "A or B for…")
+ *  is answered from the pages that already compare those two. A page of the customer's own does
+ *  not join that comparison, so it is not a content task; the action is outreach to those pages. */
+const NOT_A_RIVAL = /^(ai|seo|aeo|geo|chatgpt|claude|gemini|perplexity|grok|copilot|google|bing|free|paid|diy|agency|in-house|manual|automated)$/i;
+const escRx = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+export function comparesTwoNamed(question: string, competitorNames: string[] = []): boolean {
+  const q = String(question || '');
+  const named = new Set(
+    competitorNames
+      .map((n) => String(n || '').trim())
+      .filter((n) => n.length > 1)
+      .filter((n) => new RegExp(`\\b${escRx(n)}\\b`, 'i').test(q))
+      .map((n) => n.toLowerCase())
+  );
+  if (named.size >= 2) return true;
+  const m = q.match(/\b([A-Z][\w.&+-]*(?:\s[A-Z][\w.&+-]*)?)\s+(?:vs\.?|versus)\s+([A-Z][\w.&+-]*)/);
+  return !!m && !NOT_A_RIVAL.test(m[1]) && !NOT_A_RIVAL.test(m[2]);
+}
+
 /** Build the closing "What to do" agenda as markdown lines (no trailing blank). */
 /** A question as the reader should see it: without the market suffix the sweep appended. */
 export function displayQuestion(question: string, location?: string | null): string {
@@ -182,7 +205,9 @@ export function sweepAgendaBlocks(inp: SweepActionInputs): AgendaBlock[] {
       lines: ['Paste this into your site `<head>`:', '', ...remediationSnippet(inp.domain, inp.brand, inp.collisions, inp.served)] });
   }
   if (inp.categoryWinPct !== null && inp.categoryWinPct < 100 && inp.losingCategoryQuestions.length) {
-    const losing = inp.losingCategoryQuestions.slice(0, 12);
+    const all = inp.losingCategoryQuestions.slice(0, 12);
+    const comparisons = all.filter((q) => comparesTwoNamed(q, inp.competitorNames));
+    const losing = all.filter((q) => !comparisons.includes(q));
     const wantsList = losing.filter((q) => answerShape(q) === 'recommendation');
     const wantsAdvice = losing.filter((q) => answerShape(q) === 'advice');
     const lines: string[] = [];
@@ -192,9 +217,15 @@ export function sweepAgendaBlocks(inp: SweepActionInputs): AgendaBlock[] {
       lines.push(`**Read these ${wantsAdvice.length === 1 ? 'one' : `${wantsAdvice.length}`} differently.** ${wantsAdvice.length === 1 ? 'This question reads' : 'These read'} as a request for a procedure rather than for a shortlist, so an engine tends to answer ${wantsAdvice.length === 1 ? 'it' : 'them'} with steps and name no vendor at all. A zero here is weaker evidence than a zero on the questions above — it may mean the answer was never shaped like a recommendation, not that you lost a comparison. Worth a page for the reader; not worth reading as a citation loss:`);
       for (const q of wantsAdvice) lines.push(`- Write the page that answers: "${displayQuestion(q, inp.location)}"`);
     }
-    out.push({ key: 'content-agenda', owner: 'Content', watch: 'citation',
+    if (losing.length) out.push({ key: 'content-agenda', owner: 'Content', watch: 'citation',
       title: `You aren't recommended on the questions buyers actually ask (${inp.categoryWinPct}% category win). Turn each losing question into a page that answers it head-on.`,
       lines });
+    if (comparisons.length) out.push({ key: 'comparison-outreach', owner: 'Outreach', watch: 'coverage',
+      title: `${comparisons.length === 1 ? 'One question compares' : `${comparisons.length} questions compare`} two named competitors. That is outreach, not a page.`,
+      lines: [
+        'An engine answers these from the pages that already compare those products. A page of your own does not join that comparison; being included by the publishers of those comparison pages can. Find them in your Source coverage.',
+        ...comparisons.map((q) => `- "${displayQuestion(q, inp.location)}"`),
+      ] });
     out.push({ key: 'do-now-listings', owner: 'Outreach', watch: 'coverage',
       title: "This month's authority checklist (Do-now tier)",
       lines: [inp.doNowAuthorities.length

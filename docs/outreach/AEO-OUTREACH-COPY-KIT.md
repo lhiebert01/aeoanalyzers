@@ -165,9 +165,9 @@ these people come back months later.
 > The diagnosis is free — you can run it right now at aeoanalyzers.com and see your score and
 > your gaps without an account.
 >
-> The paid side is the fixes and the tracking. A Day Pass is $29 for 24 hours of full access
-> if you just want one deep report. Pro is $149 a month and Business is $599 a month for
-> ongoing measurement. Most people start with the free check and decide from there.
+> The paid side is the fixes and the tracking. A Day Pass gives 24 hours of full access
+> if you just want one deep report; Pro and Business are monthly plans for ongoing
+> measurement (prices at aeoanalyzers.com/pricing). Most people start with the free check and decide from there.
 
 ### "How is this different from [Profound / Otterly / other]?"
 

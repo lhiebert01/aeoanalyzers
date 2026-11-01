@@ -1,6 +1,6 @@
 # AEO Analyzers
 
-AEO Analyzers is answer engine optimization (AEO) software. It measures whether AI answer engines (ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business) find your site, describe it accurately and recommend it when buyers ask, backs every figure with a stored transcript, and gives you the fixes.
+AEO Analyzers is answer engine optimization (AEO) software. It measures whether AI answer engines (five on Pro and Business: ChatGPT, Claude, Perplexity, Gemini and Grok; four on the Day Pass) find your site, describe it accurately and recommend it when buyers ask, backs every figure with a stored transcript, and gives you the fixes.
 
 **Prices and plans:** https://aeoanalyzers.com/pricing is the source of truth. Any price in this repository's dated documents (release notes, plans, baselines) is as of that document's date.
 
@@ -42,7 +42,7 @@ AEO Analyzers is answer engine optimization (AEO) software. It measures whether 
 - **Regression-Tested:** A `vitest` suite (`npm test`) pins the accuracy rules; resilient `safeJsonParse` + raised token ceiling harden model-response handling
 
 ### Citation Sweeps & Measurement Loop (v1.7–v1.8) — the flagship capability
-Beyond the 90-second diagnostic, AEO Analyzers runs **tested Citation Sweeps**: it asks ChatGPT, Claude, Perplexity, and Gemini your buyers' real questions **several times per query, with web search on**, and reports **three separable layers** — each with its own fix path, **every score backed by a stored transcript**:
+Beyond the AEO Score, AEO Analyzers runs **tested Citation Sweeps**: it asks the answer engines (five on Pro and Business, four on the Day Pass) your buyers' real questions **several times per query, with web search on**, and reports **three separable layers** — each with its own fix path, **every score backed by a stored transcript**:
 - **Retrievability** — can the engines reach you (branded)?
 - **Fidelity** — do they get you *right*? Cited-accurate vs. cited-drifted, plus **entity-collision detection** that names exactly which similarly-named things the engines confuse you with.
 - **Citation Win** — do they recommend you over competitors on the unbranded buyer question?
@@ -56,11 +56,9 @@ Measurement integrity is built in: truncated answers are **excluded** (never sho
 
 ### Platform
 - **Analysis History:** Track your AEO score improvements over time with full detail view
-- **Google OAuth + Email Auth:** Secure authentication via Supabase with Google sign-in support
-- **Admin Dashboard:** User management, growth metrics, and GA4 analytics link
-- **GA4 Analytics:** Full Google Analytics 4 integration for tracking user behavior and conversions
-- **Stripe Subscriptions:** Free (3 free checks), Day Pass ($29), Pro Optimizer ($149/mo) and Business Authority ($599/mo); current terms at https://aeoanalyzers.com/pricing
-- **Free Tier Gate:** 3 free checks per account, then upgrade required — enforced server-side
+- **Sign-in:** email, or a Google account
+- **Admin Dashboard:** user management and growth metrics (internal)
+- **Plans:** a free AEO Score, a no-subscription Day Pass, and Pro and Business subscriptions (Stripe); plans and prices at https://aeoanalyzers.com/pricing
 
 ## Tech Stack
 
@@ -76,7 +74,7 @@ Measurement integrity is built in: truncated answers are **excluded** (never sho
 | **Sweep Engines** | Claude / OpenAI / Perplexity / Gemini (server, key-gated `api/_lib/engines.ts`) | Multi-engine Citation Sweeps with web search |
 | **Reports** | docx (in-browser generation) | Professional DOCX report download with code-splitting |
 | **Payments** | Stripe | Subscription billing |
-| **Analytics** | Google Analytics 4 (GA4) | User tracking & conversion metrics |
+| **Site analytics** | Google Analytics (internal page-view measurement; not a product feature) | |
 | **Hosting** | Vercel | Static site + serverless API routes |
 | **DNS** | Network Solutions | Domain management for aeoanalyzers.com |
 
@@ -84,10 +82,10 @@ Measurement integrity is built in: truncated answers are **excluded** (never sho
 
 ```
 Browser (React SPA)
-  ├── Supabase Auth (email signup, login, Google OAuth)
+  ├── Supabase Auth (email or Google sign-in)
   ├── Supabase PostgreSQL (users, analysis_history with RLS)
   ├── Gemini API (AEO Score analysis)
-  ├── Google Analytics 4 (GA4 event tracking)
+  ├── Google Analytics (internal page views)
   └── Vercel API Routes (serverless)
         ├── /api/fetch-site (HTML proxy with full Chrome browser headers)
         ├── /api/create-checkout-session (Stripe)
@@ -101,8 +99,8 @@ Browser (React SPA)
 - Node.js v18+
 - npm
 - A Supabase project (free or paid)
-- A Gemini API key (free tier)
-- A Google Cloud Console project (for Google OAuth)
+- A Gemini API key
+- A Google Cloud Console project (for Google sign-in)
 
 ### Installation
 
@@ -205,7 +203,7 @@ The app is deployed on **Vercel** with automatic builds on push:
 - [Hosting Setup](./docs/SETUP-HOSTING-INSTRUCTIONS.md) -- Vercel deployment and domain configuration
 - [Domain & SSL Guide](./docs/CLOUD-RUN-SSL-DOMAIN-FIX-GUIDE.md) -- Vercel domain/SSL troubleshooting
 - [Personas & FAQ](./docs/personas-and-faq.md) -- Target audience and frequently asked questions
-- [Original Launch Blog](./docs/blog-90-seconds-vs-100-hours.md) -- "90 Seconds vs 100 Hours" blog post and social media templates
+- [Original Launch Blog](./docs/blog-90-seconds-vs-100-hours.md) -- the March 2026 launch post (dated; superseded wording)
 
 ## Author
 

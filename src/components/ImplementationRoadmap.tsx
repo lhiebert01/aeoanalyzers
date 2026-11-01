@@ -1,3 +1,4 @@
+import { selectTopPriorities, PRIORITY_THRESHOLD, SCHEMA_COMPLETE_TEXT, VERIFY_CAVEAT } from '../lib/reportGuards';
 import React, { useEffect, useState } from 'react';
 import { CoverCard } from './CoverCard';
 import { buildScoreCover, type LatestSweepFigure } from '../lib/scoreCover';
@@ -119,13 +120,16 @@ export default function ImplementationRoadmap({ isPaid, guideAccess = 'none', da
   const cleanDisplayName = (displayName || 'AEO Analyzers User').split(/[&|\\\/]/).map(s => s.trim()).filter(s => s && !s.includes('.docx') && !s.includes('.pdf') && !s.includes(':\\'))[0] || 'AEO Analyzers User';
 
   const siteUrl = analyzedUrl || 'our website';
-  const weakAreas = analysisResult.criteria.filter(c => c.score < 7);
-  const strongAreas = analysisResult.criteria.filter(c => c.score >= 7);
-  const sortedCriteria = [...analysisResult.criteria].sort((a, b) => a.score - b.score);
-  const topPriorities = sortedCriteria.slice(0, 3);
+  const weakAreas = analysisResult.criteria.filter(c => c.score < PRIORITY_THRESHOLD);
+  const strongAreas = analysisResult.criteria.filter(c => c.score >= PRIORITY_THRESHOLD);
+  const top = selectTopPriorities(analysisResult.criteria, analysisResult.implementationChecklist);
+  const topPrioritiesText = top.kind === 'areas'
+    ? top.areas.map((c, i) => `### ${i + 1}) ${c.name} (Score: ${c.score}/10)\n\n${c.feedback}`).join('\n\n')
+    : `${top.note}\n\n${top.checklist.map((c, i) => `${i + 1}. ${c.action}`).join('\n')}`;
+  const schemaComplete = analysisResult.schemaComplete === true;
 
   const findingsSection = analysisResult.criteria
-    .map(c => `### ${c.name}\n\n**Score: ${c.score}/10**\n\n${c.feedback}\n\n**What to do:**\n${c.score < 7 ? '* This is a priority area. See implementation instructions below.' : '* This area is performing well. Maintain current implementation and monitor for changes.'}`)
+    .map(c => `### ${c.name}\n\n**Score: ${c.score}/10**\n\n${c.feedback}\n\n**What to do:**\n${c.score < PRIORITY_THRESHOLD ? '* This is a priority area. See implementation instructions below.' : '* This area is performing well. Maintain current implementation and monitor for changes.'}`)
     .join('\n\n---\n\n');
 
   const getScoreRating = (score: number): { rating: string; description: string } => {
@@ -193,7 +197,7 @@ ${strongAreas.length > 0 ? `\nAreas of strength:\n\n${strongAreas.map(c => `* **
 
 ## Top priorities
 
-${topPriorities.map((c, i) => `### ${i + 1}) ${c.name} (Score: ${c.score}/10)\n\n${c.feedback}`).join('\n\n')}
+${topPrioritiesText}
 
 ---
 
@@ -221,7 +225,7 @@ JSON-LD is a small block of code that goes in your website's <head> section. It 
 This complete schema lists all detected products, services, and capabilities. Paste it into the <head> section of your main Services or Solutions page.
 
 \`\`\`
-${(() => { const s = analysisResult.schemaSnippet || ''; try { return JSON.stringify(JSON.parse(s), null, 2); } catch { return s || 'See the AEO Analyzers report for the generated snippet.'; } })()}
+${schemaComplete ? SCHEMA_COMPLETE_TEXT : (() => { const s = analysisResult.schemaSnippet || ''; try { return JSON.stringify(JSON.parse(s), null, 2); } catch { return s || 'See the AEO Analyzers report for the generated snippet.'; } })()}
 \`\`\`
 
 **Where to paste it:**
@@ -266,7 +270,13 @@ The goal is to make each page useful not only for visitors, but also for AI syst
 
 ---
 
-${(analysisResult.verifiedSchema || analysisResult.comprehensiveSchema) ? `## Verified schema — safe to paste
+${schemaComplete ? `## Verified schema
+
+${SCHEMA_COMPLETE_TEXT}
+
+---
+
+` : ''}${(analysisResult.verifiedSchema || analysisResult.comprehensiveSchema) ? `## Verified schema — safe to paste
 
 The following JSON-LD contains ONLY values detected on your page, and only user-facing services (internal modules excluded). It is ready to deploy as-is — paste it into your site's <head> section.
 
@@ -332,7 +342,7 @@ _${nextSweepLine(g.watch)}_`).join('\n\n')}
 
 ### Phase 1: Indexing & verification (highest leverage, 1-2 days)
 * Confirm the site is crawlable and indexed — no stray noindex/canonical blocks
-* Verify in Bing Webmaster Tools (now reports AI citation performance) and Google Search Console
+* ${VERIFY_CAVEAT} Verify in Bing Webmaster Tools (now reports AI citation performance) and Google Search Console
 * Submit/refresh your sitemap
 
 ### Phase 2: Structured data & on-page technical (1-2 days)
@@ -470,16 +480,17 @@ ${cleanDisplayName}`;
                   Your website currently has an AEO score of <strong>{analysisResult.score}/100</strong>. To become a "Source of Truth" for AI, you need to focus on <strong>Semantic Density</strong> and <strong>Technical Attribution</strong>.
                 </p>
                 <div className="bg-zinc-50 rounded-2xl p-6 border border-zinc-100">
-                  <h4 className="font-bold text-sm uppercase tracking-widest text-zinc-400 mb-4">Top 3 Priorities</h4>
+                  <h4 className="font-bold text-sm uppercase tracking-widest text-zinc-700 mb-4">Top 3 Priorities</h4>
+                  {top.kind === 'allStrong' && <p className="text-xs text-zinc-700 mb-4">{top.note}</p>}
                   <ul className="space-y-4">
-                    {analysisResult.criteria.filter(c => c.score < 7).slice(0, 3).map((c, i) => (
+                    {(top.kind === 'areas' ? top.areas : top.checklist.map((c) => ({ name: c.action, feedback: c.category ? `${c.category}${c.priority ? ` · ${c.priority} priority` : ''}` : '' }))).map((c, i) => (
                       <li key={i} className="flex gap-3">
                         <div className="w-6 h-6 rounded-full bg-zinc-900 text-white text-[10px] font-bold flex items-center justify-center shrink-0">
                           {i + 1}
                         </div>
                         <div>
                           <p className="font-bold text-sm">{c.name}</p>
-                          <p className="text-xs text-zinc-500">{c.feedback}</p>
+                          <p className="text-xs text-zinc-700">{c.feedback}</p>
                         </div>
                       </li>
                     ))}
@@ -497,6 +508,7 @@ ${cleanDisplayName}`;
                 <div className="relative group">
                   <pre className="bg-zinc-900 text-zinc-300 p-6 rounded-2xl text-xs overflow-x-auto font-mono leading-relaxed max-h-[400px]">
                     {(() => {
+                      if (schemaComplete) return SCHEMA_COMPLETE_TEXT;
                       const schema = analysisResult.verifiedSchema || analysisResult.comprehensiveSchema || analysisResult.schemaSnippet || '';
                       if (!schema) return 'No snippet generated.';
                       try { return JSON.stringify(JSON.parse(schema), null, 2); } catch { return schema; }

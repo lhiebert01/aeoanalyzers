@@ -1,6 +1,6 @@
 # AEO Analyzers
 
-AEO Analyzers shows a brand exactly how today's AI assistants (ChatGPT, Claude, Perplexity, Gemini and Grok) describe, rank, and cite it — and what to change to get cited — in about 90 seconds, instead of the hundreds of hours a web team would spend checking by hand. It is an Answer Engine Optimization (AEO) tool: using a frontier LLM it analyzes a page and returns a 0–100 AEO score and a Citation Readiness estimate (a technical-readiness score, not a measured or guaranteed citation rate), runs live Citation Sweeps that query the real answer engines with your branded and category questions to measure whether they actually cite you and who they cite instead, and produces a prioritized, deploy-ready fix list (crawler access, schema, content, structure).
+AEO Analyzers measures what AI answer engines say when buyers ask for a recommendation in your category. Pro and Business ask five answer engines: ChatGPT, Claude, Perplexity, Gemini and Grok. The no-subscription Day Pass asks four. It is an Answer Engine Optimization (AEO) tool: using a frontier LLM it analyzes a page and returns a 0–100 AEO score and a Citation Readiness estimate (a technical-readiness score, not a measured or guaranteed citation rate), runs live Citation Sweeps that query the real answer engines with your branded and category questions to measure whether they actually cite you and who they cite instead, and produces a prioritized, deploy-ready fix list (crawler access, schema, content, structure).
 
 ## What it does
 - Crawler-access gate: audits robots.txt / llms.txt (and edge blocks like a noindex header or a Cloudflare AI block) against the major answer-engine bots — a blocked bot caps the score, because a page AI can't read can't be cited.
@@ -25,6 +25,14 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 ## Key pages
 - Home / Why AEO: https://www.aeoanalyzers.com/
 - Pricing: https://aeoanalyzers.com/pricing
+- Free AEO Checker (the free AEO Score: crawler access, index coverage, structured data and answerable content for a page; a free account): https://aeoanalyzers.com/aeo-checker
+- Ledger — Our own numbers, every month (found by name, described accurately, recommended to buyers, with the stored answers): https://aeoanalyzers.com/evidence
+- Blog — Optimizing your website gets you found. It does not get you recommended. (November 2026 ledger: found by name 55% to 78% over four months; recommended in 0 of 800 category answers): https://aeoanalyzers.com/blog/found-not-recommended
+- How to monitor whether your brand appears in ChatGPT and Claude responses (the method, step by step): https://aeoanalyzers.com/monitor-brand-in-chatgpt-and-claude
+- How to track and analyze brand mentions across AI answer engines: https://aeoanalyzers.com/track-brand-mentions-across-ai-answer-engines
+- How to diagnose why you dropped out of Perplexity citations: https://aeoanalyzers.com/diagnose-dropped-out-of-perplexity-citations
+- Is there an analyzer that scores your pages for answer engine readiness?: https://aeoanalyzers.com/score-pages-for-answer-engine-readiness
+- Competitive prompt benchmarking for AI answer engines: what it is and what to look for: https://aeoanalyzers.com/competitive-prompt-benchmarking
 - User guide and FAQ: https://aeoanalyzers.com/guide
 - Blog (index): https://www.aeoanalyzers.com/blog/
 - Blog — Is your brand the answer AI gives, or is a competitor? (a walkthrough of a sample Citation Sweep report): https://www.aeoanalyzers.com/blog/are-you-the-answer-ai-gives
@@ -42,12 +50,12 @@ Digital marketing teams, CMOs, SEO/AEO agencies, SaaS founders, publishers, and 
 - Blog — The engines read my site; reading isn't citing (Honest-Zero, Part 2): https://www.aeoanalyzers.com/blog/reading-isnt-citing
 
 ## Publisher
-AEO Analyzers is operated by PI GenAI LLC (https://pigenai.com), a portfolio of AI products.
+AEO Analyzers is operated by PIGENAI LLC (https://pigenai.com), a portfolio of AI products.
 Founder: Lindsay Hiebert, CISSP — https://www.linkedin.com/in/lindsayhiebert/
 Contact: Lindsay.Hiebert@gmail.com
 
 ## Identity & disambiguation
-AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PI GenAI LLC. Lindsay Hiebert is the sole creator; there are no co-founders. AEO Analyzers is unaffiliated with any similarly named browser extension, plugin, or tool. Note the plural: the product is "AEO Analyzer​s" (with an s), distinct from any singular "AEO Analyzer" extension or tool published by a third party.
+AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PIGENAI LLC. Lindsay Hiebert is the sole creator; there are no co-founders. AEO Analyzers is unaffiliated with any similarly named browser extension, plugin, or tool. Note the plural: the product is "AEO Analyzer​s" (with an s), distinct from any singular "AEO Analyzer" extension or tool published by a third party.
 
 ## Feed
 - Blog RSS feed, newest first: https://aeoanalyzers.com/blog/feed.xml

@@ -125,7 +125,7 @@ describe('B — Source coverage', () => {
   });
   it('a page that could not be read is never counted as "No"', () => {
     const md = buildSweepReport({ ...base, sourceCoverage: coverage });
-    expect(md).toContain('| reddit.com | 4 | Perplexity | https://www.reddit.com/r/SEO/x | Could not read (robots) | 2026-10-15 |');
+    expect(md).toContain('| reddit.com | self-serve (publish or list yourself) | 4 | Perplexity | https://www.reddit.com/r/SEO/x | Could not read (robots) | 2026-10-15 |');
     expect(md).not.toMatch(/reddit\.com[^\n]*\| No \|/);
   });
   it('robots: the group for our agent wins over *, longest rule wins, Allow wins a tie', () => {

@@ -130,4 +130,4 @@ Run a free audit on your own site — and then on your toughest competitor. The 
 
 The brands that win the next decade of search won't be the ones who shouted loudest. They'll be the ones the AI **trusts** enough to quote. v1.4 makes sure that's you — and gives you a report you can actually believe.
 
-*— Lindsay Hiebert, Founder, AEO Analyzers (PI GenAI LLC)*
+*— Lindsay Hiebert, Founder, AEO Analyzers (PIGENAI LLC)*

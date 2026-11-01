@@ -1,4 +1,4 @@
-# WORK PLAN — Source Presence Program: make aeoanalyzers.com the answer engines give for AEO/GEO questions, then the PI GenAI portfolio
+# WORK PLAN — Source Presence Program: make aeoanalyzers.com the answer engines give for AEO/GEO questions, then the PIGENAI portfolio
 
 **Program owner:** Founder. **Measurement + tooling:** aeo-app1 (AEO Analyzers Claude Code session). **On-site changes:** each app's own Claude Code session (Fable for Lantern Post, etc.). **Portfolio hub + ledger:** the identity session (thesmartaiworker-site / pigenai.com).
 **Issued:** Sep 2, 2026 · **Horizon:** through GTM-90 day-90 (Nov 2) for AEO Analyzers; portfolio waves through year end.
@@ -105,7 +105,9 @@ No parasite pages, no Perplexity-Pages seeding, no paid placements dressed as ed
 | Wikidata, PIGENAI LLC | live | 2026-10-15 | https://www.wikidata.org/wiki/Q141739140 |
 | Wikidata, AEO Analyzers | live | 2026-10-15 | https://www.wikidata.org/wiki/Q141739225 |
 | AlternativeTo | live (approval confirmed 2026-11-01) | 2026-10-15 | https://alternativeto.net/software/aeo-analyzers/ |
-| G2, Slashdot / SourceForge | planned (founder, Oct 16) | | |
-| Crunchbase, LinkedIn company page | planned (founder, week of Oct 19) | | |
+| Crunchbase (PIGENAI LLC) | live | 2026-11-01 | https://www.crunchbase.com/organization/pigenai-llc |
+| LinkedIn company page | live | 2026-11-01 | https://www.linkedin.com/company/aeoanalyzers/ |
+| Slashdot / SourceForge | submitted 2026-11-01 | | |
+| G2 | planned | | |
 
 Corpus-presence watch list: `src/data/corpus-watch.json` (AlternativeTo and both Wikidata items). The November 1 self-sweep filing reports how many category answers cite each; the first non-zero is the first corpus-presence signal.

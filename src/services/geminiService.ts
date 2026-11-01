@@ -1,3 +1,4 @@
+import { servedEntity, orgConflicts, dropModelNamingRewrites, rewriteNamesAiModel, qualifyVerificationItem } from '../lib/reportGuards';
 import { classifySiteType, type SiteType } from "../lib/brandType";
 import { filterOfferCatalogString, type OfferFilterResult } from "../lib/offerCatalog";
 import {
@@ -123,6 +124,8 @@ export interface AnalysisResult {
   // Change 2: provenance-tagged schema. The "paste into <head>" block must only
   // contain detected values; inferred values go in the candidate block.
   verifiedSchema?: string;   // detected-only — safe to paste
+  /** 1 Nov 2026: the site already serves a complete Organization graph, so nothing is generated. */
+  schemaComplete?: boolean;
   candidateSchema?: string;  // inferred fields — verify before pasting
   schemaProvenance?: {
     field: string;
@@ -614,6 +617,7 @@ export async function analyzeWebsite(url: string, html: string, crawler?: Crawle
     - proposed: A rewritten version that surfaces specifics ALREADY PRESENT on the page (real metrics, protocols, specs, named technologies) more citably (High Citation version)
     - page: The page section or context where this text appears
     GROUNDING RULE (critical): A rewrite may ONLY re-express facts, numbers, sources, or specifications that appear verbatim or near-verbatim in the source page. Do NOT introduce ANY new quantitative claim, statistic, percentage, pass rate, success rate, outcome, guarantee, rating, certification, or capability that is not already in the source content. Inventing "a pass rate matching the 70% industry average" or "average exam score indicators" when the page does not state them is FALSE ADVERTISING — never do it. If a vague phrase has no underlying detected fact to substitute, either leave it unchanged or recommend a STRUCTURAL change (heading, list, schema) instead — never fabricate a number. If you cannot find 3 phrases with a real underlying fact to surface, return fewer (or an empty array). Quality over quantity.
+    MODEL-NAME RULE: never propose naming an AI model or model version (a GPT, Gemini, Claude, Llama, Grok or similar name or version number) in the customer's copy. Such rewrites are discarded.
     Return schemaDensityRecommendations as an empty array.`}
 
     IMPLEMENTATION CHECKLIST (implementationChecklist array):
@@ -1066,13 +1070,16 @@ export function applyAccuracyGuards(
     // fact rather than deciding for itself what the user has paid for.
     const gatedResponse = (result as unknown as Record<string, unknown>).gated === true;
     if (domain && !gatedResponse) {
+      const served = servedEntity(pageHtml);
       const gen = generateSchema({
         domain,
         brand: truth.brandName || undefined,
         declaredName: truth.brandName || undefined,
         ownedDomains: [domain],
         collisions: [], // the analysis path has no collision detector; the sweep supplies them
+        served: { hasOrg: served.hasOrg, hasOrgId: !!served.orgId, hasDisambiguation: served.hasDisambiguation, orgId: served.orgId, orgName: served.orgName, orgType: served.orgType },
       });
+      result.schemaComplete = gen.complete === true;
       result.generatedSchema = gen.jsonLd;
       result.generatedSchemaRefusedBecause = gen.refusedBecause;
       result.schemaFindings = gen.findings;
@@ -1097,6 +1104,22 @@ export function applyAccuracyGuards(
       result.schemaSnippet = undefined;
     }
 
+    // 1 Nov 2026 ruling (a): no block we show may carry an Organization whose name or @id
+    // conflicts with the one the site serves. The generator already defers to it; the model's
+    // candidate block is checked here and withheld when it disagrees.
+    {
+      const served = servedEntity(pageHtml);
+      for (const key of ['schemaSnippet', 'verifiedSchema', 'comprehensiveSchema', 'candidateSchema', 'generatedSchema'] as const) {
+        const block = result[key];
+        if (typeof block !== 'string' || !block.trim()) continue;
+        const conflicts = orgConflicts(block, served);
+        if (conflicts.length) {
+          result[key] = undefined;
+          (result.claimsSafetyRemoved ||= []).push({ field: key, reason: `Organization conflicts with the site's own markup: ${conflicts.join('; ')}` });
+        }
+      }
+    }
+
     // §2.7 — the first-person blank. A page asserting a Person with no third-person
     // pronoun and no gender property gives an engine nothing to read, and it infers
     // from the name. Detected by nothing else, ours or a competitor's.
@@ -1109,6 +1132,26 @@ export function applyAccuracyGuards(
       }
     }
   }
+
+  // 1 Nov 2026 ruling (c): a rewrite never proposes naming an AI model or version in the
+  // customer's copy. Runs with or without page HTML.
+  if (Array.isArray(result.contentRewrites) && result.contentRewrites.length > 0) {
+    const { kept, dropped } = dropModelNamingRewrites(result.contentRewrites);
+    if (dropped.length) {
+      result.contentRewrites = kept;
+      (result.claimsSafetyRemoved ||= []).push(...dropped.map((d) => ({ field: `contentRewrite (${d.page})`, reason: 'proposed naming an AI model or version in your copy' })));
+    }
+  }
+  if (result.metaDescriptionRewrite && rewriteNamesAiModel(result.metaDescriptionRewrite.suggested, result.metaDescriptionRewrite.current)) {
+    result.metaDescriptionRewrite = undefined;
+    (result.claimsSafetyRemoved ||= []).push({ field: 'metaDescriptionRewrite', reason: 'proposed naming an AI model or version in your copy' });
+  }
+
+  // 1 Nov 2026 ruling (d): Search Console / Bing verification items carry the DNS caveat.
+  if (Array.isArray(result.implementationChecklist)) {
+    for (const item of result.implementationChecklist) if (item && typeof item.action === 'string') item.action = qualifyVerificationItem(item.action);
+  }
+  if (Array.isArray(result.recommendations)) result.recommendations = result.recommendations.map((r) => (typeof r === 'string' ? qualifyVerificationItem(r) : r));
 
   return result;
 }

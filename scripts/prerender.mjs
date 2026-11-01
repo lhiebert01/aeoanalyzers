@@ -83,6 +83,8 @@ const ROUTES = [
   // outcome this check exists to prevent.
   { path: '/privacy', marker: 'Last updated: March 22, 2026' },
   { path: '/terms', marker: 'Acceptance of Terms' },
+  // 1 Nov 2026: the free AEO checker page. The marker is its explainer heading (visible, unique).
+  { path: '/aeo-checker', marker: 'What the free AEO checker looks at' },
 ];
 // /analyzer and /sweeps are app surfaces behind sign-in and are deliberately NOT
 // prerendered; /admin never is. /press is added the day that page exists.

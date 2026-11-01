@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { SCORING_VERSION } from './lib/sweepDisclosure';
 import ImplementationRoadmap from './components/ImplementationRoadmap';
+import { CheckerExplainer, CHECKER_TITLE, CHECKER_SEO_TITLE, CHECKER_DESCRIPTION, checkerFaqJsonLd } from './components/AeoChecker';
 import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRight, Loader2, Globe, Cpu, Swords, Copy, Check, User as UserIcon, LogOut, History, CreditCard, LayoutDashboard, Settings, BookOpen, ShieldAlert, BarChart, Lock, Mail, FileText, Layout, ShoppingBag, Code, Info, ExternalLink, ChevronRight, ChevronDown, Share2, Linkedin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HelmetProvider } from 'react-helmet-async';
@@ -28,13 +29,13 @@ import { isAllZeroAnalysis, ALL_ZERO_BANNER } from './lib/inputSafety';
 import { SCORE_VS_SWEEP } from './content/scoreVsSweep';
 import { getOrganizationJsonLd, getWebSiteJsonLd, getBreadcrumbJsonLd, getPricingJsonLd } from './lib/json-ld';
 
-type View = 'analyzer' | 'sweeps' | 'history' | 'payments' | 'settings' | 'auth' | 'admin' | 'guide' | 'landing' | 'privacy' | 'terms' | 'press';
+type View = 'analyzer' | 'checker' | 'sweeps' | 'history' | 'payments' | 'settings' | 'auth' | 'admin' | 'guide' | 'landing' | 'privacy' | 'terms' | 'press';
 
 /** Views a signed-out visitor is entitled to sit on, so the auth reset never
  *  drags a public URL back to the homepage. Adding a public route means adding
  *  it here, to the path->view map, to public/sitemap.xml, and to ROUTES in
  *  scripts/prerender.mjs — the prerender gate fails the build if you forget. */
-const PUBLIC_VIEWS: View[] = ['landing', 'privacy', 'terms', 'payments', 'guide', 'press'];
+const PUBLIC_VIEWS: View[] = ['landing', 'privacy', 'terms', 'payments', 'guide', 'press', 'checker'];
 
 // Simple GA4 Tracking Hook
 const useGA4 = () => {
@@ -201,16 +202,19 @@ export default function App() {
   const [savedSweepId, setSavedSweepId] = useState<string | null>(null);
   const [loadingSweeps, setLoadingSweeps] = useState(false);
 
+  // Where to land after sign-in: the checker page returns to itself (1 Nov 2026).
+  const [returnView, setReturnView] = useState<View>('analyzer');
+
   const navigateTo = (newView: View) => {
     setView(newView);
     setIsMenuOpen(false);
-    if (newView !== 'analyzer') {
+    if (newView !== 'analyzer' && newView !== 'checker') {
       setIsViewingHistory(false);
     }
     // Leaving (or re-entering) Sweeps via nav drops any saved-sweep view so the
     // run form shows fresh — the saved view is only reached via a History "View".
     setSavedSweepId(null);
-    const path = newView === 'privacy' ? '/privacy' : newView === 'terms' ? '/terms' : '/';
+    const path = newView === 'privacy' ? '/privacy' : newView === 'terms' ? '/terms' : newView === 'checker' ? '/aeo-checker' : '/';
     window.history.pushState({}, '', path);
     window.scrollTo(0, 0);
   };
@@ -237,6 +241,7 @@ export default function App() {
       else if (path === '/pricing') setView('payments');
       else if (path === '/guide') setView('guide');
       else if (path === '/press') setView('press');
+      else if (path === '/aeo-checker') setView('checker');
       else if (path === '/sweeps') {
         // Deep-link / back-forward to a saved sweep view.
         const saved = new URLSearchParams(window.location.search).get('saved');
@@ -523,6 +528,7 @@ export default function App() {
     // browsers/VPNs defeat IP — and it captures the lead.)
     if (!user) {
       setError('Sign in for your complimentary AEO score — free with an account.');
+      setReturnView(view === 'checker' ? 'checker' : 'analyzer');
       setView('auth');
       return;
     }
@@ -682,6 +688,7 @@ export default function App() {
     if (view === 'privacy') items.push({ name: 'Privacy Policy', item: '/privacy' });
     if (view === 'terms') items.push({ name: 'Terms of Service', item: '/terms' });
     if (view === 'analyzer') items.push({ name: 'AEO Analyzers', item: '/analyzer' });
+    if (view === 'checker') items.push({ name: 'Free AEO Checker', item: '/aeo-checker' });
     return getBreadcrumbJsonLd(items);
   };
 
@@ -726,6 +733,7 @@ export default function App() {
             
             <nav className="hidden lg:flex items-center gap-2">
               <NavButton active={view === 'landing'} onClick={() => navigateTo('landing')} icon={<Globe className="w-4 h-4" />} label="Why AEO?" />
+              <NavButton active={view === 'checker'} onClick={() => navigateTo('checker')} icon={<Search className="w-4 h-4" />} label="Free AEO Checker" />
               {user && (
                 <>
                   <div className="w-px h-6 bg-zinc-200 mx-2" />
@@ -809,6 +817,7 @@ export default function App() {
             >
               <div className="p-6 space-y-2">
                 <NavButton active={view === 'landing'} onClick={() => navigateTo('landing')} icon={<Globe className="w-4 h-4" />} label="Why AEO?" />
+              <NavButton active={view === 'checker'} onClick={() => navigateTo('checker')} icon={<Search className="w-4 h-4" />} label="Free AEO Checker" />
                 {user && (
                   <>
                     <NavButton active={view === 'analyzer'} onClick={() => navigateTo('analyzer')} icon={<LayoutDashboard className="w-4 h-4" />} label="Analyzer" />
@@ -859,7 +868,7 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <Auth onAuthSuccess={() => setView('analyzer')} />
+              <Auth onAuthSuccess={() => { const back = returnView; setReturnView('analyzer'); if (back === 'checker') window.history.replaceState({}, '', '/aeo-checker'); setView(back); }} />
             </motion.div>
           )}
 
@@ -1244,19 +1253,23 @@ export default function App() {
             </motion.div>
           )}
 
-          {view === 'analyzer' && (
+          {(view === 'analyzer' || view === 'checker') && (
             <motion.div 
-              key="analyzer"
+              key={view}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
+              {view === 'checker' ? (
+                <SEO title={CHECKER_SEO_TITLE} description={CHECKER_DESCRIPTION} canonical="https://aeoanalyzers.com/aeo-checker" author="Lindsay Hiebert" publishedDate="2026-11-01T00:00:00Z" jsonLd={checkerFaqJsonLd()} />
+              ) : (
               <SEO 
                 title="AEO Analyzers - Score Your Website"
                 description="Analyze your website's performance in AI search results and get actionable insights to improve your citations."
                 author="Lindsay Hiebert"
                 publishedDate="2026-03-22T00:00:00Z"
               />
+              )}
               <div className="max-w-5xl mx-auto px-6">
                 {isViewingHistory && (
                   <div className="mb-8 flex items-center justify-between bg-zinc-50 border border-zinc-200 rounded-2xl px-6 py-4">
@@ -1283,14 +1296,14 @@ export default function App() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="inline-block px-4 py-1.5 bg-zinc-100 text-zinc-600 rounded-full text-xs font-bold mb-6 uppercase tracking-wider"
                   >
-                    The Fixes — Not Just a Score.
+                    {view === 'checker' ? 'AEO Analyzers · Free' : 'The Fixes — Not Just a Score.'}
                   </motion.div>
                   <motion.h1 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-5xl md:text-6xl font-bold tracking-tight mb-6"
                   >
-                    Secure your <span className="text-zinc-500">AI Citation.</span>
+                    {view === 'checker' ? CHECKER_TITLE : <>Secure your <span className="text-zinc-500">AI Citation.</span></>}
                   </motion.h1>
                   <motion.p 
                     initial={{ opacity: 0, y: 20 }}
@@ -1298,7 +1311,9 @@ export default function App() {
                     transition={{ delay: 0.1 }}
                     className="text-zinc-500 text-lg max-w-2xl mx-auto mb-10"
                   >
-                    We score how citable your site is by AI answer engines like Gemini, ChatGPT, and Perplexity — and give you the exact fixes that would take a web team hundreds of hours, in 90 seconds.
+                    {view === 'checker'
+                      ? 'Enter your site. The checker reads your live page the way answer-engine crawlers do and scores how ready it is to be read and cited, with every gap named.'
+                      : 'We score how ready your page is to be read and cited by AI answer engines, and give you the fixes.'}
                   </motion.p>
 
                   <motion.form 
@@ -1609,6 +1624,7 @@ export default function App() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+                {view === 'checker' && <CheckerExplainer />}
               </div>
             </motion.div>
           )}
@@ -1660,9 +1676,9 @@ export default function App() {
           </div>
 
           <div className="mt-10 pt-6 border-t border-zinc-200">
-            <p className="text-[11px] leading-relaxed text-zinc-500 max-w-3xl">
+            <p className="text-[11px] leading-relaxed text-zinc-600 max-w-3xl">
               <span className="font-semibold text-zinc-700">Using AI responsibly in your own company?</span>{' '}
-              PI GenAI also builds{' '}
+              PIGENAI also builds{' '}
               <a href="https://sanctumshield.com" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 underline underline-offset-2">SanctumShield</a> (AI governance),{' '}
               <a href="https://academy.sanctumshield.com" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 underline underline-offset-2">SanctumShield Academy</a> (governance training), and{' '}
               <a href="https://ad-flash.com" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 underline underline-offset-2">Ad-Flash</a> (AI ad creative).
@@ -1671,20 +1687,19 @@ export default function App() {
 
           <div className="mt-8 pt-6 border-t border-zinc-200 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-5">
-              <button onClick={() => navigateTo('privacy')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Privacy Policy</button>
-              <button onClick={() => navigateTo('terms')} className="text-xs text-zinc-400 hover:text-zinc-900 transition-all">Terms of Service</button>
+              <button onClick={() => navigateTo('privacy')} className="text-xs text-zinc-600 hover:text-zinc-900 transition-all">Privacy Policy</button>
+              <button onClick={() => navigateTo('terms')} className="text-xs text-zinc-600 hover:text-zinc-900 transition-all">Terms of Service</button>
             </div>
-            <p className="text-zinc-400 text-xs font-mono uppercase tracking-widest">
+            <p className="text-zinc-600 text-xs font-mono uppercase tracking-widest">
               AEO Analyzers // The Answer Engine
             </p>
           </div>
 
           {/* Entity disambiguation (WO-DOGFOOD-001): a first-party, verbatim-quotable
               fact so answer engines don't fuse us with similarly named tools. */}
-          <p className="mt-6 max-w-2xl text-[11px] leading-relaxed text-zinc-400">
-            AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by
-            Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any
-            similarly named browser extension, plugin, or tool.
+          {/* 1 Nov 2026 ruling: one visible line, at body-text contrast (zinc-700 on white, 10.3:1). */}
+          <p className="mt-6 text-sm leading-relaxed text-zinc-700">
+            AEO Analyzers (aeoanalyzers.com) is built and solely maintained by Lindsay Hiebert, founder of PIGENAI LLC, and is unaffiliated with any similarly named extension, plugin or tool.
           </p>
         </div>
       </footer>

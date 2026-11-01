@@ -2,7 +2,7 @@
 
 ## Current pricing (15 Oct 2026)
 
-Prices and plan names in the entries below are as of each entry's date. Current: Free (3 free checks), Day Pass $29 (24 hours; 3 Citation Sweeps on the four-engine panel, 25 AEO analyses), Pro Optimizer $149/month (8 sweeps, five-engine panel with Grok, 100 analyses), Business Authority $599/month (20 sweeps, 200 analyses). Source of truth: https://aeoanalyzers.com/pricing.
+Prices and plan names in the entries below are as of each entry's date. Current plans and prices: https://aeoanalyzers.com/pricing (the only place this repository states a current price).
 
 ## v1.5.1 — Grounded-only output: no fabricated claims (2026-06-21)
 
@@ -11,11 +11,11 @@ Prices and plan names in the entries below are as of each entry's date. Current:
 - **Our own site de-fabricated:** removed the fake `aggregateRating` (4.9 / 124) + invented "Sarah J."/"Mark T." testimonials from `json-ld.ts` and `MarketingLanding.tsx`; corrected `SoftwareApplication` price range (highPrice 99→199, offerCount 3→4); reworded a stale `twitter:description` that implied multi-engine querying.
 - **Tests:** +9 regression tests in `accuracy.test.ts` (no-reviews page → nothing fabricated; real-reviews page → passes through). 29 tests green; `tsc` + build clean.
 
-## v1.5.0 — AI-crawler visibility, live payments, $24 Day Pass (2026-05-31)
+## v1.5.0 — AI-crawler visibility, live payments, Day Pass (2026-05-31)
 
 - **Prerender:** `/` is rendered at build time (puppeteer-core + @sparticuz/chromium) so AI crawlers get body + JSON-LD, not an empty SPA shell. Fail-open + watchdog. Added `public/llms.txt`. See `docs/prerender-plan.md`.
 - **Stripe live:** configured production keys (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`) + Pro/Business/Day-Pass price IDs in Vercel; repointed the webhook to the Vercel `/api/webhook` (was a dead Cloud Run URL). Pro/Business checkout now works.
-- **$24 Day Pass:** one-time purchase → 24h full access (`users.report_pass_until`), auto-expires; bulleted card on Pricing; new Supabase column.
+- **Day Pass:** one-time purchase (price: https://aeoanalyzers.com/pricing) → 24h full access (`users.report_pass_until`), auto-expires; bulleted card on Pricing; new Supabase column.
 - **Docs:** `STATUS.md` (source-of-truth), `docs/go-to-market-plan.md`, `docs/blog-relaunch-2026.md`.
 
 ## Hotfixes — DOCX download + resilient AI parsing (2026-05-29)

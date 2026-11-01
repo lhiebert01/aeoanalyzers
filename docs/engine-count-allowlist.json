@@ -416,12 +416,6 @@
    "note": "worked example of N"
   },
   {
-   "file": "src/App.tsx",
-   "text": "t mb-6\" > Secure your <span className=\"text-zinc-500\">AI Cita",
-   "class": "SCORE",
-   "note": "AEO Score (structural scan), examples with \"like\""
-  },
-  {
    "file": "src/components/ImplementationRoadmap.tsx",
    "text": "AI engine like Google Gemini, ChatGPT, or Perplexity answers a user'",
    "class": "GENERAL",
@@ -459,7 +453,7 @@
   },
   {
    "file": "src/components/PressKit.tsx",
-   "text": "nAI LLC \u2014 July 2026** \u2014 AEO Analyzers today released the ne",
+   "text": "NAI LLC \u2014 July 2026** \u2014 AEO Analyzers today released the ne",
    "class": "DATED",
    "note": "July 2026 press release text"
   },
@@ -489,7 +483,7 @@
   },
   {
    "file": "src/components/PressKit.tsx",
-   "text": "nAI LLC \u2014 July 2026</strong> \u2014 AEO Analyzers today released",
+   "text": "NAI LLC \u2014 July 2026</strong> \u2014 AEO Analyzers today released",
    "class": "DATED",
    "note": "July 2026 press release text"
   },
@@ -564,6 +558,72 @@
    "text": "In the latest four-engine sweep of each of 11 companies",
    "class": "DATED",
    "note": "benchmark of dated four-engine sweeps (July to October 2026)"
+  },
+  {
+   "file": "public/blog/found-not-recommended/index.html",
+   "text": "Claude, Perplexity and Gemini returned it every time.",
+   "class": "DATED",
+   "note": "November 1st, 2026 ledger fact (panel v1.1, per-engine by-name results)"
+  },
+  {
+   "file": "public/blog/found-not-recommended/index.html",
+   "text": "using the latest four-engine sweep of each one (July 26 to October 8, 2026)",
+   "class": "DATED",
+   "note": "benchmark of 11 companies, dated four-engine sweeps (same wording as /evidence)"
+  },
+  {
+   "file": "public/track-brand-mentions-across-ai-answer-engines/index.html",
+   "text": "In our own November 1st, 2026 measurement, three engines returned our site",
+   "class": "DATED",
+   "note": "November 1st, 2026 ledger fact (panel v1.1, per-engine by-name results)"
+  },
+  {
+   "file": "src/components/AeoChecker.tsx",
+   "text": "Free AEO checker: see whether ChatGPT, Claude, Perplexity and",
+   "class": "SCORE",
+   "note": "AEO Score (free checker): crawler access for each engine's bots; one model per analysis, not a sweep panel"
+  },
+  {
+   "file": "src/components/AeoChecker.tsx",
+   "text": "checks whether the bots behind ChatGPT, Claude, Perplexity and",
+   "class": "SCORE",
+   "note": "AEO Score (free checker): crawler access for each engine's bots; one model per analysis, not a sweep panel"
+  },
+  {
+   "file": "src/components/MarketingLanding.tsx",
+   "text": "AEO Analyzers is the free AEO checker for ChatGPT, Claude, Perplexity and Gemini",
+   "class": "SCORE",
+   "note": "AEO Score (free checker): crawler access for each engine's bots; one model per analysis, not a sweep panel"
+  },
+  {
+   "file": "src/components/SEO.tsx",
+   "text": "AEO Analyzers is the free AEO checker for ChatGPT, Claude, Perplexity and Gemini",
+   "class": "SCORE",
+   "note": "AEO Score (free checker): crawler access for each engine's bots; one model per analysis, not a sweep panel"
+  },
+  {
+   "file": "public/score-pages-for-answer-engine-readiness/index.html",
+   "text": "whether the crawlers behind ChatGPT, Claude, Perplexity and Gemini can reach it",
+   "class": "SCORE",
+   "note": "AEO Score (free checker): crawler access for each engine's bots; one model per analysis, not a sweep panel"
+  },
+  {
+   "file": "public/llms.txt",
+   "text": "How to monitor whether your brand appears in ChatGPT and Claude responses (the method, step by step)",
+   "class": "GENERAL",
+   "note": "page titles in the Key pages list (the lint joins list lines into one sentence); no panel count"
+  },
+  {
+   "file": "public/llms-full.txt",
+   "text": "How to monitor whether your brand appears in ChatGPT and Claude responses (the method, step by step)",
+   "class": "GENERAL",
+   "note": "page titles in the Key pages list (the lint joins list lines into one sentence); no panel count"
+  },
+  {
+   "file": "public/diagnose-dropped-out-of-perplexity-citations/index.html",
+   "text": "checks the bots behind ChatGPT, Claude, Perplexity and Gemini",
+   "class": "SCORE",
+   "note": "AEO Score (free checker): crawler access for each engine's bots; one model per analysis, not a sweep panel"
   }
  ]
 }

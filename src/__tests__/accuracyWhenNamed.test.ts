@@ -65,6 +65,6 @@ describe('retrievability stays the gate', () => {
     const src = readFileSync('src/lib/doNowPlan.ts', 'utf8');
     expect(src).toMatch(/export function classifyProblem\(perEngine: EngineRetrieval\[\]/);
     expect(src).not.toMatch(/accuracyWhenNamed/);
-    expect(readFileSync('src/lib/sweepActions.ts', 'utf8')).toMatch(/export const WEAK_RETRIEVABILITY = 80;/);
+    expect(readFileSync('src/lib/sweepActions.ts', 'utf8')).toMatch(/export const WEAK_RETRIEVABILITY = 90;/);
   });
 });

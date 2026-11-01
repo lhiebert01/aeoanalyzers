@@ -64,8 +64,8 @@
 
 ### 3. Revenue and Onboarding
 - **Free Tier**: 1 free analysis, then upgrade required. Usage tracked server-side (Hook).
-- **Pro Tier ($49/mo)**: Unlimited analyses + Implementation Roadmap + DOCX Reports + Comprehensive Schema + Content Rewrites + Implementation Checklist (Value).
-- **Business Tier ($199/mo)**: Everything in Pro + Competitor Benchmarking + Priority Support (Scale).
+- **Pro Tier** ([current prices](https://aeoanalyzers.com/pricing)): Unlimited analyses + Implementation Roadmap + DOCX Reports + Comprehensive Schema + Content Rewrites + Implementation Checklist (Value).
+- **Business Tier**: Everything in Pro + Competitor Benchmarking + Priority Support (Scale).
 
 ### 4. Infrastructure Cost Summary
 
@@ -92,8 +92,8 @@ For reference, the platform now includes:
 - Enhanced handoff email template
 - Platform-specific implementation guides
 - Analysis history with full detail view
-- Google OAuth + email authentication
-- Admin dashboard with GA4 integration
+- Sign-in with email or a Google account
+- Admin dashboard (internal)
 
 See [RELEASE-NOTES.md](../RELEASE-NOTES.md) for the full changelog.
 

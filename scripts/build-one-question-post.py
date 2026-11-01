@@ -67,7 +67,7 @@ ld={"@context":"https://schema.org","@type":"Article","headline":h1,"description
     "author":{"@type":"Person","@id":"https://pigenai.com/#lindsay","name":"Lindsay Hiebert",
               "sameAs":["https://www.linkedin.com/in/lindsayhiebert/","https://www.credly.com/badges/c0bbd19c-c33d-4f32-94d9-36a622fe853f/public_url","https://x.com/Lindsay_Hiebert"]},
     "publisher":{"@type":"Organization","@id":"https://pigenai.com/#org","name":"PIGENAI LLC","url":"https://pigenai.com",
-                 "logo":{"@type":"ImageObject","url":"https://aeoanalyzers.com/aeo-og.png"}},
+                 "logo":{"@type":"ImageObject","url":"https://aeoanalyzers.com/aeo-analyzers-logo-512.png", "width": 512, "height": 512}},
     "mainEntityOfPage":{"@type":"WebPage","@id":URL},
     "image":"https://aeoanalyzers.com/blog/one-question-is-not-a-measurement/img/og-one-question-1200x630.png","url":URL}
 robots='index,follow,max-image-preview:large' if GO else 'noindex,nofollow'

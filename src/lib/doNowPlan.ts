@@ -65,7 +65,11 @@ export interface DoNowInputs {
   paid: boolean;
 }
 
-export type Problem = 'not-found' | 'found-but-misdescribed' | 'found-and-accurate' | 'found-accuracy-unmeasured' | 'mixed' | 'unmeasured';
+export type Problem = 'not-found' | 'found-unreliably' | 'found-but-misdescribed' | 'found-and-accurate' | 'found-accuracy-unmeasured' | 'mixed' | 'unmeasured';
+
+/** Founder ruling, 1 Nov 2026: below this share of branded answers, being found by name is not
+ *  settled, so the diagnosis is discovery, never "an accuracy problem, not a discovery problem". */
+export const FOUND_BY_NAME_SETTLED = 0.9;
 
 import type { OwnerTag } from './ownerTags';
 
@@ -127,6 +131,11 @@ export function classifyProblem(perEngine: EngineRetrieval[], drifted?: number, 
   const anyMissing = scored.some((e) => e.found === 0);
   if (anyFound && anyMissing) return 'mixed';
   if (!anyFound) return 'not-found';
+  // Every engine found it at least once, but not reliably: ChatGPT 1 of 10 on our own Nov 1 sweep
+  // (78% overall) would otherwise have been told it had "an accuracy problem, not a discovery problem".
+  const found = scored.reduce((a, e) => a + e.found, 0);
+  const total = scored.reduce((a, e) => a + e.total, 0);
+  if (found / total < FOUND_BY_NAME_SETTLED) return 'found-unreliably';
   // Found everywhere. "Accuracy problem" is a claim about fidelity and needs fidelity evidence:
   // the Nybsys 2026-09-30 report said it with 8/8 answers accurate and no collision.
   if ((drifted ?? 0) > 0 || collisions.length) return 'found-but-misdescribed';
@@ -162,6 +171,12 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
         ? 'The steps below are about getting into an index. Schema work is not on this list, and doing it now would cost you time and change nothing.'
         : 'The fix is about getting into an index. Schema work will not do it, and doing it now would cost you time and change nothing.'
     );
+  } else if (problem === 'found-unreliably') {
+    const found = scored.reduce((a, e) => a + e.found, 0);
+    const total = scored.reduce((a, e) => a + e.total, 0);
+    const weak = scored.filter((e) => e.found / e.total < FOUND_BY_NAME_SETTLED).map((e) => `${e.engine} ${e.found} of ${e.total}`);
+    situation.push(`**You have a discovery problem.** Asked for you by name, the engines in this sweep retrieved ${input.domain} in ${Math.round((100 * found) / total)}% of answers (${found} of ${total}); ${weak.join(', ')}.`);
+    situation.push(`Below 90%, being found is not settled, so this plan starts there. What an engine says about you only matters in the answers that reach you. ${STRUCTURED_DATA_RULE}`);
   } else if (problem === 'found-but-misdescribed') {
     situation.push(`**You have an accuracy problem, not a discovery problem.** Every engine in this sweep retrieved ${input.domain} when asked for you by name.`);
     situation.push(`They can find you. What they say about you is the thing to fix, and that is what structured data is for. ${STRUCTURED_DATA_RULE}`);
@@ -195,7 +210,7 @@ export function buildDoNowPlan(input: DoNowInputs): DoNowPlan {
   const steps: DoNowStep[] = [];
   const add = (s: Omit<DoNowStep, 'n'>) => steps.push({ n: 0, ...s });
 
-  const discovery = problem === 'not-found' || problem === 'mixed';
+  const discovery = problem === 'not-found' || problem === 'mixed' || problem === 'found-unreliably';
 
   if (discovery) {
     add({

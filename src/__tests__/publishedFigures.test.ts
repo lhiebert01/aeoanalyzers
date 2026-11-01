@@ -254,12 +254,12 @@ describe('October 2026 row', () => {
     expect(categoryPct(OCT)).toEqual({ pct: 0, n: 200 });
   });
   it('the ledger renders exactly those figures, and the summaries point at October', () => {
-    expect(ledger).toMatch(/October 2026<\/td>\s*<td><span class="fig flat">88%<\/span><span class="nn">N=40<\/span><\/td>/);
+    expect(ledger).toMatch(/October 2026<\/td>\s*<td[^>]*><span class="fig flat">88%<\/span><span class="nn">N=40<\/span><\/td>/);
     expect(ledger).toMatch(/<span class="fig flat">100%<\/span><span class="nn">40 of 40 named<\/span>/);
     // From 1 Nov 2026 the summaries point at November (78% of 40).
     expect(readFileSync(root('public/blog/index.html'), 'utf8')).toContain('<span class="ls-n good">78%</span>');
     expect(page).toContain('<span class="ls-n good">78%</span>');
-    expect(ledger).toMatch(/November 2026<\/td>\s*<td><span class="fig flat">78%<\/span><span class="nn">N=40<\/span><\/td>/);
+    expect(ledger).toMatch(/November 2026<\/td>\s*<td[^>]*><span class="fig flat">78%<\/span><span class="nn">N=40<\/span><\/td>/);
   });
   it('accuracy-when-named on the page recomputes from transcripts + stored site facts, for every month', async () => {
     const { accuracyWhenNamed } = await import('../lib/fidelity');

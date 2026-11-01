@@ -6,7 +6,61 @@
     <atom:link href="https://aeoanalyzers.com/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Short, grounded pieces on why AI assistants cite some sites and not others, with our own measurements published whatever they say.</description>
     <language>en-us</language>
-    <lastBuildDate>Thu, 15 Oct 2026 12:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 01 Nov 2026 12:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Optimizing your website gets you found. It does not get you recommended.</title>
+      <link>https://aeoanalyzers.com/blog/found-not-recommended</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/found-not-recommended</guid>
+      <pubDate>Sun, 01 Nov 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Four months of our own numbers: found by name rose from 55% to 78%; recommended to category buyers in 0 of 800 answers. Where the work is now.</description>
+      <media:content url="https://aeoanalyzers.com/og-home-2026-11.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>How to monitor whether your brand appears in ChatGPT and Claude responses</title>
+      <link>https://aeoanalyzers.com/monitor-brand-in-chatgpt-and-claude</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/monitor-brand-in-chatgpt-and-claude</guid>
+      <pubDate>Sun, 01 Nov 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Ask the questions buyers ask, with web search on, five times each. Score found, accurate and recommended separately, and repeat every month.</description>
+      <media:content url="https://aeoanalyzers.com/og-home-2026-11.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>How to track and analyze brand mentions across AI answer engines</title>
+      <link>https://aeoanalyzers.com/track-brand-mentions-across-ai-answer-engines</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/track-brand-mentions-across-ai-answer-engines</guid>
+      <pubDate>Sun, 01 Nov 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Track AI answer engine mentions per engine, per question type and per month, with every answer stored. What to count and how to read the trend.</description>
+      <media:content url="https://aeoanalyzers.com/og-home-2026-11.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>How to diagnose why you dropped out of Perplexity citations</title>
+      <link>https://aeoanalyzers.com/diagnose-dropped-out-of-perplexity-citations</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/diagnose-dropped-out-of-perplexity-citations</guid>
+      <pubDate>Sun, 01 Nov 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Check crawler access first, then ask the same questions again with several runs, compare the sources Perplexity cites now, and check what it says about you.</description>
+      <media:content url="https://aeoanalyzers.com/og-home-2026-11.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Is there an analyzer that scores your pages for answer engine readiness?</title>
+      <link>https://aeoanalyzers.com/score-pages-for-answer-engine-readiness</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/score-pages-for-answer-engine-readiness</guid>
+      <pubDate>Sun, 01 Nov 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Yes. An answer engine readiness score checks crawler access, index coverage, structured data and answerable content. What it measures, and what it does not.</description>
+      <media:content url="https://aeoanalyzers.com/og-home-2026-11.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Competitive prompt benchmarking for AI answer engines: what it is and what to look for</title>
+      <link>https://aeoanalyzers.com/competitive-prompt-benchmarking</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/competitive-prompt-benchmarking</guid>
+      <pubDate>Sun, 01 Nov 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Run your buyers' prompts on each engine, several times, and record who gets named instead of you, how often and from which sources. What a tool must do.</description>
+      <media:content url="https://aeoanalyzers.com/og-home-2026-11.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>We added a fifth AI engine. Here is what changed, and what did not.</title>
       <link>https://aeoanalyzers.com/blog/the-fifth-engine</link>

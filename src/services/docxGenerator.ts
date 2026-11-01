@@ -1,3 +1,4 @@
+import { selectTopPriorities, PRIORITY_THRESHOLD, SCHEMA_COMPLETE_TEXT, VERIFY_CAVEAT } from '../lib/reportGuards';
 import type { AnalysisResult } from './geminiService';
 import { categoryFromAnswerQuality, type GapCategory } from '../lib/queryGap';
 import { buildScoreCover, type LatestSweepFigure } from '../lib/scoreCover';
@@ -65,9 +66,10 @@ export async function generateDocxReport(
     }
   })();
 
-  const weakAreas = result.criteria.filter(c => c.score < 7).sort((a, b) => a.score - b.score);
-  const strongAreas = result.criteria.filter(c => c.score >= 7).sort((a, b) => b.score - a.score);
-  const topPriorities = [...result.criteria].sort((a, b) => a.score - b.score).slice(0, 3);
+  const weakAreas = result.criteria.filter(c => c.score < PRIORITY_THRESHOLD).sort((a, b) => a.score - b.score);
+  const strongAreas = result.criteria.filter(c => c.score >= PRIORITY_THRESHOLD).sort((a, b) => b.score - a.score);
+  const top = selectTopPriorities(result.criteria, result.implementationChecklist);
+  const schemaComplete = result.schemaComplete === true;
 
   const spacer = () => new Paragraph({ spacing: { after: 200 } });
 
@@ -224,15 +226,20 @@ export async function generateDocxReport(
 
   // 6. Top 3 Priorities
   children.push(sectionHeading('Top 3 Priorities'));
-  topPriorities.forEach((c, i) => {
-    children.push(
-      new Paragraph({
-        children: [new TextRun({ text: `${i + 1}. ${c.name} (Score: ${c.score}/10)`, bold: true, size: 24, color: '1a1a2e' })],
-        spacing: { before: 200, after: 80 },
-      }),
-      bodyText(c.feedback)
-    );
-  });
+  if (top.kind === 'areas') {
+    top.areas.forEach((c, i) => {
+      children.push(
+        new Paragraph({
+          children: [new TextRun({ text: `${i + 1}. ${c.name} (Score: ${c.score}/10)`, bold: true, size: 24, color: '1a1a2e' })],
+          spacing: { before: 200, after: 80 },
+        }),
+        bodyText(c.feedback)
+      );
+    });
+  } else {
+    children.push(bodyText(top.note));
+    top.checklist.forEach((c, i) => children.push(bodyText(`${i + 1}. ${c.action}`)));
+  }
   children.push(spacer());
 
   // 7. Implementation Instructions
@@ -252,7 +259,9 @@ export async function generateDocxReport(
     bulletPoint('OfferCatalog schema where multiple solutions are grouped')
   );
 
-  if (result.schemaSnippet) {
+  if (schemaComplete) {
+    children.push(boldBodyText('Generated JSON-LD for ', `${analyzedUrl}:`), bodyText(SCHEMA_COMPLETE_TEXT));
+  } else if (result.schemaSnippet) {
     let formattedSnippet = result.schemaSnippet;
     try { formattedSnippet = JSON.stringify(JSON.parse(result.schemaSnippet), null, 2); } catch { /* use as-is */ }
     children.push(
@@ -315,7 +324,7 @@ export async function generateDocxReport(
       spacing: { before: 200, after: 100 },
     }),
     bulletPoint('Confirm the site is crawlable and indexed — no stray noindex/canonical blocks'),
-    bulletPoint('Verify in Bing Webmaster Tools (now reports AI citation performance) and Google Search Console'),
+    bulletPoint(`${VERIFY_CAVEAT} Verify in Bing Webmaster Tools (now reports AI citation performance) and Google Search Console`),
     bulletPoint('Submit or refresh your sitemap'),
 
     new Paragraph({
@@ -543,7 +552,9 @@ export async function generateDocxReport(
 
   // Appendix A: Verified Schema (Safe to Paste) + Candidate Schema (Verify First)
   const verified = result.verifiedSchema || result.comprehensiveSchema;
-  if (verified) {
+  if (schemaComplete) {
+    children.push(sectionHeading('Appendix A: Verified Schema', { pageBreak: true }), bodyText(SCHEMA_COMPLETE_TEXT), spacer());
+  } else if (verified) {
     let formattedVerified = verified;
     try { formattedVerified = JSON.stringify(JSON.parse(verified), null, 2); } catch { /* use as-is */ }
     children.push(

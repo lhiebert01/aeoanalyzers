@@ -28,7 +28,7 @@ const listedPaths = [...sitemap.matchAll(/<loc>https:\/\/aeoanalyzers\.com([^<]*
  *  scripts/check-prerender.mjs fails if the prerender then does not produce it, so the
  *  two lists cannot drift apart silently. Verified live on 2026-09-18: five distinct
  *  documents of 58503, 25574, 37556, 14427 and 14303 bytes. */
-const PRERENDERED = new Set(['/', '/pricing', '/guide', '/privacy', '/terms']);
+const PRERENDERED = new Set(['/', '/pricing', '/guide', '/privacy', '/terms', '/aeo-checker']);
 
 function hasOwnSource(path: string): boolean {
   if (PRERENDERED.has(path)) return true;

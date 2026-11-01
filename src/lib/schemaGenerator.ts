@@ -81,7 +81,12 @@ export interface SchemaFacts {
   /** Third-party entities the engines confused them with. */
   collisions?: string[];
   /** What the page already ships, so we prescribe a delta rather than a duplicate. */
-  served?: { hasOrg?: boolean; hasOrgId?: boolean; hasDisambiguation?: boolean; sameAs?: string[] };
+  served?: {
+    hasOrg?: boolean; hasOrgId?: boolean; hasDisambiguation?: boolean; sameAs?: string[];
+    /** The served Organization's own @id, name and type (1 Nov 2026 ruling): when present, we
+     *  reference that graph instead of minting a second Organization that conflicts with it. */
+    orgId?: string | null; orgName?: string | null; orgType?: string | null;
+  };
   /** Every distinct form of the organization name found on the page, with counts. */
   observedNames?: { value: string; count: number }[];
   /** Every distinct value seen for a person's job title, with counts. */
@@ -95,6 +100,8 @@ export interface SchemaResult {
   refusedBecause: string | null;
   /** Findings the generator produced while building — surfaced in the report. */
   findings: string[];
+  /** The site already serves a complete Organization graph: nothing to paste. */
+  complete?: boolean;
 }
 
 /** §2.5 — a page that names itself more than one way is an entity-consistency defect,
@@ -177,10 +184,31 @@ export function generateSchema(facts: SchemaFacts): SchemaResult {
   const jobTitle = reconcileProperty('job title', facts.observedJobTitles);
   if (jobTitle.finding) findings.push(jobTitle.finding);
 
-  // The name we would assert: the site's own declared name first, then the reconciled
+  // 1 Nov 2026 ruling: the site already serves an Organization with its own @id. A fresh
+  // Organization at https://<domain>/#org, or under another name, would be a second entity that
+  // contradicts the site's own markup. Either the existing graph is complete, or we emit only
+  // the missing property, on the site's own @id and name.
+  const sv = facts.served;
+  const safeEarly = publishableCollisions(facts.collisions || [], facts.ownedDomains);
+  if (sv?.hasOrg && sv.orgId) {
+    if (!safeEarly.length || sv.hasDisambiguation) return { jsonLd: null, refusedBecause: null, findings, complete: true };
+    const ownName = sv.orgName || facts.declaredName || orgName.chosen || facts.brand || domain;
+    const delta: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@graph': [{
+        '@type': (sv.orgType || 'Organization').split(' ')[0],
+        '@id': sv.orgId,
+        ...(sv.orgName ? { name: sv.orgName } : {}),
+        disambiguatingDescription: `${ownName} (${domain}) is not affiliated with similarly named entities such as ${safeEarly.slice(0, 3).join(', ')}.`,
+      }],
+    };
+    return { jsonLd: JSON.stringify(delta, null, 2), refusedBecause: null, findings };
+  }
+
+  // The name we would assert: the site's own Organization name first (without an @id), then its declared name, then the reconciled
   // page name, then the configured brand. We never prefer the configured brand over
   // what the site says about itself — that is how the Sep 8 collision was manufactured.
-  const name = facts.declaredName || orgName.chosen || facts.brand;
+  const name = facts.served?.orgName || facts.declaredName || orgName.chosen || facts.brand;
   if (!name) {
     return {
       jsonLd: null,
@@ -203,6 +231,7 @@ export function generateSchema(facts: SchemaFacts): SchemaResult {
   // §2.3 — an owned domain is never disclaimed and never treated as an impostor.
   const owned = facts.ownedDomains;
   const safe = publishableCollisions(facts.collisions || [], owned);
+
 
   const node: Record<string, unknown> = {
     '@type': 'Organization',

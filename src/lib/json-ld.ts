@@ -9,7 +9,7 @@ const ORG_ID = 'https://pigenai.com/#org';
 const FOUNDER_ID = 'https://pigenai.com/#lindsay';
 const WEBSITE_ID = `${SITE_URL}/#website`;
 const APP_ID = `${SITE_URL}/#app`;
-// PI GenAI LLC hub entity — the portfolio's canonical Organization. Reciprocal
+// PIGENAI LLC hub entity — the portfolio's canonical Organization. Reciprocal
 // linking to it is what lets answer engines fuse the whole portfolio into ONE
 // authoritative entity (see the AEO remediation playbook, FIX 3).
 const PIGENAI_ORG_ID = 'https://pigenai.com/#org';
@@ -17,7 +17,9 @@ const PIGENAI_ORG_ID = 'https://pigenai.com/#org';
 const WIKIDATA_ORG = 'https://www.wikidata.org/wiki/Q141739140'; // PIGENAI LLC
 const WIKIDATA_APP = 'https://www.wikidata.org/wiki/Q141739225'; // AEO Analyzers
 // WO-008 4.14: live directory listings of the product (registry, Listings table). Product node only.
-const APP_LISTINGS = ['https://alternativeto.net/software/aeo-analyzers/'];
+const APP_LISTINGS = ['https://alternativeto.net/software/aeo-analyzers/', 'https://www.linkedin.com/company/aeoanalyzers/'];
+// Profiles of PIGENAI LLC itself (registry): the Organization node only.
+const ORG_LISTINGS = ['https://www.crunchbase.com/organization/pigenai-llc'];
 
 const APP_DESCRIPTION =
   'AEO Analyzers scores how citable your site is and gives you the exact fixes, then measures it with Citation Sweeps: five answer engines on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass.';
@@ -29,7 +31,7 @@ const APP_DESCRIPTION =
 // visible HTML — gives engines a first-party fact to resolve the collision.
 // Exploit the plural: ours is the only "AEO Analyzer​s".
 const DISAMBIGUATION =
-  'AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.';
+  'AEO Analyzers (aeoanalyzers.com) was created and is solely maintained by Lindsay Hiebert, founder of PIGENAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.';
 
 // Node builders (no @context — that lives on the wrapping object / @graph).
 // The Organization IS the legal entity PIGENAI LLC (the operator), not a
@@ -44,7 +46,7 @@ function organizationNode() {
     legalName: 'PIGENAI LLC',
     alternateName: 'PI GenAI LLC',
     url: 'https://pigenai.com',
-    logo: `${SITE_URL}/aeo-og-bta-2026b.png`,
+    logo: { '@type': 'ImageObject', url: `${SITE_URL}/aeo-analyzers-logo-512.png`, width: 512, height: 512 },
     description:
       'PIGENAI LLC builds and operates AEO Analyzers (aeoanalyzers.com) and a portfolio of practical AI products.',
     foundingDate: '2025-12-18',
@@ -83,7 +85,7 @@ function organizationNode() {
     // confirmed live. Values come from docs/identity/ENTITY-REGISTRY.md (WO-013), the single
     // source. Wikidata Q141739140 is PIGENAI LLC, created by the founder 15 Oct 2026. Never a
     // portfolio or sibling-product URL.
-    sameAs: [WIKIDATA_ORG],
+    sameAs: [WIKIDATA_ORG, ...ORG_LISTINGS],
     contactPoint: {
       '@type': 'ContactPoint',
       email: 'Lindsay.Hiebert@gmail.com',
@@ -92,7 +94,7 @@ function organizationNode() {
   };
 }
 
-// Founder Person — the same canonical identity used across every PI GenAI
+// Founder Person — the same canonical identity used across every PIGENAI
 // property. The Credly badge URL is the strongest cross-property "same person"
 // signal, so it's the load-bearing sameAs.
 function founderNode() {
@@ -109,7 +111,7 @@ function founderNode() {
     familyName: 'Hiebert',
     gender: 'Male',
     // §2.3 one property, one Person: the ratified jobTitle form, identical across every
-    // PI GenAI property. Was 'Founder & Sole Creator', which differed from the others.
+    // PIGENAI property. Was 'Founder & Sole Creator', which differed from the others.
     jobTitle: 'Founder and CEO, PIGENAI LLC',
     // BIOGRAPHY — the standard here differs from the one governing report output, and
     // conflating them has already cost a true fact once. Read this before editing.
@@ -131,7 +133,7 @@ function founderNode() {
     // **Do not restore it as a correction, and do not strip any other stated
     // biographical fact as "unsupported" on grounded-output grounds.**
     description:
-      'Founder and CEO of PIGENAI LLC. Decades across carrier, networking and silicon — including Cisco Systems and Intel Corporation, where he was Senior Product Manager for AI, Network and Edge and led the Intel Network Builders ecosystem. CISSP. Builder of the PI GenAI portfolio of production AI applications.',
+      'Founder and CEO of PIGENAI LLC. Decades across carrier, networking and silicon — including Cisco Systems and Intel Corporation, where he was Senior Product Manager for AI, Network and Edge and led the Intel Network Builders ecosystem. CISSP. Builder of the PIGENAI portfolio of production AI applications.',
     worksFor: { '@id': ORG_ID },
     sameAs: [
       'https://www.linkedin.com/in/lindsayhiebert/',
@@ -158,7 +160,7 @@ function webSiteNode() {
     alternateName: 'AEOAnalyzers',
     url: SITE_URL,
     publisher: { '@id': ORG_ID },
-    description: 'AI-powered Answer Engine Optimization powered by a Google Gemini frontier model. Real frontier-model analysis. Real-world results. 90 seconds.',
+    description: 'Measures what AI answer engines say when buyers ask for a recommendation.',
   };
 }
 

@@ -12,6 +12,7 @@
 // Import-light on purpose: a serverless route imports this file (relative imports end in .js).
 import { normalizeDomain, isErroredRun, isModelPrior, effectiveCompetitorSet, competitorsCited, type Competitor, type SweepRunResult } from './citationSweep.js';
 import { classifyQuerySegment, SEGMENT_LABEL } from './querySegment.js';
+import { tierForDomain } from './authorityTiers.js';
 
 export const MAX_URLS_PER_HOST = 3;
 export const MAX_URLS_PER_SWEEP = 40;
@@ -159,13 +160,50 @@ export function coverageHeadline(c: SourceCoverage): { headline: string; sites: 
   };
 }
 
-/** The Outreach action: the "No" rows, by times cited, described only as data. */
-export function coverageAction(c: SourceCoverage): { title: string; items: string[] } | null {
-  const no = c.rows.filter((r) => r.verdict === 'no').sort((a, b) => b.timesCited - a.timesCited);
+/** 1 Nov 2026 ruling: every Source coverage page carries one of three labels, and the outreach
+ *  list runs self-serve first, then independent, then vendor-owned last.
+ *   - vendor-owned: the publisher sells in the customer's own category (an entered competitor, or a
+ *     vendor the sweep's answers recommended). Its pages recommend its own product.
+ *   - self-serve: a listing, directory or community where the customer can publish or list itself
+ *     (the attainability registry's "Do now" tier).
+ *   - independent: everything else; an editor or author decides, so it is a pitch. */
+export type CoverageKind = 'self-serve' | 'independent' | 'vendor-owned';
+export const COVERAGE_KIND_LABEL: Record<CoverageKind, string> = {
+  'self-serve': 'self-serve (publish or list yourself)',
+  independent: 'independent (pitchable)',
+  'vendor-owned': 'vendor-owned (unlikely to add you)',
+};
+export const COVERAGE_KIND_ORDER: CoverageKind[] = ['self-serve', 'independent', 'vendor-owned'];
+
+const regOf = (h: string) => {
+  const parts = String(h || '').toLowerCase().replace(/^[a-z]+:\/\//, '').replace(/^www\./, '').split('/')[0].split('.').filter(Boolean);
+  return parts.length <= 2 ? parts.join('.') : parts.slice(-2).join('.');
+};
+
+export function coverageKind(host: string, vendorDomains: string[] = []): CoverageKind {
+  const reg = regOf(host);
+  if (reg && vendorDomains.some((d) => regOf(d) === reg)) return 'vendor-owned';
+  if (tierForDomain(host).tier === 'now') return 'self-serve';
+  return 'independent';
+}
+
+/** The category's vendors for this sweep: entered competitors plus vendors the answers recommended. */
+export function categoryVendorDomains(entered: { domain?: string }[] = [], recommended: { domain?: string }[] = []): string[] {
+  return [...new Set([...entered, ...recommended].map((c) => regOf(c.domain || '')).filter(Boolean))];
+}
+
+/** The Outreach action: the "No" rows, labeled and ordered self-serve, independent, vendor-owned
+ *  (times cited within each), described only as data. */
+export function coverageAction(c: SourceCoverage, vendorDomains: string[] = []): { title: string; items: string[] } | null {
+  const rank = (k: CoverageKind) => COVERAGE_KIND_ORDER.indexOf(k);
+  const no = c.rows
+    .filter((r) => r.verdict === 'no')
+    .map((r) => ({ r, k: coverageKind(r.host, vendorDomains) }))
+    .sort((a, b) => rank(a.k) - rank(b.k) || b.r.timesCited - a.r.timesCited);
   if (!no.length) return null;
   return {
     title: 'Pages engines read that do not name you yet',
-    items: no.map((r) => `${r.url} (${r.host}; cited in ${r.timesCited} category answer${r.timesCited === 1 ? '' : 's'} by ${r.engines.join(', ')})`),
+    items: no.map(({ r, k }) => `${COVERAGE_KIND_LABEL[k]}: ${r.url} (${r.host}; cited in ${r.timesCited} category answer${r.timesCited === 1 ? '' : 's'} by ${r.engines.join(', ')})`),
   };
 }
 

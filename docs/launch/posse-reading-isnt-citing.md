@@ -98,7 +98,7 @@ Being read is passive. Being cited is active — an engine naming you over a com
 
 And if you'd rather learn your own number than let a prospect find it first, the first look is free and takes about ninety seconds: aeoanalyzers.com
 
-*AEO Analyzers was created and is solely maintained by Lindsay Hiebert, founder of PI GenAI LLC.*
+*AEO Analyzers was created and is solely maintained by Lindsay Hiebert, founder of PIGENAI LLC.*
 
 ---
 

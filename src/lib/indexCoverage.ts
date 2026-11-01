@@ -177,7 +177,7 @@ export function evaluateIndexCoverage(input: {
   if (!bingVerificationMetaFound) {
     score = Math.max(0, score - 15);
     recommendations.push(
-      'No on-page Bing site-verification signal (`msvalidate.01`) was found. Bing indexes feed BOTH Perplexity and ChatGPT search, making Bing Webmaster Tools verification the highest-leverage, most-neglected AEO action. If you have not verified this site in Bing Webmaster Tools (bing.com/webmasters), do so — it is free. (Note: verification via DNS or an XML file is not visible from the page, so disregard this if already verified.)'
+      'If not already verified (DNS verification is not visible to this check). No on-page Bing site-verification signal (`msvalidate.01`) was found. Bing indexes feed both Perplexity and ChatGPT search; verify this site in Bing Webmaster Tools (bing.com/webmasters). It is free.'
     );
     summaryParts.push('No on-page Bing verification signal detected.');
   }

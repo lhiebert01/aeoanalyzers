@@ -69,7 +69,7 @@ the instrument that measures it.*
 | Category recommendation win, Sep 2026 re-measure | **0%** (N=200) | same |
 | AI-crawler visits, **ten days** (Jul 22-31 2026) | **265** (211 training-tier, 179 GPTBot) | `bot_hits`, re-verified Sep 7. Telemetry began Jul 22 — there is NO 30-day July window. |
 | Engines measured | Claude, ChatGPT, Perplexity, Gemini | — |
-| Pricing | Day Pass $24 one-time · Pro $49/mo · Business $199/mo | `STATUS.md` |
+| Pricing | [current prices](https://aeoanalyzers.com/pricing) | `STATUS.md` |
 
 **Not cleared for the release:** any live or "current" figure, any customer count, any revenue
 or growth figure, any rating or review count, any provider cost, any percentage improvement
@@ -146,8 +146,7 @@ and not a verdict, and it declines to build features that game answer engines ra
 measure them.
 
 AEO Analyzers is available at aeoanalyzers.com. A free check reports the diagnosis. A Day Pass
-is $24 for 24 hours of full access, and subscriptions are $49 per month for Pro and $199 per
-month for Business. The monthly self-measurement and its methodology are published on the
+gives 24 hours of full access, and Pro and Business are monthly subscriptions (prices: https://aeoanalyzers.com/pricing) for Business. The monthly self-measurement and its methodology are published on the
 company's blog.
 
 ### About the Founder

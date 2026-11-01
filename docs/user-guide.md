@@ -68,8 +68,8 @@ The report is generated entirely in your browser — no data leaves your machine
 The **Handoff** tab provides a copy-paste email template you can send directly to your web team or agency. It includes all findings, the comprehensive schema, content rewrites, knowledge gap FAQ, implementation checklist, and rollout plan — everything needed to implement the changes.
 
 ### 8. Managing Your Account
-- **Sign Up / Log In**: Create an account using email or Google OAuth via our secure authentication system powered by Supabase.
-- **Subscription Tiers**: Upgrade from Free to Pro ($149/mo) or Business ($599/mo) to unlock the Implementation Roadmap, DOCX reports, and up to 200 analyses a month.
+- **Sign Up / Log In**: Create an account using email or a Google account via our secure authentication system powered by Supabase.
+- **Subscription Tiers**: Upgrade from Free to Pro or Business (https://aeoanalyzers.com/pricing) to unlock the Implementation Roadmap, DOCX reports, and up to 200 analyses a month.
 - **Analysis History**: All your past analyses are saved and accessible from your dashboard, so you can track AEO score improvements over time.
 - **Billing Management**: Access the Stripe billing portal from your account settings to manage your subscription, update payment methods, or view invoices.
 

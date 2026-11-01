@@ -49,7 +49,7 @@ below reveals whether the snapshot actually ran in production.
 ## Acceptance test (run against the live deploy)
 
 ```
-curl -ksS -A "ClaudeBot" https://aeoanalyzers.com/ | grep -iE 'Citation|Simulation Engine|Secure your' && echo PASS:content-visible
+curl -ksS -A "ClaudeBot" https://aeoanalyzers.com/ | grep -iE 'Citation|answer engines|Secure your' && echo PASS:content-visible
 curl -ksS -A "ClaudeBot" https://aeoanalyzers.com/ | grep -o 'application/ld+json' && echo PASS:json-ld-present
 curl -ksS -A "ClaudeBot" https://aeoanalyzers.com/ | grep -q '<div id="root"></div>' && echo 'FAIL:still empty shell' || echo 'PASS:shell-hydrated'
 ```

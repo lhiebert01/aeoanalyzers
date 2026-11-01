@@ -14,8 +14,9 @@ interface SEOProps {
 }
 
 const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://aeoanalyzers.com';
-const DEFAULT_TITLE = 'AEO Analyzers | Be the Answer AI Gives';
-const DEFAULT_DESCRIPTION = 'AEO Analyzers scores how citable your site is, then measures it with Citation Sweeps: five answer engines on Pro and Business, four on the Day Pass.';
+// 1 Nov 2026: searchers for "aeo analyzer" / "aeo checker" see the name and what it is.
+const DEFAULT_TITLE = 'AEO Analyzers | Free AEO Checker for AI Answer Engines';
+const DEFAULT_DESCRIPTION = 'AEO Analyzers is the free AEO checker for ChatGPT, Claude, Perplexity and Gemini: see if your site is ready to be cited, then measure what the engines say.';
 const DEFAULT_AUTHOR = 'Lindsay Hiebert';
 
 const SEO: React.FC<SEOProps> = ({

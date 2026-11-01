@@ -95,7 +95,8 @@ MONTHS = [
             "the rule of November 1st, which matches a retired name in any letter case). Dated actions between the October "
             "and November measurements, from our Record: October 14th, the Measurement Layer post; October 15th, the price "
             "cleanup, the fifth-engine post, the Expo one-pager, Wikidata entries for the company and the product, and the "
-            "AlternativeTo listing.")),
+            "AlternativeTo listing. This month&rsquo;s post: <a class=\"ilink\" href=\"/blog/found-not-recommended\">Optimizing "
+            "your website gets you found. It does not get you recommended.</a>")),
 ]
 
 LESSONS = [
@@ -144,11 +145,11 @@ def rows():
         tag = ' <span class="tag">restated</span>' if m['restated'] else ''
         out.append(f"""        <tr>
           <td class="mo">{m['month']}</td>
-          <td><span class="fig {tone}">{m['b']}%</span><span class="nn">N={m['bn']}</span></td>
-          <td><span class="fig flat">{round(100 * m['acc'][0] / m['acc'][1])}%</span><span class="nn">{m['acc'][0]} of {m['acc'][1]} named</span></td>
-          <td><span class="fig flat">{m['c']}%</span><span class="nn">N={m['cn']}</span></td>
-          <td class="when">{m['measured']}<br><a class="ilink" href="{GH}/{m['file']}">transcripts</a></td>
-          <td><p class="ledgernote">{tag}{m['note']}{coverage_line(m)}</p></td>
+          <td data-label="Found by name"><span class="fig {tone}">{m['b']}%</span><span class="nn">N={m['bn']}</span></td>
+          <td data-label="Described accurately when named"><span class="fig flat">{round(100 * m['acc'][0] / m['acc'][1])}%</span><span class="nn">{m['acc'][0]} of {m['acc'][1]} named</span></td>
+          <td data-label="Recommended to buyers"><span class="fig flat">{m['c']}%</span><span class="nn">N={m['cn']}</span></td>
+          <td class="when" data-label="Measured">{m['measured']}<br><a class="ilink" href="{GH}/{m['file']}">transcripts</a></td>
+          <td data-label="What changed"><p class="ledgernote">{tag}{m['note']}{coverage_line(m)}</p></td>
         </tr>""")
     return '\n'.join(out)
 
@@ -224,7 +225,33 @@ CSS += """
 .ledger tbody tr:nth-child(even){background:var(--panel)}
 .ledger .ledgernote{font-size:14.5px;line-height:1.55;margin:0}
 .ledger .fig{font-size:19px}
-@media(max-width:1000px){.ledger table{min-width:820px}}
+/* Nov 2026: the table breaks out of the 720px article column to the page width, columns are
+   fixed pixels, Month never wraps, and "What changed" takes the remaining width and wraps. */
+.ledger.wide{overflow:visible;position:relative;left:50%;transform:translateX(-50%);
+  width:min(1140px,calc(100vw - 40px))}
+.ledger.wide table{min-width:0;width:100%}
+.ledger.wide col.c-mo{width:150px}.ledger.wide col.c-fig{width:108px}.ledger.wide col.c-acc{width:132px}
+.ledger.wide col.c-rec{width:136px}.ledger.wide col.c-when{width:116px}
+.ledger.wide td{overflow-wrap:anywhere;word-break:normal}
+.ledger.wide th{overflow-wrap:normal;word-break:normal;hyphens:none}
+.ledger.wide td.mo{white-space:nowrap;overflow-wrap:normal}
+.ledger.wide .ledgernote{max-width:none}
+/* Narrow screens: one stacked card per month. */
+@media(max-width:820px){
+  .ledger.wide{left:auto;transform:none;width:auto}
+  .ledger.wide table,.ledger.wide tbody,.ledger.wide tr,.ledger.wide td{display:block;width:auto}
+  .ledger.wide table{background:none;box-shadow:none;border-radius:0;overflow:visible}
+  .ledger.wide thead,.ledger.wide colgroup{display:none}
+  .ledger.wide tbody tr{background:var(--card);border:1px solid var(--edge);border-radius:12px;
+    box-shadow:var(--card-shadow);margin:0 0 14px;overflow:hidden}
+  .ledger.wide tbody tr:nth-child(even){background:var(--card)}
+  .ledger.wide td{border-right:0;border-bottom:1px solid var(--hair);padding:10px 16px}
+  .ledger.wide td:last-child{border-bottom:0}
+  .ledger.wide td.mo{font-size:18px;background:var(--panel)}
+  .ledger.wide td[data-label]::before{content:attr(data-label);display:block;font-size:11.5px;
+    font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 3px}
+  .ledger.wide .when{white-space:normal}
+}
 </style>"""
 
 BAR  = src[src.index('<body>'):src.index('<div class="wrap">')]
@@ -282,7 +309,7 @@ PAGE = f"""<!doctype html>
   "creator": {{ "@type": "Person", "@id": "https://pigenai.com/#lindsay", "name": "Lindsay Hiebert", "url": "https://www.linkedin.com/in/lindsayhiebert/" }},
   "publisher": {{
     "@type": "Organization", "@id": "https://pigenai.com/#org", "name": "PIGENAI LLC", "alternateName": "PI GenAI LLC", "url": "https://pigenai.com",
-    "logo": {{ "@type": "ImageObject", "url": "https://aeoanalyzers.com/aeo-og.png" }}
+    "logo": {{ "@type": "ImageObject", "url": "https://aeoanalyzers.com/aeo-analyzers-logo-512.png", "width": 512, "height": 512 }}
   }},
   "temporalCoverage": "2026-08-01/2026-10-08",
   "variableMeasured": [
@@ -314,11 +341,10 @@ PAGE = f"""<!doctype html>
 
     <div class="postbody">
       <h2 class="posth2" id="the-ledger">Every month so far</h2>
-      <div class="ledger">
+      <div class="ledger wide">
         <table>
           <colgroup>
-            <col style="width:11%"><col style="width:10%"><col style="width:11%"><col style="width:11%">
-            <col style="width:11%"><col style="width:46%">
+            <col class="c-mo"><col class="c-fig"><col class="c-acc"><col class="c-rec"><col class="c-when"><col>
           </colgroup>
           <thead><tr>
             <th scope="col">Month</th>
@@ -394,7 +420,7 @@ PAGE = f"""<!doctype html>
     </div>
 
     <p class="samplenote"><em>AEO Analyzers (aeoanalyzers.com) was created and is solely maintained
-    by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser
+    by Lindsay Hiebert, founder of PIGENAI LLC. It is unaffiliated with any similarly named browser
     extension, plugin, or tool.</em></p>
   </article>
 

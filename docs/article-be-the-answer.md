@@ -3,7 +3,7 @@
 *Ready-to-publish for Substack / Medium / LinkedIn Articles.*
 *Substack subject line:* **Be the answer AI gives (we just re-launched AEO Analyzers)**
 *Medium title:* **Be the Answer AI Gives: Why Every Business Needs Answer Engine Optimization Now** — set the canonical URL to your Substack/site copy.
-*By Lindsay Hiebert, Founder · PI GenAI LLC*
+*By Lindsay Hiebert, Founder · PIGENAI LLC*
 
 **Subtitle / preview:** Search is being replaced by answers. Here's how to find out whether AI cites your business — and exactly how to fix it — in about 90 seconds.
 
@@ -61,4 +61,4 @@ Only need to fix one site? There's a **Day Pass** — full access for 24 hours, 
 
 The brands that win the next decade of discovery won't be the loudest. They'll be the ones AI trusts enough to quote. Find out if that's you — before your competitor does.
 
-*— Lindsay Hiebert, Founder, AEO Analyzers (PI GenAI LLC)*
+*— Lindsay Hiebert, Founder, AEO Analyzers (PIGENAI LLC)*

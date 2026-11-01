@@ -95,7 +95,7 @@
 
 ## 6. Success metrics
 - Free audits run (week 1 vs baseline)
-- Free → paid conversion on Pro ($49) / Business ($199)
+- Free → paid conversion on Pro / Business ([current prices](https://aeoanalyzers.com/pricing))
 - Re-runs by existing users (engagement with v1.4)
 - Agency signups / multi-site usage
 - Blog + LinkedIn reach, audit click-through rate

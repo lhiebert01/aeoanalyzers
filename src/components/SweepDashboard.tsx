@@ -28,7 +28,7 @@ import { otherPanels, describeDenominator, buildSeries, pooledFromSummary, resco
 import { extractBeliefs, flaggedWrongValues, flaggedSiteValues, ENGINE_LABEL as BELIEF_ENGINE } from '../lib/beliefs';
 import { detectEntityLinkingFailures, type EntityLinkingReport } from '../lib/entityLinking';
 import { getAccessToken, supabaseQuery, supabaseUpdate } from '../supabase';
-import { coverageHeadline, coverageAction, corroboration, corroborationLine, vendorBase, vendorBaseLine, type SourceCoverage } from '../lib/sourceCoverage';
+import { coverageHeadline, coverageAction, coverageKind, categoryVendorDomains, COVERAGE_KIND_LABEL, corroboration, corroborationLine, vendorBase, vendorBaseLine, type SourceCoverage } from '../lib/sourceCoverage';
 import { latestScoreFor } from '../lib/latestFigures';
 import { OWNER_ORDER, OWNER_DESC, nextSweepLine } from '../lib/ownerTags';
 import { measuredAfterView, PANEL_DIFFERS, MEASURED_AFTER, fmtDay, type RecordEntry, type SweepFigures } from '../lib/theRecord';
@@ -1458,6 +1458,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
             const base = vendorBase(result.runs, { domain: result.domain, brand: result.brand || undefined }, parseCompetitors(competitors));
             const hl = sourceCoverage ? coverageHeadline(sourceCoverage) : null;
             const label = { yes: 'Yes', no: 'No', unreadable: 'Could not read' } as const;
+            const vendors = categoryVendorDomains(parseCompetitors(competitors), scorecard?.topCompetitors || []);
             return (
               <div className="bg-white border border-zinc-200 rounded-3xl p-6 shadow-sm">
                 <h3 className="font-bold flex items-center gap-2 mb-1"><Search className="w-4 h-4 text-zinc-500" />Source coverage</h3>
@@ -1468,11 +1469,12 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                     {sourceCoverage!.rows.length > 0 && (
                       <div className="overflow-x-auto mt-3">
                         <table className="w-full text-xs">
-                          <thead><tr className="text-left text-zinc-600 border-b border-zinc-200"><th className="py-1 pr-3">Site</th><th className="py-1 pr-3">Times cited</th><th className="py-1 pr-3">Engines citing</th><th className="py-1 pr-3">Page read</th><th className="py-1 pr-3">Names you</th><th className="py-1">Fetched</th></tr></thead>
+                          <thead><tr className="text-left text-zinc-600 border-b border-zinc-200"><th className="py-1 pr-3">Site</th><th className="py-1 pr-3">Kind</th><th className="py-1 pr-3">Times cited</th><th className="py-1 pr-3">Engines citing</th><th className="py-1 pr-3">Page read</th><th className="py-1 pr-3">Names you</th><th className="py-1">Fetched</th></tr></thead>
                           <tbody>
                             {sourceCoverage!.rows.map((r) => (
                               <tr key={r.url} className="border-b border-zinc-100 align-top">
                                 <td className="py-1.5 pr-3 text-zinc-900">{r.host}</td>
+                                <td className="py-1.5 pr-3 text-zinc-800">{COVERAGE_KIND_LABEL[coverageKind(r.host, vendors)]}</td>
                                 <td className="py-1.5 pr-3 tabular-nums text-zinc-800">{r.timesCited}</td>
                                 <td className="py-1.5 pr-3 text-zinc-800">{r.engines.map((e) => BELIEF_ENGINE[e] || e).join(', ')}</td>
                                 <td className="py-1.5 pr-3 break-all"><a className="underline text-zinc-800" href={r.url} target="_blank" rel="noopener noreferrer nofollow">{r.url}</a></td>
@@ -1484,7 +1486,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                         </table>
                       </div>
                     )}
-                    {(() => { const act = coverageAction(sourceCoverage!); return act ? (
+                    {(() => { const act = coverageAction(sourceCoverage!, vendors); return act ? (
                       <div className="mt-4 rounded-2xl border border-zinc-200 p-4">
                         <p className="font-bold text-sm">{act.title} <span className="ml-1 inline-block rounded-full border border-zinc-300 px-2 py-0.5 text-[11px] font-semibold text-zinc-800 align-middle">Outreach</span></p>
                         <ul className="mt-2 text-xs text-zinc-800 space-y-1 break-all">{act.items.map((it) => <li key={it}>{it}</li>)}</ul>
@@ -1598,6 +1600,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                 brand: result.brand || undefined,
                 domain: result.domain,
                 served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs, ownedDomains } : undefined,
+                competitorNames: parseCompetitors(competitors).map((c) => c.name),
               })} />
               <div className="mt-4 pt-4 border-t border-zinc-100">
                 <CrossLink to="score" onClick={onOpenAnalyzer} />

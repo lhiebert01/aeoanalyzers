@@ -1,6 +1,6 @@
 # AEO Analyzers, Reintroduced: The AI-Visibility Tool You Can Actually Trust — and Act On
 
-**By Lindsay Hiebert, Founder · PI GenAI LLC**
+**By Lindsay Hiebert, Founder · PIGENAI LLC**
 *Re-launch announcement · 2026*
 
 ---
@@ -91,4 +91,4 @@ The brands that win the next decade of discovery won't be the loudest — they'l
 👉 **Run your free audit now: [https://www.aeoanalyzers.com](https://www.aeoanalyzers.com)**
 Then run it on your toughest competitor. **The gap between those two scores is the gap AI is using to choose between you — today.**
 
-*— Lindsay Hiebert, Founder, AEO Analyzers (PI GenAI LLC)*
+*— Lindsay Hiebert, Founder, AEO Analyzers (PIGENAI LLC)*

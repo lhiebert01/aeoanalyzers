@@ -11,9 +11,12 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
-const OUT = '/mnt/c/Users/Linds/Downloads/AEO-Analyzers-MASTER-Announcement.docx';
+// Optional: --out <file.docx> and --source <file.md> --title <heading> (regenerate any other
+// markdown-sourced Word deliverable the same way; binaries are never patched in place).
+const arg = (k) => { const i = process.argv.indexOf(k); return i > -1 ? process.argv[i + 1] : null; };
+const OUT = arg('--out') || '/mnt/c/Users/Linds/Downloads/AEO-Analyzers-MASTER-Announcement.docx';
 
-const SOURCES = [
+const DEFAULT_SOURCES = [
   { file: 'docs/brand-messaging-guide.md', title: 'Part 0 — Brand & Messaging Guide (single source of truth)' },
   { file: 'docs/launch-posts-today.md', title: 'Part 1 — POST TODAY (final, accurate, paste-ready: all channels + features/benefits + Day Pass)' },
   { file: 'docs/launch-announcement-kit.md', title: 'Part 2 — Posting Calendar & Plan (when / where to post)' },
@@ -23,6 +26,7 @@ const SOURCES = [
   { file: 'docs/image-prompt-playbook.md', title: 'Part 6 — Image Prompt Playbook (regenerate / enhance)' },
   { file: 'docs/visual-canon.md', title: 'Part 7 — Visual Canon (existing-image ↔ story mapping)' },
 ];
+const SOURCES = arg('--source') ? [{ file: arg('--source'), title: arg('--title') || '' }] : DEFAULT_SOURCES;
 
 const d = await import('docx');
 const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle, Table, TableRow, TableCell, WidthType, ShadingType } = d;
@@ -101,9 +105,9 @@ function mdToParagraphs(md) {
 const children = [
   new Paragraph({ spacing: { before: 1200 } }),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 }, children: [new TextRun({ text: 'AEO Analyzers', bold: true, size: 56, color: NAVY })] }),
-  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 }, children: [new TextRun({ text: 'Master Announcement — posts, article, image playbook', size: 30, color: GREY })] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 }, children: [new TextRun({ text: arg('--title') || 'Master Announcement — posts, article, image playbook', size: 30, color: GREY })] }),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 }, children: [new TextRun({ text: 'Be the answer AI gives.', italics: true, size: 24, color: GREY })] }),
-  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 600 }, children: [new TextRun({ text: 'PI GenAI LLC · Lindsay Hiebert · https://www.aeoanalyzers.com', size: 20, color: '999999' })] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 600 }, children: [new TextRun({ text: 'PIGENAI LLC · Lindsay Hiebert · https://www.aeoanalyzers.com', size: 20, color: '999999' })] }),
 ];
 
 for (const s of SOURCES) {
@@ -114,7 +118,7 @@ for (const s of SOURCES) {
 
 const doc = new Document({
   creator: 'AEO Analyzers',
-  title: 'AEO Analyzers — Launch Announcement Kit',
+  title: arg('--title') ? `AEO Analyzers — ${arg('--title')}` : 'AEO Analyzers — Launch Announcement Kit',
   sections: [{ children }],
 });
 
@@ -137,6 +141,9 @@ function writeResilient(target, label) {
   }
 }
 
-// Repo source copy + the Downloads convenience copy.
-writeResilient(path.join(ROOT, 'docs', 'AEO-Analyzers-MASTER-Announcement.docx'), 'repo copy');
-writeResilient(OUT, 'Downloads copy');
+// Default run: the repo source copy + the Downloads convenience copy. With --out, only that file.
+if (arg('--out')) writeResilient(OUT, 'output');
+else {
+  writeResilient(path.join(ROOT, 'docs', 'AEO-Analyzers-MASTER-Announcement.docx'), 'repo copy');
+  writeResilient(OUT, 'Downloads copy');
+}

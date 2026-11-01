@@ -138,4 +138,4 @@ If you want to know what the engines say about your business — before a prospe
 **Mine's zero. For now.**
 
 ---
-*AEO Analyzers was created and is solely maintained by Lindsay Hiebert, founder of PI GenAI LLC. Originally published at https://aeoanalyzers.com/blog/i-scored-zero.*
+*AEO Analyzers was created and is solely maintained by Lindsay Hiebert, founder of PIGENAI LLC. Originally published at https://aeoanalyzers.com/blog/i-scored-zero.*

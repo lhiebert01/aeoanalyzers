@@ -71,4 +71,4 @@ Confident, plain-English, credible, calm-urgent (urgency from the real shift, no
 - **Plan & cadence:** `docs/go-to-market-plan.md`.
 
 ## 12. Boilerplate (paste at the end of articles / about blurbs)
-> AEO Analyzers helps brands become the cited source of truth in AI answers. In about 90 seconds it shows how citable you are to answer engines like Gemini, ChatGPT, and Perplexityr site, scores your Citation Probability, and gives you the exact, deploy-ready fixes. Free to try. Be the answer AI gives — https://www.aeoanalyzers.com · PI GenAI LLC.
+> AEO Analyzers helps brands become the cited source of truth in AI answers. In about 90 seconds it shows how citable you are to answer engines like Gemini, ChatGPT, and Perplexityr site, scores your Citation Probability, and gives you the exact, deploy-ready fixes. Free to try. Be the answer AI gives — https://www.aeoanalyzers.com · PIGENAI LLC.

@@ -1,8 +1,30 @@
 {
   "_note": "WO-008 4.14: hosts of our own profiles. The monthly self-sweep filing (scripts/finalize-selfsweep.ts) counts the category answers that cite each one; the first non-zero count is the first corpus-presence signal.",
   "hosts": [
-    { "host": "alternativeto.net", "path": "/software/aeo-analyzers", "live": "2026-10-15" },
-    { "host": "wikidata.org", "path": "/wiki/Q141739225", "live": "2026-10-15" },
-    { "host": "wikidata.org", "path": "/wiki/Q141739140", "live": "2026-10-15" }
+    {
+      "host": "alternativeto.net",
+      "path": "/software/aeo-analyzers",
+      "live": "2026-10-15"
+    },
+    {
+      "host": "wikidata.org",
+      "path": "/wiki/Q141739225",
+      "live": "2026-10-15"
+    },
+    {
+      "host": "wikidata.org",
+      "path": "/wiki/Q141739140",
+      "live": "2026-10-15"
+    },
+    {
+      "host": "crunchbase.com",
+      "path": "/organization/pigenai-llc",
+      "live": "2026-11-01"
+    },
+    {
+      "host": "linkedin.com",
+      "path": "/company/aeoanalyzers",
+      "live": "2026-11-01"
+    }
   ]
 }

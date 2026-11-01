@@ -15,7 +15,7 @@ export default function PressKit() {
   const blogContent = `
 # The next generation of AEO Analyzers: prove it, don't just score it
 
-**By Lindsay Hiebert · PI GenAI LLC**
+**By Lindsay Hiebert · PIGENAI LLC**
 *July 2026*
 
 Search is becoming answers. When someone asks ChatGPT, Gemini, Perplexity, or Claude about your category, they get one answer — one or two names. If it isn't you, your customers never see you.
@@ -42,11 +42,11 @@ FOR IMMEDIATE RELEASE
 
 # AEO Analyzers adds real-time Citation Sweeps — measuring whether AI answer engines actually cite your brand
 
-**PI GenAI LLC — July 2026** — AEO Analyzers today released the next generation of its Answer Engine Optimization platform, adding live Citation Sweeps that ask real AI answer engines — ChatGPT, Claude, Perplexity, and Google Gemini — a brand's buyer questions and record what each one answers.
+**PIGENAI LLC — July 2026** — AEO Analyzers today released the next generation of its Answer Engine Optimization platform, adding live Citation Sweeps that ask real AI answer engines — ChatGPT, Claude, Perplexity, and Google Gemini — a brand's buyer questions and record what each one answers.
 
 As buyers increasingly ask AI assistants for recommendations instead of scrolling search results, being the source an engine cites has become a growth priority. AEO Analyzers measures that outcome directly, with stored transcripts a customer can reproduce.
 
-"A score predicts; a sweep proves," said Lindsay Hiebert, founder of PI GenAI LLC. "We ask the real engines your buyers' questions, show whether they cite you or a competitor, and hand you the specific fixes. Our promise is simple — run the query yourself and you'll get what the report says."
+"A score predicts; a sweep proves," said Lindsay Hiebert, founder of PIGENAI LLC. "We ask the real engines your buyers' questions, show whether they cite you or a competitor, and hand you the specific fixes. Our promise is simple — run the query yourself and you'll get what the report says."
 
 ### What the platform does
 *   **Citation Sweeps:** buyers' questions run across four live answer engines, multiple times each, with every transcript stored.
@@ -54,8 +54,8 @@ As buyers increasingly ask AI assistants for recommendations instead of scrollin
 *   **The fixes, not just a score:** paste-ready JSON-LD, content rewrites, and a developer-ready report; plus a crawler-access audit of robots.txt and llms.txt.
 *   **Progressive monitoring:** re-run monthly to track share of the AI answer over time.
 
-### About PI GenAI LLC
-AEO Analyzers (aeoanalyzers.com) is built and maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.
+### About PIGENAI LLC
+AEO Analyzers (aeoanalyzers.com) is built and maintained by Lindsay Hiebert, founder of PIGENAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.
 
 **Media Contact:**
 Lindsay Hiebert
@@ -198,7 +198,7 @@ Start free: https://aeoanalyzers.com
               <div className="flex items-center gap-4 mb-12 pb-12 border-b border-zinc-100">
                 <div className="w-12 h-12 rounded-full bg-zinc-900 flex items-center justify-center text-white font-black">LH</div>
                 <div>
-                  <div className="font-bold text-zinc-900">Lindsay Hiebert · PI GenAI LLC</div>
+                  <div className="font-bold text-zinc-900">Lindsay Hiebert · PIGENAI LLC</div>
                   <div className="text-xs text-zinc-400">July 2026 • 4 min read</div>
                 </div>
               </div>
@@ -256,11 +256,11 @@ Start free: https://aeoanalyzers.com
                 AEO Analyzers adds real-time Citation Sweeps — measuring whether AI answer engines actually cite your brand
               </h2>
 
-              <p><strong>PI GenAI LLC — July 2026</strong> — AEO Analyzers today released the next generation of its Answer Engine Optimization platform, adding live Citation Sweeps that ask real AI answer engines — ChatGPT, Claude, Perplexity, and Google Gemini — a brand's buyer questions and record what each one answers.</p>
+              <p><strong>PIGENAI LLC — July 2026</strong> — AEO Analyzers today released the next generation of its Answer Engine Optimization platform, adding live Citation Sweeps that ask real AI answer engines — ChatGPT, Claude, Perplexity, and Google Gemini — a brand's buyer questions and record what each one answers.</p>
 
               <p>As buyers increasingly ask AI assistants for recommendations instead of scrolling search results, being the source an engine cites has become a growth priority. AEO Analyzers measures that outcome directly, with stored transcripts a customer can reproduce.</p>
 
-              <p>"A score predicts; a sweep proves," said Lindsay Hiebert, founder of PI GenAI LLC. "We ask the real engines your buyers' questions, show whether they cite you or a competitor, and hand you the specific fixes. Our promise is simple — run the query yourself and you'll get what the report says."</p>
+              <p>"A score predicts; a sweep proves," said Lindsay Hiebert, founder of PIGENAI LLC. "We ask the real engines your buyers' questions, show whether they cite you or a competitor, and hand you the specific fixes. Our promise is simple — run the query yourself and you'll get what the report says."</p>
 
               <div className="space-y-4">
                 <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">What the platform does:</p>
@@ -273,8 +273,8 @@ Start free: https://aeoanalyzers.com
               </div>
 
               <div className="pt-12 border-t border-zinc-200 space-y-4">
-                <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">About PI GenAI LLC</p>
-                <p>AEO Analyzers (aeoanalyzers.com) is built and maintained by Lindsay Hiebert, founder of PI GenAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</p>
+                <p className="font-black text-zinc-900 uppercase tracking-widest text-xs">About PIGENAI LLC</p>
+                <p>AEO Analyzers (aeoanalyzers.com) is built and maintained by Lindsay Hiebert, founder of PIGENAI LLC. It is unaffiliated with any similarly named browser extension, plugin, or tool.</p>
               </div>
 
               <div className="pt-8 space-y-1">

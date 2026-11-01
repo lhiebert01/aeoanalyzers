@@ -11,11 +11,12 @@ const qid = (entity: string) => REG.match(new RegExp(`\\| ${entity} \\| (Q\\d+) 
 describe('entity registry ↔ structured data', () => {
   it('the Organization and SoftwareApplication carry exactly their own Wikidata item', () => {
     expect(node('Organization')['@id']).toBe('https://pigenai.com/#org');
-    expect(node('Organization').sameAs).toEqual([qid('PIGENAI LLC')[2]]);
+    // Organization: its Wikidata item plus live profiles of the company itself (Crunchbase).
+    const liveRow = (name: string) => (REG.split('## Listings')[1].split('\n').find((l) => l.startsWith(`| ${name} |`) && /\| live \|/.test(l)) || '').split('|')[2]?.trim();
+    expect(node('Organization').sameAs).toEqual([qid('PIGENAI LLC')[2], liveRow('Crunchbase')]);
     // Product node: its Wikidata item, then every listing the registry marks live (and only those).
-    const live = REG.split('## Listings')[1].split('## Canonical')[0].split('\n').filter((l) => /\| live \|/.test(l) && /^\| (AlternativeTo|Crunchbase|G2|Slashdot|LinkedIn)/.test(l)).map((l) => l.split('|')[2].trim());
-    expect(node('SoftwareApplication').sameAs).toEqual([qid('AEO Analyzers')[2], ...live]);
-    expect(live).toEqual(['https://alternativeto.net/software/aeo-analyzers/']);
+    expect(node('SoftwareApplication').sameAs).toEqual([qid('AEO Analyzers')[2], liveRow('AlternativeTo'), liveRow('LinkedIn company page')]);
+    expect(liveRow('Crunchbase')).toBe('https://www.crunchbase.com/organization/pigenai-llc');
     expect(qid('PIGENAI LLC')[1]).toBe('Q141739140');
     expect(qid('AEO Analyzers')[1]).toBe('Q141739225');
   });

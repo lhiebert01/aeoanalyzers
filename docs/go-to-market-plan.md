@@ -31,9 +31,9 @@ invisible to AI, fixed it — here's the before/after."
    most credible asset you have. Pairs with the v1.4 accuracy narrative.
 2. **v1.4 "Trustworthy AEO" announcement** — publish `blog-v1.4-trustworthy-aeo-launch.md`
    on site + LinkedIn article + Medium. Use `launch-plan-v1.4.md` copy.
-3. **Day Pass announcement** — short post: "Only have one site? $24, fix it today,
+3. **Day Pass announcement** — short post: "Only have one site? Fix it today with a Day Pass,
    no subscription." Targets the single-site majority.
-4. **Email existing users** — "v1.4 is live + a $24 Day Pass; re-run your audit."
+4. **Email existing users** — "v1.4 is live + a Day Pass; re-run your audit."
 5. **Get listed where AI looks** — submit to AEO/GEO directories (LLMrefs 200+
    platform directory) and pitch inclusion in "best AEO tools 2026" listicles
    that currently surface competitors but not us (the audit found we were absent
@@ -44,9 +44,9 @@ invisible to AI, fixed it — here's the before/after."
 ## 3. Funnel & pricing (live today)
 
 - **Free** = one full diagnosis (scores, gaps, brand type) — the hook. Fixes gated.
-- **Day Pass $24 one-time / 24h** = the single-site buyer who won't subscribe.
-- **Pro $49/mo** = freelancers / small teams.
-- **Business $199/mo** = agencies / multi-site / growing SaaS.
+- **Day Pass, one-time / 24h** ([current prices](https://aeoanalyzers.com/pricing)) = the single-site buyer who won't subscribe.
+- **Pro** = freelancers / small teams.
+- **Business** = agencies / multi-site / growing SaaS.
 - Conversion levers to add next: a one-time→subscription upsell after a Day Pass;
   "see your competitor's score" teaser to drive Competitive Duel.
 

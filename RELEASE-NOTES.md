@@ -2,7 +2,7 @@
 
 ## Current pricing (15 Oct 2026)
 
-Prices, plan names and product descriptions in the entries below are as of each entry's date (the product is no longer described as a "simulation"; it asks the real engines and stores every answer). Current: Free (3 free checks), Day Pass $29 (24 hours; 3 Citation Sweeps on the four-engine panel, 25 AEO analyses), Pro Optimizer $149/month (8 sweeps, five-engine panel with Grok, 100 analyses), Business Authority $599/month (20 sweeps, 200 analyses). Source of truth: https://aeoanalyzers.com/pricing.
+Prices, plan names and product descriptions in the entries below are as of each entry's date (the product is no longer described as a "simulation"; it asks the real engines and stores every answer). Current plans and prices: https://aeoanalyzers.com/pricing (the only place this repository states a current price).
 
 ## WO-AEO-REPORT-SOURCE-COVERAGE-012 — 15 October 2026 (Measure. Act. Record.)
 - **Page one of both reports** shows "Ready to be cited" (the AEO Score, what your site controls) beside "Recommended by engines" (category answers with their denominator, engines and date). Never blended; "Not yet measured" with a link when one is missing; the bridging sentence at 86+ and under 10%.
@@ -95,7 +95,7 @@ Regression coverage added in `src/__tests__/aeoGaps.test.ts` (22 tests).
   GPTBot, OAI-SearchBot, PerplexityBot, Google-Extended, …) — the exact fix the
   product recommends.
 - `public/llms.txt` corrected: removed the inaccurate "simulates multiple AI
-  engines" claim (it uses a single Gemini frontier model), added the $24 Day
+  engines" claim (it uses a single Gemini frontier model), added the Day
   Pass, and a verifiable founder/portfolio line.
 - `src/lib/json-ld.ts` is now one connected `@graph` (`Organization` ↔ founder
   `Person` w/ Credly + CISSP `hasCredential` ↔ `WebSite` ↔ `SoftwareApplication`)
@@ -131,7 +131,7 @@ A real audit caught the analyzer doing the one thing an AEO tool must never do: 
 
 ## v1.5.0 — May 31, 2026
 
-### AI-Crawler Visibility, Live Payments & the $24 Day Pass
+### AI-Crawler Visibility, Live Payments & the Day Pass
 
 The release that makes AEO Analyzers practice what it sells and take money for the first time.
 
@@ -142,9 +142,9 @@ The release that makes AEO Analyzers practice what it sells and take money for t
 
 #### Payments live (Stripe) — first-time configuration
 - Production was never actually wired to Stripe (no keys in Vercel; webhook pointed at a dead Cloud Run URL, 100% failing). Now configured: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and Pro/Business/Day-Pass price IDs in Vercel; webhook repointed to `https://www.aeoanalyzers.com/api/webhook` with `checkout.session.completed` + subscription events.
-- Pro ($49/mo) and Business ($199/mo) checkout now function.
+- Pro and Business checkout now function (current prices: https://aeoanalyzers.com/pricing).
 
-#### $24 Day Pass (one-time, 24h full access)
+#### Day Pass (one-time, 24h full access; price: https://aeoanalyzers.com/pricing)
 - One-time purchase grants 24h of full access (`users.report_pass_until`), then auto-expires to free — built for the single-site user who won't subscribe. Reuses checkout/webhook; `mode: 'payment'`; surfaced as a bulleted card on the Pricing page. New Supabase column `report_pass_until timestamptz`.
 
 #### Docs
@@ -304,19 +304,18 @@ The existing AEO report delivered scores and generic instructions. v1.3 makes ev
 ## v1.1.0 — March 26, 2026
 
 ### Authentication & Security
-- **Google OAuth:** Full Google sign-in support via Google Cloud Console + Supabase. Works for all users (app published to production).
+- **Google sign-in:** Full Google sign-in support via Google Cloud Console + Supabase. Works for all users (app published to production).
 - **Sign Out Fix:** Non-blocking sign out that clears all storage and forces page reload. No more hanging on sign out.
 - **Auth Hang Fix:** Added 3-second safety timeout and immediate session check via `getSession()`. Page no longer hangs on refresh when Supabase auth is slow.
-- **Free Tier Gate:** 1 free analysis per user, then upgrade required. Usage tracked server-side in Supabase (cannot be bypassed by clearing cookies).
+- **Free Tier Gate:** a limited number of free analyses per user (current plans: https://aeoanalyzers.com/pricing), then upgrade required. Usage tracked server-side in Supabase (cannot be bypassed by clearing cookies).
 
 ### Analytics
-- **GA4 Integration:** Google Analytics 4 fully configured with Measurement ID `G-WRY4D9ZS8E`. Tracks page views, scroll, login, form starts, and session events.
-- **Admin GA4 Link:** "Open GA4" button in SuperAdmin Dashboard links directly to the GA4 property dashboard.
+- **Site analytics:** internal Google Analytics page-view measurement (not a product feature).
 
 ### Branding & Messaging
 - **Consistent Branding:** All instances of "AEO Analyzer" (singular) updated to "AEO Analyzers" (plural) across the entire codebase — header, footer, SEO metadata, privacy policy, terms, FAQs, press kit, and handoff template.
 - **Header Update:** Now reads "AEO ANALYZERS" matching the domain `aeoanalyzers.com`.
-- **New Positioning:** "Multiple AI Engines. One Score. 90 Seconds." — emphasizes multi-engine simulation vs single-algorithm legacy tools, and the speed advantage over manual web team audits.
+- **New Positioning:** "Multiple AI Engines. One Score. 90 Seconds." (retired wording; the AEO Score uses one model per analysis, and Citation Sweeps ask the real engines) — emphasized speed, and the speed advantage over manual web team audits.
 - **Updated SEO:** All meta descriptions, OpenGraph tags, JSON-LD structured data, and page titles updated with new messaging.
 
 ### Analysis & Reporting

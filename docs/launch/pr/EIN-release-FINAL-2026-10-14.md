@@ -87,8 +87,7 @@ Hiebert, Founder of PIGENAI LLC.
 The company states plainly that a category score of zero is a starting position rather than a
 verdict, and it declines to build features that game answer engines instead of measuring them.
 
-AEO Analyzers is free to try, with the diagnosis available without an account. A Day Pass is $24
-for 24 hours of full access, and subscriptions are $49 per month for Pro and $199 per month for
+AEO Analyzers is free to try, with the diagnosis available without an account. A Day Pass gives 24 hours of full access, and Pro and Business are monthly subscriptions (prices: https://aeoanalyzers.com/pricing); see
 Business. Anyone can [run a free AI-visibility check](https://aeoanalyzers.com) today.
 
 > **Body word count: 591** (limit 1,000) ✅ — counted with links flattened, as the builder emits them.
@@ -166,7 +165,7 @@ Checked against the shipped code on Sep 7 2026. The wire is immutable, so each o
 | Reports which competitors are named instead | `detectCompetitors` / per-engine `competitorCounts` |
 | Every number backed by a stored transcript | transcripts returned and persisted to `sweep_results` |
 | Diagnosis free without an account | `api/run-sweep.ts` — no session resolves to a free quick check rather than a paywall |
-| Day Pass $24 · Pro $49 · Business $199 | `STATUS.md`, live Stripe price IDs |
+| [current prices](https://aeoanalyzers.com/pricing) | `STATUS.md`, live Stripe price IDs |
 | The August and September measurement figures | `docs/baselines/aeoanalyzers-SERIES-ANCHOR-2026-08-01.json` and `aeoanalyzers-2026-09-01.json` |
 
 ## 6 · Ruling log
@@ -182,7 +181,7 @@ Checked against the shipped code on Sep 7 2026. The wire is immutable, so each o
 | ✅ | How is the competitor sentence phrased? | **What we do and verified, never what another tool lacks — date-stamped "As of October 2026".** Precedent: "No other tool measures this" went false when Profound shipped FactCheck on Jul 14 2026. That claim was on an editable surface; a wire release is not. A claim about our own behaviour stays true because we control it. | Sep 7 2026 |
 | ✅ | Do the anchor targets exist? | **Checked live Sep 7 2026.** `/blog/how-it-works` and `/blog/reading-isnt-citing` are real prerendered pages. `/how-it-works`, `/evidence` and `/methodology` are **not pages** — they serve the homepage shell. Anchors rewritten to the two that exist. | Sep 7 2026 |
 | ⛔ | **`/press` does not exist but IS in `public/sitemap.xml`.** | **Blocker, two ways.** The playbook requires `/press` live before the wire, and this release has nowhere to point. Separately, a sitemap entry that resolves to the homepage shell is a broken promise to the crawlers this product exists to measure. Build `/press` before T-5, or remove it from the sitemap. | open |
-| ✅ | Which prices does the wire freeze? | **Day Pass $24 · Pro $49/mo · Business $199/mo.** Confirmed in three independent places in the shipped code: `src/components/Payments.tsx` (the checkout UI), `src/components/MarketingLanding.tsx` (public copy), and `src/lib/json-ld.ts` (the structured data we serve). **The $250 AI Visibility Executive Report is NOT live** — it is the planned next product in `STATUS.md` (WO-AEO-EXECREPORT-001). Likely source of the confusion: the Stripe env var is named `VITE_STRIPE_PRICE_ID_REPORT` but maps to the **$24 Day Pass**. | Sep 7 2026 |
+| ✅ | Which prices does the wire freeze? | **The prices then listed** (current: https://aeoanalyzers.com/pricing). Confirmed in three independent places in the shipped code: `src/components/Payments.tsx` (the checkout UI), `src/components/MarketingLanding.tsx` (public copy), and `src/lib/json-ld.ts` (the structured data we serve). **The planned AI Visibility Executive Report is NOT live** — it is the planned next product in `STATUS.md` (WO-AEO-EXECREPORT-001). Likely source of the confusion: the Stripe env var is named `VITE_STRIPE_PRICE_ID_REPORT` but maps to the **Day Pass**. | Sep 7 2026 |
 | ⚑ | Is `press@aeoanalyzers.com` forwarding and tested? | Required before submission. | open |
 | ⚑ | Alt text for both images | Write from the actual pixels once the renders exist. | open |
 | ⚑ | Overview video | Optional. Omit the field if no public YouTube video exists. | open |

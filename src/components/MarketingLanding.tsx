@@ -82,8 +82,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
   return (
     <div className="space-y-24 pb-24">
       <SEO
-        title="Be the Answer AI Gives"
-        description="AEO Analyzers scores how citable your site is, then measures it with Citation Sweeps: five answer engines on Pro and Business, four on the Day Pass."
+        description="AEO Analyzers is the free AEO checker for ChatGPT, Claude, Perplexity and Gemini: see if your site is ready to be cited, then measure what the engines say."
         ogType="website"
         author="Lindsay Hiebert"
         publishedDate="2026-03-22T00:00:00Z"
@@ -145,11 +144,14 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           <a 
             href="#why-aeo"
             aria-label="Learn why AEO matters"
-            className="w-full sm:w-auto px-12 py-6 rounded-2xl font-black transition-all flex items-center justify-center gap-3 border border-zinc-200 text-zinc-400 hover:border-zinc-900 hover:text-zinc-900 text-xl uppercase tracking-tight"
+            className="w-full sm:w-auto px-12 py-6 rounded-2xl font-black transition-all flex items-center justify-center gap-3 border border-zinc-300 text-zinc-700 hover:border-zinc-900 hover:text-zinc-900 text-xl uppercase tracking-tight"
           >
             Learn Why It Matters
           </a>
         </motion.div>
+        <p className="mt-6 text-sm text-zinc-700">
+          Or go straight to the <a href="/aeo-checker" className="font-bold text-zinc-900 underline underline-offset-2">Free AEO Checker</a> and check any page.
+        </p>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

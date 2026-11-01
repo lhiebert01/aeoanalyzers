@@ -63,7 +63,7 @@ Traditional SEO tools were built for a world that no longer exists. They analyze
 
 Here's what they don't do:
 
-- They don't simulate how AI engines parse your content
+- They don't check how AI engines read your content
 - They don't measure Citation Probability
 - They don't generate Schema.org markup for you
 - They don't tell you why an AI chose your competitor over you
@@ -71,13 +71,13 @@ Here's what they don't do:
 
 Most critically: **they run a single algorithm.** One set of rules. One perspective.
 
-AEO Analyzers runs multiple AI engine simulations. Because Gemini doesn't parse your site the same way ChatGPT does. And Perplexity has its own set of priorities. A single-algorithm tool gives you a single point of failure. We give you the full picture.
+AEO Analyzers (as of this post, March 2026) scored a page with one model per analysis. Today, Citation Sweeps ask the real answer engines and store every answer.
 
 That's why it's Analyzer**s**, plural.
 
 ## The Competitive Duel: Your Secret Weapon
 
-Here's my favorite feature. Enter your URL and a competitor's URL. We run both through the same AI simulation and give you a head-to-head verdict.
+Here's my favorite feature. Enter your URL and a competitor's URL. We run both through the same analysis and give you a head-to-head verdict.
 
 You don't just see your score — you see exactly where your competitor is beating you and why. Maybe they have better Schema.org implementation. Maybe their content has higher factual density. Maybe their semantic HTML structure gives AI agents a clearer picture.
 
@@ -92,7 +92,7 @@ Whatever it is, you'll know in 90 seconds. And you'll have the code to fix it.
 | **Legacy SEO tool** | Ongoing subscription | $100-$500/month | Wrong problem |
 | **AEO Analyzers** | 90 seconds | Starting free | Actionable, multi-engine results |
 
-We're not saying fire your web team. We're saying arm them with the right intelligence. Give them 90 seconds of AI simulation instead of 90 days of guesswork.
+We're not saying fire your web team. We're saying arm them with the right intelligence. Give them a measured starting point instead of 90 days of guesswork.
 
 ## Try It Now
 

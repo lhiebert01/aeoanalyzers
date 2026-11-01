@@ -22,7 +22,7 @@ import type { FactDensityAudit } from './factDensity';
 import { extractBeliefs, beliefsMarkdown, flaggedWrongValues, flaggedSiteValues } from './beliefs';
 import { buildDoNowPlan, type DoNowStep } from './doNowPlan';
 import { displayQuestion, sweepAgendaBlocks, renderOwnerGroups, MEASURE_AGAIN, type SweepActionInputs } from './sweepActions';
-import { coverageHeadline, coverageAction, corroboration, corroborationLine, vendorBase, vendorBaseLine } from './sourceCoverage';
+import { coverageHeadline, coverageAction, corroboration, corroborationLine, vendorBase, vendorBaseLine, coverageKind, categoryVendorDomains, COVERAGE_KIND_LABEL } from './sourceCoverage';
 import type { WatchFigure, OwnerTag } from './ownerTags';
 import { measuredAfter, recordSection, type RecordEntry, type SweepFigures } from './theRecord';
 import { doNowChecklist } from './doNowChecklist';
@@ -114,6 +114,12 @@ function plan(inp: SweepReportInputs) {
   });
 }
 
+/** The category's vendors for this sweep (entered + recommended), for the coverage labels. */
+function vendorsFor(inp: SweepReportInputs): string[] {
+  const sc = sweepScorecard(inp.result.runs, { domain: inp.result.domain, brand: inp.result.brand || undefined }, inp.competitors);
+  return categoryVendorDomains(inp.competitors, sc.topCompetitors);
+}
+
 function agendaInputs(inp: SweepReportInputs): SweepActionInputs {
   const { result: r, fidelity, entityLinking, authority, truth, ownedDomains } = inp;
   const sc = sweepScorecard(r.runs, { domain: r.domain, brand: r.brand || undefined }, inp.competitors);
@@ -128,12 +134,13 @@ function agendaInputs(inp: SweepReportInputs): SweepActionInputs {
     brand: r.brand || undefined,
     domain: r.domain,
     served: truth ? { hasOrg: truth.hasOrganization, hasOrgId: truth.hasOrgId, hasDisambiguation: truth.hasDisambiguation, sameAs: truth.sameAs, ownedDomains } : undefined,
+    competitorNames: inp.competitors.map((c) => c.name),
   };
 }
 
 /** WO-012 G: every action this sweep's report lists, keyed, for "Mark done". */
 export function recordActions(inp: SweepReportInputs): { key: string; title: string; owner: OwnerTag }[] {
-  const cov = inp.sourceCoverage ? coverageAction(inp.sourceCoverage) : null;
+  const cov = inp.sourceCoverage ? coverageAction(inp.sourceCoverage, vendorsFor(inp)) : null;
   return [
     ...plan(inp).steps.map((st) => ({ key: `plan:${st.what.slice(0, 80)}`, title: st.what, owner: st.owner })),
     ...sweepAgendaBlocks(agendaInputs(inp)).map((b) => ({ key: `agenda:${b.key}`, title: b.title, owner: b.owner })),
@@ -367,9 +374,10 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
       out.push('');
       if (cov.rows.length) {
         const label = { yes: 'Yes', no: 'No', unreadable: 'Could not read' } as const;
-        out.push('| Site | Times cited | Engines citing | Page read | Names you | Fetched |');
-        out.push('|---|---|---|---|---|---|');
-        for (const row of cov.rows) out.push(`| ${row.host} | ${row.timesCited} | ${row.engines.map((e) => ENGINE_LABEL[e] || e).join(', ')} | ${row.url} | ${label[row.verdict]}${row.reason ? ` (${row.reason})` : ''} | ${cov.fetchedAt.slice(0, 10)} |`);
+        const vendors = vendorsFor(inp);
+        out.push('| Site | Kind | Times cited | Engines citing | Page read | Names you | Fetched |');
+        out.push('|---|---|---|---|---|---|---|');
+        for (const row of cov.rows) out.push(`| ${row.host} | ${COVERAGE_KIND_LABEL[coverageKind(row.host, vendors)]} | ${row.timesCited} | ${row.engines.map((e) => ENGINE_LABEL[e] || e).join(', ')} | ${row.url} | ${label[row.verdict]}${row.reason ? ` (${row.reason})` : ''} | ${cov.fetchedAt.slice(0, 10)} |`);
         out.push('');
       }
     } else {
@@ -405,7 +413,7 @@ function buildSweepReportRaw(inp: SweepReportInputs): string {
         lines: [step.explainer, '', `- Moves: ${MOVES[step.moves]}`, `- Why it matters for AI answers: ${step.why}`, ...(step.link ? [`- Link: ${step.link}`] : []), `- Time: ${step.time}`, `- What changes: ${step.changes}`, `- What does NOT change: ${step.doesNotChange}`],
       })),
       ...sweepAgendaBlocks(agendaInputs(inp)),
-      ...(() => { const a = inp.sourceCoverage ? coverageAction(inp.sourceCoverage) : null; return a ? [{ owner: 'Outreach' as const, watch: 'coverage' as const, title: a.title, lines: a.items.map((i) => `- ${i}`) }] : []; })(),
+      ...(() => { const a = inp.sourceCoverage ? coverageAction(inp.sourceCoverage, vendorsFor(inp)) : null; return a ? [{ owner: 'Outreach' as const, watch: 'coverage' as const, title: a.title, lines: a.items.map((i) => `- ${i}`) }] : []; })(),
     ];
     out.push(...renderOwnerGroups(actions));
     if (p.noChannelNote) { out.push(p.noChannelNote); out.push(''); }

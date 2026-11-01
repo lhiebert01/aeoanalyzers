@@ -34,7 +34,7 @@ We ran this on ourselves 240 times. AI finds us by name 98% of the time. On unbr
 
 Read the full breakdown and check your own domain free → https://aeoanalyzers.com/blog/what-you-actually-get
 
-*AEO Analyzers was created and is solely maintained by Lindsay Hiebert, founder of PI GenAI LLC.*
+*AEO Analyzers was created and is solely maintained by Lindsay Hiebert, founder of PIGENAI LLC.*
 
 ---
 
