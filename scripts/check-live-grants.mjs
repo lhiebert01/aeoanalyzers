@@ -8,7 +8,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 
 export const ALLOWED = {
-  users: ['INSERT', 'SELECT', 'UPDATE'],
+  users: ['SELECT'],
   analysis_history: ['INSERT', 'SELECT'],
   citation_sweeps: ['SELECT', 'UPDATE'],
   sweep_results: ['SELECT'],
@@ -16,9 +16,23 @@ export const ALLOWED = {
   search_standing: ['INSERT', 'SELECT'],
 };
 
+// Column-level writes (supabase/migrations/20261102130000_users_column_writes.sql).
+export const COLUMNS = {
+  users: { INSERT: ['display_name', 'email', 'id', 'role', 'subscription_status'], UPDATE: ['last_analysis_at', 'usage_count'] },
+};
+
 export function violations(rows) {
   const out = [];
   for (const r of rows) {
+    if (String(r.kind || '').startsWith('col:')) {
+      const priv = r.kind.slice(4);
+      if (r.grantee === 'anon') { out.push(`anon holds ${priv} on ${r.table_name}(${r.privs})`); continue; }
+      if ((ALLOWED[r.table_name] || []).includes(priv)) continue;
+      const ok = (COLUMNS[r.table_name] || {})[priv] || [];
+      const extra = String(r.privs).split(',').filter((c) => c && !ok.includes(c));
+      if (extra.length) out.push(`authenticated holds ${priv} on ${r.table_name}(${extra.join(', ')}) (allowed columns: ${ok.join(', ') || 'none'})`);
+      continue;
+    }
     const privs = String(r.privs).split(',').filter(Boolean);
     if (r.grantee === 'anon') { out.push(`anon holds ${privs.join(', ')} on ${r.table_name}`); continue; }
     const allowed = ALLOWED[r.table_name] || [];
@@ -35,7 +49,8 @@ async function main() {
   const envUrl = process.env.VITE_SUPABASE_URL || (existsSync('.env') ? (readFileSync('.env', 'utf8').match(/^VITE_SUPABASE_URL=(.*)$/m) || [])[1] : '');
   const ref = String(envUrl || '').replace(/^https?:\/\//, '').split('.')[0];
   if (!ref) { console.error('check:grants:live: no VITE_SUPABASE_URL'); process.exit(1); }
-  const query = `select table_name, grantee, string_agg(privilege_type, ',' order by privilege_type) privs from information_schema.role_table_grants where table_schema='public' and grantee in ('anon','authenticated') group by table_name, grantee`;
+  const query = `select 'grant' kind, table_name, grantee, string_agg(privilege_type, ',' order by privilege_type) privs from information_schema.role_table_grants where table_schema='public' and grantee in ('anon','authenticated') group by table_name, grantee
+    union all select 'col:' || privilege_type, table_name, grantee, string_agg(column_name, ',' order by column_name) from information_schema.column_privileges where table_schema='public' and grantee in ('anon','authenticated') group by privilege_type, table_name, grantee`;
   const r = await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) });
   if (!r.ok) { console.error(`check:grants:live: query failed (HTTP ${r.status})`); process.exit(1); }
   const v = violations(await r.json());
