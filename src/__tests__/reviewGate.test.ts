@@ -133,8 +133,8 @@ describe('buyer series pages carry real social images', () => {
     for (const s of SLUGS) {
       const html = readFileSync(resolve(ROOT, `public/${s}/index.html`), 'utf8');
       // WO-016 (Nov 2026): each page's share card is the new text-free art with the title set in code.
-      // A regenerated card gets a new filename (-2026-11b) so LinkedIn fetches it fresh.
-      expect(html, `${s} og:image`).toMatch(new RegExp(`property="og:image" content="https://aeoanalyzers\\.com/img/blog/2026-11/og-${s}-2026-11b?\\.jpg"`));
+      // A regenerated card gets a new filename (-2026-11b, -2026-11c) so LinkedIn fetches it fresh.
+      expect(html, `${s} og:image`).toMatch(new RegExp(`property="og:image" content="https://aeoanalyzers\\.com/img/blog/2026-11/og-${s}-2026-11[bc]?\\.jpg"`));
       for (const t of ['og:image:width','og:image:height','og:image:type','og:image:alt','twitter:card','twitter:image']) {
         expect(html, `${s} missing ${t}`).toContain(t);
       }
@@ -142,9 +142,13 @@ describe('buyer series pages carry real social images', () => {
   });
 
   it('the declared image files exist on disk at the exact declared size', () => {
+    // The files each page actually declares (share card and hero), not a guessed filename.
     for (const s of SLUGS) {
-      expect(existsSync(resolve(ROOT, `public/img/blog/2026-11/og-${s}-2026-11.jpg`)) || existsSync(resolve(ROOT, `public/img/blog/2026-11/og-${s}-2026-11b.jpg`)), `${s} OG file`).toBe(true);
-      expect(existsSync(resolve(ROOT, `public/img/blog/2026-11/${s}-hero.webp`)), `${s} hero file`).toBe(true);
+      const html = readFileSync(resolve(ROOT, `public/${s}/index.html`), 'utf8');
+      const og = html.match(/property="og:image" content="https:\/\/aeoanalyzers\.com([^"]+)"/)![1];
+      const hero = html.match(/<figure class="posthero"><img src="([^"]+)"/)![1];
+      expect(existsSync(resolve(ROOT, `public${og}`)), `${s} OG file ${og}`).toBe(true);
+      expect(existsSync(resolve(ROOT, `public${hero}`)), `${s} hero file ${hero}`).toBe(true);
     }
   });
 

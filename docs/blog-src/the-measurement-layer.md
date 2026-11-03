@@ -10,14 +10,14 @@ seo_title: "We Tested Our AI Visibility. The Result Was Zero | AEO Analyzers"
 meta_description: "AI engines found us by name but did not recommend us in our category test. What a 14-point panel effect and 0.9 points of drift teach about AI visibility."
 og_image: /og/og-the-measurement-layer-v2.png
 og_alt: "A buyer question feeds AI answer cards linked to a measurement receipt showing the engine panel and source evidence."
-hero_image: /images/blog/hero-the-measurement-layer-v2.png
-hero_alt: "A buyer question, three engine answers tagged searched or from memory, and the panel receipt: 4 engines, 200 answers, 13 Oct 2026, sources read."
+hero_image: /images/blog/hero-the-measurement-layer-2026-11c.webp
+hero_alt: "The engines are already describing you. Read the transcript. Category answers per engine on 13 October 2026, searched versus answered from memory: ChatGPT 38 searched, 12 from memory (of 50); Claude 50 searched, 0 from memory (of 50); Perplexity 50 searched, 0 from memory (of 50); Gemini 50 searched, 0 from memory (of 50). Every transcript stored."
 hero_caption: "Our own site, 13 October 2026, panel v1.1. Figures and transcripts on /evidence."
-opening_embed_image: /images/blog/embed-recognized-not-recommended.png
-opening_embed_alt: "Asked by name: found 75%. Asked by category: recommended 0% in test. Known when named, missing from the shortlist."
+opening_embed_image: /images/blog/embed-recognized-not-recommended-2026-11c.webp
+opening_embed_alt: "Being recognized is not being recommended. Asked by name: found in 30 of 40 answers (75%). Asked by category: recommended in 0 of 200 answers. 13 October 2026."
 opening_embed_caption: "Found by name on 30 of 40 answers; recommended on 0 of 200 category answers. 13 October 2026, four engines."
-embed_image: /images/blog/embed-measurement-architecture.png
-embed_alt: "One score is not a measurement: inputs (buyer questions, engine panel, repeated runs, score) produce evidence (transcripts, searched versus memory, cited sources, sample and drift) which produces the diagnosis (missing mentions, source gaps, priority actions)."
+embed_image: /images/blog/embed-measurement-architecture-2026-11c.webp
+embed_alt: "One score is not a measurement. The evidence tells you what to fix. Inputs (buyer questions, engine panel, repeated runs) produce evidence (transcripts, searched or from memory, cited sources, sample and drift), which produces the diagnosis (missing mentions, source gaps, priority actions)."
 search_themes: "AI visibility measurement; AI recommendation tracking; answer engine optimization; AI answer transcripts; AI search visibility"
 rules: "No prices. Measure and manage claimed; improve never. Only figures on /evidence. No named competitors, no negative language about other tools or practitioners. Section marked EXHIBIT is filled by the agent from a stored transcript before publishing; nothing illustrative is presented as measured."
 ---

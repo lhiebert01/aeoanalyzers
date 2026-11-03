@@ -51,6 +51,15 @@ export function check(sqlRaw) {
     if (!new RegExp(String.raw`\bgrant\s+execute\s+on\s+function\s+${NAME.replace('([a-z_][a-z0-9_]*)', n)}\b`).test(sql))
       warnings.push(`function public.${n} has no GRANT EXECUTE (fine unless it is called as an RPC)`);
   }
+  // Founder ruling (Nov 2, 2026): the API roles never get TRUNCATE (row-level security does not apply
+  // to it), REFERENCES, TRIGGER, MAINTAIN or ALL, and anon gets nothing on a table, view or sequence.
+  for (const stmt of sql.split(';')) {
+    const g = stmt.match(/\bgrant\s+([\s\S]*?)\bon\s+(?:table\s+|sequence\s+|all\s+tables\s+in\s+schema\s+|all\s+sequences\s+in\s+schema\s+)?[\s\S]*?\bto\s+([\s\S]*)$/);
+    if (!g || /\bon\s+(function|schema|all\s+functions)\b/.test(stmt)) continue;
+    const privs = g[1]; const to = g[2];
+    if (/\banon\b/.test(to)) errors.push(`grants table or sequence privileges to anon (anon needs none): ${stmt.trim().slice(0, 90)}`);
+    if (/\b(anon|authenticated)\b/.test(to) && /\b(truncate|references|trigger|maintain|all)\b/.test(privs)) errors.push(`grants TRUNCATE, REFERENCES, TRIGGER, MAINTAIN or ALL to an API role: ${stmt.trim().slice(0, 90)}`);
+  }
   return { errors, warnings };
 }
 
@@ -69,7 +78,9 @@ grant select on public.note_count, tags to authenticated;`;
 create or replace function public.bump() returns void language sql as $$ select 1 $$;`;
   const g = check(good);
   const b = check(bad);
-  const ok = g.errors.length === 0 && b.errors.length === 3 && b.warnings.length === 1;
+  const priv = check(`grant all on table public.notes to authenticated; grant truncate on public.notes to authenticated; grant select on public.notes to anon;`);
+  const ok = g.errors.length === 0 && b.errors.length === 3 && b.warnings.length === 1 && priv.errors.length === 3;
+  console.log(`self-test: privilege fixture ${priv.errors.length} errors (expected 3)`);
   console.log(`self-test: passing fixture ${g.errors.length} errors; failing fixture ${b.errors.length} errors, ${b.warnings.length} warning`);
   for (const e of b.errors) console.log(`  (expected) ${e}`);
   if (!ok) { console.error('self-test FAILED'); process.exit(1); }

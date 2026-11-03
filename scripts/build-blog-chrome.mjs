@@ -278,7 +278,7 @@ const ldH = { '@context': 'https://schema.org', '@graph': [
   { '@type': 'CollectionPage', '@id': SITE + '/blog/how-to', url: SITE + '/blog/how-to', name: 'How to guides', description: desc, isPartOf: { '@id': SITE + '/#website' }, publisher: { '@id': 'https://pigenai.com/#org' } },
   { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' }, { '@type': 'ListItem', position: 2, name: 'Blog', item: SITE + '/blog/' }, { '@type': 'ListItem', position: 3, name: 'How to', item: SITE + '/blog/how-to' }] },
 ] };
-const og = howArt ? SITE + howArt.og : SITE + '/og-home-2026-11.jpg';
+const og = howArt ? SITE + howArt.og : SITE + '/og-home-2026-11c.jpg';
 const ogAlt = howArt ? howArt.ogAlt : 'AEO Analyzers: How to guides.';
 const htmlHowto = `<!doctype html>
 <html lang="en">

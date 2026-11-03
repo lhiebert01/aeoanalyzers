@@ -1,277 +1,509 @@
 {
-  "/aeo-buyers-guide": {
-    "slug": "aeo-buyers-guide",
-    "hero": "/img/blog/2026-11/aeo-buyers-guide-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A stack of seven flat panels on a dark navy background: a lit light grey panel on top, then alternating teal-green and purple panels below.",
-    "og": "/img/blog/2026-11/og-aeo-buyers-guide-2026-11b.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: The AEO Buyer’s Guide: three short reads. A stack of seven flat panels on a dark navy background: a lit light grey panel on top, then alternating teal-green and purple panels below."
-  },
-  "/what-should-an-aeo-tool-do": {
-    "slug": "what-should-an-aeo-tool-do",
-    "hero": "/img/blog/2026-11/what-should-an-aeo-tool-do-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "Three upright geometric panels standing side by side on a dark navy background, one teal-green, one purple and one light grey.",
-    "og": "/img/blog/2026-11/og-what-should-an-aeo-tool-do-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: What Should an AEO Tool Actually Do? Three upright geometric panels standing side by side on a dark navy background, one teal-green, one purple and one light grey."
-  },
-  "/blog/why-ai-doesnt-mention-you": {
-    "slug": "why-ai-doesnt-mention-you",
-    "hero": "/img/blog/2026-11/why-ai-doesnt-mention-you-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A soft beam of light falling across a wide field of square tiles, lighting only the nearest few in teal-green and purple.",
-    "og": "/img/blog/2026-11/og-why-ai-doesnt-mention-you-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: Why AI Still Doesn’t Mention Your Business. A soft beam of light falling across a wide field of square tiles, lighting only the nearest few in teal-green and purple."
-  },
-  "/monitor-brand-in-chatgpt-and-claude": {
-    "slug": "monitor-brand-in-chatgpt-and-claude",
-    "hero": "/img/blog/2026-11/monitor-brand-in-chatgpt-and-claude-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A ring of blank teal-green and purple cards circling one larger teal-green card on a dark navy background.",
-    "og": "/img/blog/2026-11/og-monitor-brand-in-chatgpt-and-claude-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: How to monitor whether your brand appears in ChatGPT and Claude responses. A ring of blank teal-green and purple cards circling one larger teal-green card on a dark navy background."
-  },
-  "/track-brand-mentions-across-ai-answer-engines": {
-    "slug": "track-brand-mentions-across-ai-answer-engines",
-    "hero": "/img/blog/2026-11/track-brand-mentions-across-ai-answer-engines-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "Parallel diagonal lanes of stacked cards in teal-green, purple and grey, with one lane in the foreground faded and dim.",
-    "og": "/img/blog/2026-11/og-track-brand-mentions-across-ai-answer-engines-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: How to track and analyze brand mentions across AI answer engines. Parallel diagonal lanes of stacked cards in teal-green, purple and grey, with one lane in the foreground faded and dim."
-  },
-  "/score-pages-for-answer-engine-readiness": {
-    "slug": "score-pages-for-answer-engine-readiness",
-    "hero": "/img/blog/2026-11/score-pages-for-answer-engine-readiness-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A tilted light grey outline of a page on a dark navy background, crossed by two teal-green beams and one purple beam of light.",
-    "og": "/img/blog/2026-11/og-score-pages-for-answer-engine-readiness-2026-11b.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: Is there an analyzer that scores your pages for answer engine readiness? A tilted light grey outline of a page on a dark navy background, crossed by two teal-green beams and one purple beam of light."
-  },
-  "/diagnose-dropped-out-of-perplexity-citations": {
-    "slug": "diagnose-dropped-out-of-perplexity-citations",
-    "hero": "/img/blog/2026-11/diagnose-dropped-out-of-perplexity-citations-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A row of upright cards in teal-green, purple and grey with one card tipped forward out of line.",
-    "og": "/img/blog/2026-11/og-diagnose-dropped-out-of-perplexity-citations-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: How to diagnose why you dropped out of Perplexity citations. A row of upright cards in teal-green, purple and grey with one card tipped forward out of line."
-  },
-  "/ai-answers-get-facts-wrong-about-my-brand": {
-    "slug": "ai-answers-get-facts-wrong-about-my-brand",
-    "hero": "/img/blog/2026-11/ai-answers-get-facts-wrong-about-my-brand-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A neat row of teal-green and grey cards in which one card sits slightly raised, with a purple card misaligned behind it.",
-    "og": "/img/blog/2026-11/og-ai-answers-get-facts-wrong-about-my-brand-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: Which tools show where AI answers get facts wrong about your brand? A neat row of teal-green and grey cards in which one card sits slightly raised, with a purple card misaligned behind it."
-  },
-  "/competitive-prompt-benchmarking": {
-    "slug": "competitive-prompt-benchmarking",
-    "hero": "/img/blog/2026-11/competitive-prompt-benchmarking-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "Rows of identical light grey card frames laid out in perspective on dark navy, with three cards in one row glowing teal-green.",
-    "og": "/img/blog/2026-11/og-competitive-prompt-benchmarking-2026-11b.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: Competitive prompt benchmarking for AI answer engines: what it is and what to look for. Rows of identical light grey card frames laid out in perspective on dark navy, with three cards in one row glowing teal-green."
-  },
-  "/guides/directory-listings": {
-    "slug": "guide-directory-listings",
-    "hero": "/img/blog/2026-11/guide-directory-listings-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A grid of directory cards in teal-green, purple and light grey on a dark navy background, three of them lit from within.",
-    "og": "/img/blog/2026-11/og-guide-directory-listings-2026-11b.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: How to list your business on directories, step by step. A grid of directory cards in teal-green, purple and light grey on a dark navy background, three of them lit from within."
-  },
-  "/guides/wikidata": {
-    "slug": "guide-wikidata",
-    "hero": "/img/blog/2026-11/guide-wikidata-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "One central teal-green and grey slab linked by fine lines to small geometric nodes around it.",
-    "og": "/img/blog/2026-11/og-guide-wikidata-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: How to create your company's Wikidata entry, step by step. One central teal-green and grey slab linked by fine lines to small geometric nodes around it."
-  },
-  "/evidence": {
-    "slug": "evidence",
-    "hero": "/img/blog/2026-11/evidence-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A long row of cards receding into the distance, each with a teal-green or purple top band.",
-    "og": "/img/blog/2026-11/og-evidence-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: Our own numbers, every month. A long row of cards receding into the distance, each with a teal-green or purple top band."
-  },
-  "/blog/found-not-recommended": {
-    "slug": "found-not-recommended",
-    "hero": "/img/blog/2026-11/found-not-recommended-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A light grey archway on a dark navy background: a lit teal-green path runs from it to an open purple card on a raised block, while a short second route ends at a closed stack of purple cards.",
-    "og": "/img/blog/2026-11/og-found-not-recommended-2026-11b.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: Optimizing your website gets you found. It does not get you recommended. A light grey archway on a dark navy background: a lit teal-green path runs from it to an open purple card on a raised block, while a short second route ends at a closed stack of purple cards."
-  },
-  "/blog/i-scored-zero": {
-    "slug": "i-scored-zero",
-    "hero": "/img/blog/2026-11/i-scored-zero-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A wall of rectangular tiles in grey, purple and teal-green, with one small tile in the middle glowing.",
-    "og": "/img/blog/2026-11/og-i-scored-zero-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: I Ran My Own AI-Visibility Tool on My Own Site. It Scored 0%. A wall of rectangular tiles in grey, purple and teal-green, with one small tile in the middle glowing."
-  },
-  "/blog/reading-isnt-citing": {
-    "slug": "reading-isnt-citing",
-    "hero": "/img/blog/2026-11/reading-isnt-citing-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "An angled view of stacked purple, teal-green and grey blocks, with one small card glowing teal-green among them.",
-    "og": "/img/blog/2026-11/og-reading-isnt-citing-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: The Engines Read My Site. Reading Isn't Citing. An angled view of stacked purple, teal-green and grey blocks, with one small card glowing teal-green among them."
-  },
-  "/blog/the-fifth-engine": {
-    "slug": "the-fifth-engine",
-    "hero": "/img/blog/2026-11/the-fifth-engine-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "Five identical light grey rounded frames in a row on dark navy, the fifth edged and glowing in teal-green.",
-    "og": "/img/blog/2026-11/og-the-fifth-engine-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: We added a fifth AI engine. Here is what changed, and what did not. Five identical light grey rounded frames in a row on dark navy, the fifth edged and glowing in teal-green."
-  },
-  "/blog/the-measurement-layer": {
-    "slug": "the-measurement-layer",
-    "hero": "/img/blog/2026-11/the-measurement-layer-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "Three translucent panels of light standing in a row at an angle, shifting from teal-green to purple.",
-    "og": "/img/blog/2026-11/og-the-measurement-layer-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: We Built an AI Visibility Tool. Then We Tested Ourselves. The Result Was Zero. Three translucent panels of light standing in a row at an angle, shifting from teal-green to purple."
-  },
-  "/blog/one-question-is-not-a-measurement": {
-    "slug": "one-question-is-not-a-measurement",
-    "hero": "/img/blog/2026-11/one-question-is-not-a-measurement-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A grid of small cards on dark navy, some lit in teal-green and purple and the rest dim grey.",
-    "og": "/img/blog/2026-11/og-one-question-is-not-a-measurement-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: One Question Is Not a Measurement. A grid of small cards on dark navy, some lit in teal-green and purple and the rest dim grey."
-  },
-  "/aeo-buyers-standard": {
-    "slug": "aeo-buyers-standard",
-    "hero": "/img/blog/2026-11/aeo-buyers-standard-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "Seven checklist panels in two rows on dark navy, each with a teal-green edge and a purple check mark.",
-    "og": "/img/blog/2026-11/og-aeo-buyers-standard-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: The AEO Buyer’s Standard. Seven checklist panels in two rows on dark navy, each with a teal-green edge and a purple check mark."
-  },
-  "/best-aeo-tools": {
-    "slug": "best-aeo-tools",
-    "hero": "/img/blog/2026-11/best-aeo-tools-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "An open checklist of panels with teal-green check marks, a ruler-like guide standing beside it.",
-    "og": "/img/blog/2026-11/og-best-aeo-tools-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: Best AEO Tools in 2026: What to Compare Before You Buy. An open checklist of panels with teal-green check marks, a ruler-like guide standing beside it."
-  },
-  "/blog/how-it-works": {
-    "slug": "how-it-works",
-    "hero": "/img/blog/2026-11/how-it-works-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "A path of glowing teal-green and purple tiles running through a series of light grey arches.",
-    "og": "/img/blog/2026-11/og-how-it-works-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: How AEO Analyzers Works: The 90-Second Tour of a Hundred-Hour Analysis. A path of glowing teal-green and purple tiles running through a series of light grey arches."
-  },
-  "/blog/what-you-actually-get": {
-    "slug": "what-you-actually-get",
-    "hero": "/img/blog/2026-11/what-you-actually-get-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "Five stacked layers of flat cards, teal-green on top, then purple, then light grey.",
-    "og": "/img/blog/2026-11/og-what-you-actually-get-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: What You Actually Get: The Action Plan Inside Every Citation Sweep. Five stacked layers of flat cards, teal-green on top, then purple, then light grey."
-  },
-  "/blog/are-you-the-answer-ai-gives": {
-    "slug": "are-you-the-answer-ai-gives",
-    "hero": "/img/blog/2026-11/are-you-the-answer-ai-gives-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "Two round gauges facing each other, one teal-green and one purple, each with a single needle and no markings.",
-    "og": "/img/blog/2026-11/og-are-you-the-answer-ai-gives-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: Is your brand the answer AI gives — or is a competitor? Two round gauges facing each other, one teal-green and one purple, each with a single needle and no markings."
-  },
-  "/get-recommended": {
-    "slug": "get-recommended",
-    "hero": "/img/blog/2026-11/get-recommended-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "Three flat stepping stones crossing calm water, each a little brighter, the last glowing teal-green.",
-    "og": "/img/blog/2026-11/og-get-recommended-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: How AI engines choose who to recommend, and what you can do about it. Three flat stepping stones crossing calm water, each a little brighter, the last glowing teal-green."
-  },
-  "/blog/how-to": {
-    "slug": "how-to",
-    "hero": "/img/blog/2026-11/how-to-hero.webp",
-    "heroW": 1600,
-    "heroH": 900,
-    "heroAlt": "Three shelves of neatly spaced instruction cards in light grey with teal-green and purple blocks.",
-    "og": "/img/blog/2026-11/og-how-to-2026-11.jpg",
-    "ogW": 1200,
-    "ogH": 630,
-    "ogAlt": "AEO Analyzers: How to guides. Three shelves of neatly spaced instruction cards in light grey with teal-green and purple blocks."
+ "/aeo-buyers-guide": {
+  "slug": "aeo-buyers-guide",
+  "hero": "/img/blog/2026-11/aeo-buyers-guide-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Three short reads before you buy. Three boxes in order: what an AEO tool should do, what to require, how to compare the market.",
+  "og": "/img/blog/2026-11/og-aeo-buyers-guide-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Three short reads before you buy. Three boxes in order: what an AEO tool should do, what to require, how to compare the market.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/aeo-buyers-guide",
+   "headline": "Three short reads before you buy.",
+   "srcSha": "639335c9a2889ddceb9fae47b9b306ccb60c6e2de7729264afda2b71d90c7a6a",
+   "ogSha": "4ab14018b1a45a182de4c386790d8f05b565aacc40737612635d3ee6229698f6",
+   "heroSha": "0d56f0a04846c6feda0aad3100489f27b6c6403693be130ccfbe5ba359415e8e"
   }
+ },
+ "/what-should-an-aeo-tool-do": {
+  "slug": "what-should-an-aeo-tool-do",
+  "hero": "/img/blog/2026-11/what-should-an-aeo-tool-do-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "A mention is not a citation. A citation is not a recommendation. Three boxes in a row: mentioned, cited, recommended, with recommended highlighted.",
+  "og": "/img/blog/2026-11/og-what-should-an-aeo-tool-do-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: A mention is not a citation. A citation is not a recommendation. Three boxes in a row: mentioned, cited, recommended, with recommended highlighted.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/what-should-an-aeo-tool-do",
+   "headline": "A mention is not a citation. A citation is not a recommendation.",
+   "srcSha": "a0ba16e52702b4b0f51c63cece261d950fa361d3e24eafb5828397509e472cd9",
+   "ogSha": "6ff6bc5e955af420e4e366cdea142cdbbccd1893d893ac09f13e4483a21e789e",
+   "heroSha": "b14f39217baf6b261c1dcfaf0e7022563ff4e10083458dccebf171084314d69c"
+  }
+ },
+ "/blog/why-ai-doesnt-mention-you": {
+  "slug": "why-ai-doesnt-mention-you",
+  "hero": "/img/blog/2026-11/why-ai-doesnt-mention-you-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Three gates, in order. Check the first one first. Three gates in order, in the index, retrieved and cited, with the first highlighted as the one to check first.",
+  "og": "/img/blog/2026-11/og-why-ai-doesnt-mention-you-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Three gates, in order. Check the first one first. Three gates in order, in the index, retrieved and cited, with the first highlighted as the one to check first.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/why-ai-doesnt-mention-you",
+   "headline": "Three gates, in order. Check the first one first.",
+   "srcSha": "096186937c9534a4aa860e0f9b6e8516cd1c42d496192ed95f11c216bde16e7f",
+   "ogSha": "8fc818b51c02031468285f31e9636bd523c02e738ac2d5c1f2e8e12ab88de4c7",
+   "heroSha": "c5a5a71ee6e1fb59420488d1288b030423fad271200f7871596ea94defee8144"
+  }
+ },
+ "/monitor-brand-in-chatgpt-and-claude": {
+  "slug": "monitor-brand-in-chatgpt-and-claude",
+  "hero": "/img/blog/2026-11/monitor-brand-in-chatgpt-and-claude-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Ask the buyer’s question. Store every answer. Four boxes in order: the buyer question with web search on, ChatGPT and Claude asked several times each, scored for found by name and recommended, and the stored answer.",
+  "og": "/img/blog/2026-11/og-monitor-brand-in-chatgpt-and-claude-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Ask the buyer’s question. Store every answer. Four boxes in order: the buyer question with web search on, ChatGPT and Claude asked several times each, scored for found by name and recommended, and the stored answer.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/monitor-brand-in-chatgpt-and-claude",
+   "headline": "Ask the buyer’s question. Store every answer.",
+   "srcSha": "d236385a69f29df3c19e231695b553647c3a1405157055b0ffaa0689d00a0bc1",
+   "ogSha": "bcd93a4c9ad72e6dbbe2cf5512c375b6a7c3e63192ca51d2daa83291ec4fa6b0",
+   "heroSha": "9dfc1ce8f7bb6cb14b02c647058fa955507483a7062101412a2f8749838630c6"
+  }
+ },
+ "/track-brand-mentions-across-ai-answer-engines": {
+  "slug": "track-brand-mentions-across-ai-answer-engines",
+  "hero": "/img/blog/2026-11/track-brand-mentions-across-ai-answer-engines-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Count found by name and recommended, separately. Two panels from our own November 2026 measurement: found by name 78% (N=40); recommended in 0 of 200 category answers.",
+  "og": "/img/blog/2026-11/og-track-brand-mentions-across-ai-answer-engines-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Count found by name and recommended, separately. Two panels from our own November 2026 measurement: found by name 78% (N=40); recommended in 0 of 200 category answers.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/track-brand-mentions-across-ai-answer-engines",
+   "headline": "Count found by name and recommended, separately.",
+   "srcSha": "d1f47ce8844e4ae2a964b955cbb7787c0b5bee7d333f3bfbfdcceed1c814d9e9",
+   "ogSha": "af7108062333d6d92ee5cfb2aac93b374ec89e6602b9e7f0857651c4b8aa3278",
+   "heroSha": "3af1709d86141578d4cc009e08303a8f0ff763574da6a8028e06019e52e021bc"
+  }
+ },
+ "/score-pages-for-answer-engine-readiness": {
+  "slug": "score-pages-for-answer-engine-readiness",
+  "hero": "/img/blog/2026-11/score-pages-for-answer-engine-readiness-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Can an engine reach it, read it and attribute it? Three checks in order: reach (crawler access and index), read (answerable content), attribute (structured data).",
+  "og": "/img/blog/2026-11/og-score-pages-for-answer-engine-readiness-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Can an engine reach it, read it and attribute it? Three checks in order: reach (crawler access and index), read (answerable content), attribute (structured data).",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/score-pages-for-answer-engine-readiness",
+   "headline": "Can an engine reach it, read it and attribute it?",
+   "srcSha": "b308cd00b2f64c879f546c25e36a767646111c75a300ed3b7b2951d22acdfb97",
+   "ogSha": "72a2f3c35ba5ef55915dcde8f510cb58277f05e5cc13bf1917a35568e136f41f",
+   "heroSha": "aa3c66e3efc274c2d69eab85b1785bb84b7501a917c7fe3d9ac834aaf2957244"
+  }
+ },
+ "/diagnose-dropped-out-of-perplexity-citations": {
+  "slug": "diagnose-dropped-out-of-perplexity-citations",
+  "hero": "/img/blog/2026-11/diagnose-dropped-out-of-perplexity-citations-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Dropped out of the citations? Check access first. Four steps in order: crawler access, ask the same questions again with several runs, compare the sources cited now, check what the engine says about you.",
+  "og": "/img/blog/2026-11/og-diagnose-dropped-out-of-perplexity-citations-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Dropped out of the citations? Check access first. Four steps in order: crawler access, ask the same questions again with several runs, compare the sources cited now, check what the engine says about you.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/diagnose-dropped-out-of-perplexity-citations",
+   "headline": "Dropped out of the citations? Check access first.",
+   "srcSha": "9df2be7d280f40c510188ca6c2b04e88b277b58584544f04d293f0f5ebe9ffe1",
+   "ogSha": "0f6a5d163d1bc54d6a34ca4d5c4a770f8fdc89dacf9d6f22c7c5f8d492b4338a",
+   "heroSha": "ad89b686f93b954f791e2f46dbd9beb1c036e9ff5eeca0b3667eebd728df2724"
+  }
+ },
+ "/ai-answers-get-facts-wrong-about-my-brand": {
+  "slug": "ai-answers-get-facts-wrong-about-my-brand",
+  "hero": "/img/blog/2026-11/ai-answers-get-facts-wrong-about-my-brand-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Check the answer against your own site. Two panels from our own measurement: Claude’s answer, “an AI simulation engine” in 10 of 10 by-name answers in November 2026, marked as a miss, beside our site’s own description, “Measures what AI answer engines say when buyers ask for a recommendation”.",
+  "og": "/img/blog/2026-11/og-ai-answers-get-facts-wrong-about-my-brand-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Check the answer against your own site. Two panels from our own measurement: Claude’s answer, “an AI simulation engine” in 10 of 10 by-name answers in November 2026, marked as a miss, beside our site’s own description, “Measures what AI answer engines say when buyers ask for a recommendation”.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/ai-answers-get-facts-wrong-about-my-brand",
+   "headline": "Check the answer against your own site.",
+   "srcSha": "09b3e0f7ec4d9802fe497ee41b03c07cbab8905d62dd3a889fce62c0d1139559",
+   "ogSha": "26e0553d02bc58a98df03271607804c376b3e63ec0e6bcdd40a484dd9192d248",
+   "heroSha": "6d2620645bce86c9afbf3779b6b9f8d9e41bf54d0fad6c0b6628b3e5fe35208f"
+  }
+ },
+ "/competitive-prompt-benchmarking": {
+  "slug": "competitive-prompt-benchmarking",
+  "hero": "/img/blog/2026-11/competitive-prompt-benchmarking-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Who gets named instead of you? Four boxes in order: buyer prompts, every engine with several runs, who is named instead and how often, and the sources behind it.",
+  "og": "/img/blog/2026-11/og-competitive-prompt-benchmarking-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Who gets named instead of you? Four boxes in order: buyer prompts, every engine with several runs, who is named instead and how often, and the sources behind it.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/competitive-prompt-benchmarking",
+   "headline": "Who gets named instead of you?",
+   "srcSha": "2e94e6872f2aaa360ee6110fb677143cf6dd6e2c8d341ad9d521c07283df646e",
+   "ogSha": "0e5a7adbb5f14c7496113a3acc77d48b34ad5e15b716e68fe98e74670fb363fa",
+   "heroSha": "fa7133df92636c15983384bcc9e4c2a9cba4bb4b7cbb2d963d99a56c5660b959"
+  }
+ },
+ "/guides/directory-listings": {
+  "slug": "guide-directory-listings",
+  "hero": "/img/blog/2026-11/guide-directory-listings-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "One description, word for word, everywhere. One description box linked to a directory listing, a review site profile and a business profile, each with a check mark.",
+  "og": "/img/blog/2026-11/og-guide-directory-listings-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: One description, word for word, everywhere. One description box linked to a directory listing, a review site profile and a business profile, each with a check mark.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/guides/directory-listings",
+   "headline": "One description, word for word, everywhere.",
+   "srcSha": "2a27bc0a0f85efa4e55cd5e2dcb10fe57c974c155a7768a8f61955c1faa1129a",
+   "ogSha": "4522aff60707cee70321c4de20e2deca8e6142a5b0f16904dbf13c7ffd1920fc",
+   "heroSha": "e64bb5b6265072a924f93c26454e44c1ae8f7de13e14d397dd29a8f347c70d0c"
+  }
+ },
+ "/guides/wikidata": {
+  "slug": "guide-wikidata",
+  "hero": "/img/blog/2026-11/guide-wikidata-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "One entity. Every statement sourced. A Wikidata item box linked to your website, your official name and your founded date, each with a source.",
+  "og": "/img/blog/2026-11/og-guide-wikidata-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: One entity. Every statement sourced. A Wikidata item box linked to your website, your official name and your founded date, each with a source.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/guides/wikidata",
+   "headline": "One entity. Every statement sourced.",
+   "srcSha": "642a242f2f78fb1712e4f375e51a995449df5754c1aa0585f3e15daac9e99c6e",
+   "ogSha": "d2008b950eaf9c528430b55e949e420443489862701a2473a16d01f65c09e465",
+   "heroSha": "d962e204ac3dc8d327946ad949fdce883a6c71b5b8d3e36565a808ab27706b43"
+  }
+ },
+ "/evidence": {
+  "slug": "evidence",
+  "hero": "/img/blog/2026-11/evidence-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Our own numbers, every month, whatever they say. A bar chart of our own monthly measurement: found by name 55% in August, 80% in September, 88% in October, 78% in November (N=40 each, August restated), and recommended in 0 of 200 category answers every month.",
+  "og": "/img/blog/2026-11/og-evidence-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Our own numbers, every month, whatever they say. A bar chart of our own monthly measurement: found by name 55% in August, 80% in September, 88% in October, 78% in November (N=40 each, August restated), and recommended in 0 of 200 category answers every month.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/evidence",
+   "headline": "Our own numbers, every month, whatever they say.",
+   "srcSha": "e0f309f8f4ab8fa718d2f4c4c5e24648ad6eebfe7edaaebe0e18ae1957fddcb4",
+   "ogSha": "7d106ee36d2cfd84eb8a9b3591dd4ba739af6febf2c2cea6475a6725c7c66435",
+   "heroSha": "e35cce5eb6ad71d1733266a2c11e8c420e846413d0990e1e729693f637b32977"
+  }
+ },
+ "/blog/found-not-recommended": {
+  "slug": "found-not-recommended",
+  "hero": "/img/blog/2026-11/found-not-recommended-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Found by name. Not recommended. Two panels from our own measurement: found by name 78% in November 2026 (N=40); recommended in 0 of 200 category answers, every month.",
+  "og": "/img/blog/2026-11/og-found-not-recommended-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Found by name. Not recommended. Two panels from our own measurement: found by name 78% in November 2026 (N=40); recommended in 0 of 200 category answers, every month.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/found-not-recommended",
+   "headline": "Found by name. Not recommended.",
+   "srcSha": "34c63dd7a5fe0b7ecb9c87887ebb9c68b0645fd52695271d2f83d5948d065033",
+   "ogSha": "ad58164949ad61c0744aabc6d65efff7b5c7a060bc3a9fec09bdf7f5b2af1522",
+   "heroSha": "d16478adb933edaaa50720959ad5b71dd999f6ee5aa9c63ce3b4337369237177"
+  }
+ },
+ "/blog/i-scored-zero": {
+  "slug": "i-scored-zero",
+  "hero": "/img/blog/2026-11/i-scored-zero-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "I ran my own tool on my own site. Zero. A bar chart of our own monthly measurement: found by name 55% in August, 80% in September, 88% in October, 78% in November (N=40 each, August restated), and recommended in 0 of 200 category answers every month.",
+  "og": "/img/blog/2026-11/og-i-scored-zero-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: I ran my own tool on my own site. Zero. A bar chart of our own monthly measurement: found by name 55% in August, 80% in September, 88% in October, 78% in November (N=40 each, August restated), and recommended in 0 of 200 category answers every month.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/i-scored-zero",
+   "headline": "I ran my own tool on my own site. Zero.",
+   "srcSha": "b4728317e6ba3b01af8ecf286cbae9bd503d0ec81d004236c3fc50b3e976b174",
+   "ogSha": "0abc5ce7c93f0ee2ea4e25400272b50abd88491089bd1f40fde0ba9a656ef982",
+   "heroSha": "4eebb5168972efd985f6ad7192d1efc3710dc78d59b0b656df111cf3a63396a5"
+  }
+ },
+ "/blog/reading-isnt-citing": {
+  "slug": "reading-isnt-citing",
+  "hero": "/img/blog/2026-11/reading-isnt-citing-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Being read is not being cited. Two boxes: the crawler fetched the page, marked done; the answer cited the page, marked as a miss.",
+  "og": "/img/blog/2026-11/og-reading-isnt-citing-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Being read is not being cited. Two boxes: the crawler fetched the page, marked done; the answer cited the page, marked as a miss.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/reading-isnt-citing",
+   "headline": "Being read is not being cited.",
+   "srcSha": "47debf5315ccf7b3696921c45f4fb8b9f31b00383f8c7a0d2a60cc7ca045588f",
+   "ogSha": "4870c43f578e874b0aca87f38d670d867b77f54b4005149934cbce83ca633e38",
+   "heroSha": "e1ce19a08f199ab7c7c78a6dfd5a562fb20fd3d14467930db5662bc781e24aec"
+  }
+ },
+ "/blog/the-fifth-engine": {
+  "slug": "the-fifth-engine",
+  "hero": "/img/blog/2026-11/the-fifth-engine-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "A new engine starts a new series. Two rows of engines: the series of record (ChatGPT, Claude, Perplexity, Gemini) and the new series, which adds Grok (ChatGPT, Claude, Perplexity, Gemini, Grok), with Grok highlighted.",
+  "og": "/img/blog/2026-11/og-the-fifth-engine-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: A new engine starts a new series. Two rows of engines: the series of record (ChatGPT, Claude, Perplexity, Gemini) and the new series, which adds Grok (ChatGPT, Claude, Perplexity, Gemini, Grok), with Grok highlighted.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/the-fifth-engine",
+   "headline": "A new engine starts a new series.",
+   "srcSha": "1d6448f50a0b092de94e94494244b5900002aed33d8a495f309d304d9e688db0",
+   "ogSha": "2f3e15cd59ef4e5c444582fa5999f394e27aa3568c26fdfe5644baeab1af95a8",
+   "heroSha": "6eae3ac80e2c46f9f0161123cc3d8d703e30a1d311abbea50e68b80a3c731fe4"
+  }
+ },
+ "/blog/the-measurement-layer": {
+  "slug": "the-measurement-layer",
+  "hero": "/img/blog/2026-11/the-measurement-layer-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Three layers, each with its own fix. Three layers in a row: retrievability, fidelity, citation win.",
+  "og": "/img/blog/2026-11/og-the-measurement-layer-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Three layers, each with its own fix. Three layers in a row: retrievability, fidelity, citation win.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/the-measurement-layer",
+   "headline": "Three layers, each with its own fix.",
+   "srcSha": "ca4558f045588f1146dc67c225f1682f04c44682f4037d9679c51a549404821e",
+   "ogSha": "9fc28a67f4afaed86b57e6c17e17d4f61a145bb96c119e02eb3614d7cdf9d4b8",
+   "heroSha": "1108513dc03e3a80fee42fe2dfdd57622cc7fbe4ac988a91cf8747adfd81a504"
+  }
+ },
+ "/blog/one-question-is-not-a-measurement": {
+  "slug": "one-question-is-not-a-measurement",
+  "hero": "/img/blog/2026-11/one-question-is-not-a-measurement-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "One question is not a measurement. One question shown as a single dot, next to a measurement shown as a grid of dots: many questions, every engine, several runs.",
+  "og": "/img/blog/2026-11/og-one-question-is-not-a-measurement-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: One question is not a measurement. One question shown as a single dot, next to a measurement shown as a grid of dots: many questions, every engine, several runs.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/one-question-is-not-a-measurement",
+   "headline": "One question is not a measurement.",
+   "srcSha": "ab6690c719f01fb6bded0e450ca5f70ce98fa266fbd0829e559fbeebd3c58baf",
+   "ogSha": "6db528042ee4601b9c9ade0e762f05ab655e4f76a594bfd2192a25cd193fb640",
+   "heroSha": "c80b0d44f37dfa5a8652905db43050e4788d48a8cc84aa19cdf5c6a3a0cf8b67"
+  }
+ },
+ "/aeo-buyers-standard": {
+  "slug": "aeo-buyers-standard",
+  "hero": "/img/blog/2026-11/aeo-buyers-standard-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Seven requirements. Ask every vendor, us included. Seven numbered requirements: observe, diagnose, remediate, verify, receipts, scale, economics.",
+  "og": "/img/blog/2026-11/og-aeo-buyers-standard-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Seven requirements. Ask every vendor, us included. Seven numbered requirements: observe, diagnose, remediate, verify, receipts, scale, economics.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/aeo-buyers-standard",
+   "headline": "Seven requirements. Ask every vendor, us included.",
+   "srcSha": "5e8579afbe0c71ee42d6a3f621463687a37083cb2933b5e215a3d039147144d2",
+   "ogSha": "bd3f8ced2b22abe04a3f7a7142f94efff443502d85033ed22d3815c97c42a9d8",
+   "heroSha": "e62a6cb5b070a395d19a80d025340d56e70665ed4cc4382b92fed223d7995ebb"
+  }
+ },
+ "/best-aeo-tools": {
+  "slug": "best-aeo-tools",
+  "hero": "/img/blog/2026-11/best-aeo-tools-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Judge every AEO tool on the same seven tests. Seven numbered tests for comparing AEO tools: observe, diagnose, remediate, verify, receipts, scale, economics.",
+  "og": "/img/blog/2026-11/og-best-aeo-tools-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Judge every AEO tool on the same seven tests. Seven numbered tests for comparing AEO tools: observe, diagnose, remediate, verify, receipts, scale, economics.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/best-aeo-tools",
+   "headline": "Judge every AEO tool on the same seven tests.",
+   "srcSha": "a85981a01d70c3e69992dae68ed16a9c10f0558bc64a7febe4f9de83721bbb37",
+   "ogSha": "bd7b38a563e0baf9d206c36302217ddbbed21712e8722d6b77c91a0b749cfb7a",
+   "heroSha": "9a1b4312e00564ba289fd385180a2ae94baaa2cf3aca8a603a1fd9bd9e722e1f"
+  }
+ },
+ "/blog/how-it-works": {
+  "slug": "how-it-works",
+  "hero": "/img/blog/2026-11/how-it-works-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Ask the engines. Keep every transcript. The pipeline in five boxes: your site, your questions, the engines asked several times, three layers scored, transcripts kept.",
+  "og": "/img/blog/2026-11/og-how-it-works-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Ask the engines. Keep every transcript. The pipeline in five boxes: your site, your questions, the engines asked several times, three layers scored, transcripts kept.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/how-it-works",
+   "headline": "Ask the engines. Keep every transcript.",
+   "srcSha": "e3a1be8bf3195688e3ae89e1862acddcc14990c5f3dbdfc6f84c259b393cfd91",
+   "ogSha": "2ee56c21bfaec34f6bbbd9d78456845496502e80fb009b7b65ed2530047e87e2",
+   "heroSha": "13555258f453414fbf318823c42f577e1c8c1663004ab5e8dfb79b817bc87faa"
+  }
+ },
+ "/blog/what-you-actually-get": {
+  "slug": "what-you-actually-get",
+  "hero": "/img/blog/2026-11/what-you-actually-get-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Every sweep ends in your next steps. A checklist: paste-in schema, fidelity corrections, an off-site plan from real citations, questions to win, proof on the next sweep, every answer stored.",
+  "og": "/img/blog/2026-11/og-what-you-actually-get-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Every sweep ends in your next steps. A checklist: paste-in schema, fidelity corrections, an off-site plan from real citations, questions to win, proof on the next sweep, every answer stored.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/what-you-actually-get",
+   "headline": "Every sweep ends in your next steps.",
+   "srcSha": "f4ff9b3481e5c9a43d76d799ee4c7cdcafcd49c7d6f28d0c9b704797a90acb7b",
+   "ogSha": "f7f71a10aff49abf03fc2360be985483171a7cf99775ec0082956fd1d6bb9674",
+   "heroSha": "88d8c9684fc1dd51c05147a05f968391d62d5f84d9e752823247797e0422c7c7"
+  }
+ },
+ "/blog/are-you-the-answer-ai-gives": {
+  "slug": "are-you-the-answer-ai-gives",
+  "hero": "/img/blog/2026-11/are-you-the-answer-ai-gives-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "One answer: you or a competitor. A buyer asks which is the best in their category, and the answer lists a competitor, another competitor and a dashed box asking whether it is you.",
+  "og": "/img/blog/2026-11/og-are-you-the-answer-ai-gives-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: One answer: you or a competitor. A buyer asks which is the best in their category, and the answer lists a competitor, another competitor and a dashed box asking whether it is you.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/are-you-the-answer-ai-gives",
+   "headline": "One answer: you or a competitor.",
+   "srcSha": "4f6a6f6b44e562e1c47a78563f4415aa5a942b07c27db4c4ef8212c4c03613c2",
+   "ogSha": "77f318199ffc0b7e67d3ba63f8d46040b3f8b9b964ca35e2e08156aa73610f18",
+   "heroSha": "2d0e311c492b7a77cf7121a1f6abf47c4206be8a9685b0038e14b5acdda26221"
+  }
+ },
+ "/get-recommended": {
+  "slug": "get-recommended",
+  "hero": "/img/blog/2026-11/get-recommended-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "Measure. Act. Record. A loop of three steps: measure, act, record, then back to measure every month with the same questions.",
+  "og": "/img/blog/2026-11/og-get-recommended-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Measure. Act. Record. A loop of three steps: measure, act, record, then back to measure every month with the same questions.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/get-recommended",
+   "headline": "Measure. Act. Record.",
+   "srcSha": "586c44bd983e68c9e282fa3d009fe5d5b4889e324780a6e12f4a3816478de61e",
+   "ogSha": "ae6b4008883442b60bc2fb7583a5b29d0287eb8058f1ee55ac65b01417a3a551",
+   "heroSha": "1341512e520af21b631f75871ea59bd8cb7559aaff7287380766daf767cd677a"
+  }
+ },
+ "/blog/how-to": {
+  "slug": "how-to",
+  "hero": "/img/blog/2026-11/how-to-hero-2026-11c.webp",
+  "heroW": 1600,
+  "heroH": 840,
+  "heroAlt": "How-to guides for answer engine visibility. A checklist of guides: monitor your brand, track mentions, score page readiness, diagnose a drop, directory listings, Wikidata entry.",
+  "og": "/img/blog/2026-11/og-how-to-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: How-to guides for answer engine visibility. A checklist of guides: monitor your brand, track mentions, score page readiness, diagnose a drop, directory listings, Wikidata entry.",
+  "card": {
+   "source": "scripts/build-share-cards.ts",
+   "key": "/blog/how-to",
+   "headline": "How-to guides for answer engine visibility.",
+   "srcSha": "5a95b343dfd97853794f1e088442afeada4f71e8a3ad553f28c816174d45a6d2",
+   "ogSha": "67aeeba87cf8b6ebc0994ee690bdd2f3460ec5809a3838df24a10411cf5fdaf5",
+   "heroSha": "4bd8f8d83cbb0e5441d1e66006cea60d5643fab0ecfc66c0def5c7cbc1ec196c"
+  }
+ },
+ "_home": {
+  "og": "/og-home-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Found by name is not recommended. Two boxes: asked by name, do the engines find you; asked by category, do they recommend you."
+ },
+ "_blog": {
+  "og": "/img/blog/2026-11/og-blog-2026-11c.jpg",
+  "ogW": 1200,
+  "ogH": 630,
+  "ogAlt": "AEO Analyzers: Our own numbers, published whatever they say. A bar chart of our own monthly measurement: found by name 55% in August, 80% in September, 88% in October, 78% in November (N=40 each, August restated), and recommended in 0 of 200 category answers every month."
+ },
+ "_embeds": {
+  "hero-the-measurement-layer": {
+   "file": "/images/blog/hero-the-measurement-layer-2026-11c.webp",
+   "w": 1600,
+   "h": 840,
+   "alt": "The engines are already describing you. Read the transcript. Category answers per engine on 13 October 2026, searched versus answered from memory: ChatGPT 38 searched, 12 from memory (of 50); Claude 50 searched, 0 from memory (of 50); Perplexity 50 searched, 0 from memory (of 50); Gemini 50 searched, 0 from memory (of 50). Every transcript stored."
+  },
+  "embed-recognized-not-recommended": {
+   "file": "/images/blog/embed-recognized-not-recommended-2026-11c.webp",
+   "w": 1600,
+   "h": 840,
+   "alt": "Being recognized is not being recommended. Asked by name: found in 30 of 40 answers (75%). Asked by category: recommended in 0 of 200 answers. 13 October 2026."
+  },
+  "embed-measurement-architecture": {
+   "file": "/images/blog/embed-measurement-architecture-2026-11c.webp",
+   "w": 1600,
+   "h": 840,
+   "alt": "One score is not a measurement. The evidence tells you what to fix. Inputs (buyer questions, engine panel, repeated runs) produce evidence (transcripts, searched or from memory, cited sources, sample and drift), which produces the diagnosis (missing mentions, source gaps, priority actions)."
+  }
+ }
 }

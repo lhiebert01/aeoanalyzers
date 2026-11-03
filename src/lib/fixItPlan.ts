@@ -76,6 +76,26 @@ export interface PlanInput {
 const reg = (h: string) => { const p = normalizeDomain(h).split('.'); return p.length <= 2 ? p.join('.') : p.slice(-2).join('.'); };
 /** Open publishing hosts: the customer can publish there under their own name (Lane 2). */
 export const OPEN_PUBLISHING = ['dev.to', 'medium.com', 'substack.com', 'hashnode.com', 'hashnode.dev', 'github.com', 'linkedin.com'];
+/** Data and research sites: never the one next step (founder ruling, Nov 2, 2026). */
+export const DATA_SITES = ['crunchbase.com', 'cbinsights.com', 'statista.com', 'pitchbook.com', 'owler.com', 'zoominfo.com', 'similarweb.com', 'dnb.com', 'builtwith.com', 'wikipedia.org', 'zippia.com', 'glassdoor.com', 'craft.co', 'tracxn.com', 'growjo.com', 'apollo.io', 'rocketreach.co', 'manta.com'];
+/** Display names for directories outside the catalog. */
+export const DIRECTORY_NAMES: Record<string, string> = { 'yelp.com': 'Yelp', 'houzz.com': 'Houzz', 'angi.com': 'Angi', 'angieslist.com': 'Angi', 'homeadvisor.com': 'HomeAdvisor', 'thumbtack.com': 'Thumbtack', 'bbb.org': 'the Better Business Bureau', 'nextdoor.com': 'Nextdoor', 'yellowpages.com': 'Yellow Pages', 'tripadvisor.com': 'Tripadvisor', 'github.com': 'GitHub' };
+/** Which business types a directory outside the catalog fits. */
+export const DIRECTORY_TYPES: Record<string, string[]> = {
+  'yelp.com': ['local', 'professional_services'], 'houzz.com': ['local'], 'angi.com': ['local'], 'angieslist.com': ['local'], 'homeadvisor.com': ['local'],
+  'thumbtack.com': ['local', 'professional_services'], 'bbb.org': ['local', 'professional_services', 'ecommerce'], 'nextdoor.com': ['local'],
+  'yellowpages.com': ['local', 'professional_services'], 'tripadvisor.com': ['local'],
+};
+/** The catalog listing that best fits each business type, in order (ruling 2b). */
+export const BEST_FIT: Record<string, string[]> = {
+  local: ['google_business', 'yelp', 'bing_places', 'apple_business'],
+  professional_services: ['google_business', 'linkedin', 'bing_places'],
+  software: ['g2', 'capterra', 'alternativeto', 'producthunt'],
+  ecommerce: ['trustpilot', 'google_business', 'producthunt'],
+};
+/** One-next-step threshold, scaled to the sweep: 10 citations at 200 category answers, never below 2. */
+export const nextStepThreshold = (categoryAnswers: number) => Math.max(2, Math.round((10 * categoryAnswers) / 200));
+
 /** Directories and review sites where a business lists itself (beyond the attainability registry). */
 export const SELF_LISTING = ['yelp.com', 'houzz.com', 'angi.com', 'angieslist.com', 'homeadvisor.com', 'thumbtack.com', 'bbb.org', 'nextdoor.com', 'yellowpages.com', 'tripadvisor.com', 'facebook.com', 'google.com', 'bing.com', 'apple.com', 'capterra.com', 'getapp.com', 'softwareadvice.com', 'alternativeto.net', 'sourceforge.net', 'slashdot.org', 'producthunt.com', 'trustpilot.com', 'crunchbase.com', 'g2.com'];
 export function classifyHost(host: string, vendorDomains: string[], sellsProduct = false, pageRead = false, software = true): { kind: CoverageKind; rule: string } {
@@ -139,7 +159,7 @@ function figures(inp: PlanInput) {
 export function diagnose(f: { foundPct: number | null; accPct: number | null; recPct: number | null }): { line: string; rule: string } {
   if (f.foundPct !== null && f.foundPct < 90) return { line: "Engines don't reliably find you yet", rule: `found by name ${f.foundPct}% (below 90%)` };
   if (f.accPct !== null && f.accPct < 90) return { line: 'Engines find you but say things that are wrong', rule: `found by name ${f.foundPct}%, described accurately ${f.accPct}% (below 90%)` };
-  if (f.recPct !== null && f.recPct < 10) return { line: "Engines know you but don't recommend you: the next steps are off your site", rule: `found by name ${f.foundPct}% and accurate ${f.accPct ?? '—'}%, recommended ${f.recPct}% (below 10%)` };
+  if (f.recPct !== null && f.recPct < 10) return { line: "Engines know you but don't recommend you: the next steps are off your site", rule: `found by name ${f.foundPct}%${f.accPct !== null ? ` and accurate ${f.accPct}%` : ' (accuracy not measured: no site snapshot)'}, recommended ${f.recPct}% (below 10%)` };
   return { line: 'Keep measuring; work the lanes in order.', rule: 'no threshold crossed' };
 }
 
@@ -215,7 +235,7 @@ export function buildFixItPlan(inp: PlanInput): FixItPlan {
   const gh = hosts.find((h) => reg(h.host) === 'github.com');
   const slug = String(siteName(inp)).toLowerCase().replace(/[^a-z0-9]+/g, '-');
   const slug2 = slug.replace(/-/g, '');
-  const ownListing = (e: { hosts: string[] }) => inp.runs.some((r) => (r.sources || []).some((u) => e.hosts.some((x) => matchesCatalogHost(hostOf(u), x)) && (u.toLowerCase().includes(slug) || u.toLowerCase().includes(slug2))));
+  const ownListing = (e: { hosts: string[] }) => slug2.length >= 4 && inp.runs.some((r) => (r.sources || []).some((u) => e.hosts.some((x) => matchesCatalogHost(hostOf(u), x)) && (u.toLowerCase().includes(slug) || u.toLowerCase().includes(slug2))));
   for (const c of cited1.filter((x) => ownListing(x.e))) add({ key: `lane1:keep:${c.e.id}`, lane: 1, owner: 'Outreach', title: `${c.e.name}: your listing is already cited (${c.all} times in your answers). Keep it current.`, lines: ['Check that the name, description and link match your site word for word.'], minutes: 5, doneWhen: 'The listing matches your site.', nextSweepShows: 'Whether answers keep citing it.', watch: 'coverage' });
   for (const c of cited1.filter((x) => !ownListing(x.e))) add({ key: `lane1:${c.e.id}`, lane: 1, owner: 'Outreach', title: `${c.e.name}: cited ${c.all} times in your answers, ${c.times} in category answers (${c.engines.join(', ')})`, lines: [`Create or claim your listing: ${c.e.start_url}. Paste text and every field: your step-by-step guide, section "${c.e.name}".`], minutes: c.e.minutes, doneWhen: `Your ${c.e.name} listing is live and its address is in your Record.`, nextSweepShows: 'Whether answers cite your listing, and Source coverage.', watch: 'coverage' });
   // Directories and review sites outside the catalog, cited in the category answers (Houzz, Angi...).
@@ -277,11 +297,25 @@ export function buildFixItPlan(inp: PlanInput): FixItPlan {
   let one: FixItPlan['oneNextStep'] = null;
   const winnableUnrec = (st?.winnable || []).filter((q) => q.cls === 'specific');
   const brandClass = st?.classes.find((c) => c.cls === 'brand');
-  const ss10 = cited1.find((c) => c.times >= 10) || (gh && gh.times >= 10 ? { e: { name: 'GitHub' }, times: gh.times } as any : null) || ((): any => { const d = hosts.find((x) => SELF_LISTING.includes(reg(x.host)) && x.times >= 10); return d ? { e: { name: reg(d.host) }, times: d.times } : null; })();
+  // Rule 1: a page-1 specific question with no recommendation → measure it.
   if (winnableUnrec.length && (f.recPct ?? 0) === 0) one = { title: 'Measure it: add your page-1 questions to your differentiator questions and run a sweep', why: `${winnableUnrec.length} specific question${winnableUnrec.length === 1 ? '' : 's'} already rank on page 1 in search (for example "${winnableUnrec[0].key}" at ${winnableUnrec[0].position}), and this sweep recommended you in ${f.rec} of ${f.recN} category answers. A first recommendation is most likely where you already rank.` };
+  // Rule 2: name searches on page 2–3 → the homepage title and description.
   else if (brandClass && brandClass.position !== null && brandClass.position > 10 && brandClass.position <= 30) one = { title: 'Fix your homepage title and description', why: `Searches for your name average position ${brandClass.position}, on page 2. Engines read roughly the top 10.` };
-  else if (ss10) one = { title: `List on ${ss10.e.name}`, why: `${ss10.e.name} was cited ${ss10.times} times in your category answers and does not list you yet.` };
-  else if (pitch[0]) one = { title: `Pitch ${pitch[0].host}`, why: `It is the independent page the engines cited most for your category (${pitch[0].timesCited} times).` };
+  // Rules 3, 3a, 3b, then 4 (founder ruling, Nov 2, 2026). Data and research sites are never chosen.
+  const bt = inp.businessType || 'software';
+  const thr = nextStepThreshold(f.recN);
+  const notData = (h: string) => !DATA_SITES.includes(reg(h));
+  const fitsHost = (h: string) => { const r = reg(h); const e = catalog.find((x) => x.hosts.some((y) => matchesCatalogHost(h, y))); return e ? (e.types.includes(bt) || e.types.includes('all')) : (DIRECTORY_TYPES[r] || []).includes(bt) || (r === 'github.com' && bt === 'software'); };
+  const nameOf = (h: string) => catalog.find((x) => x.hosts.some((y) => matchesCatalogHost(h, y)))?.name || DIRECTORY_NAMES[reg(h)] || reg(h);
+  const selfServeFit = hosts.filter((h) => notData(h.host) && fitsHost(h.host) && (SELF_LISTING.includes(reg(h.host)) || reg(h.host) === 'github.com' || catalog.some((e) => e.hosts.some((y) => matchesCatalogHost(h.host, y)))) && !['google.com', 'bing.com', 'apple.com', 'facebook.com'].includes(reg(h.host)))
+    .filter((h) => { const e = catalog.find((x) => x.hosts.some((y) => matchesCatalogHost(h.host, y))); return !(e && ownListing(e)); });
+  const top = selfServeFit[0];
+  const best = (BEST_FIT[bt] || BEST_FIT.software).map((id) => catalog.find((e) => e.id === id)).find((e) => e && !e.hosts.some((x) => DATA_SITES.includes(reg(x))) && !ownListing(e));
+  const pitchable = pitch.find((r) => notData(r.host));
+  if (!one && top && top.times >= thr) one = { title: `List on ${nameOf(top.host)}`, why: `${nameOf(top.host)} was cited ${top.times} times in your category answers (the bar for a sweep this size is ${thr}), and none of the cited pages is your listing.` };
+  else if (!one && top) one = { title: `List on ${nameOf(top.host)}`, why: `It is the listing the engines cited most in your category answers (${top.times} time${top.times === 1 ? '' : 's'}), and it fits your type of business.` };
+  else if (!one && best) one = { title: `List on ${best.name}`, why: `No listing site was cited in your category answers this month; ${best.name} is the listing that best fits your type of business (${NOT_CITED_LABEL}).` };
+  else if (!one && pitchable) one = { title: `Pitch ${pitchable.host}`, why: `It is the independent page the engines cited most for your category (${pitchable.timesCited} times).` };
 
   // ── Moving first (§2C) ──
   const moving: FixItPlan['movingFirst'] = [];

@@ -18,103 +18,44 @@ import chromium from '@sparticuz/chromium';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { wilsonInterval, confidenceLabel } from '../src/lib/citationSweep';
 
-const BASE = 'docs/baselines';
 const OUT = 'public/img/blog/2026-11';
 const HIW = 'public/blog/how-it-works';
 
-// ---------------------------------------------------------------- data (asserted)
-// Same pattern as NOT_FOUND in scripts/build-evidence.py.
-const NOT_FOUND = new RegExp(
-  "(could ?n'?t find|couldn.t find|unable to find|no (?:specific )?(?:website|information|results?)" +
-    ' (?:specifically )?(?:at|about|for)|don\'?t have (?:any )?(?:specific )?information' +
-    "|(?:do not|don'?t|does not|doesn'?t) (?:contain|include|mention|have) (?:any )?(?:specific )?information (?:about|on|for))",
-  'i',
-);
-type Run = { engine: string; queryType: string; domainCited?: boolean; transcript?: string };
-const load = (f: string) => JSON.parse(readFileSync(`${BASE}/${f}`, 'utf8'));
-const runs = (f: string, kind: string): Run[] => load(f).runs.filter((r: Run) => r.queryType === kind);
-const isFound = (r: Run) => !!r.domainCited && !NOT_FOUND.test(r.transcript || '');
-function assertEq(label: string, got: unknown, want: unknown) {
-  if (JSON.stringify(got) !== JSON.stringify(want)) throw new Error(`${label}: got ${JSON.stringify(got)}, expected ${JSON.stringify(want)}`);
-}
-
-const MONTHS = [
-  { m: 'Aug', long: 'August', f: 'aeoanalyzers-SERIES-ANCHOR-2026-08-01.json', restated: true, want: 55 },
-  { m: 'Sep', long: 'September', f: 'aeoanalyzers-2026-09-01.json', restated: false, want: 80 },
-  { m: 'Oct', long: 'October', f: 'aeoanalyzers-2026-10-08.json', restated: false, want: 88 },
-  { m: 'Nov', long: 'November', f: 'aeoanalyzers-2026-11-01.json', restated: false, want: 78 },
-].map((x) => {
-  const b = runs(x.f, 'branded');
-  const c = runs(x.f, 'category');
-  const pct = Math.round((100 * b.filter(isFound).length) / b.length);
-  const catHits = c.filter((r) => !!r.domainCited).length;
-  assertEq(`${x.m} found-by-name %`, pct, x.want);
-  assertEq(`${x.m} by-name N`, b.length, 40);
-  assertEq(`${x.m} recommended`, [catHits, c.length], [0, 200]);
-  return { ...x, pct, n: b.length, cat: catHits, catN: c.length };
-});
-
-const NOV = 'aeoanalyzers-2026-11-01.json';
-const ENGINE_LABEL: Record<string, string> = { claude: 'Claude', perplexity: 'Perplexity', gemini: 'Gemini', openai: 'ChatGPT' };
-const PER_ENGINE = ['claude', 'perplexity', 'gemini', 'openai'].map((e) => {
-  const rs = runs(NOV, 'branded').filter((r) => r.engine === e);
-  return { key: e, name: ENGINE_LABEL[e], found: rs.filter(isFound).length, n: rs.length };
-});
-assertEq('Nov per-engine found', PER_ENGINE.map((p) => [p.name, p.found, p.n]), [
-  ['Claude', 10, 10], ['Perplexity', 10, 10], ['Gemini', 10, 10], ['ChatGPT', 1, 10],
-]);
-
-const SC = load(NOV).sourceCoverage;
-const scRows = SC.rows as { verdict: string }[];
-const scYes = scRows.filter((r) => r.verdict === 'yes').length;
-const scUnread = scRows.filter((r) => r.verdict === 'unreadable').length;
-assertEq('Nov source coverage', [scRows.length, scYes, scUnread, SC.named, SC.recurringPages, SC.couldNotRead], [40, 0, 4, 0, 40, 4]);
-
-// said-vs-site: the phrase Claude used for us in its by-name answers, and our registry short text.
-const QUOTE = 'AI simulation engine';
-const claudeBy = runs(NOV, 'branded').filter((r) => r.engine === 'claude');
-const quoteHits = claudeBy.filter((r) => (r.transcript || '').toLowerCase().includes(QUOTE.toLowerCase())).length;
-assertEq('Claude "AI simulation engine" by-name answers', [quoteHits, claudeBy.length], [10, 10]);
-const REGISTRY = readFileSync('docs/identity/ENTITY-REGISTRY.md', 'utf8');
-const SHORT = 'Measures what AI answer engines say when buyers ask for a recommendation.';
-if (!REGISTRY.includes(`Short: ${SHORT}`)) throw new Error('registry short text changed: docs/identity/ENTITY-REGISTRY.md');
-
-// Engine panels, from the single source.
-const ENGINES = JSON.parse(readFileSync('src/data/engines.json', 'utf8'));
-const V11: string[] = ENGINES.panels['v1.1'].engines;
-const V12: string[] = ENGINES.panels['v1.2'].engines;
-assertEq('panel v1.2 = v1.1 + extra', V12.slice(0, V11.length), V11);
-const EXTRA = V12.slice(V11.length); // Grok
-assertEq('plans', [ENGINES.plans['Day Pass'], ENGINES.plans.Pro, ENGINES.plans.Business], ['v1.1', 'v1.2', 'v1.2']);
+// ---------------------------------------------------------------- data (asserted): scripts/blog-data.ts
+import { assertEq, MONTHS, NOV, PER_ENGINE, SC, scRows, scYes, scUnread, QUOTE, quoteHits, claudeBy, SHORT, ENGINES, V11, V12, EXTRA, runs, isFound, load, ENGINE_LABEL, NOT_FOUND, type Run } from './blog-data';
 
 // ---------------------------------------------------------------- style
-const fontR = readFileSync('/mnt/c/Windows/Fonts/segoeui.ttf').toString('base64');
-const fontB = readFileSync('/mnt/c/Windows/Fonts/segoeuib.ttf').toString('base64');
+// House style (image polish pass, Nov 2026): Figtree (SIL OFL, scripts/fonts), near-black
+// grid, one green accent, red-orange only for a zero or a miss. No navy, teal or purple.
+const fontV = readFileSync('scripts/fonts/Figtree-VF.ttf').toString('base64');
 const MARK = readFileSync('public/img/brand/aeo-analyzers-chip-mark.svg', 'utf8');
 const mark = (px: number) => MARK.replace('<svg ', `<svg width="${px}" height="${px}" aria-hidden="true" `);
 
+// Key names kept from the first palette so every figure below restyles in place: "teal" is now the
+// house green, "purple"/"lav"/"cyan" (the old second accents) are neutral grey and white.
 const C = {
-  bg: '#0A0F1C', panel: '#131C30', panel2: '#18233A', line: '#2A3856', teal: '#2FD39A', tealDeep: '#0F2A26',
-  purple: '#8B7CF6', lav: '#B4A9FF', grey: '#C9D1DC', muted: '#AEB7C4', white: '#FFFFFF', cyan: '#4FD1E8',
+  bg: '#050807', panel: '#070C0A', panel2: '#09100C', line: '#2B3430', teal: '#4ADE80', tealDeep: '#0A2213',
+  purple: '#9CA3AF', lav: '#FFFFFF', grey: '#E5E7EB', muted: '#9CA3AF', white: '#FFFFFF', cyan: '#FFFFFF', red: '#F87171',
+  stroke: '#6B7280',
 };
+const GRID = `background-color:${C.bg};background-image:linear-gradient(#0E1512 1px,transparent 1px),linear-gradient(90deg,#0E1512 1px,transparent 1px);background-size:56px 56px`;
 
 const CSS = `
-@font-face{font-family:Seg;font-weight:400;src:url(data:font/ttf;base64,${fontR})}
-@font-face{font-family:Seg;font-weight:700;src:url(data:font/ttf;base64,${fontB})}
+@font-face{font-family:Seg;font-weight:300 900;src:url(data:font/ttf;base64,${fontV}) format('truetype')}
 *{box-sizing:border-box}
 html,body{margin:0;background:${C.bg}}
 body{font-family:Seg,sans-serif;color:${C.grey};width:1600px}
-.fig{width:1600px;padding:56px 64px 44px;background:${C.bg}}
+.fig{width:1600px;padding:56px 64px 44px;${GRID}}
 .hd{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-bottom:40px}
-.t{font-weight:700;font-size:46px;line-height:1.1;color:${C.white};letter-spacing:-.01em;margin:0}
+.t{font-weight:800;font-size:48px;line-height:1.08;color:${C.white};letter-spacing:-.02em;margin:0}
 .s{font-size:24px;line-height:1.4;color:${C.grey};margin:12px 0 0;max-width:1150px}
 .pill{display:inline-block;white-space:nowrap;font-weight:700;font-size:18px;letter-spacing:.06em;text-transform:uppercase;
-  color:${C.lav};background:${C.bg};border:2px solid ${C.purple};border-radius:999px;padding:8px 18px}
+  color:${C.white};background:${C.bg};border:2px solid ${C.purple};border-radius:999px;padding:8px 18px;letter-spacing:.16em}
 .pill.teal{color:${C.teal};border-color:${C.teal}}
 .panel{background:${C.panel};border:2px solid ${C.line};border-radius:22px}
-.ft{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:36px;padding-top:22px;border-top:1px solid ${C.line}}
+.ft{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:36px;padding-top:22px;border-top:3px solid ${C.teal}}
 .src{font-size:19px;line-height:1.4;color:${C.muted};background:${C.bg}}
-.brand{display:flex;align-items:center;gap:12px;font-weight:700;font-size:18px;letter-spacing:.08em;color:${C.white};white-space:nowrap}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700;font-size:18px;letter-spacing:.2em;color:${C.white};white-space:nowrap}
 .k{color:${C.teal}} .l{color:${C.lav}}
 .row{display:flex;gap:28px}
 .arrow{flex:none;align-self:center;color:${C.teal}}
@@ -210,7 +151,8 @@ const figs: Fig[] = [];
 
 // 2. three-layers (rebuild of how-it-works visual-2, neutral placeholders)
 {
-  const okC = (c: string, glyph: 'check' | 'q' | 'x') => {
+  const okC = (c0: string, glyph: 'check' | 'q' | 'x') => {
+    const c = glyph === 'x' ? C.red : c0; // a miss is red-orange
     const g = glyph === 'check' ? '<path d="M15 25l7 7 13-14"/>' : glyph === 'x' ? '<path d="M17 17l16 16M33 17L17 33"/>'
       : '<path d="M19.5 19.5a5.5 5.5 0 1 1 7.5 5.2c-1.3.6-2 1.6-2 3V30"/><circle cx="25" cy="36" r="0.8" fill="currentColor"/>';
     return `<svg width="64" height="64" viewBox="0 0 50 50" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color:${c};flex:none" aria-hidden="true"><circle cx="25" cy="25" r="22"/>${g}</svg>`;
@@ -279,11 +221,9 @@ const figs: Fig[] = [];
     ${lit}
     <div style="position:absolute;left:${litEnd + 30}px;width:${1472 - litEnd - 30 - 200}px;top:360px;border-top:3px dashed ${C.line}"></div>
     <p style="position:absolute;left:${litEnd + 30}px;width:${1472 - litEnd - 30 - 200}px;top:384px;text-align:center;font-size:20px;color:${C.muted}">11 to 67</p>
-    <div style="position:absolute;right:0;top:300px;width:170px;height:150px;border-radius:16px;background:${C.panel};border:2px dashed #46567A;padding:14px 16px">
+    <div style="position:absolute;right:0;top:300px;width:170px;height:150px;border-radius:16px;background:${C.panel};border:2px dashed #6B7280;padding:14px 16px">
       <p style="font-weight:700;font-size:40px;color:${C.muted};line-height:1">68</p>
-      <div style="margin-top:18px;height:6px;border-radius:3px;background:#2E3B58;width:80%"></div>
-      <div style="margin-top:10px;height:6px;border-radius:3px;background:#2E3B58;width:60%"></div>
-      <div style="margin-top:10px;height:6px;border-radius:3px;background:#2E3B58;width:70%"></div>
+      <p style="margin-top:14px;font-size:18px;letter-spacing:.16em;color:${C.muted}">POSITION</p>
     </div>
     <p style="position:absolute;right:0;width:330px;top:470px;text-align:right;font-size:21px;line-height:1.4;color:${C.grey}"><b style="color:${C.white}">Our /best-aeo-tools page</b><br>average position 68<br>Never reached</p>
     <p style="position:absolute;left:0;top:470px;width:${litEnd}px;text-align:center;font-size:21px;color:${C.grey}">Search results the engine reads before it answers</p>
@@ -323,7 +263,7 @@ const figs: Fig[] = [];
 {
   const dots = (k: number, n: number) => Array.from({ length: n }, (_, i) => i < k
     ? `<span style="width:34px;height:34px;border-radius:50%;background:${C.teal};display:inline-block"></span>`
-    : `<span style="width:34px;height:34px;border-radius:50%;border:3px solid #5A6A8C;display:inline-block"></span>`).join('');
+    : `<span style="width:34px;height:34px;border-radius:50%;border:3px solid #6B7280;display:inline-block"></span>`).join('');
   const rows = PER_ENGINE.map((p) => `<div style="display:flex;align-items:center;gap:40px;padding:26px 36px;border-top:1px solid ${C.line}">
     <span style="width:220px;font-weight:700;font-size:32px;color:${C.white}">${p.name}</span>
     <span style="display:flex;gap:14px;flex:1">${dots(p.found, p.n)}</span>
@@ -334,7 +274,7 @@ const figs: Fig[] = [];
     <div class="panel" style="overflow:hidden">${rows.replace('border-top:1px', 'border-top:0px')}</div>
     <div style="display:flex;gap:40px;margin-top:22px;font-size:20px;color:${C.grey}">
       <span style="display:flex;gap:10px;align-items:center"><span style="width:22px;height:22px;border-radius:50%;background:${C.teal};display:inline-block"></span>Found: our site among the answer’s sources</span>
-      <span style="display:flex;gap:10px;align-items:center"><span style="width:22px;height:22px;border-radius:50%;border:3px solid #5A6A8C;display:inline-block"></span>Not found</span></div>
+      <span style="display:flex;gap:10px;align-items:center"><span style="width:22px;height:22px;border-radius:50%;border:3px solid #6B7280;display:inline-block"></span>Not found</span></div>
     ${footer('Source: docs/baselines/aeoanalyzers-2026-11-01.json, stored answers (panel v1.1).')}`,
     alt: `Table titled "Found by name, November 1st, 2026", our own measurement, ten answers per engine shown as dots. ${PER_ENGINE.map((p) => `${p.name}: ${p.found} of ${p.n}`).join('; ')}.`,
     caption: 'Found by name per engine on November 1st, 2026, our own measurement: one engine found us once in ten tries while the other three found us every time. Source: docs/baselines/aeoanalyzers-2026-11-01.json.',
@@ -391,13 +331,12 @@ const figs: Fig[] = [];
     <h3 style="font-size:27px;white-space:nowrap">${t}</h3><p style="font-size:21px;margin:8px 0 22px;min-height:58px">${d}</p>${body}</div>`;
   const answers = `<div style="position:relative;height:250px">${[0, 1, 2].map((i) => `<div style="position:absolute;left:${i * 18}px;top:${i * 18}px;right:${(2 - i) * 18}px;height:200px;border-radius:14px;background:${C.panel2};border:1.5px solid ${i === 2 ? C.teal : C.line};padding:18px">
       ${i === 2 ? `<div style="display:flex;gap:10px;align-items:center;font-size:20px;color:${C.white}">${ICON(I.chat, C.teal, 26)}Answer + its sources</div>
-      <div style="margin-top:16px;height:6px;width:85%;border-radius:3px;background:#3A4868"></div><div style="margin-top:10px;height:6px;width:70%;border-radius:3px;background:#3A4868"></div>
-      <div style="margin-top:20px;display:flex;gap:8px">${[1, 2, 3].map(() => `<span style="width:56px;height:22px;border-radius:6px;border:1.5px solid ${C.teal}"></span>`).join('')}</div>` : ''}</div>`).join('')}</div>`;
+      <div style="margin-top:22px;display:flex;gap:10px">${[1, 2, 3].map((n) => `<span style="font-size:18px;font-weight:700;color:${C.teal};border:1.5px solid ${C.teal};border-radius:6px;padding:3px 12px">Source ${n}</span>`).join('')}</div>` : ''}</div>`).join('')}</div>`;
   const ranked = bars.map((w) => `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">${ICON(I.doc, C.grey, 26)}<span style="font-size:20px;color:${C.white};width:110px">Cited page</span>
     <span style="flex:1"><span style="display:block;height:16px;border-radius:0 4px 4px 0;background:${C.purple};width:${w}%"></span></span></div>`).join('');
   const naming = bars.map((_, i) => `<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">${ICON(I.doc, C.grey, 26)}<span style="font-size:20px;color:${C.white};flex:1">Cited page</span>
     ${names[i] ? `<span style="font-weight:700;font-size:18px;color:${C.bg};background:${C.teal};border-radius:999px;padding:3px 14px">Names you</span>`
-      : `<span style="font-size:18px;color:${C.grey};border:1.5px solid #5A6A8C;border-radius:999px;padding:2px 14px;background:${C.panel}">Does not</span>`}</div>`).join('');
+      : `<span style="font-size:18px;color:${C.grey};border:1.5px solid #6B7280;border-radius:999px;padding:2px 14px;background:${C.panel}">Does not</span>`}</div>`).join('');
   figs.push({
     id: 'answers-sources-naming',
     html: `${header('From stored answers to the pages that decide them', 'Rank what the engine cites instead, then check which of those pages name you.', ILL)}
@@ -444,7 +383,7 @@ const figs: Fig[] = [];
     ['AYAA-', 'AAAAB', 'YAAYA', 'AA-AA'],
   ];
   const col: Record<string, string> = { Y: C.teal, A: C.purple, B: C.grey };
-  const dot = (c: string) => c === '-' ? `<span style="width:24px;height:24px;border-radius:50%;border:3px solid #5A6A8C;display:inline-block"></span>`
+  const dot = (c: string) => c === '-' ? `<span style="width:24px;height:24px;border-radius:50%;border:3px solid #6B7280;display:inline-block"></span>`
     : `<span style="width:24px;height:24px;border-radius:50%;background:${col[c]};display:inline-block"></span>`;
   const tally: Record<string, number> = { A: 0, B: 0, Y: 0, '-': 0 };
   G.flat().join('').split('').forEach((c) => tally[c]++);
@@ -511,7 +450,7 @@ const figs: Fig[] = [];
 // 13. ledger-chart
 {
   const plotH = 380;
-  const grid = [0, 25, 50, 75, 100].map((v) => `<div style="position:absolute;left:0;right:0;bottom:${(v / 100) * plotH}px;border-top:1px solid ${v === 0 ? '#5A6A8C' : C.line}"></div>
+  const grid = [0, 25, 50, 75, 100].map((v) => `<div style="position:absolute;left:0;right:0;bottom:${(v / 100) * plotH}px;border-top:1px solid ${v === 0 ? '#6B7280' : C.line}"></div>
     <span style="position:absolute;left:-74px;width:60px;text-align:right;bottom:${(v / 100) * plotH - 12}px;font-size:18px;color:${C.muted}">${v}%</span>`).join('');
   const bars = MONTHS.map((m) => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%">
     <span style="font-weight:700;font-size:34px;color:${C.white};margin-bottom:10px">${m.pct}%</span>
@@ -519,7 +458,7 @@ const figs: Fig[] = [];
   const labels = MONTHS.map((m) => `<div style="flex:1;text-align:center;padding-top:14px">
     <p style="font-weight:700;font-size:24px;color:${C.white}">${m.long} 2026</p><p style="font-size:19px;color:${C.muted};margin-top:2px">N=${m.n}${m.restated ? ' · <span style="color:' + C.lav + '">restated</span>' : ''}</p></div>`).join('');
   const rec = MONTHS.map((m) => `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:10px">
-    <div style="width:120px;height:4px;border-radius:2px;background:${C.lav}"></div><p style="font-weight:700;font-size:26px;color:${C.white}">${m.cat} of ${m.catN}</p></div>`).join('');
+    <div style="width:120px;height:4px;border-radius:2px;background:${m.cat === 0 ? C.red : C.lav}"></div><p style="font-weight:800;font-size:28px;color:${m.cat === 0 ? C.red : C.white}">${m.cat} of ${m.catN}</p></div>`).join('');
   figs.push({
     id: 'ledger-chart',
     html: `${header('Found by name, but not recommended', 'AEO Analyzers’ own monthly measurement, August to November 2026.')}
@@ -541,21 +480,21 @@ const figs: Fig[] = [];
 // 14. named-0-of-40
 {
   const sq = scRows.map((r) => r.verdict === 'unreadable'
-    ? `<span style="width:52px;height:52px;border-radius:10px;border:2px dashed #7A88A8;display:inline-block;background:repeating-linear-gradient(45deg,transparent 0 6px,#2E3B58 6px 9px)"></span>`
+    ? `<span style="width:52px;height:52px;border-radius:10px;border:2px dashed #6B7280;display:inline-block;background:repeating-linear-gradient(45deg,transparent 0 6px,#1F2723 6px 9px)"></span>`
     : r.verdict === 'yes' ? `<span style="width:52px;height:52px;border-radius:10px;background:${C.teal};display:inline-block"></span>`
-      : `<span style="width:52px;height:52px;border-radius:10px;border:2px solid #5A6A8C;display:inline-block;background:${C.panel2}"></span>`).join('');
+      : `<span style="width:52px;height:52px;border-radius:10px;border:2px solid #6B7280;display:inline-block;background:${C.panel2}"></span>`).join('');
   figs.push({
     id: 'named-0-of-40',
     html: `<div class="panel" style="display:flex;gap:64px;align-items:center;padding:56px 60px">
       <div style="flex:1">
-        <p style="font-weight:700;font-size:26px;letter-spacing:.06em;text-transform:uppercase;color:${C.teal}">Named on</p>
-        <p style="font-weight:700;font-size:148px;line-height:1;color:${C.white};margin:12px 0 18px">${SC.named} of ${SC.recurringPages}</p>
+        <p style="font-weight:700;font-size:24px;letter-spacing:.2em;text-transform:uppercase;color:${C.white}">Named on</p>
+        <p style="font-weight:800;font-size:148px;line-height:1;color:${SC.named === 0 ? C.red : C.white};margin:12px 0 18px">${SC.named} of ${SC.recurringPages}</p>
         <p style="font-size:28px;line-height:1.4;color:${C.grey}">most-read pages for our category questions, November 1st, 2026 (${SC.couldNotRead} could not be read)</p>
       </div>
       <div><div style="display:grid;grid-template-columns:repeat(8,52px);gap:12px">${sq}</div>
         <div style="display:flex;gap:28px;margin-top:22px;font-size:19px;color:${C.grey}">
-          <span style="display:flex;gap:10px;align-items:center"><span style="width:20px;height:20px;border-radius:5px;border:2px solid #5A6A8C;display:inline-block"></span>Does not name us</span>
-          <span style="display:flex;gap:10px;align-items:center"><span style="width:20px;height:20px;border-radius:5px;border:2px dashed #7A88A8;display:inline-block"></span>Could not be read</span></div></div>
+          <span style="display:flex;gap:10px;align-items:center"><span style="width:20px;height:20px;border-radius:5px;border:2px solid #6B7280;display:inline-block"></span>Does not name us</span>
+          <span style="display:flex;gap:10px;align-items:center"><span style="width:20px;height:20px;border-radius:5px;border:2px dashed #6B7280;display:inline-block"></span>Could not be read</span></div></div>
     </div>
     ${footer('Source: docs/baselines/aeoanalyzers-2026-11-01.json, source coverage of the pages the engines cited for our category questions.')}`,
     alt: `Stat tile: "Named on ${SC.named} of ${SC.recurringPages}" most-read pages for our category questions, November 1st, 2026 (${SC.couldNotRead} could not be read). A grid of ${SC.recurringPages} squares: ${SC.recurringPages - SC.couldNotRead - scYes} outlined squares for pages that do not name us and ${SC.couldNotRead} hatched squares for pages that could not be read; none filled.`,
@@ -639,14 +578,14 @@ const figs: Fig[] = [];
   const conf = confidenceLabel(total);
   assertEq('why-several-runs numbers', [cited, total, pct, wi.low, wi.high, conf], [12, 20, 60, 39, 78, 'high confidence']);
   const yes = `<svg width="64" height="64" viewBox="0 0 50 50" aria-hidden="true"><path d="M12 26l9 9 17-19" fill="none" stroke="${C.teal}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  const no = `<svg width="52" height="52" viewBox="0 0 50 50" aria-hidden="true"><path d="M13 13l24 24M37 13L13 37" fill="none" stroke="#7D899E" stroke-width="5.5" stroke-linecap="round"/></svg>`;
+  const no = `<svg width="52" height="52" viewBox="0 0 50 50" aria-hidden="true"><path d="M13 13l24 24M37 13L13 37" fill="none" stroke="#F87171" stroke-width="5.5" stroke-linecap="round"/></svg>`;
   const cell = (c: string) => `<div style="height:104px;border-radius:16px;display:flex;align-items:center;justify-content:center;${c === '1'
     ? `background:${C.tealDeep};border:2px solid ${C.teal}` : `background:${C.panel2};border:2px solid ${C.line}`}">${c === '1' ? yes : no}</div>`;
   const grid = `<div style="display:grid;grid-template-columns:250px repeat(${runsN},1fr);gap:12px;align-items:center">
     <span></span>${Array.from({ length: runsN }, (_, i) => `<span style="text-align:center;font-weight:700;font-size:22px;color:${C.teal}">Run ${i + 1}</span>`).join('')}
     ${engines.map((e, r) => `<div style="height:104px;display:flex;flex-direction:column;justify-content:center;padding-left:22px;border-radius:16px;background:${C.panel};border:2px solid ${C.line}">
       <span style="font-weight:700;font-size:26px;color:${C.white}">${e}</span><span style="font-size:19px;color:${C.grey}">web search on</span></div>${G[r].split('').map(cell).join('')}`).join('')}</div>`;
-  const dots = Array.from({ length: total }, (_, i) => `<span style="width:20px;height:20px;border-radius:50%;display:inline-block;${i < cited ? `background:${C.teal}` : 'border:3px solid #5A6A8C'}"></span>`).join('');
+  const dots = Array.from({ length: total }, (_, i) => `<span style="width:20px;height:20px;border-radius:50%;display:inline-block;${i < cited ? `background:${C.teal}` : 'border:3px solid #6B7280'}"></span>`).join('');
   const stat = (lbl: string, body: string, extra = '') => `<div style="flex:1;padding:0 28px;${extra}"><p style="font-weight:700;font-size:19px;letter-spacing:.06em;text-transform:uppercase;color:${C.teal};margin-bottom:12px">${lbl}</p>${body}</div>`;
   const html = `${header('Why several runs?', 'A single answer is random. The pattern is a measurement.', ILL)}
   <div class="row" style="gap:24px;align-items:stretch">
@@ -661,7 +600,7 @@ const figs: Fig[] = [];
       <div><div style="display:flex;gap:8px;align-items:center">${ICON(I.check, C.teal, 30)}<span style="font-weight:700;font-size:19px;letter-spacing:.04em;color:${C.teal}">CITED</span></div>
         <p style="font-size:19px;line-height:1.4;margin-top:8px">Your brand is cited in the answer.</p></div>
       <div style="border-top:1px solid ${C.line}"></div>
-      <div><div style="display:flex;gap:8px;align-items:center"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#7D899E" stroke-width="1.7"/><path d="M9 9l6 6M15 9l-6 6" stroke="#7D899E" stroke-width="1.7" stroke-linecap="round"/></svg><span style="font-weight:700;font-size:19px;letter-spacing:.04em;color:${C.white}">NOT CITED</span></div>
+      <div><div style="display:flex;gap:8px;align-items:center"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#F87171" stroke-width="1.7"/><path d="M9 9l6 6M15 9l-6 6" stroke="#F87171" stroke-width="1.7" stroke-linecap="round"/></svg><span style="font-weight:700;font-size:19px;letter-spacing:.04em;color:${C.white}">NOT CITED</span></div>
         <p style="font-size:19px;line-height:1.4;margin-top:8px">You are not cited in the answer.</p></div>
     </div>
   </div>
@@ -762,8 +701,8 @@ const figs: Fig[] = [];
       <p style="color:${C.teal};margin-top:12px">EASIER<br>TO MOVE</p>
     </div>
     <div style="flex:1;display:flex;flex-direction:column;gap:16px">
-      ${tier(3, C.purple, C.lav, '#171433', 56, I.mountain, 'ASPIRATIONAL', 'Labeled honestly, not assigned as homework.', ['Major publications', 'Analyst reports', 'Government and standards'], 'High authority. Low control. Long horizon.', I.target, 'Industry reports, academic research, news sites, analyst firms, standards organizations.')}
-      ${tier(2, C.cyan, C.cyan, '#0E2430', 28, I.handshake, 'EARN', 'Pitchable: roundups, communities, directories.', ['Lists', 'Reviews', 'Partnerships', 'Events', 'Guest features'], 'Relationship-based. Influenceable. Earn the spot.', I.users, 'Top tools lists, community recommendations, newsletters, podcasts, industry associations.')}
+      ${tier(3, C.purple, C.lav, '#070C0A', 56, I.mountain, 'ASPIRATIONAL', 'Labeled honestly, not assigned as homework.', ['Major publications', 'Analyst reports', 'Government and standards'], 'High authority. Low control. Long horizon.', I.target, 'Industry reports, academic research, news sites, analyst firms, standards organizations.')}
+      ${tier(2, C.cyan, C.cyan, '#070C0A', 28, I.handshake, 'EARN', 'Pitchable: roundups, communities, directories.', ['Lists', 'Reviews', 'Partnerships', 'Events', 'Guest features'], 'Relationship-based. Influenceable. Earn the spot.', I.users, 'Top tools lists, community recommendations, newsletters, podcasts, industry associations.')}
       ${tier(1, C.teal, C.teal, C.tealDeep, 0, I.doc, 'DO NOW', 'Self-serve: your profiles, your pages.', ['Website', 'Help center', 'Docs', 'Social profiles', 'Knowledge base'], 'High control. Fastest movement. Start here.', I.check, 'Your website content, schema markup, business and review-site profiles, help docs, case studies.')}
     </div>
   </div>
@@ -788,7 +727,7 @@ const figs: Fig[] = [];
     const p = (t: number, rr = r) => { const a = ((150 + t * 240) * Math.PI) / 180; return [cx + rr * Math.cos(a), cy + rr * Math.sin(a)]; };
     const arc = (t: number) => { const [x0, y0] = p(0), [x1, y1] = p(t); return `M${x0.toFixed(1)} ${y0.toFixed(1)}A${r} ${r} 0 ${t * 240 > 180 ? 1 : 0} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`; };
     const t = value / 100;
-    const ticks = Array.from({ length: 11 }, (_, i) => { const [a, b] = p(i / 10, r + 18), [c, d] = p(i / 10, r + (i % 5 ? 26 : 32)); return `<path d="M${a.toFixed(1)} ${b.toFixed(1)}L${c.toFixed(1)} ${d.toFixed(1)}" stroke="#5A6A8C" stroke-width="2.5" stroke-linecap="round"/>`; }).join('');
+    const ticks = Array.from({ length: 11 }, (_, i) => { const [a, b] = p(i / 10, r + 18), [c, d] = p(i / 10, r + (i % 5 ? 26 : 32)); return `<path d="M${a.toFixed(1)} ${b.toFixed(1)}L${c.toFixed(1)} ${d.toFixed(1)}" stroke="#6B7280" stroke-width="2.5" stroke-linecap="round"/>`; }).join('');
     const [nx, ny] = p(t, r);
     const [zx, zy] = p(0, r), [hx, hy] = p(1, r);
     return `<div style="position:relative;width:420px;height:330px;margin:0 auto">
@@ -860,13 +799,13 @@ const figs: Fig[] = [];
       <path d="M${l + 14} ${top + 18}L${x + 40} ${top + 46}V${bot - 50}L${l + 14} ${bot - 12}z" fill="${fill}" stroke="${col}" stroke-width="5" stroke-linejoin="round"/>
       <circle cx="${x + 22}" cy="${ly}" r="9" fill="${col}"/>`;
   };
-  const grey = '#8C98AD';
+  const grey = '#6B7280';
   const svg = `<svg width="${W}" height="${H}" style="position:absolute;left:0;top:150px" aria-hidden="true">
     <circle cx="20" cy="${ly}" r="14" fill="${grey}"/>
     <path d="M20 ${ly}H${gx[2] - 170}" stroke="${grey}" stroke-width="6"/>
     <path d="M${gx[2] + 30} ${ly}H${W - 40}" stroke="${C.teal}" stroke-width="7"/>
     <path d="M${W - 52} ${ly - 24}L${W - 6} ${ly}L${W - 52} ${ly + 24}z" fill="${C.teal}"/>
-    ${door(gx[0], grey, '#1C2538')}${door(gx[1], grey, '#1C2538')}${door(gx[2], C.teal, C.tealDeep)}</svg>`;
+    ${door(gx[0], grey, '#09100C')}${door(gx[1], grey, '#09100C')}${door(gx[2], C.teal, C.tealDeep)}</svg>`;
   const tool = (ic: string, x: number, y: number) => `<div style="position:absolute;left:${x}px;top:${y}px">${ICON(ic, C.teal, 64)}</div>`;
   const label = (n: number, x: number, t: string, on: boolean) => `<div style="position:absolute;left:${x - 220}px;width:440px;top:0;display:flex;flex-direction:column;align-items:center;gap:10px">
     <span style="width:64px;height:64px;border-radius:50%;border:4px solid ${on ? C.teal : grey};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:34px;color:${on ? C.teal : C.grey}">${n}</span>
@@ -899,7 +838,7 @@ const CONTRAST_CHECK = () => {
       const c = parse(getComputedStyle(e).backgroundColor);
       if (c.a > 0) { layers.push(c); if (c.a >= 1) break; }
     }
-    let out = { r: 10, g: 15, b: 28 };
+    let out = { r: 5, g: 8, b: 7 };
     for (const l of layers.reverse()) out = { r: l.r * l.a + out.r * (1 - l.a), g: l.g * l.a + out.g * (1 - l.a), b: l.b * l.a + out.b * (1 - l.a) };
     return out;
   };

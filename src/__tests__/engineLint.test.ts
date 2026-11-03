@@ -40,7 +40,7 @@ describe('share images carry no engine count in their pixels', () => {
     const hits = ex(`git grep -l -E '(og:image|twitter:image)" content="[^"]*(aeo-og\\.png|aeo-og-sweep-2026c\\.png)' -- public || true`, { encoding: 'utf8' }).trim();
     expect(hits).toBe('');
     const seo = readFileSync('src/components/SEO.tsx', 'utf8');
-    expect(seo).toContain("ogImage = '/og-home-2026-11.jpg'");
+    expect(seo).toContain("ogImage = '/og-home-2026-11c.jpg'");
     expect(seo).not.toMatch(/sample AEO Score of 88/);
   });
 });

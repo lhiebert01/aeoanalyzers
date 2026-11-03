@@ -26,7 +26,7 @@ const SEO: React.FC<SEOProps> = ({
   canonical,
   ogType = 'website',
   // Nov 2026 share card: text set in code over a text-free image; no engine count, no number in the pixels.
-  ogImage = '/og-home-2026-11.jpg',
+  ogImage = '/og-home-2026-11c.jpg',
   author = DEFAULT_AUTHOR,
   publishedDate = '2026-03-22T00:00:00Z',
   jsonLd,
@@ -62,7 +62,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:image:type" content={imageType} />
-      <meta property="og:image:alt" content="AEO Analyzers: Be the Answer AI Gives. Measure what AI answer engines say about you, act on it, and keep a dated record. Three stacked answer cards on a navy background." />
+      <meta property="og:image:alt" content="AEO Analyzers: Found by name is not recommended. Two boxes: asked by name, do the engines find you; asked by category, do they recommend you." />
       <meta property="og:locale" content="en_US" />
       
       {/* Article Metadata (if applicable) */}
@@ -76,7 +76,7 @@ const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
-      <meta name="twitter:image:alt" content="AEO Analyzers: Be the Answer AI Gives. Measure what AI answer engines say about you, act on it, and keep a dated record. Three stacked answer cards on a navy background." />
+      <meta name="twitter:image:alt" content="AEO Analyzers: Found by name is not recommended. Two boxes: asked by name, do the engines find you; asked by category, do they recommend you." />
 
       {/* Robots */}
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />

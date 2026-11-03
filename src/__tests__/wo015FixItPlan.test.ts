@@ -160,11 +160,22 @@ describe('the one next step: one box, chosen by the rules in order', () => {
     const s2 = deriveStanding(exportFromCsv('Top queries,Clicks,Impressions,CTR,Position\nx tool,5,364,1%,16\n'), { domain: 'x.com', brand: 'X' });
     expect(buildFixItPlan(base({ runs, standing: s2 })).oneNextStep!.title).toBe('Fix your homepage title and description');
   });
-  it('rule 3: a self-serve host cited 10+ times → list there; rule 4: else the top independent page', () => {
-    const many = [...branded(7, 10), ...Array.from({ length: 10 }, (_, i) => run({ runIndex: i, query: `q${i}`, sources: ['https://www.g2.com/categories/x'] }))];
+  it('rule 3: a fitting self-serve host at or above the scaled bar → list there', () => {
+    const many = [...branded(7, 10), ...Array.from({ length: 10 }, (_, i) => run({ runIndex: i, query: `q${i}`, sources: ['https://www.g2.com/categories/crm'] }))];
     expect(buildFixItPlan(base({ runs: many })).oneNextStep!.title).toBe('List on G2');
-    const p4 = buildFixItPlan(base({ runs: branded(7, 10), coverage: cov([{ host: 'example.com', url: 'https://example.com/a', timesCited: 3, engines: ['Claude'], verdict: 'no', sellsProduct: false }]) }));
-    expect(p4.oneNextStep!.title).toBe('Pitch example.com');
+  });
+  it('the bar scales with sweep size: 10 at 200 category answers, never below 2', async () => {
+    const { nextStepThreshold } = await import('../lib/fixItPlan');
+    expect([nextStepThreshold(200), nextStepThreshold(40), nextStepThreshold(10)]).toEqual([10, 2, 2]);
+  });
+  it('3a: below the bar, the most-cited fitting listing; 3b: none cited, the best catalog fit for the type; never a data site', () => {
+    const local = { businessType: 'local' as const };
+    const few = [...branded(10, 10), run({ query: 'pool builders near me', sources: ['https://www.houzz.com/pro/x', 'https://www.cbinsights.com/company/y'] })];
+    expect(buildFixItPlan(base({ runs: few, ...local })).oneNextStep!.title).toBe('List on Houzz');
+    const none = [...branded(10, 10), run({ query: 'pool builders near me', sources: ['https://www.cbinsights.com/company/y', 'https://www.crunchbase.com/organization/z'] })];
+    const p = buildFixItPlan(base({ runs: none, ...local, coverage: cov([{ host: 'cbinsights.com', url: 'https://www.cbinsights.com/company/y', timesCited: 9, engines: ['Claude'], verdict: 'no', sellsProduct: true }]) }));
+    expect(p.oneNextStep!.title).toBe('List on Google Business Profile');
+    expect(p.oneNextStep!.title).not.toMatch(/cbinsights|crunchbase/i);
   });
 });
 

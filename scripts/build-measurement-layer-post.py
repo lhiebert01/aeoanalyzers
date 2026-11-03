@@ -58,13 +58,13 @@ for p in re.split(r'\n\s*\n', rest):
     if p.startswith('## '):
         if p[3:].strip() == OPEN_BEFORE:
             out.append(f'''      <figure class="postfig">
-        <img src="{OPEN_WEBP}" alt="{html.escape(meta['opening_embed_alt'], quote=True)}" width="1731" height="909" loading="lazy" decoding="async">
+        <img src="{OPEN_WEBP}" alt="{html.escape(meta['opening_embed_alt'], quote=True)}" width="1600" height="840" loading="lazy" decoding="async">
         <figcaption>{caption(meta['opening_embed_caption'])}</figcaption>
       </figure>''')
         out.append(f'      <h2 class="posth2">{inline(p[3:])}</h2>')
         if p[3:].strip() == EMBED_UNDER:
             out.append(f'''      <figure class="postfig">
-        <img src="{EMBED_WEBP}" alt="{html.escape(meta['embed_alt'], quote=True)}" width="1731" height="909" loading="lazy" decoding="async">
+        <img src="{EMBED_WEBP}" alt="{html.escape(meta['embed_alt'], quote=True)}" width="1600" height="840" loading="lazy" decoding="async">
       </figure>''')
         continue
     if p.startswith('> '):
@@ -75,7 +75,7 @@ for p in re.split(r'\n\s*\n', rest):
         out.append(f'      <p class="postlead">{inline(p[1:-1])}</p>')
         out.append('      <p class="postmeta">Lindsay Hiebert &middot; October 14, 2026 &middot; 8-minute read</p>')
         out.append(f'''      <figure class="postfig">
-        <img src="{HERO_WEBP}" alt="{html.escape(meta['hero_alt'], quote=True)}" width="1731" height="909" decoding="async" fetchpriority="high">
+        <img src="{HERO_WEBP}" alt="{html.escape(meta['hero_alt'], quote=True)}" width="1600" height="840" decoding="async" fetchpriority="high">
         <figcaption>{caption(meta['hero_caption'])}</figcaption>
       </figure>''')
         first = False; continue

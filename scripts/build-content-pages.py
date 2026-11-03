@@ -16,9 +16,8 @@ import re, html, json, sys, glob, os
 SRC_DIR = sys.argv[1] if len(sys.argv) > 1 else 'docs/content/2026-11'
 CHASSIS = 'public/blog/why-ai-doesnt-mention-you/index.html'
 SITE = 'https://aeoanalyzers.com'
-OG = SITE + '/og-home-2026-11.jpg'
-OG_ALT = ('AEO Analyzers: Be the Answer AI Gives. Measure what AI answer engines say about you, act on it, '
-          'and keep a dated record. Three stacked answer cards on a navy background.')
+OG = SITE + '/og-home-2026-11c.jpg'
+OG_ALT = "AEO Analyzers: Found by name is not recommended. Two boxes: asked by name, do the engines find you; asked by category, do they recommend you."
 PERSON = {"@type": "Person", "@id": "https://pigenai.com/#lindsay", "name": "Lindsay Hiebert"}
 ORG = {"@type": "Organization", "@id": "https://pigenai.com/#org", "name": "PIGENAI LLC", "url": "https://pigenai.com",
        "logo": {"@type": "ImageObject", "url": SITE + "/aeo-analyzers-logo-512.png", "width": 512, "height": 512}}
