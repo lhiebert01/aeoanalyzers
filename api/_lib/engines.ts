@@ -14,6 +14,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import { GoogleGenAI } from '@google/genai';
+import { SWEEP_GEMINI_MODELS } from './ai-models.js';
 
 export type Engine = 'claude' | 'openai' | 'perplexity' | 'gemini' | 'grok';
 
@@ -254,8 +255,7 @@ async function askGemini(query: string): Promise<EngineAnswer> {
   // Resilient chain: prefer the newest, fall back on a per-model quota (429) or
   // availability error — Gemini is the priority + free-quick-check engine, so it
   // must not die on a single model's quota.
-  const primary = process.env.SWEEP_GEMINI_MODEL || 'gemini-3.6-flash';
-  const models = [...new Set([primary, 'gemini-2.5-flash', 'gemini-2.5-flash-lite'])];
+  const models = SWEEP_GEMINI_MODELS; // ./ai-models.ts
   let lastErr: any;
   for (const model of models) {
     try {

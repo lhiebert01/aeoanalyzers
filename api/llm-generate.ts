@@ -21,14 +21,10 @@ import Anthropic from '@anthropic-ai/sdk';
 import { isPaidRequest, analysesUsedIfCapped } from './_lib/entitlement.js';
 import { analysesAllowance, analysesLimitMessage, allowanceWindowStart } from '../src/lib/sweepCaps.js';
 import { redactFixFields, markGated } from '../src/lib/fixGating.js';
+import { LLM_GEMINI_MODELS } from './_lib/ai-models.js';
 
-// Gemini flash models in priority order (best quality first, stable fallbacks).
-const GEMINI_MODELS = [
-  'gemini-3.6-flash',
-  'gemini-3.5-flash',
-  'gemini-3.5-flash-lite',
-  'gemini-2.5-flash',
-];
+// Gemini models in priority order — single source in ./_lib/ai-models.ts.
+const GEMINI_MODELS = LLM_GEMINI_MODELS;
 // Reuse the sweep's already-validated model env vars when present, so this route
 // uses model IDs known to work on this account.
 const OPENAI_MODEL = process.env.LLM_OPENAI_MODEL || process.env.SWEEP_OPENAI_MODEL || 'gpt-4o';
