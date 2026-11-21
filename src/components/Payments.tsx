@@ -11,6 +11,7 @@ const PLANS = [
     description: 'For freelance developers and small marketing teams.',
     features: [
       '8 Citation Sweeps / mo, with every transcript',
+      'Five-engine panel: ChatGPT, Claude, Perplexity, Gemini and Grok',
       'Intent tags on every question',
       'Grounded vs. memory split (searched answers kept apart from recalled ones)',
       'Historical series: the same questions re-run and compared over time',
