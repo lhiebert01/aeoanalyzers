@@ -1687,6 +1687,10 @@ export default function App() {
               <a href="https://academy.sanctumshield.com" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 underline underline-offset-2">SanctumShield Academy</a> (governance training), and{' '}
               <a href="https://ad-flash.com" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 underline underline-offset-2">Ad-Flash</a> (AI ad creative).
             </p>
+            <p className="mt-2 text-[11px] leading-relaxed text-zinc-600 max-w-3xl">
+              Built by PIGENAI LLC, Kansas City, Missouri ·{' '}
+              <a href="https://pigenai.com/products/" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 underline underline-offset-2">See every PIGENAI app</a>
+            </p>
           </div>
 
           <div className="mt-8 pt-6 border-t border-zinc-200 flex flex-col md:flex-row items-center justify-between gap-4">
