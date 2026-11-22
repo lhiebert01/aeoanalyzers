@@ -77,7 +77,9 @@ describe('sweep setup: the free setup check', () => {
     expect(ids).toEqual(expect.arrayContaining(['collision', 'branded', 'word-0', 'procedure-1', 'source-Wolfram Alpha']));
     for (const i of issues) expect(`${i.title} ${i.detail}`).not.toMatch(/[{}]|undefined|null/);
     expect(issues.find((i) => i.id === 'branded')!.fix).toEqual({ kind: 'replaceBranded', questions: brandedQuestions('Signal Atlas', 'usesignalatlas.com') });
-    expect(issues.find((i) => i.id === 'collision')!.detail).toMatch(/signalatlas\.store.*disambiguatingDescription.*Wikidata/s);
+    const coll = issues.find((i) => i.id === 'collision')!.detail;
+    expect(coll).toMatch(/signalatlas\.store.*official profiles.*Wikidata/s);
+    expect(coll).not.toMatch(/[a-z][A-Z]|sameAs|JSON|schema/); // plain English, no property names
   });
   it('a setup built from the site passes clean', () => {
     const issues = setupCheck({ ...base, competitors: ['Perplexity', 'Statista', 'Consensus'], brandedQuestions: brandedQuestions('Signal Atlas', 'usesignalatlas.com'),

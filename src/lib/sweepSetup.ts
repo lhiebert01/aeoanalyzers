@@ -194,7 +194,7 @@ export function setupCheck(inp: SetupInput): SetupIssue[] {
   if (inp.collisions?.length) {
     const list = inp.collisions.slice(0, 5).map((c) => c.where).join(', ');
     out.push({ id: 'collision', level: 'warn', title: `Other products are also called ${brand || 'this name'}`,
-      detail: `We found ${list}. When buyers ask about ${brand}, engines may describe one of these instead of you, and a sweep will measure that confusion. Before you run, help engines tell you apart: ask about "${brand} (${domain})" (we do this below), describe what ${brand} is in one sentence at the top of your homepage, add that sentence and links to your official profiles to your homepage's structured data (disambiguatingDescription and sameAs), and list ${brand} on the directories engines read (our free guides: Directory listings and Wikidata).` });
+      detail: `We found ${list}. When buyers ask about ${brand}, engines may describe one of these instead of you, and a sweep will measure that confusion. Before you run, help engines tell you apart: ask about "${brand} (${domain})" (we do this below), describe what ${brand} is in one sentence at the top of your homepage, add that sentence, with links to your official profiles, to the hidden company details on your homepage that engines read (the step-by-step guide in your report shows how), and list ${brand} on the directories engines read (our free guides: Directory listings and Wikidata).` });
   }
 
   const weak = inp.brandedQuestions.map((q) => weakBrandedQuestion(q, brand, domain)).filter(Boolean);
