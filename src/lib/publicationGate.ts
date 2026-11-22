@@ -17,7 +17,7 @@
 
 import { sweepScorecard, scoreRun, type SweepRunResult, type Competitor } from './citationSweep';
 import { accuracyWhenNamed } from './fidelity';
-import type { TruthRecord } from './truthRecord';
+import { withIdentity, type TruthRecord } from './truthRecord';
 
 /** A measured figure appearing in public content, and where it came from. */
 export interface PublishedClaim {
@@ -80,7 +80,7 @@ function recompute(sweep: ResolvedSweep, metric: PublishedClaim['metric']) {
       return { value: sc.ownedCitationRatePct, n: sc.ownedCitationN };
     case 'accuracyWhenNamedPct': {
       // N is the answers that NAMED the company — the denominator the page must state beside the figure.
-      const a = accuracyWhenNamed(scored.filter((r) => r.queryType === 'branded'), sweep.truth);
+      const a = accuracyWhenNamed(scored.filter((r) => r.queryType === 'branded'), withIdentity(sweep.truth, sweep.domain));
       return a ? { value: a.pct, n: a.named } : { value: null, n: 0 };
     }
   }

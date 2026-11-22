@@ -5,6 +5,7 @@ import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authority
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, largestLosingSegment, SEGMENT_LABEL } from '../lib/querySegment';
 import { sanitizeCompetitors, lintDefunctNames, stripNonQuestionLines, cleanBrandName } from '../lib/sweepConfig';
+import { brandedQuestions, siteDigest, isUsedSource, unsupportedWords, removeWord, setupCheck, isProcedureQuestion, EXTRACT_PROMPT, QUESTIONS_PROMPT, type SiteDigest, type NameCollision, type SetupIssue, type SetupFix } from '../lib/sweepSetup';
 import { buildSweepActionAgenda } from '../lib/sweepActions';
 import { buildDoNowPlan } from '../lib/doNowPlan';
 import { planSweep } from '../lib/sweepPlan';
@@ -15,7 +16,7 @@ import { avgPawc } from '../lib/pawc';
 import { auditFactDensity, type FactDensityAudit } from '../lib/factDensity';
 import { sweepScorecard, confidenceLevel, confidenceLabel, aggregateSweep, scoreRun } from '../lib/citationSweep';
 import type { SweepSummary, SweepRunResult, SweepScorecard, Engine, QueryType, Competitor } from '../lib/citationSweep';
-import { extractTruthRecord, withSiteRecord, type TruthRecord } from '../lib/truthRecord';
+import { extractTruthRecord, withSiteRecord, withIdentity, type TruthRecord } from '../lib/truthRecord';
 import { summarizeFidelity, classifyRunFidelity, type FidelitySummary } from '../lib/fidelity';
 import { doNowChecklist } from '../lib/doNowChecklist';
 import { recordActions, buildSweepReport, buildSweepCover, pitchTargetsFrom, ALIAS, fixItPlanFor, type SweepResponse, type SweepReportInputs } from '../lib/sweepReport';
@@ -87,32 +88,20 @@ async function llmJson(prompt: string, schema: any): Promise<string> {
   return data.text as string;
 }
 
+// Nov 22 2026 (usesignalatlas.com): the category, competitors and questions come from what makes the
+// site different (its own pages: who it serves, what sets it apart, its sources), not generic
+// segments. Prompts and the deterministic checks live in src/lib/sweepSetup.ts.
 const EXTRACT_SCHEMA = {
   type: Type.OBJECT,
   properties: {
     brand: { type: Type.STRING },
     core_category: { type: Type.STRING },
+    differentiators: { type: Type.ARRAY, items: { type: Type.STRING } },
+    audiences: { type: Type.ARRAY, items: { type: Type.STRING } },
     competitors: { type: Type.ARRAY, items: { type: Type.STRING } },
   },
   required: ['brand', 'core_category'],
 };
-
-const extractPrompt = (siteText: string) => `Extract the following from this website text:
-1. Brand Name.
-2. A 3-to-5 word Core Category describing what they sell.
-3. Three to five DIRECT competitors — real, named products a buyer would cross-shop
-   AGAINST this company in the SAME sub-category. Apply this test: "would the same
-   buyer evaluating this product also put the competitor on their shortlist?" If not,
-   exclude it. An adjacent-but-different tool (e.g. a security, data-governance, or
-   infrastructure vendor for a marketing/analytics product) is NOT a competitor.
-   Only include a name you are confident competes head-to-head; return an EMPTY list
-   rather than guessing a wrong-category name. (Names only.)
-Return as JSON: {"brand":"...","core_category":"...","competitors":["...","...","..."]}
-
-WEBSITE TEXT:
-"""
-${siteText}
-"""`;
 
 const QUERY_SCHEMA = {
   type: Type.OBJECT,
@@ -132,40 +121,8 @@ const QUERY_SCHEMA = {
   required: ['sweep_queries'],
 };
 
-const queryPrompt = (brand: string, domain: string, category: string, competitors: string[]) =>
-  `You are an Answer Engine Optimization (AEO) Query Generator. Generate a fixed set of 10 test queries a prospective buyer would type into an AI search engine when researching a solution in the provided category. Do NOT use the Brand Name in these queries (test organic recommendation).
-
-INPUTS:
-- Brand Name: ${brand || '(unknown)'}
-- Domain: ${domain}
-- Core Category: ${category}
-- Competitors: ${competitors.length ? competitors.join(', ') : '(none provided)'}
-
-Generate exactly 10 queries by intent:
-- Category Discovery (3): broad "best solutions in this category" questions
-- Problem/Solution (3): a problem this category solves, asking for recommendations
-- Comparative (4): "vs" / "alternative to {competitor}" questions
-
-PHRASING: write each query the way a real buyer TYPES it — plain, natural language,
-not internal category jargon. At most 2 of the 10 may use the category's technical
-term; the rest should read like a non-expert ("how do I show up in AI answers", "why
-isn't my site recommended by ChatGPT"). Never reference DISCONTINUED product names
-(SearchGPT, Bard, Bing Chat, Google SGE) — use current names (ChatGPT search, Gemini,
-Copilot, Google AI Overviews).
-
-SEGMENT SPREAD so results aren't one blended number — include:
-- at least ONE small-business/affordable-framed question ("affordable ... for
-  startups", "free ... checker");
-- at least ONE "affordable alternative to {a specific competitor}" question;
-- if this category is commonly bought through agencies/resellers, ONE agency-framed
-  question ("best ... for agencies managing multiple clients").
-Favor questions this brand can realistically win given its positioning and price
-point — not only enterprise-framed ones. Drop pure "{competitorA} vs {competitorB}"
-questions that structurally exclude this brand; every comparative should be one this
-brand could plausibly be named in.
-
-OUTPUT: valid JSON
-{"sweep_queries":[{"intent_type":"Discovery|Problem|Comparative","query":"..."}]}`;
+/** Pages beyond the homepage that say what makes a product different (followed when linked). */
+const SETUP_PAGES = /^\/(?:about|features?|how-it-works|product|pricing|use-cases?|solutions?|customers?|sources|why)(?:\/|$)/i;
 
 type GeneratedQuery = { intent_type: string; query: string };
 
@@ -181,7 +138,13 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
   const [domain, setDomain] = useState('');
   const [brand, setBrand] = useState('');
   const [coreCategory, setCoreCategory] = useState('');
-  const [branded, setBranded] = useState('who is {domain}\nwhat is {domain}');
+  // Questions about the company are written in plain words ("What is Signal Atlas (usesignalatlas.com)?")
+  // from the brand and website until the person edits them; their wording is then kept as typed.
+  const [branded, setBranded] = useState('');
+  const [brandedEdited, setBrandedEdited] = useState(false);
+  // What the site's own pages say (for the free setup check) and other products with the same name.
+  const [siteInfo, setSiteInfo] = useState<{ text: string; usedSources: string[] } | null>(null);
+  const [collisions, setCollisions] = useState<NameCollision[] | null>(null);
   const [categoryQueries, setCategoryQueries] = useState('');
   const [competitors, setCompetitors] = useState('');
   const [running, setRunning] = useState(false);
@@ -415,7 +378,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
           // WO-004: History shows accuracy-when-named from the stored summary; add it when the row has a snapshot.
           // WO-010 A: judge against what the site published at the sweep's own time (prices, free
           // allowance, retired names); for our own domain the dated record fills an older snapshot.
-          const truthAtRun = withSiteRecord(sweep.full_result?.truth as TruthRecord | undefined, sweep.domain, sweep.created_at);
+          const truthAtRun = withIdentity(withSiteRecord(sweep.full_result?.truth as TruthRecord | undefined, sweep.domain, sweep.created_at), sweep.domain, sweep.category);
           const awnSaved = accuracyWhenNamed(scored.filter((r) => r.queryType === 'branded'), truthAtRun);
           const storedAwn = sweep.summary?.accuracyWhenNamed as { accurate: number; named: number } | undefined;
           const awnMoved = !!(awnSaved && storedAwn && (storedAwn.accurate !== awnSaved.accurate || storedAwn.named !== awnSaved.named));
@@ -451,7 +414,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
         // audit. So a saved sweep === the original run (same screen + same downloaded
         // report). Nothing is re-fetched from the client's site (that would be a
         // different point in time) and nothing is fabricated.
-        const savedTruth = withSiteRecord(sweep.full_result?.truth as TruthRecord | undefined, sweep.domain, sweep.created_at) ?? undefined;
+        const savedTruth = withIdentity(withSiteRecord(sweep.full_result?.truth as TruthRecord | undefined, sweep.domain, sweep.created_at), sweep.domain, sweep.category) ?? undefined;
         const savedFactDensity = sweep.full_result?.factDensity as FactDensityAudit | undefined;
         if (savedTruth) {
           const brandedRuns = runs.filter((r) => r.queryType === 'branded');
@@ -516,6 +479,27 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
   // Step 1: user enters only the domain → crawl it, infer the basics, draft the
   // buyer questions, then surface them for confirmation (nothing runs/costs a
   // sweep yet). Falls back to the manual confirm panel if the site can't be read.
+  /** Read the homepage and up to three linked pages that say what makes the product different. */
+  async function readSite(d: string): Promise<SiteDigest | null> {
+    const get = (url: string) => fetch('/api/fetch-site', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) }).then((r) => r.json()).catch(() => null);
+    const home = await get(d);
+    if (!home?.html) return null;
+    const links = [...new Set([...String(home.html).matchAll(/href=["'](\/[a-z0-9\-\/]*)["']/gi)].map((m) => m[1]).filter((p) => SETUP_PAGES.test(p)))].slice(0, 3);
+    const more = (await Promise.all(links.map((p) => get(`${d}${p}`)))).map((x, i) => (x?.html ? { url: `https://${d}${links[i]}`, html: x.html as string } : null)).filter(Boolean) as { url: string; html: string }[];
+    const info = siteDigest([{ url: `https://${d}/`, html: home.html }, ...more], d);
+    setSiteInfo({ text: info.text, usedSources: info.usedSources });
+    return info;
+  }
+
+  /** Free name-collision check: other live products with the same name (no model call). */
+  function checkNames(b: string, d: string) {
+    setCollisions(null);
+    if (!b.trim()) return;
+    const token = getAccessToken();
+    fetch('/api/name-check', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ brand: b, domain: d }) })
+      .then((r) => (r.ok ? r.json() : null)).then((j) => setCollisions(j?.collisions || [])).catch(() => setCollisions([]));
+  }
+
   async function analyze(forceGuess = false) {
     if (!paidViewer) return; // WO-007: no site read, no inference, no auto-fill on free
     const d = normDomain(domain);
@@ -539,39 +523,42 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
           setGeneratedQueries(cq.map((query) => ({ intent_type: '', query })));
           setOwnedDomains(Array.isArray(prior.owned_domains) ? prior.owned_domains : []);
           setConfigSource('prior'); setPriorSweepDate(prior.created_at);
+          setBrandedEdited(false); setBranded('');
           setPhase('confirm'); setAnalyzing(false);
+          readSite(d).catch(() => null);
+          checkNames(prior.brand || '', d);
           return;
         }
       } catch { /* fall through to a fresh guess */ }
     }
     setConfigSource('guess'); setPriorSweepDate(null);
     try {
-      const site = await fetch('/api/fetch-site', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: d }),
-      }).then((r) => r.json()).catch(() => null);
-      if (!site?.html) throw new Error(site?.error || `Couldn't read ${d}. Enter the details yourself below.`);
-      const text = htmlToText(site.html).slice(0, 6000);
+      const info = await readSite(d);
+      if (!info) throw new Error(`Couldn't read ${d}. Enter the details yourself below.`);
 
-      // Infer brand / category / competitors from the crawled page text.
-      const ext = safeJsonParse(await llmJson(extractPrompt(text), EXTRACT_SCHEMA)) || {};
+      // Category, what makes it different, who it serves, and the products an AI engine names for it.
+      const ext = safeJsonParse(await llmJson(EXTRACT_PROMPT(info.digest), EXTRACT_SCHEMA)) || {};
       const guessedBrand = cleanBrandName(String(ext.brand || ''));
       const guessedCategory = String(ext.core_category || '').trim();
-      const guessedComp: string[] = Array.isArray(ext.competitors)
-        ? sanitizeCompetitors(
-            ext.competitors.map((c: any) => String(c || '').trim()),
-            { brand: guessedBrand, ownDomain: d }
-          ).slice(0, 3)
-        : [];
+      const list = (v: any) => (Array.isArray(v) ? v.map((x: any) => String(x || '').trim()).filter(Boolean) : []);
+      const differentiators = list(ext.differentiators).slice(0, 5);
+      const audiences = list(ext.audiences).filter((a) => info.text.toLowerCase().includes(a.toLowerCase()));
+      // Never a source the product itself uses (Wolfram|Alpha, Our World in Data … on usesignalatlas.com).
+      const guessedComp: string[] = sanitizeCompetitors(list(ext.competitors), { brand: guessedBrand, ownDomain: d })
+        .filter((c) => !isUsedSource(c, info.usedSources)).slice(0, 4);
       setBrand(guessedBrand);
       setCoreCategory(guessedCategory);
       setCompetitors(guessedComp.join('\n'));
+      setBrandedEdited(false); setBranded('');
+      checkNames(guessedBrand, d);
 
-      // Draft the 10 non-branded buyer questions from those (guessed) values.
-      const q = safeJsonParse(await llmJson(queryPrompt(guessedBrand, d, guessedCategory, guessedComp), QUERY_SCHEMA)) || {};
+      // Draft the 10 buyer questions from what makes the site different.
+      const sourceNames = info.usedSources.filter((x) => !/\./.test(x) && x.split(' ').length <= 4);
+      const q = safeJsonParse(await llmJson(QUESTIONS_PROMPT({ category: guessedCategory, differentiators, audiences, competitors: guessedComp, sources: sourceNames }), QUERY_SCHEMA)) || {};
+      // Budget and audience words the site never uses are taken out; "how to" questions stay, flagged by the check.
+      const tidy = (x: string) => unsupportedWords(x, info.text).reduce((acc, u) => removeWord(acc, u.word), x);
       const gq: GeneratedQuery[] = Array.isArray(q.sweep_queries)
-        ? q.sweep_queries.filter((x: any) => x?.query).map((x: any) => ({ intent_type: String(x.intent_type || 'Discovery'), query: lintDefunctNames(String(x.query).trim()) }))
+        ? q.sweep_queries.filter((x: any) => x?.query).map((x: any) => ({ intent_type: String(x.intent_type || 'Discovery'), query: tidy(lintDefunctNames(String(x.query).trim())) }))
         : [];
       setGeneratedQueries(gq);
       setCategoryQueries(gq.map((x) => x.query).join('\n'));
@@ -587,7 +574,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
 
   function startOver() {
     setPhase('input'); setExtractError(null); setGeneratedQueries([]);
-    setBrand(''); setCoreCategory(''); setCategoryQueries(''); setCompetitors('');
+    setBrand(''); setCoreCategory(''); setCategoryQueries(''); setCompetitors(''); setBranded(''); setBrandedEdited(false); setSiteInfo(null); setCollisions(null);
     setResult(null); setAuthority(null); setError(null); setEditQueries(false);
   }
 
@@ -604,7 +591,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
         body: JSON.stringify({
           domain: d, brand: brand.trim() || undefined,
           category: coreCategory.trim() || undefined, // WO-INTEGRITY-002 A1: persisted for pin/rebuild
-          brandedQueries: parseQuestions(branded).map(expand),
+          brandedQueries: parseQuestions(brandedText).map(expand),
           categoryQueries: parseQuestions(categoryQueries).map(expand),
           competitors: parseCompetitors(competitors),
           ownedDomains, // G2 config memory
@@ -631,7 +618,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
       Promise.all([fetchSite(d), fetchSite(`${d.replace(/\/+$/, '')}/pricing`)])
         .then(([site, pricing]) => {
           if (!site?.html) return;
-          const tr = withSiteRecord(extractTruthRecord(site.html, site.llmsTxt, pricing?.html || null), d, new Date()) as TruthRecord;
+          const tr = withIdentity(withSiteRecord(extractTruthRecord(site.html, site.llmsTxt, pricing?.html || null), d, new Date()), d, coreCategory.trim() || null) as TruthRecord;
           setTruth(tr);
           setPageFactDensity(auditFactDensity(site.html)); // E2: content-depth audit
           const brandedRuns = (json.runs || []).filter((r: SweepRunResult) => r.queryType === 'branded');
@@ -731,9 +718,28 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
 
   // Confirm-panel display: expanded question lists + the total we'll actually ask.
   const dNorm = normDomain(domain);
-  const brandedList = parseQuestions(branded).map((q) => q.replace(/\{domain\}/g, dNorm));
+  // Template mechanics stay internal: what the person sees and edits is plain text.
+  const brandedText = brandedEdited ? branded : brandedQuestions(brand, dNorm).join('\n');
+  const brandedList = parseQuestions(brandedText).map((q) => q.replace(/\{domain\}/g, dNorm));
   const categoryList = parseQuestions(categoryQueries);
   const totalQuestions = brandedList.length + categoryList.length;
+  // "12 questions, 48 answers": the same planner run-sweep uses, shown live as the person types.
+  const sweepSize = (() => {
+    const nEng = (isAdmin ? panel : planPanel ?? 'v1.1') === 'v1.2' ? 5 : 4;
+    const { reps, queriesRun } = planSweep(totalQuestions, nEng, { admin: isAdmin, requestedReps: 3 });
+    return { questions: queriesRun, answers: queriesRun * nEng * reps };
+  })();
+  // The free setup check (no model call): plain-English problems, each with a suggested fix.
+  const setupIssues: SetupIssue[] = phase === 'confirm' ? setupCheck({
+    brand, domain: dNorm, category: coreCategory, competitors: parseQuestions(competitors),
+    brandedQuestions: brandedList, buyerQuestions: categoryList,
+    siteText: siteInfo?.text || '', usedSources: siteInfo?.usedSources || [], collisions: collisions || [],
+  }).filter((i) => siteInfo || !i.id.startsWith('word-')) : [];
+  function applyFix(fix: SetupFix) {
+    if (fix.kind === 'replaceBranded') { setBranded(fix.questions.join('\n')); setBrandedEdited(false); }
+    else if (fix.kind === 'replaceQuestion') setCategoryQueries(categoryList.map((q, i) => (i === fix.index ? fix.question : q)).join('\n'));
+    else if (fix.kind === 'removeCompetitor') setCompetitors(parseQuestions(competitors).filter((c) => c.split(',')[0].trim().toLowerCase() !== fix.name.toLowerCase()).join('\n'));
+  }
   // Bucket the model's free-form intent labels robustly — it returns variants
   // ("Category Discovery", "Problem/Solution", "Comparative") that an exact-string
   // match would drop from the review list. Anything unrecognized falls to "Other"
@@ -944,10 +950,10 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
 
           <label className="text-sm font-semibold block">Closest competitors
             {configSource === 'prior'
-              ? <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-emerald-600"><Sparkles className="w-3 h-3" />from your last sweep — one per line, edit freely (<span className="font-mono">Name</span> or <span className="font-mono">Name, domain.com</span>)</span>
-              : <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />we guessed these — one per line, edit freely (<span className="font-mono">Name</span> or <span className="font-mono">Name, domain.com</span>)</span>}
+              ? <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-emerald-600"><Sparkles className="w-3 h-3" />from your last sweep — one per line; add a website after a comma if you like</span>
+              : <span className="mt-0.5 flex items-center gap-1 text-xs font-normal text-indigo-500"><Sparkles className="w-3 h-3" />products an AI engine names for what you do — verify; one per line, a website after a comma if you like</span>}
             <textarea value={competitors} onChange={(e) => setCompetitors(e.target.value)} rows={3}
-              placeholder="Knostic, knostic.ai" className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
+              placeholder="Perplexity, perplexity.ai" className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
           </label>
 
           {/* WO-006 Item C: the country is named INSIDE each buyer question, not left to account settings. */}
@@ -977,31 +983,34 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
             </button>
             {editQueries ? (
               <div className="px-4 pb-4 pt-1 space-y-4 border-t border-zinc-100">
-                <label className="text-xs font-semibold block text-zinc-700">About you (branded) — <span className="font-mono">{'{domain}'}</span> expands to your site
-                  <textarea value={branded} onChange={(e) => setBranded(e.target.value)} rows={2}
-                    className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
+                <label className="text-sm font-semibold block text-zinc-800">Questions about your company
+                  <span className="block text-xs font-normal text-zinc-600 mt-0.5">One per line. For example: {brandedQuestions(brand || 'Your Brand', dNorm || 'yoursite.com')[0]}</span>
+                  <textarea value={brandedText} onChange={(e) => { setBranded(e.target.value); setBrandedEdited(true); }} rows={2}
+                    className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
                 </label>
-                <label className="text-xs font-semibold block text-zinc-700">From prospective buyers (unbranded, one per line)
+                <label className="text-sm font-semibold block text-zinc-800">Questions your buyers ask
+                  <span className="block text-xs font-normal text-zinc-600 mt-0.5">One per line, without your name. For example: {coreCategory ? `best ${coreCategory.toLowerCase()} that ${/source|cit/i.test(coreCategory) ? 'links every number to its source' : 'fits what I need'}` : 'which tool should I use to …'}</span>
                   {questionSeries === 'differentiator' && (
                     <div className="mb-2 rounded-xl border border-zinc-900 bg-zinc-50 p-3 text-sm text-zinc-900">
                       <b>Separate series: your differentiator questions.</b> This sweep is stored as its own series and never compared with your main questions. Nothing runs until you click the run button.
-                      <button type="button" onClick={() => { setQuestionSeries('main'); setCategoryQueries(''); setBranded('who is {domain}\nwhat is {domain}'); }} className="ml-2 underline font-semibold">Back to my main questions</button>
+                      <button type="button" onClick={() => { setQuestionSeries('main'); setCategoryQueries(''); setBrandedEdited(false); setBranded(''); }} className="ml-2 underline font-semibold">Back to my main questions</button>
                     </div>
                   )}
                   <textarea value={categoryQueries} onChange={(e) => setCategoryQueries(e.target.value)} rows={8}
-                    className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm font-mono" />
+                    className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
                 </label>
+                <p className="text-sm font-semibold text-zinc-800" aria-live="polite">{sweepSize.questions} question{sweepSize.questions !== 1 ? 's' : ''}, {sweepSize.answers} answers</p>
               </div>
             ) : (
               <div className="px-4 pb-4 pt-1 space-y-3 border-t border-zinc-100 text-sm">
                 <div>
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">About you</div>
+                  <div className="text-xs font-bold text-zinc-600 mb-1">Questions about your company</div>
                   <ul className="space-y-0.5 text-zinc-700">
                     {brandedList.map((q, i) => <li key={i} className="flex gap-2"><span className="text-zinc-300">•</span>{q}</li>)}
                   </ul>
                 </div>
                 <div>
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1">From prospective customers</div>
+                  <div className="text-xs font-bold text-zinc-600 mb-1">Questions your buyers ask</div>
                   {categoryList.length > 0 && (() => { const m = intentMix(categoryList, coreCategory); return (
                     <div className="flex flex-wrap gap-1.5 mb-2" aria-label="Question mix by buyer intent">
                       {INTENTS.filter((i) => m[i]).map((i) => <span key={i} className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-zinc-100 text-zinc-700 border border-zinc-200">{INTENT_LABEL[i]} · {m[i]}</span>)}
@@ -1013,7 +1022,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                           <div className="text-xs font-semibold text-zinc-500">{intentLabel[b]}</div>
                           <ul className="space-y-0.5 text-zinc-700">
                             {categoryList.filter((q) => intentOf(q) === b).map((q, i) => (
-                              <li key={i} className="flex gap-2" title={classifyIntent(q, coreCategory).rule}><span className="text-zinc-300">•</span>{q}<span className="ml-auto shrink-0 text-[10px] uppercase tracking-wide text-zinc-500">{INTENT_LABEL[classifyIntent(q, coreCategory).intent as keyof typeof INTENT_LABEL]}</span></li>
+                              <li key={i} className="flex gap-2" title={classifyIntent(q, coreCategory).rule}><span className="text-zinc-300">•</span>{q}<span className={`ml-auto shrink-0 text-[10px] uppercase tracking-wide ${isProcedureQuestion(q) ? 'font-bold text-amber-800' : 'text-zinc-500'}`}>{isProcedureQuestion(q) ? 'Procedure' : INTENT_LABEL[classifyIntent(q, coreCategory).intent as keyof typeof INTENT_LABEL]}</span></li>
                             ))}
                           </ul>
                         </div>
@@ -1025,6 +1034,22 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Nov 22 2026: the free setup check, before anything is paid for. */}
+          <div className="rounded-xl border border-zinc-300 p-4 space-y-3" aria-label="Setup check">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-sm font-bold text-zinc-900">Setup check (free)</h3>
+              <span className="text-xs text-zinc-600">{collisions === null || !siteInfo ? 'Checking your site and name…' : setupIssues.length ? `${setupIssues.length} thing${setupIssues.length !== 1 ? 's' : ''} to look at` : 'Nothing to fix'}</span>
+            </div>
+            {setupIssues.length === 0 && collisions !== null && siteInfo && <p className="text-sm text-emerald-800">Your questions name your brand with your website, stay close to what your site says, and your competitors are not your own sources.</p>}
+            {setupIssues.map((i) => (
+              <div key={i.id} className={`rounded-lg border p-3 text-sm ${i.level === 'warn' ? 'border-amber-300 bg-amber-50' : i.level === 'fix' ? 'border-zinc-300 bg-white' : 'border-zinc-200 bg-zinc-50'}`}>
+                <p className="font-semibold text-zinc-900">{i.title}</p>
+                <p className="text-zinc-700 mt-0.5">{i.detail}</p>
+                {i.fix && <button type="button" onClick={() => applyFix(i.fix!)} className="mt-2 text-sm font-semibold underline text-zinc-900">{i.fixLabel}</button>}
+              </div>
+            ))}
           </div>
 
           {/* WO-INTEGRITY-002 B1(b): show reps + a cost estimate before the run. A large
@@ -1568,7 +1593,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
           {/* WO-015: Your next steps (shown for every full sweep; gated by plan inside). */}
           {result && !result.quickCheck && (
             <NextStepsPanel plan={fixItPlanFor(reportInputs(result))} access={planAccess()} onUpload={onStandingUpload} uploading={standingBusy} uploadError={standingErr}
-              onUseDifferentiator={(qs) => { setCategoryQueries(qs.join('\n')); setBranded(''); setQuestionSeries('differentiator'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+              onUseDifferentiator={(qs) => { setCategoryQueries(qs.join('\n')); setBranded(''); setBrandedEdited(true); setQuestionSeries('differentiator'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
           )}
           {result && !result.quickCheck && result.persisted && (
             <RecordPanel domain={result.domain} enabled={!!recordEnabled} actions={(() => { const a = [...recordActions(reportInputs(result)), ...guideRecordActions(guideFor(result, null))]; return a.filter((x, i) => a.findIndex((y) => y.key === x.key) === i); })()} onEntries={setRecordEntries} />
@@ -1716,7 +1741,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                     {r.grounding === 'model-prior' && !r.truncated && (
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-600 border border-sky-200" title="Answered from the model's memory — no live web search">model-prior</span>
                     )}
-                    {truth && r.queryType === 'branded' && r.cited && !r.truncated && classifyRunFidelity(true, r.transcript, truth).state === 'cited-drifted' && (
+                    {truth && r.queryType === 'branded' && r.cited && !r.truncated && classifyRunFidelity(true, r.transcript, truth, r.sources || [], r.query).state === 'cited-drifted' && (
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700 border border-red-200" title="Named you but asserted a false fact">drifted</span>
                     )}
                     <span className="font-semibold">{ENGINE_LABEL[r.engine] || r.engine}</span>

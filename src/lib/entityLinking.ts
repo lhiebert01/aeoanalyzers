@@ -179,7 +179,7 @@ export function detectEntityLinkingFailures(
   // name of your own does not.
   const fullTruth = truth && 'brandName' in truth ? (truth as TruthRecord) : null;
   const OWN_STALE = new Set(['price_mismatch', 'retired_name', 'allowance_mismatch']);
-  const fidelityOf = (r: { cited?: boolean; transcript?: string }) => (fullTruth && r.cited ? classifyRunFidelity(true, r.transcript || '', fullTruth) : null);
+  const fidelityOf = (r: { cited?: boolean; transcript?: string; sources?: string[]; query?: string }) => (fullTruth && r.cited ? classifyRunFidelity(true, r.transcript || '', fullTruth, r.sources || [], r.query || '') : null);
   const accurate = (r: { cited?: boolean; transcript?: string }) => fidelityOf(r)?.state === 'cited-accurate';
   /** An identity error (a fabricated founder) may be another entity's fact pinned on you; a stale
    *  price, allowance or product name of your own is not. */

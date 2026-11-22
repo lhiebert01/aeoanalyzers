@@ -24,7 +24,7 @@ import {
 } from '../src/lib/citationSweep.js';
 import { SCORING_VERSION } from '../src/lib/sweepDisclosure.js';
 import { accuracyWhenNamed } from '../src/lib/fidelity.js';
-import { extractTruthRecord, withSiteRecord, type TruthRecord } from '../src/lib/truthRecord.js';
+import { extractTruthRecord, withSiteRecord, withIdentity, type TruthRecord } from '../src/lib/truthRecord.js';
 import { COST_SCALE } from '../src/lib/costEstimate.js';
 import { CostGuard, NOT_ASKED, RETRIED_MARK, PLAN_PANEL, allowanceWindowStart, PLAN_SWEEPS, effectiveSweepCapUsd, monthlyCostCapUsd, sweepCapUsd, type PaidTier } from '../src/lib/sweepCaps.js';
 import { auditFactDensity, type FactDensityAudit } from '../src/lib/factDensity.js';
@@ -489,7 +489,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // recompute every point-in-time layer the as-run screen shows — fidelity/drift,
         // entity-linking collisions, content depth — with NO raw HTML stored. Best-effort:
         // a failed/slow fetch must never affect the sweep — it just omits the snapshot.
-        const snapshot = await fetchSiteSnapshot(domain);
+        const snapshot0 = await fetchSiteSnapshot(domain);
+        // Nov 22 2026: the snapshot carries the site's own domain and category, so fidelity can tell
+        // an answer about a namesake (another product with the same name) from one about you.
+        const snapshot = snapshot0 ? { ...snapshot0, truth: withIdentity(snapshot0.truth, domain, category || null) } : snapshot0;
         // WO-004: accuracy-when-named counts travel with the stored summary so History can show them.
         const awn = snapshot ? accuracyWhenNamed(runs.filter((r) => r.queryType === 'branded'), snapshot.truth) : null;
         const storedSummary = awn ? { ...summary, accuracyWhenNamed: { accurate: awn.accurate, named: awn.named } } : summary;

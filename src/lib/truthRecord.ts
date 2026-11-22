@@ -74,6 +74,18 @@ export interface TruthRecord {
    *  for the step-by-step guide: its own description, structured-data types and names, address and
    *  the CMS `generator` tag. Absent on snapshots taken before 15 Oct 2026. */
   site?: SiteFacts;
+  /** The site's own domain and the sweep's category line (Nov 22 2026), for the misidentification
+   *  check in fidelity.ts: an answer that puts the brand on another domain, or describes a product in
+   *  another category, is about a different company with the same name. Set by the caller that
+   *  knows them (run-sweep, the saved and live sweep views); absent on older snapshots. */
+  domain?: string;
+  category?: string;
+}
+
+/** Attach the site's own domain and category to a snapshot (no-op when absent). */
+export function withIdentity<T extends TruthRecord | null | undefined>(truth: T, domain?: string | null, category?: string | null): T {
+  if (!truth) return truth;
+  return { ...truth, ...(domain ? { domain } : {}), ...(category ? { category } : {}) } as T;
 }
 
 /** Extract and parse every <script type="application/ld+json"> block, flattening

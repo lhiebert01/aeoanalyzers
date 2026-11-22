@@ -33,7 +33,7 @@ import { tierForDomain, TIER_LABEL, type AttainabilityTier } from './authorityTi
 import { segmentBreakdown, winnableSegment, segmentSummaryNote, SEGMENT_LABEL, type SegmentStat } from './querySegment';
 import { buildSweepActionAgenda } from './sweepActions';
 import { auditFactDensity, compareFactDensity, type FactDensityAudit } from './factDensity';
-import type { TruthRecord } from './truthRecord';
+import { withIdentity, type TruthRecord } from './truthRecord';
 
 export type ReportVariant = 'paid' | 'courtesy';
 
@@ -102,7 +102,9 @@ export function assembleReportData(input: {
   /** Competitor pages the engines cite, for the competitive fact-density gap (E2). */
   competitorPages?: { label: string; html: string }[];
 }): ExecReportData {
-  const { brand, domain, sweepDate, competitors, truth } = input;
+  const { brand, domain, sweepDate, competitors } = input;
+  // The site's own domain (and category, when the caller has one) let fidelity catch namesakes.
+  const truth = withIdentity(input.truth, domain, (input as { category?: string | null }).category || null);
   // WO-004 Part B: never receive a cost figure.
   input = { ...input, runs: stripCost({ runs: input.runs }).runs };
   const client = { domain, brand: brand || undefined };

@@ -1,0 +1,386 @@
+{
+ "note": "Branded answers from the usesignalatlas.com Citation Sweeps of 22 November 2026 (stored transcripts), for the misidentification test. Engine output, unedited.",
+ "sweeps": [
+  {
+   "id": "b3614263-9e8c-48db-a342-97d5fcf3a5d8",
+   "domain": "usesignalatlas.com",
+   "brand": "Signal Atlas",
+   "category": "AI research assistant for official data with cited sources",
+   "competitors": [
+    {
+     "name": "Perplexity"
+    },
+    {
+     "name": "Statista"
+    },
+    {
+     "name": "Consensus"
+    }
+   ],
+   "truth": {
+    "site": {
+     "region": null,
+     "appName": "Signal Atlas",
+     "country": null,
+     "ldTypes": [
+      "SoftwareApplication"
+     ],
+     "orgName": null,
+     "locality": null,
+     "generator": null,
+     "ldDescription": "Signal Atlas puts 26 authoritative sources in one research desk. 6 are connected for live evidence; 20 are guided. Ask a question, get routed to the source, and leave with a brief you can check.",
+     "metaDescription": "Signal Atlas puts 26 authoritative sources in one research desk. 6 are connected for live evidence; 20 are guided. Ask a question, get routed to the source, and leave with a brief you can check."
+    },
+    "facts": [
+     {
+      "key": "name",
+      "value": "Signal Atlas"
+     },
+     {
+      "key": "description",
+      "value": "Signal Atlas puts 26 authoritative sources in one research desk. 6 are connected for live evidence; 20 are guided. Ask a question, get routed to the source, and leave with a brief you can check."
+     }
+    ],
+    "sameAs": [],
+    "founders": [],
+    "hasOrgId": true,
+    "brandName": "Signal Atlas",
+    "hasOrganization": true,
+    "hasDisambiguation": false
+   },
+   "runs": [
+    {
+     "engine": "claude",
+     "query": "what is usesignalatlas.com",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "SignalAtlas (usesignalatlas.com) is an interactive, zoomable web visualization of the radio frequency spectrum that allows users to explore frequency bands, search specific frequencies, and view spectrum allocations\n. \nIt's built with React + D3.js and features dynamic zoom capabilities covering frequencies from Hz to hundreds of GHz\n.",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Opensignal",
+      "https://en.wikipedia.org/wiki/ESignal",
+      "https://en.wikipedia.org/wiki/Signal_transduction_inhibitor",
+      "https://en.wikipedia.org/wiki/Global_Solar_Atlas",
+      "https://en.wikipedia.org/wiki/Sign_(disambiguation)",
+      "https://en.wikipedia.org/wiki/Signal",
+      "https://en.wikipedia.org/wiki/Automated_Anatomical_Labeling",
+      "https://github.com/Imagineer7/SignalAtlas",
+      "https://github.com/philipjellison/SignalAtlas"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "claude",
+     "query": "who is usesignalatlas.com",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "I couldn't find a website specifically at usesignalatlas.com. However, there are two open-source projects called SignalAtlas: \none is an interactive web visualization of the radio frequency spectrum that allows users to explore frequency bands, navigate through standard band regions, and search specific frequencies (at imagineer7.github.io/SignalAtlas)\n, and \nanother is a world-map display for amateur radio stations and anyone interested in live Earth views\n. If you're looking for a specific website or service, could you provide more context about what you're trying to find?",
+     "sources": [
+      "https://en.wikipedia.org/wiki/Opensignal",
+      "https://en.wikipedia.org/wiki/ESignal",
+      "https://en.wikipedia.org/wiki/Signal_transduction_inhibitor",
+      "https://en.wikipedia.org/wiki/Global_Solar_Atlas",
+      "https://en.wikipedia.org/wiki/Sign_(disambiguation)",
+      "https://en.wikipedia.org/wiki/Signal",
+      "https://en.wikipedia.org/wiki/Automated_Anatomical_Labeling",
+      "https://github.com/Imagineer7/SignalAtlas",
+      "https://github.com/philipjellison/SignalAtlas"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "gemini",
+     "query": "what is usesignalatlas.com",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "Signal Atlas (usesignalatlas.com) is an independent travel platform that provides comparisons of global travel eSIM providers like Airalo (airalo.com), Nomad (getnomad.app), Saily (saily.com), and Holafly (holafly.com). It also offers destination-specific setup guides, visa information, and curated local city intelligence tools like Stacks and Passport.",
+     "sources": [
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEPQnTBwZrQar6vKgCfu4DdR-Xqbn090aL-ENSSOaezMNkwfmfags72jK1mXwTtOCfqrVlHHot8CTyciYfgG83JAVxILyD9uHy0s0kzK3zpSeBfz9MZr-Q=",
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQENmWmW4I4k-72KSbVRjGozgd3ZcEdGGNC8Ezt-wF9B_HMmD3WZQiFxhM57gSWfoU7eR1E018O-KOFohzDqU-JdytZOnzbwp6f-E9rHXayr",
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHF9DQ5b4noOdFjgXZ3YuTrvezbs7I1V0-pngDjEGuDyTrN9n4XFcDUL4nNXnCDU1tJe8DOETH1BjsTKLNbtmcti1fVKJ2Wimf-fe-g_cv0fZV12Tu9wtvd5BO24E9QU4ZYouQzM0pwWqAVGbZgOiDv"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "gemini",
+     "query": "who is usesignalatlas.com",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "**Signal Atlas** (signalatlas.com) is a real-time news intelligence dashboard that aggregates breaking news, markets, tech, defense, and space updates from over 40 global wire services into live intelligence feeds. The name \"Signal Atlas\" is also used by an open-source radio frequency (RF) spectrum intelligence platform hosted on GitHub (github.com) and an indoor Wi-Fi signal heatmap mobile application available on Google Play (play.google.com).",
+     "sources": [
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGzF3oRvxvcRXhTtn_tKtJya4N0pqARXgSqS6JroMRHBLQElji2JUO6tlBrOdlqZgwnvwzLEWqXWAQAN9JwKtr_s0hMntL-fd7cElZ8Keu8P9F7qSLaJ8_thmZRErPHHg_k8Dm5fw==",
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFHTDxa0-0aTNSnzM4_FQ6gcNcUifbMHqtmbVGPAh_HCLaWXdxKUx1Z8Sxhichrp9pedkl7yA9JSWwfakJL-SvT511xWHoP7OMdfv8K8kgqb1pyoxcRwgdWo6b1qXA=",
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHkrDqbVFmbFzNOPc1D5cHYS9LztGeayg6b-z-OtjwUk17z3RmGL3s1Q9fOzczK2c7saCR5DhvrqyoX_KSvCb7g-6ovsNzvexWkc8QeHRBiGADNCwQvHoaVRFiA8svK384xHeT0jww0nyAy25Qq5meHwqFD4Lq8x1AM0vvt"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "openai",
+     "query": "what is usesignalatlas.com",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "usesignalatlas.com is the website for Signal Atlas, a platform offering curated waypoint collections for travel and outdoor exploration. These collections include locations like scenic viewpoints, campgrounds, and trail access points, available in formats such as GPX, CSV, KML, and GeoJSON. Signal Atlas provides various membership plans, including Atlas Starter, Atlas Explorer, and Atlas Unlimited, each offering different levels of access to these collections. ([signalatlas.store](https://signalatlas.store/?utm_source=openai))",
+     "sources": [
+      "https://signalatlas.store/?utm_source=openai"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "openai",
+     "query": "who is usesignalatlas.com",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "Signal Atlas is a platform offering curated waypoint collections for travel and outdoor activities, providing organized packs of public locations like scenic viewpoints and campgrounds in standard export formats. ([signalatlas.store](https://signalatlas.store/?utm_source=openai))\n\nUsesignalatlas.com is the research desk of Signal Atlas, where users can ask questions and receive concise briefs with every number linked to its source.",
+     "sources": [
+      "https://signalatlas.store/?utm_source=openai"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "perplexity",
+     "query": "what is usesignalatlas.com",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "usesignalatlas.com appears to be a stock-research platform related to **Signal Atlas**, offering AI-ranked global stocks, strategy-based shortlists, market dashboards, portfolio tracking, alerts, and research reports. Its main associated domain is **getsignalatlas.com**.[1]",
+     "sources": [
+      "https://getsignalatlas.com/",
+      "https://www.linkedin.com/company/signal-atlas",
+      "https://www.linkedin.com/company/signalatlas",
+      "https://www.reddit.com/r/RTLSDR/comments/1khidij/signalatlas_an_interactive_radio_spectrum_explorer/",
+      "https://signal-atlas.co.uk/",
+      "https://signalatlas.kit.com/profile/posts",
+      "https://play.google.com/store/apps/details?id=app.signalatlas&hl=en",
+      "https://github.com/abanerjee84/signal-atlas-osint",
+      "https://github.com/HoodieRat/signal-atlas",
+      "https://github.com/Khizer783/signal-atlas"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "perplexity",
+     "query": "who is usesignalatlas.com",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "**usesignalatlas.com** appears to belong to **SignalAtlas**, a Utah-based financial-services company offering rules-based trading signals for self-directed traders. Its related product provides stock rankings and AI-assisted market analysis; the company says it does not manage brokerage accounts or provide personalized investment advice.[1][3]",
+     "sources": [
+      "https://www.linkedin.com/company/signalatlas",
+      "https://www.linkedin.com/company/signal-atlas",
+      "https://getsignalatlas.com/",
+      "https://www.reddit.com/r/RTLSDR/comments/1khidij/signalatlas_an_interactive_radio_spectrum_explorer/",
+      "https://play.google.com/store/apps/details?id=app.signalatlas&hl=en",
+      "https://hiddenties.com/app/organizations/searchatlas",
+      "https://github.com/abanerjee84/signal-atlas-osint",
+      "https://trendundercurrent.com/",
+      "https://www.linkedin.com/company/atlas-signal-inc",
+      "https://trends.builtwith.com/hosting/US-Signal"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    }
+   ]
+  },
+  {
+   "id": "8be88e51-d603-4a0d-90fc-b06222ba10e4",
+   "domain": "usesignalatlas.com",
+   "brand": "Signal Atlas",
+   "category": "AI research assistant for official data with cited sources",
+   "competitors": [
+    {
+     "name": "Perplexity"
+    },
+    {
+     "name": "Statista"
+    },
+    {
+     "name": "Consensus"
+    }
+   ],
+   "truth": {
+    "site": {
+     "region": null,
+     "appName": "Signal Atlas",
+     "country": null,
+     "ldTypes": [
+      "SoftwareApplication",
+      "FAQPage"
+     ],
+     "orgName": null,
+     "locality": null,
+     "generator": null,
+     "ldDescription": "Signal Atlas puts 26 authoritative sources in one research desk. 6 are connected for live evidence; 20 are guided. Ask a question, get routed to the source, and leave with a brief you can check.",
+     "metaDescription": "Signal Atlas puts 26 authoritative sources in one research desk. 6 are connected for live evidence; 20 are guided. Ask a question, get routed to the source, and leave with a brief you can check."
+    },
+    "facts": [
+     {
+      "key": "name",
+      "value": "Signal Atlas"
+     },
+     {
+      "key": "description",
+      "value": "Signal Atlas puts 26 authoritative sources in one research desk. 6 are connected for live evidence; 20 are guided. Ask a question, get routed to the source, and leave with a brief you can check."
+     }
+    ],
+    "sameAs": [],
+    "founders": [],
+    "hasOrgId": true,
+    "brandName": "Signal Atlas",
+    "hasOrganization": true,
+    "hasDisambiguation": true
+   },
+   "runs": [
+    {
+     "engine": "claude",
+     "query": "What is Signal Atlas (usesignalatlas.com)?",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "Based on the search results, there are multiple projects called \"Signal Atlas,\" so the specific one at usesignalatlas.com likely refers to \na tool that turns your phone into a Wi-Fi heatmap maker and mobile signal meter—walk through your home or office and watch a live coverage map appear, room by room\n. \nIt provides coverage scores, dead zone finding, and router placement advice, with results stored only on your device with no cloud upload\n. \nThe app is free to use and supported by ads\n.",
+     "sources": [
+      "https://github.com/isodoro/Signal-Atlas",
+      "https://play.google.com/store/apps/details?id=app.signalatlas&hl=en_US",
+      "https://github.com/ZayyadMusa/signal-atlas",
+      "https://github.com/olosnoks/signal-atlas",
+      "https://github.com/mjkozicki/signal-atlas",
+      "https://github.com/ColdBore-RD/signal-atlas",
+      "https://github.com/rbenzing/SignalAtlas",
+      "https://github.com/philipjellison/SignalAtlas",
+      "https://en.wikipedia.org/wiki/Nuclear_Receptor_Signaling_Atlas"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "claude",
+     "query": "Who makes the Signal Atlas research desk?",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "Based on the search results, there are multiple projects called \"Signal Atlas\" or \"Signal Desk\" on GitHub created by different developers. \nThe most prominent one is a Windows desktop app by HoodieRat that discovers research for chosen topics, stores findings in SQLite, and analyzes them with an AI provider\n, available at github.com/HoodieRat/signal-atlas. \nAnother Signal Atlas is a quantitative research platform for NSE cash equities by debkrm\n. Without knowing which specific product you're asking about, I'd recommend checking these GitHub repositories directly to identify the one you need.",
+     "sources": [
+      "https://github.com/debkrm/Signal-Atlas",
+      "https://github.com/HoodieRat/signal-atlas",
+      "https://github.com/debkrm/Signal-Atlas-Core",
+      "https://github.com/vinaynaik432-debug/signal-desk",
+      "https://github.com/aaronbansal5/signal-desk-research",
+      "https://github.com/bnabdela/signal-desk",
+      "https://en.wikipedia.org/wiki/Nuclear_Receptor_Signaling_Atlas",
+      "https://github.com/TragicVibesHD/signal-desk",
+      "https://github.com/MonaLeafah/signal-desk"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "gemini",
+     "query": "What is Signal Atlas (usesignalatlas.com)?",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "Signal Atlas (`usesignalatlas.com`) is a live city intelligence and travel coordination platform created by the strategic intelligence studio I.O.V. (`iov.agency`). Described as \"the OS for travelers,\" it provides real-time local recommendations, event updates, and customizable trip itineraries called \"Stacks.\" Users can save recommendations to a personal digital \"Passport\" and navigate curated guides across featured destinations like Lisbon and Berlin.",
+     "sources": [
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEsZHwtwIcq0Q2abVujHj4qV7wqb7zJEbveZ9M3bEDw0W0yKIOaEgWSpykbjvEVhFQXjzebsK8UJZDeAinfT63E1NpUj18z75iVq5bM7Bm1iA=="
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "gemini",
+     "query": "Who makes the Signal Atlas research desk?",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "The **Signal Atlas** quantitative stock research desk is developed by Adrien Le Roux at [getsignalatlas.com](https://getsignalatlas.com). Alternatively, the **Signal Atlas** pursuit and account research desk workflow is built by advisory firm Cromwell FutureWorks at [cromwellfutureworks.com](https://cromwellfutureworks.com).",
+     "sources": [
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEez7B09sQsqY2DCC-NpCFQEx1DyhgLeDbsE6aU3J2-v2gIV7SjCtTdtRlGlAlFbhlnBcaEBGabAaOOWpDgspMf_Bi_tNKJhloYpikeGyRUDnw5soDTdvodarBq_BK8ay9yya36iCi3uX8Hs4mNU3MbeVEg9on6SzupslghEzdB-b6go4zD",
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHWXfK9YIKaq1gp8iQQfVO50kvInBiXM5obD2GkVXFAvHzHvBCXJqZmTYGj1SEtq3kGz_sO1NFtr7HV2LTxfFg3idbFIoNkpfu-qbu6PJsH648f07LiLmkw4Xt4vmDG5AvUg-moLAVslkdhK_w=",
+      "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE0rf5WFkBdC-CaBA-p_pw7w793zXyOjCfmDb-YG35H7h8cqiaPWeCg5SRFOTtZrguk3_hJ5NLn8bBBxQksgBso4olV6s-hhi9U6-AMCMIwlhLwHUUL"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "openai",
+     "query": "What is Signal Atlas (usesignalatlas.com)?",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "Signal Atlas is a research platform that helps users obtain authoritative answers to their questions by connecting them to relevant sources and providing clear, verifiable information. Users can submit inquiries, and the platform delivers concise briefs with every figure linked to its original source. This approach ensures transparency and reliability in the information provided.",
+     "sources": [],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "openai",
+     "query": "Who makes the Signal Atlas research desk?",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "The Signal Atlas research desk is produced by Signal Atlas, an independent editorial research organization specializing in travel connectivity. ([signalatlas.world](https://signalatlas.world/contact.html?utm_source=openai))",
+     "sources": [
+      "https://signalatlas.world/contact.html?utm_source=openai"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "perplexity",
+     "query": "What is Signal Atlas (usesignalatlas.com)?",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "Signal Atlas (usesignalatlas.com) appears to be an **AI-powered stock-research and market-signals platform** that screens roughly 100,000 stocks across 40+ factors, then provides strategy-based rankings, watchlists, portfolio tracking, and AI-generated research on catalysts, risks, and price levels.[1] It is designed for self-directed investors and provides general, non-personalized information—not individualized investment advice.[1]",
+     "sources": [
+      "https://getsignalatlas.com/",
+      "https://github.com/abanerjee84/signal-atlas-osint",
+      "https://play.google.com/store/apps/details?id=app.signalatlas&hl=en",
+      "https://signal-atlas.co.uk/",
+      "https://www.linkedin.com/company/signal-atlas",
+      "https://www.linkedin.com/company/signalatlas",
+      "https://signalatlas.kit.com/profile/posts",
+      "https://github.com/linsk-labs/signal-atlas",
+      "https://github.com/isodoro/Signal-Atlas",
+      "https://www.reddit.com/r/RTLSDR/comments/1khidij/signalatlas_an_interactive_radio_spectrum_explorer/"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    },
+    {
+     "engine": "perplexity",
+     "query": "Who makes the Signal Atlas research desk?",
+     "queryType": "branded",
+     "runIndex": 0,
+     "transcript": "Signal Atlas Research Desk is made by **Signal Atlas SA**, operating through **Trend Undercurrent** at **trendundercurrent.com**.[1][4]",
+     "sources": [
+      "https://trendundercurrent.com/topics/",
+      "https://trendundercurrent.com/explore/",
+      "https://thesurpluss.com/resources",
+      "https://trendundercurrent.com/",
+      "https://trendundercurrent.com/archive/",
+      "https://hermes-agent.nousresearch.com/marketplace/signal-atlas",
+      "https://trendundercurrent.com/entities/",
+      "https://trendundercurrent.com/sources/",
+      "https://trendundercurrent.com/guides/",
+      "https://www.linkedin.com/company/signal-atlas-matrix"
+     ],
+     "truncated": false,
+     "grounding": "search-grounded",
+     "costUsd": 0
+    }
+   ]
+  }
+ ]
+}

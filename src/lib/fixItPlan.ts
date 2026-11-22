@@ -150,7 +150,7 @@ function figures(inp: PlanInput) {
   const cat = inp.runs.filter((r) => r.queryType === 'category' && usable(r) && r.grounding !== 'model-prior');
   const found = br.filter((r) => r.domainCited).length;
   let accurate = 0, named = 0;
-  if (inp.truth) for (const r of br) { const f = classifyRunFidelity(!!r.cited, r.transcript || '', inp.truth); if (f.state === 'cited-accurate') { accurate++; named++; } else if (f.state === 'cited-drifted') named++; }
+  if (inp.truth) for (const r of br) { const f = classifyRunFidelity(!!r.cited, r.transcript || '', inp.truth, (r as { sources?: string[] }).sources || [], (r as { query?: string }).query || ''); if (f.state === 'cited-accurate') { accurate++; named++; } else if (f.state === 'cited-drifted') named++; }
   const rec = cat.filter((r) => r.domainCited).length;
   return { foundPct: pct(found, br.length), found, foundN: br.length, accPct: named ? pct(accurate, named) : null, accurate, named, recPct: pct(rec, cat.length), rec, recN: cat.length };
 }
@@ -170,7 +170,7 @@ export function wrongClaims(inp: PlanInput) {
   const own = [inp.domain, ...(inp.ownedDomains || [])];
   const byKey = new Map<string, { wrong: string; detail: string; engines: Set<string>; runs: SweepRunResult[] }>();
   for (const r of inp.runs.filter((x) => x.queryType === 'branded' && usable(x))) {
-    const f = classifyRunFidelity(!!r.cited, r.transcript || '', inp.truth);
+    const f = classifyRunFidelity(!!r.cited, r.transcript || '', inp.truth, (r as { sources?: string[] }).sources || [], (r as { query?: string }).query || '');
     if (f.state !== 'cited-drifted') continue;
     for (const i of f.issues) {
       if (i.severity !== 'high') continue;
