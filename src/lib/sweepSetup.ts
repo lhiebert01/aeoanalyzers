@@ -247,31 +247,42 @@ export function setupCheck(inp: SetupInput): SetupIssue[] {
 
 // ─── Model prompts (input built from the site's own pages) ───────────────────────────────────────
 
-export const EXTRACT_PROMPT = (digest: string) => `From this website's own pages, extract what makes this product different. Use the site's own words; do not invent anything the pages do not say.
-Return JSON:
+export const EXTRACT_PROMPT = (digest: string) => `From this website's own pages, work out what the product is and why a buyer would choose it. Do not invent anything the pages do not say.
+Return compact JSON (short strings, no more items than asked):
 {"brand": "the product name",
- "core_category": "what it is, 3 to 8 words, in the site's own terms (not a generic segment)",
- "differentiators": ["up to 5 short phrases: features, sources, or proof points the site states"],
- "audiences": ["only the customer types the site itself names; empty if it names none"],
- "competitors": ["up to 5 products an AI answer engine would most often recommend to the same buyer for this exact need, names only; never a data source or tool the site says it uses or links to; empty rather than a guess"]}
+ "core_category": "the TYPE of product a buyer would search for, 4 to 8 plain words (for example \\"AI research assistant for official statistics\\"); never the site's tagline or slogan",
+ "buyer_needs": ["at most 5 concrete jobs buyers come for, each under 12 words, in a buyer's words, naming the kind of data or answer they need (for example \\"find official economic statistics with a link to the source\\")"],
+ "differentiators": ["at most 5, each under 10 words: features, sources or proof points the site states"],
+ "audiences": ["only customer types the site itself names, at most 5; empty if it names none"]}
 
 WEBSITE PAGES:
 """
 ${digest}
 """`;
 
-export const QUESTIONS_PROMPT = (p: { category: string; differentiators: string[]; audiences: string[]; competitors: string[]; sources: string[] }) => `Write 10 questions a buyer would type into an AI assistant when looking for a product like this one. Do NOT use the product's name.
+export const QUESTIONS_PROMPT = (p: { category: string; needs?: string[]; differentiators: string[]; audiences: string[]; competitors: string[]; sources: string[] }) => `Write 10 questions a buyer would type into an AI assistant when looking for a product like this one. Do NOT use the product's name.
 
 What it is: ${p.category}
-What makes it different (the site's own words): ${p.differentiators.join('; ') || '(not stated)'}
+What buyers come for: ${(p.needs || []).join('; ') || '(not stated)'}
+What makes it different: ${p.differentiators.join('; ') || '(not stated)'}
 Customer types the site names: ${p.audiences.join(', ') || '(none named)'}
 Products buyers compare it with: ${p.competitors.join(', ') || '(none)'}
-Sources it uses (topics a buyer may ask about, never competitors): ${p.sources.slice(0, 12).join(', ') || '(none listed)'}
+Sources it uses (kinds of data a buyer may ask for by name, never competitors): ${p.sources.slice(0, 12).join(', ') || '(none listed)'}
 
 Rules:
-- Build every question from what makes it different, not from a generic segment.
+- Write what a buyer actually types: name the kind of data or answer they need (for example official statistics, government data, economic series, research papers), and what they need it to do (cite the source, link each number). Do not quote the site's marketing phrases or slogans.
+- Build the questions from what buyers come for and what makes the product different, not from a generic segment.
 - Ask for recommendations ("best tool that …", "which research tools …", "alternatives to X that …"). Do not write "how to …" questions: engines answer those with steps and name no product.
 - Never use budget words (affordable, cheaper, cheap, budget, free, low-cost) or customer types (startups, agencies, small business, enterprise, freelancers) unless they appear above as words the site itself uses.
-- Up to 3 "alternatives to {competitor}" questions, only for the competitors listed.
-- Plain buyer language, no internal jargon. No location.
+- Up to 3 "alternatives to X" questions, only for the products listed above.
+- Plain buyer language, under 20 words each. No location.
 Return JSON: {"sweep_queries":[{"intent_type":"Discovery|Problem|Comparative","query":"..."}]}`;
+
+/** The free competitor check: which products an AI assistant names for this category and these needs.
+ *  The answer is filtered afterwards: never the brand, never a source the product uses. */
+export const COMPETITORS_PROMPT = (p: { category: string; needs: string[]; sources: string[] }) => `A buyer asks an AI assistant for recommendations:
+- "What are the best options for: ${p.category}?"
+${p.needs.slice(0, 5).map((n) => `- "Which tool should I use to ${n.replace(/^(to\s+)/i, '').replace(/[.?]$/, '')}?"`).join('\n')}
+List the products you would name across these answers, the most often named first, so that every kind of need above is covered (a data or statistics need by the data products buyers use, a research need by the research assistants they use). Names of products only (no categories, no websites), at most 6.
+Do not list these, which are data sources rather than competing products: ${p.sources.slice(0, 20).join(', ') || '(none)'}.
+Return JSON: {"competitors": ["...", "..."]}`;

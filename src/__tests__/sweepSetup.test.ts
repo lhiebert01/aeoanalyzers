@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
   brandedQuestions, weakBrandedQuestion, unsupportedWords, removeWord, isProcedureQuestion, rephraseProcedure,
-  siteDigest, isUsedSource, setupCheck, QUESTIONS_PROMPT, EXTRACT_PROMPT,
+  siteDigest, isUsedSource, setupCheck, QUESTIONS_PROMPT, EXTRACT_PROMPT, COMPETITORS_PROMPT,
 } from '../lib/sweepSetup';
 
 /** Nov 22 2026 (usesignalatlas.com): build the setup from what makes the site different and check
@@ -92,7 +92,11 @@ describe('sweep setup: the prompts and the editor', () => {
     expect(p).toMatch(/Never use budget words/);
     expect(p).toMatch(/Do not write "how to/);
     expect(p).toContain('a receipt with every number');
-    expect(EXTRACT_PROMPT('x')).toMatch(/never a data source or tool the site says it uses/);
+    expect(EXTRACT_PROMPT('x')).toMatch(/never the site's tagline or slogan/);
+    const c = COMPETITORS_PROMPT({ category: 'AI research assistant for official statistics', needs: ['find official economic statistics with a source link'], sources: ['FRED Economic Data', 'Wolfram|Alpha'] });
+    expect(c).toMatch(/Do not list these, which are data sources rather than competing products: FRED Economic Data, Wolfram\|Alpha/);
+    expect(c).toContain('Which tool should I use to find official economic statistics with a source link?');
+    expect(QUESTIONS_PROMPT({ category: 'x', needs: ['find official data'], differentiators: [], audiences: [], competitors: [], sources: [] })).toMatch(/Do not quote the site's marketing phrases/);
   });
   it('the question editor shows no code notation and uses plain names', () => {
     const src = readFileSync('src/components/SweepDashboard.tsx', 'utf8');

@@ -5,7 +5,7 @@ import { aggregateAuthorityGap, type AuthorityGapReport } from '../lib/authority
 import { tierForDomain, TIER_LABEL } from '../lib/authorityTiers';
 import { segmentBreakdown, winnableSegment, largestLosingSegment, SEGMENT_LABEL } from '../lib/querySegment';
 import { sanitizeCompetitors, lintDefunctNames, stripNonQuestionLines, cleanBrandName } from '../lib/sweepConfig';
-import { brandedQuestions, siteDigest, isUsedSource, unsupportedWords, removeWord, setupCheck, isProcedureQuestion, EXTRACT_PROMPT, QUESTIONS_PROMPT, type SiteDigest, type NameCollision, type SetupIssue, type SetupFix } from '../lib/sweepSetup';
+import { brandedQuestions, siteDigest, isUsedSource, unsupportedWords, removeWord, setupCheck, isProcedureQuestion, EXTRACT_PROMPT, QUESTIONS_PROMPT, COMPETITORS_PROMPT, type SiteDigest, type NameCollision, type SetupIssue, type SetupFix } from '../lib/sweepSetup';
 import { buildSweepActionAgenda } from '../lib/sweepActions';
 import { buildDoNowPlan } from '../lib/doNowPlan';
 import { planSweep } from '../lib/sweepPlan';
@@ -96,11 +96,17 @@ const EXTRACT_SCHEMA = {
   properties: {
     brand: { type: Type.STRING },
     core_category: { type: Type.STRING },
+    buyer_needs: { type: Type.ARRAY, items: { type: Type.STRING } },
     differentiators: { type: Type.ARRAY, items: { type: Type.STRING } },
     audiences: { type: Type.ARRAY, items: { type: Type.STRING } },
-    competitors: { type: Type.ARRAY, items: { type: Type.STRING } },
   },
   required: ['brand', 'core_category'],
+};
+
+const COMPETITOR_SCHEMA = {
+  type: Type.OBJECT,
+  properties: { competitors: { type: Type.ARRAY, items: { type: Type.STRING } } },
+  required: ['competitors'],
 };
 
 const QUERY_SCHEMA = {
@@ -541,11 +547,15 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
       const guessedBrand = cleanBrandName(String(ext.brand || ''));
       const guessedCategory = String(ext.core_category || '').trim();
       const list = (v: any) => (Array.isArray(v) ? v.map((x: any) => String(x || '').trim()).filter(Boolean) : []);
+      const needs = list(ext.buyer_needs).slice(0, 5);
       const differentiators = list(ext.differentiators).slice(0, 5);
       const audiences = list(ext.audiences).filter((a) => info.text.toLowerCase().includes(a.toLowerCase()));
+      const sourceNames = info.usedSources.filter((x) => !/\./.test(x) && x.split(' ').length <= 4);
+      // The free competitor check: the products an AI assistant names for this category and these needs.
       // Never a source the product itself uses (Wolfram|Alpha, Our World in Data … on usesignalatlas.com).
-      const guessedComp: string[] = sanitizeCompetitors(list(ext.competitors), { brand: guessedBrand, ownDomain: d })
-        .filter((c) => !isUsedSource(c, info.usedSources)).slice(0, 4);
+      const cc = safeJsonParse(await llmJson(COMPETITORS_PROMPT({ category: guessedCategory, needs, sources: sourceNames }), COMPETITOR_SCHEMA)) || {};
+      const guessedComp: string[] = sanitizeCompetitors(list(cc.competitors), { brand: guessedBrand, ownDomain: d })
+        .filter((c) => !isUsedSource(c, info.usedSources)).slice(0, 5);
       setBrand(guessedBrand);
       setCoreCategory(guessedCategory);
       setCompetitors(guessedComp.join('\n'));
@@ -553,8 +563,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
       checkNames(guessedBrand, d);
 
       // Draft the 10 buyer questions from what makes the site different.
-      const sourceNames = info.usedSources.filter((x) => !/\./.test(x) && x.split(' ').length <= 4);
-      const q = safeJsonParse(await llmJson(QUESTIONS_PROMPT({ category: guessedCategory, differentiators, audiences, competitors: guessedComp, sources: sourceNames }), QUERY_SCHEMA)) || {};
+      const q = safeJsonParse(await llmJson(QUESTIONS_PROMPT({ category: guessedCategory, needs, differentiators, audiences, competitors: guessedComp, sources: sourceNames }), QUERY_SCHEMA)) || {};
       // Budget and audience words the site never uses are taken out; "how to" questions stay, flagged by the check.
       const tidy = (x: string) => unsupportedWords(x, info.text).reduce((acc, u) => removeWord(acc, u.word), x);
       const gq: GeneratedQuery[] = Array.isArray(q.sweep_queries)
@@ -989,7 +998,7 @@ export default function SweepDashboard({ onUpgrade, isAdmin, isPaidUser, planPan
                     className="mt-1 w-full border border-zinc-300 rounded-xl px-3 py-2 text-sm" />
                 </label>
                 <label className="text-sm font-semibold block text-zinc-800">Questions your buyers ask
-                  <span className="block text-xs font-normal text-zinc-600 mt-0.5">One per line, without your name. For example: {coreCategory ? `best ${coreCategory.toLowerCase()} that ${/source|cit/i.test(coreCategory) ? 'links every number to its source' : 'fits what I need'}` : 'which tool should I use to …'}</span>
+                  <span className="block text-xs font-normal text-zinc-600 mt-0.5">One per line, without your name. For example: {categoryList[0] || 'which tool should I use to …'}</span>
                   {questionSeries === 'differentiator' && (
                     <div className="mb-2 rounded-xl border border-zinc-900 bg-zinc-50 p-3 text-sm text-zinc-900">
                       <b>Separate series: your differentiator questions.</b> This sweep is stored as its own series and never compared with your main questions. Nothing runs until you click the run button.
