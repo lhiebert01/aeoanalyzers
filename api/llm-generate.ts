@@ -18,7 +18,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI } from '@google/genai';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
-import { isPaidRequest, analysesUsedIfCapped } from './_lib/entitlement.js';
+import { isPaidRequest, analysesUsedIfCapped, incrementUsageCount } from './_lib/entitlement.js';
+import { isSiteAnalysisSchema, freeLimitReached } from '../src/lib/usageCount.js';
 import { analysesAllowance, analysesLimitMessage, allowanceWindowStart } from '../src/lib/sweepCaps.js';
 import { redactFixFields, markGated } from '../src/lib/fixGating.js';
 import { LLM_GEMINI_MODELS } from './_lib/ai-models.js';
@@ -175,6 +176,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (purpose !== 'sweep-config') {
       const ent0 = await entP;
       if (ent0.userId && !ent0.admin) {
+        // Free accounts are capped on users.usage_count, which only this server writes
+        // (founder ruling, Nov 21 2026); every tier is also capped on saved analyses in its window.
+        if (freeLimitReached(ent0.tier, ent0.usageCount, analysesAllowance('free'))) {
+          return res.status(429).json({ error: analysesLimitMessage('free') });
+        }
         const used = await analysesUsedIfCapped(ent0.userId, analysesAllowance(ent0.tier), allowanceWindowStart(ent0.tier, ent0.passUntil));
         if (used !== null) {
           return res.status(429).json({ error: analysesLimitMessage(ent0.tier) });
@@ -218,6 +224,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // stripped. "Something was removed" is the wrong condition for that; "this
     // caller is not entitled" is the right one.
     if (!ent.paid && ent.determined) text = markGated(redactFixFields(text));
+
+    // Count the analysis on the server: one per site scored (the call whose schema asks for a
+    // score), for signed-in non-admin callers. The browser cannot write usage_count.
+    if (purpose !== 'sweep-config' && ent.userId && !ent.admin && isSiteAnalysisSchema(schema)) {
+      await incrementUsageCount(ent.userId);
+    }
 
     return res.status(200).json({ text, provider });
   } catch (err: any) {

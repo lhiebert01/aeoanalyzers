@@ -10,15 +10,20 @@ import { homedir } from 'node:os';
 export const ALLOWED = {
   users: ['SELECT'],
   analysis_history: ['INSERT', 'SELECT'],
-  citation_sweeps: ['SELECT', 'UPDATE'],
+  citation_sweeps: ['SELECT'],
   sweep_results: ['SELECT'],
   action_records: ['INSERT', 'SELECT'],
   search_standing: ['INSERT', 'SELECT'],
 };
 
-// Column-level writes (supabase/migrations/20261102130000_users_column_writes.sql).
+// Column-level writes (supabase/migrations/20261102130000_users_column_writes.sql and
+// 20261121_server_side_usage_count.sql). users has no UPDATE for signed-in users: usage_count and
+// last_analysis_at are written only by the server (increment_usage_count). citation_sweeps updates
+// are limited to the columns the browser writes; created_at and total_cost_usd, which decide the
+// sweep allowance, are server-only.
 export const COLUMNS = {
-  users: { INSERT: ['display_name', 'email', 'id', 'role', 'subscription_status'], UPDATE: ['last_analysis_at', 'usage_count'] },
+  users: { INSERT: ['display_name', 'email', 'id', 'role', 'subscription_status'] },
+  citation_sweeps: { UPDATE: ['owned_domains', 'rescore_note', 'rescored_at', 'scoring_version', 'summary'] },
 };
 
 export function violations(rows) {

@@ -5,7 +5,7 @@ import { CheckerExplainer, CHECKER_TITLE, CHECKER_SEO_TITLE, CHECKER_DESCRIPTION
 import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRight, Loader2, Globe, Cpu, Swords, Copy, Check, User as UserIcon, LogOut, History, CreditCard, LayoutDashboard, Settings, BookOpen, ShieldAlert, BarChart, Lock, Mail, FileText, Layout, ShoppingBag, Code, Info, ExternalLink, ChevronRight, ChevronDown, Share2, Linkedin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HelmetProvider } from 'react-helmet-async';
-import { supabase, supabaseQuery, supabaseInsert, supabaseUpdate, setAccessToken } from './supabase';
+import { supabase, supabaseQuery, supabaseInsert, setAccessToken } from './supabase';
 
 interface AppUser {
   id: string;
@@ -120,7 +120,7 @@ export default function App() {
   const openContact = (subject?: string) => { setContactSubject(subject); setContactOpen(true); };
   const { trackEvent } = useGA4();
 
-  const FREE_LIMIT = 3; // Free accounts: 3 analyses ever (founder, 14 Oct 2026); api/llm-generate enforces it server-side
+  const FREE_LIMIT = 3; // Free accounts: 3 analyses ever (founder, 14 Oct 2026); api/llm-generate counts (users.usage_count) and enforces it server-side
 
   const isAdmin = user?.email?.toLowerCase() === 'lindsay.hiebert@gmail.com' ||
                   user?.email?.toLowerCase() === 'liindsay.hiebert@gmail.com';
@@ -459,19 +459,17 @@ export default function App() {
     };
   };
 
-  const updateUsageCount = async () => {
-    if (!user || !userProfile) return;
-
-    const newCount = (userProfile.usage_count || 0) + 1;
+  // usage_count is counted and enforced on the server (api/llm-generate increments it once per site
+  // scored; founder ruling, Nov 21 2026). The browser cannot write it, so after an analysis it
+  // re-reads the count the server recorded, for the "x / 3 free checks" meter.
+  const refreshUsageCount = async () => {
+    if (!user) return;
     try {
-      // Use direct REST API to bypass Supabase client issues
-      await supabaseUpdate('users', `id=eq.${user.id}`, {
-        usage_count: newCount,
-        last_analysis_at: new Date().toISOString(),
-      });
-      setUserProfile({ ...userProfile, usage_count: newCount });
+      const { data } = await supabaseQuery('users', `id=eq.${user.id}&select=usage_count,last_analysis_at`);
+      const row = Array.isArray(data) ? data[0] : null;
+      if (row) setUserProfile((p: any) => (p ? { ...p, usage_count: row.usage_count, last_analysis_at: row.last_analysis_at } : p));
     } catch (err) {
-      console.error('Error updating usage count:', err);
+      console.error('Error reading usage count:', err);
     }
   };
 
@@ -583,7 +581,7 @@ export default function App() {
             aUrl,
             aCompetitor
           ).catch(console.error);
-          updateUsageCount().catch(console.error);
+          refreshUsageCount().catch(console.error);
         }
         trackEvent('analysis_complete', { type: 'duel', winner: duel.winner });
       } else {
@@ -602,7 +600,7 @@ export default function App() {
         // Save to DB in background (don't block UI)
         if (user) {
           saveToHistory(analysis, aUrl).catch(console.error);
-          updateUsageCount().catch(console.error);
+          refreshUsageCount().catch(console.error);
         }
         trackEvent('analysis_complete', { type: 'single', score: analysis.score });
       }

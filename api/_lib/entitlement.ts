@@ -15,7 +15,7 @@ const ADMIN_EMAILS = ['lindsay.hiebert@gmail.com', 'liindsay.hiebert@gmail.com']
 
 export async function isPaidRequest(
   req: VercelRequest,
-): Promise<{ paid: boolean; userId: string | null; determined: boolean; admin?: boolean; tier?: string; passUntil?: string | null }> {
+): Promise<{ paid: boolean; userId: string | null; determined: boolean; admin?: boolean; tier?: string; passUntil?: string | null; usageCount?: number | null }> {
   const supaUrl = process.env.VITE_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const anon = process.env.VITE_SUPABASE_ANON_KEY;
@@ -43,7 +43,7 @@ export async function isPaidRequest(
 
     const H = { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
     const rowRes = await fetch(
-      `${supaUrl}/rest/v1/users?id=eq.${userId}&select=subscription_status,report_pass_until`,
+      `${supaUrl}/rest/v1/users?id=eq.${userId}&select=subscription_status,report_pass_until,usage_count`,
       { headers: H },
     );
     const [row] = rowRes.ok ? await rowRes.json() : [null];
@@ -52,7 +52,9 @@ export async function isPaidRequest(
     const paid = sub === 'Business' || sub === 'Pro' || !!dayPassActive;
     // The plan decides the analyses allowance; a subscription outranks a Day Pass.
     const tier = sub === 'Business' || sub === 'Pro' ? sub : dayPassActive ? 'daypass' : 'free';
-    return { paid, userId, determined: true, tier, passUntil: row?.report_pass_until ?? null };
+    // usage_count is written only by the server (increment_usage_count); null = unreadable.
+    const usageCount = rowRes.ok && row ? Number(row.usage_count) || 0 : null;
+    return { paid, userId, determined: true, tier, passUntil: row?.report_pass_until ?? null, usageCount };
   } catch {
     return { paid: false, userId: null, determined: false }; // transient error → fail open (protect payers)
   }
@@ -79,6 +81,32 @@ export async function analysesUsedIfCapped(userId: string, cap: number, since: D
     const used = Number((r.headers.get('content-range') || '0-0/0').split('/')[1] || 0);
     return used >= cap ? used : null;
   } catch {
+    return null;
+  }
+}
+
+/**
+ * Server-side usage counting (founder ruling, Nov 21 2026): users.usage_count is incremented only
+ * here, through the service-role-only increment_usage_count() function, after the analysis route
+ * generates a site analysis. The browser can read the count and cannot write it. Returns the new
+ * count, or null when it could not be recorded (logged; the generated analysis is still returned).
+ */
+export async function incrementUsageCount(userId: string): Promise<number | null> {
+  const supaUrl = process.env.VITE_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supaUrl || !serviceKey) return null;
+  try {
+    const r = await fetch(`${supaUrl}/rest/v1/rpc/increment_usage_count`, {
+      method: 'POST',
+      headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_user: userId }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!r.ok) { console.error('[usage] increment failed', r.status); return null; }
+    const n = await r.json();
+    return typeof n === 'number' ? n : Number(n) || null;
+  } catch (e: any) {
+    console.error('[usage] increment failed', e?.message);
     return null;
   }
 }
