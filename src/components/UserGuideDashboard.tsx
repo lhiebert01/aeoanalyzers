@@ -237,13 +237,13 @@ export default function UserGuideDashboard() {
         </div>
 
         <p className="text-zinc-600 max-w-2xl leading-relaxed">
-          A score predicts; a Citation Sweep proves. We ask the real answer engines — ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business — your buyers' questions, multiple times each, and store every transcript. A sweep measures three separable layers:
+          A score shows what to check; a Citation Sweep records what the engines actually said. We ask the real answer engines — ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business — your buyers' questions, multiple times each, and store every transcript. A sweep measures three separable layers:
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <PracticeCard
             title="Retrievability"
-            description="Ask AI about your brand by name — does it return a real answer? A health check that should sit near 100%. A miss here is an indexing emergency."
+            description="Ask AI about your brand by name — does it return a real answer? A health check that should sit near 100%. A miss here is the first thing to investigate."
             icon={<Target className="w-5 h-5" />}
           />
           <PracticeCard

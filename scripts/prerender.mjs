@@ -81,7 +81,7 @@ const ROUTES = [
   // copy AND unique to the view: 'Privacy Policy' is also a footer link on the
   // landing page, so it would match the shell and write a duplicate — the exact
   // outcome this check exists to prevent.
-  { path: '/privacy', marker: 'Last updated: March 22, 2026' },
+  { path: '/privacy', marker: 'Last updated: November 26, 2026' },
   { path: '/terms', marker: 'Acceptance of Terms' },
   // 1 Nov 2026: the free AEO checker page. The marker is its explainer heading (visible, unique).
   { path: '/aeo-checker', marker: 'What the free AEO checker looks at' },

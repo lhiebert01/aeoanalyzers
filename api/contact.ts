@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    return res.status(503).json({ error: 'Contact is temporarily unavailable — please email lindsay.hiebert@gmail.com directly.' });
+    return res.status(503).json({ error: 'Contact is temporarily unavailable. Please try again shortly.' });
   }
   const from = process.env.CONTACT_FROM || 'AEOAnalyzers <forms@aeoanalyzers.com>';
   const to = process.env.CONTACT_TO || 'lindsay.hiebert@gmail.com';
@@ -49,7 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
     if (!r.ok) {
       console.error('[contact] resend failed', r.status, await r.text().catch(() => ''));
-      return res.status(502).json({ error: 'Could not send right now — please email lindsay.hiebert@gmail.com directly.' });
+      return res.status(502).json({ error: 'Could not send right now. Please try again shortly.' });
     }
     return res.status(200).json({ ok: true });
   } catch (err: any) {

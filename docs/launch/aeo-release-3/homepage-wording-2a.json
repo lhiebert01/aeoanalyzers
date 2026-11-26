@@ -1,0 +1,62 @@
+[
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "Measurement honesty — every score backed by the real AI transcript. Run the query yourself.",
+  "after": "Measurement honesty: every Citation Sweep result keeps the AI answer transcript behind it. Read it yourself."
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you.",
+  "after": "Search is becoming answers. An AI answer often names only a few businesses, and a buyer may never see one that is left out."
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "<strong>fail to cite you</strong>, you lose the customer.",
+  "after": "<strong>fail to cite you</strong>, the buyer may never reach your site."
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "unlocks the cure — paste-ready JSON-LD",
+  "after": "unlocks the fixes: paste-ready JSON-LD"
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "Don't just optimize — <span className=\"text-zinc-400 italic font-serif\">prove it.</span>",
+  "after": "Don't just optimize. <span className=\"text-zinc-400 italic font-serif\">Measure it.</span>"
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "A score predicts. A <strong>Citation Sweep</strong> proves.",
+  "after": "A score shows what to check. A <strong>Citation Sweep</strong> records what the engines actually said."
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "We measure three separable layers. Every result is backed by the actual transcript.",
+  "after": "We measure three separable layers. Every sweep result is backed by the stored answer transcript."
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "A health check that should be ~100%. A miss here is an indexing emergency.",
+  "after": "A health check that should sit near 100%. A miss here is the first thing to investigate."
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "The Cure, Not Just a Score",
+  "after": "The Fixes, Not Just a Score"
+ },
+ {
+  "file": "src/components/UserGuideDashboard.tsx",
+  "before": "A score predicts; a Citation Sweep proves.",
+  "after": "A score shows what to check; a Citation Sweep records what the engines actually said."
+ },
+ {
+  "file": "src/components/UserGuideDashboard.tsx",
+  "before": "A health check that should sit near 100%. A miss here is an indexing emergency.",
+  "after": "A health check that should sit near 100%. A miss here is the first thing to investigate."
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx (FAQ, also in FAQPage JSON-LD)",
+  "before": "Second, it proves the result with live Citation Sweeps:",
+  "after": "Second, it records what the engines actually say with live Citation Sweeps:"
+ }
+]

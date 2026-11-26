@@ -654,6 +654,36 @@
    "text": "Total answers: 20 (4 engines × 5 runs)",
    "class": "ILLUSTRATIVE",
    "note": "figure alt: the rebuilt \"why several runs\" grid, labeled \"Illustrative example: not real results\" (WO-015)"
+  },
+  {
+   "file": "*",
+   "text": "Expands AI Visibility Measurement to Five Answer Engines",
+   "class": "GENERAL",
+   "note": "EIN Release 3 headline, founder-approved wire text (WO-AEO-EIN-READY-001); the release states the Pro/Business five and Day Pass four canon in its own body"
+  },
+  {
+   "file": "*",
+   "text": "aeo-analyzers-five-engines",
+   "class": "GENERAL",
+   "note": "URL slug of the Release 3 post, set by WO-AEO-EIN-READY-001 item 7"
+  },
+  {
+   "file": "public/blog/aeo-analyzers-five-engines/index.html",
+   "text": "Businesses can examine how five AI answer engines describe their brand",
+   "class": "GENERAL",
+   "note": "Release 3 body, word for word (founder text); the canon sentence follows in the same release"
+  },
+  {
+   "file": "public/citation-sweep-example/index.html",
+   "text": "including ChatGPT (chatgpt.com), Claude (claude.ai), Perplexity (perplexity.ai), and Google Gemini",
+   "class": "GENERAL",
+   "note": "verbatim stored Gemini answer from the Oct 13 2026 baseline, quoted unedited; it is the engine's text, not ours"
+  },
+  {
+   "file": "public/blog/aeo-analyzers-five-engines/index.html",
+   "text": "AEO Analyzers Expands AI Measurement to Five Engines",
+   "class": "GENERAL",
+   "note": "<title> of the Release 3 post: the founder-approved headline shortened to the 65-character SERP limit"
   }
  ]
 }

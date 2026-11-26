@@ -261,8 +261,11 @@ if (!idx.includes('<!--wo016-anchor-->')) {
   idx = idx.slice(0, start) + '<!--wo016-anchor-->' + idx.slice(endAt);
 }
 const STRIP = existsSync('docs/ledger-strip.html') ? readFileSync('docs/ledger-strip.html', 'utf8') : '';
+// Press and announcements (WO-AEO-EIN-READY-001, Nov 26 2026): release posts outside the art plan.
+const PRESS_POSTS = [{ path: '/blog/aeo-analyzers-five-engines' }, { path: '/blog/being-found-is-not-being-recommended' }];
+const pressSection = `  <section class="blogsec" id="press">\n    <h2 class="sech">Press and announcements</h2>\n    <p class="secintro">Releases and founder notes. Images and media contact: <a href="/press">Press</a>.</p>\n    <div class="posts">\n${PRESS_POSTS.filter((p) => existsSync(`public${p.path}/index.html`)).map(card).join('\n')}\n    </div>\n  </section>`;
 const sectionsHtml = sections.replace(/(<section class="blogsec" id="the-honest-zero-ledger">\n    <h2 class="sech">[^<]*<\/h2>\n)/, `$1${STRIP}`);
-idx = idx.replace('<!--wo016-anchor-->', '<!--wo016-anchor-->' + block('sections', '\n' + sectionsHtml + '\n'));
+idx = idx.replace('<!--wo016-anchor-->', '<!--wo016-anchor-->' + block('sections', '\n' + sectionsHtml + '\n' + pressSection + '\n'));
 idx = setHeader(idx, '/blog/');
 idx = idx.replace('</style>', `${CSS}\n${IDX_CSS}\n</style>`);
 writeFileSync(INDEX, idx);
@@ -348,4 +351,36 @@ console.log(`[wo016] chrome on ${changed} pages; blog index sectioned; /blog/how
     sm = sm.replace(new RegExp(`(<loc>${loc.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}</loc>)`), `$1${tags}`);
   }
   writeFileSync(SM, sm);
+}
+
+// WO-AEO-EIN-READY-001 item 4 (Nov 26 2026): one footer on every static page. Privacy, Terms,
+// Contact and Press links, the company line with city and state only (never a street address),
+// and the entity disambiguation line where the page does not already carry it. Idempotent:
+// rewrites each page's <footer class="sitefoot"> block on every build.
+{
+  const { readdirSync, statSync } = await import('node:fs');
+  const walk = (d) => readdirSync(d).flatMap((n) => { const p = `${d}/${n}`; return statSync(p).isDirectory() ? walk(p) : p.endsWith('.html') ? [p] : []; });
+  const DISAMBIG = 'AEO Analyzers (aeoanalyzers.com) is built and solely maintained by Lindsay Hiebert, founder of PIGENAI LLC, and is unaffiliated with any similarly named extension, plugin or tool.';
+  const footer = (withLine) => `<footer class="sitefoot">
+  <div class="fin">
+    <nav class="fnav" aria-label="Site">
+      <a href="/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="/press">Press</a>
+      <a href="/contact">Contact</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+    </nav>
+    <div class="fcop">&copy; 2026 PIGENAI LLC &middot; Kansas City, MO, United States &middot; All rights reserved.</div>${withLine ? `\n    <p class="fcop" style="flex-basis:100%;margin:0">${DISAMBIG}</p>` : ''}
+  </div>
+</footer>`;
+  let n = 0;
+  for (const f of walk('public')) {
+    const html = readFileSync(f, 'utf8');
+    if (!html.includes('<footer class="sitefoot">')) continue;
+    const others = html.replace(/<footer class="sitefoot">[\s\S]*?<\/footer>/, '');
+    const next = html.replace(/<footer class="sitefoot">[\s\S]*?<\/footer>/, footer(!/unaffiliated with any similarly/.test(others)));
+    if (next !== html) { writeFileSync(f, next); n++; }
+  }
+  console.log(`[footer] canonical footer on ${n} static pages`);
 }

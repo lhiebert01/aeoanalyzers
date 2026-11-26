@@ -6,7 +6,25 @@
     <atom:link href="https://aeoanalyzers.com/blog/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Short, grounded pieces on why AI assistants cite some sites and not others, with our own measurements published whatever they say.</description>
     <language>en-us</language>
-    <lastBuildDate>Sun, 01 Nov 2026 12:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 08 Dec 2026 12:00:00 GMT</lastBuildDate>
+    <item>
+      <title>AEO Analyzers Expands AI Visibility Measurement to Five Answer Engines</title>
+      <link>https://aeoanalyzers.com/blog/aeo-analyzers-five-engines</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/aeo-analyzers-five-engines</guid>
+      <pubDate>Tue, 08 Dec 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Website diagnostics identify improvements while Citation Sweeps record how AI engines describe, recommend and cite businesses in tested answers.</description>
+      <media:content url="https://aeoanalyzers.com/press/release-3/og-release-3-hero-1200x630.jpg" medium="image" type="image/jpeg"/>
+    </item>
+    <item>
+      <title>Being Found Is Not the Same as Being Recommended</title>
+      <link>https://aeoanalyzers.com/blog/being-found-is-not-being-recommended</link>
+      <guid isPermaLink="true">https://aeoanalyzers.com/blog/being-found-is-not-being-recommended</guid>
+      <pubDate>Tue, 08 Dec 2026 12:00:00 GMT</pubDate>
+      <dc:creator>Lindsay Hiebert</dc:creator>
+      <description>Understand the difference between website readiness, AI brand recognition and category recommendations, and learn how to examine the evidence.</description>
+      <media:content url="https://aeoanalyzers.com/press/release-3/og-founder-post-1200x630.jpg" medium="image" type="image/jpeg"/>
+    </item>
     <item>
       <title>How to monitor whether your brand appears in ChatGPT and Claude responses</title>
       <link>https://aeoanalyzers.com/monitor-brand-in-chatgpt-and-claude</link>

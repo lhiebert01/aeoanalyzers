@@ -5,7 +5,12 @@
   "redirects": [
     {
       "source": "/((?!api/).*)",
-      "has": [{ "type": "host", "value": "www.aeoanalyzers.com" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "www.aeoanalyzers.com"
+        }
+      ],
       "destination": "https://aeoanalyzers.com/$1",
       "permanent": true
     },
@@ -16,7 +21,84 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/((?!assets/).*)", "destination": "/index.html" }
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/((?!assets/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/:path+",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'none'"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'none'"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "missing": [
+        {
+          "type": "query",
+          "key": "session_id"
+        },
+        {
+          "type": "query",
+          "key": "code"
+        },
+        {
+          "type": "query",
+          "key": "saved"
+        },
+        {
+          "type": "query",
+          "key": "promo"
+        },
+        {
+          "type": "query",
+          "key": "error"
+        },
+        {
+          "type": "query",
+          "key": "error_description"
+        },
+        {
+          "type": "query",
+          "key": "type"
+        },
+        {
+          "type": "query",
+          "key": "token"
+        },
+        {
+          "type": "query",
+          "key": "access_token"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self' https://einpresswire.com https://*.einpresswire.com"
+        }
+      ]
+    }
   ]
 }

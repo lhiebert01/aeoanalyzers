@@ -120,6 +120,11 @@ export default function App() {
   const openContact = (subject?: string) => { setContactSubject(subject); setContactOpen(true); };
   const { trackEvent } = useGA4();
 
+  // WO-AEO-EIN-READY-001 item 9: the signed-out home page may be framed by einpresswire.com
+  // (vercel.json). The browser keeps the session in storage the server never sees, so a signed-in
+  // visitor inside any frame gets a link out instead of the app.
+  const framedWhileSignedIn = !!user && typeof window !== 'undefined' && window.self !== window.top;
+
   const FREE_LIMIT = 3; // Free accounts: 3 analyses ever (founder, 14 Oct 2026); api/llm-generate counts (users.usage_count) and enforces it server-side
 
   const isAdmin = user?.email?.toLowerCase() === 'lindsay.hiebert@gmail.com' ||
@@ -684,6 +689,14 @@ export default function App() {
     );
   }
 
+  if (framedWhileSignedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-8 text-center">
+        <a href="https://aeoanalyzers.com/" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-zinc-900 text-white rounded-xl font-bold">Open AEO Analyzers in a new tab</a>
+      </div>
+    );
+  }
+
   const getBreadcrumbs = () => {
     const items = [{ name: 'Home', item: '/' }];
     if (view === 'guide') items.push({ name: 'User Guide', item: '/guide' });
@@ -940,9 +953,16 @@ export default function App() {
               />
               <div className="prose prose-zinc prose-sm md:prose-base max-w-none bg-white border border-zinc-200 rounded-[3rem] p-10 md:p-16 shadow-sm">
                 <h1 className="text-4xl md:text-6xl font-bold mb-8 tracking-tight">Privacy Policy</h1>
-                <p className="text-zinc-500 font-mono uppercase tracking-widest text-xs mb-12">Last updated: March 22, 2026</p>
-                
+                <p className="text-zinc-500 font-mono uppercase tracking-widest text-xs mb-12">Last updated: November 26, 2026</p>
+
                 <section className="space-y-8">
+                  <div>
+                    <h2 className="text-2xl font-bold mb-4 text-zinc-900">Who operates AEO Analyzers</h2>
+                    <p className="text-zinc-600 leading-relaxed">
+                      AEO Analyzers is operated by PIGENAI LLC, a Missouri limited liability company in Kansas City, Missouri, United States. To reach us about privacy, use the <a href="/contact" className="underline">contact page</a>.
+                    </p>
+                  </div>
+
                   <div>
                     <h2 className="text-2xl font-bold mb-4 text-zinc-900">1. Data Collection & Analysis</h2>
                     <p className="text-zinc-600 leading-relaxed">
@@ -954,6 +974,16 @@ export default function App() {
                     <h2 className="text-2xl font-bold mb-4 text-zinc-900">2. AI Processing & Privacy</h2>
                     <p className="text-zinc-600 leading-relaxed">
                       Our analysis is powered by the Google Gemini API. When you submit a URL, we fetch the public content and send a sanitized version to the LLM for reasoning. We do not use your proprietary data to train our models.
+                    </p>
+                    <p className="text-zinc-600 leading-relaxed mt-4">
+                      A Citation Sweep sends your questions, your business name and your website address from our servers to the answer engines it asks: OpenAI (ChatGPT), Anthropic (Claude), Perplexity, Google (Gemini) and, on Pro and Business, xAI (Grok). It does not send your email address or account details to them. Each sweep's questions, answers and cited sources are stored in your account so you can read them.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h2 className="text-2xl font-bold mb-4 text-zinc-900">Service providers</h2>
+                    <p className="text-zinc-600 leading-relaxed">
+                      Vercel hosts the site. Supabase provides sign-in and the database that holds your account, analyses and sweeps. Stripe processes payments. Resend delivers email, including messages sent through the contact page. Google Fonts serves the typefaces this site loads.
                     </p>
                   </div>
 
@@ -967,7 +997,7 @@ export default function App() {
                   <div>
                     <h2 className="text-2xl font-bold mb-4 text-zinc-900">4. Cookies & Tracking</h2>
                     <p className="text-zinc-600 leading-relaxed">
-                      We use essential cookies for authentication and session management. We also use GA4 for anonymous usage tracking to improve the platform's performance and user experience.
+                      We use essential browser storage for sign-in and session management. Every page loads Google Analytics 4 (from googletagmanager.com) for usage measurement. The site also records visits from AI crawlers on our own servers, by user agent; that record holds no personal data.
                     </p>
                   </div>
                 </section>
@@ -1001,21 +1031,21 @@ export default function App() {
                   <div>
                     <h2 className="text-2xl font-bold mb-4 text-zinc-900">1. Acceptance of Terms</h2>
                     <p className="text-zinc-600 leading-relaxed">
-                      By accessing AEO Analyzers, you agree to be bound by these Terms. Our service is provided "as is," and we make no guarantees regarding the absolute accuracy of AI-generated scores, as search algorithms and LLM behaviors change frequently.
+                      AEO Analyzers is operated by PIGENAI LLC, a Missouri limited liability company in Kansas City, Missouri, United States. By accessing AEO Analyzers, you agree to be bound by these Terms. Our service is provided "as is," and we make no guarantees regarding the absolute accuracy of AI-generated scores, as search algorithms and LLM behaviors change frequently.
                     </p>
                   </div>
 
                   <div>
                     <h2 className="text-2xl font-bold mb-4 text-zinc-900">2. Usage Limits</h2>
                     <p className="text-zinc-600 leading-relaxed">
-                      Free users are limited to one analysis. Pro and Business users are subject to the monthly limits defined in their respective tiers. Attempting to bypass these limits via automated scripts or multiple accounts is a violation of these terms.
+                      Free accounts include three AEO analyses in total. Pro and Business users are subject to the monthly limits defined in their respective tiers. Attempting to bypass these limits via automated scripts or multiple accounts is a violation of these terms.
                     </p>
                   </div>
 
                   <div>
                     <h2 className="text-2xl font-bold mb-4 text-zinc-900">3. Intellectual Property</h2>
                     <p className="text-zinc-600 leading-relaxed">
-                      The AEO Analyzers platform, including its proprietary scoring algorithms and UI design, is the property of AEO Analyzers. You retain all rights to the website content you submit for analysis.
+                      The AEO Analyzers platform, including its proprietary scoring algorithms and UI design, is the property of PIGENAI LLC. You retain all rights to the website content you submit for analysis.
                     </p>
                   </div>
 
@@ -1663,7 +1693,7 @@ export default function App() {
                 <li><a href="/blog/" className="text-zinc-600 hover:text-zinc-900 transition-all">Blog</a></li>
                 <li><button onClick={() => { setView('guide'); setGuideType('user'); }} className="text-zinc-600 hover:text-zinc-900 transition-all">User Guide</button></li>
                 <li><button onClick={() => { setView('guide'); setGuideType('faq'); }} className="text-zinc-600 hover:text-zinc-900 transition-all">FAQ</button></li>
-                <li><button onClick={() => navigateTo('press')} className="text-zinc-600 hover:text-zinc-900 transition-all">Press Kit</button></li>
+                <li><a href="/press" className="text-zinc-600 hover:text-zinc-900 transition-all">Press</a></li>
               </ul>
             </div>
 
@@ -1672,7 +1702,7 @@ export default function App() {
               <div className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">Connect</div>
               <ul className="space-y-2 text-sm">
                 <li><a href="https://www.linkedin.com/in/lindsayhiebert/" target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 transition-all">LinkedIn</a></li>
-                <li><button onClick={() => openContact()} className="text-zinc-600 hover:text-zinc-900 transition-all">Contact</button></li>
+                <li><a href="/contact" className="text-zinc-600 hover:text-zinc-900 transition-all">Contact</a></li>
               </ul>
             </div>
           </div>
@@ -1692,12 +1722,14 @@ export default function App() {
           </div>
 
           <div className="mt-8 pt-6 border-t border-zinc-200 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-5">
+            <div className="flex flex-wrap items-center gap-5">
               <button onClick={() => navigateTo('privacy')} className="text-xs text-zinc-600 hover:text-zinc-900 transition-all">Privacy Policy</button>
               <button onClick={() => navigateTo('terms')} className="text-xs text-zinc-600 hover:text-zinc-900 transition-all">Terms of Service</button>
+              <a href="/contact" className="text-xs text-zinc-600 hover:text-zinc-900 transition-all">Contact</a>
+              <a href="/press" className="text-xs text-zinc-600 hover:text-zinc-900 transition-all">Press</a>
             </div>
-            <p className="text-zinc-600 text-xs font-mono uppercase tracking-widest">
-              AEO Analyzers // The Answer Engine
+            <p className="text-zinc-600 text-xs">
+              © 2026 PIGENAI LLC · Kansas City, MO, United States · All rights reserved.
             </p>
           </div>
 

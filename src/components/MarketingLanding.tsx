@@ -47,7 +47,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
     },
     {
       q: "What does AEO Analyzers actually do?",
-      a: "Two things. First, it diagnoses your site — an AEO Score, a Citation Readiness estimate (a technical-readiness score, not a measured rate), and the exact fixes (paste-ready JSON-LD schema, content rewrites, a developer-ready report). Second, it proves the result with live Citation Sweeps: it asks the real AI engines — ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business — your buyers' questions and shows whether they actually cite you, who they cite instead, and the exact answers they gave."
+      a: "Two things. First, it diagnoses your site — an AEO Score, a Citation Readiness estimate (a technical-readiness score, not a measured rate), and the exact fixes (paste-ready JSON-LD schema, content rewrites, a developer-ready report). Second, it records what the engines actually say with live Citation Sweeps: it asks the real AI engines — ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business — your buyers' questions and shows whether they actually cite you, who they cite instead, and the exact answers they gave."
     },
     {
       q: "What is a Citation Sweep and what does it measure?",
@@ -96,7 +96,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
       <div className="bg-emerald-100 border-y border-emerald-200 py-3.5 px-6 text-center sticky top-0 z-50 backdrop-blur-md bg-emerald-100/90">
         <p className="text-xs sm:text-sm font-black text-emerald-900 uppercase tracking-[0.15em] flex items-center justify-center gap-2">
           <ShieldCheck className="w-4 h-4" />
-          Measurement honesty — every score backed by the real AI transcript. Run the query yourself.
+          Measurement honesty: every Citation Sweep result keeps the AI answer transcript behind it. Read it yourself.
         </p>
       </div>
 
@@ -125,7 +125,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           transition={{ delay: 0.1 }}
           className="text-zinc-500 text-xl md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          <strong>AEO Analyzers is answer engine optimization (AEO) software — a tool that measures whether ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, retrieve your site, describe it accurately, and cite it for category questions.</strong> Search is becoming answers — AI names <strong>one</strong> source, and if it isn't you, your customers never see you. AEO Analyzers shows you exactly <em>why</em> AI overlooks you and gives you the fixes — then you re-run the sweep to check, with live Citation Sweeps across ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, showing who they actually cite. Diagnose in ~90 seconds; measure the outcome for real.
+          <strong>AEO Analyzers is answer engine optimization (AEO) software — a tool that measures whether ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, retrieve your site, describe it accurately, and cite it for category questions.</strong> Search is becoming answers. An AI answer often names only a few businesses, and a buyer may never see one that is left out. AEO Analyzers shows you exactly <em>why</em> AI overlooks you and gives you the fixes — then you re-run the sweep to check, with live Citation Sweeps across ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, showing who they actually cite. Diagnose in ~90 seconds; measure the outcome for real.
         </motion.p>
         {/* Founder ruling, 1 Nov 2026: the promise line, true today (no outcome claim). */}
         <p className="text-zinc-900 text-lg md:text-xl max-w-2xl mx-auto -mt-8 mb-14 leading-relaxed font-semibold">
@@ -193,7 +193,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
                 The <span className="text-emerald-400">Attribution Gap</span> is costing you traffic.
               </h2>
               <p className="text-xl text-zinc-400 leading-relaxed mb-8">
-                When AI agents like Gemini or ChatGPT answer a user's question using your content but <strong>fail to cite you</strong>, you lose the customer.
+                When AI agents like Gemini or ChatGPT answer a user's question using your content but <strong>fail to cite you</strong>, the buyer may never reach your site.
               </p>
               <div className="space-y-6">
                 <div className="flex gap-4">
@@ -211,7 +211,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
                   </div>
                   <div>
                     <h4 className="font-bold text-lg mb-1">The Solution</h4>
-                    <p className="text-zinc-500">AEO Analyzers doesn't stop at a number. Your free audit pinpoints <em>why</em> AI overlooks you; a Day Pass (or a plan) unlocks the cure — paste-ready JSON-LD (verified vs. guessed), content rewrites, a prioritized checklist, and a Word report your developer can ship today.</p>
+                    <p className="text-zinc-500">AEO Analyzers doesn't stop at a number. Your free audit pinpoints <em>why</em> AI overlooks you; a Day Pass (or a plan) unlocks the fixes: paste-ready JSON-LD (verified vs. guessed), content rewrites, a prioritized checklist, and a Word report your developer can ship today.</p>
                   </div>
                 </div>
               </div>
@@ -245,16 +245,16 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
             <BarChart3 className="w-3 h-3" /> New — Citation Sweeps
           </div>
-          <h2 id="measure-title" className="text-4xl md:text-6xl font-black tracking-tight mb-6">Don't just optimize — <span className="text-zinc-400 italic font-serif">prove it.</span></h2>
+          <h2 id="measure-title" className="text-4xl md:text-6xl font-black tracking-tight mb-6">Don't just optimize. <span className="text-zinc-400 italic font-serif">Measure it.</span></h2>
           <p className="text-zinc-500 text-xl max-w-3xl mx-auto leading-relaxed">
-            A score predicts. A <strong>Citation Sweep</strong> proves. We ask the real answer engines your buyers' questions, multiple times each: five on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass. We measure three separable layers. Every result is backed by the actual transcript.
+            A score shows what to check. A <strong>Citation Sweep</strong> records what the engines actually said. We ask the real answer engines your buyers' questions, multiple times each: five on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass. We measure three separable layers. Every sweep result is backed by the stored answer transcript.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white mb-6"><Search className="w-6 h-6" /></div>
             <h3 className="text-xl font-black mb-4">Retrievability</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">When someone asks AI about your brand by name, does it return a real answer? A health check that should be ~100%. A miss here is an indexing emergency.</p>
+            <p className="text-zinc-500 text-sm leading-relaxed">When someone asks AI about your brand by name, does it return a real answer? A health check that should sit near 100%. A miss here is the first thing to investigate.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white mb-6"><ShieldCheck className="w-6 h-6" /></div>
@@ -287,7 +287,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <h3 className="text-xl font-black mb-4">The Cure, Not Just a Score</h3>
+            <h3 className="text-xl font-black mb-4">The Fixes, Not Just a Score</h3>
             <p className="text-zinc-500 text-sm leading-relaxed">A score on its own is a number to look at. We hand you the fixes too — verified JSON-LD, content rewrites, and a deploy-ready Word report — so there is something specific to change, and a re-sweep to check whether it moved.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">

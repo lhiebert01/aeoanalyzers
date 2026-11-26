@@ -53,7 +53,7 @@ describe('WO-016: every page in the plan', () => {
   it('the blog index is sectioned in the ruled order, and /blog/how-to lists the How to section', () => {
     const idx = readFileSync('public/blog/index.html', 'utf8');
     const order = [...idx.matchAll(/<h2 class="sech">([^<]+)<\/h2>/g)].map((m) => m[1]);
-    expect(order).toEqual(['Start here', 'How to', 'The Honest-Zero ledger', 'Buyer series', 'Behind the scenes']);
+    expect(order).toEqual(['Start here', 'How to', 'The Honest-Zero ledger', 'Buyer series', 'Behind the scenes', 'Press and announcements']); // press section appended Nov 26 2026 (WO-AEO-EIN-READY-001), ruled order unchanged
     const how = readFileSync('public/blog/how-to/index.html', 'utf8');
     for (const p of pages.filter((x) => x.section === 'How to' && x.path !== '/blog/how-to')) expect(how).toContain(`href="${p.path}"`);
   });
