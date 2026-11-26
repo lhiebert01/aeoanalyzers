@@ -20,7 +20,10 @@ TEMPLATE = open(os.path.join(ROOT, "public/blog/the-fifth-engine/index.html"), e
 STYLE = re.search(r"<style>[\s\S]*?</style>", TEMPLATE).group(0)
 HEADER = re.search(r"<!--wo016:header-->[\s\S]*?<!--/wo016:header-->", TEMPLATE).group(0)
 # YouTube overview: set the id when Lindsay sends the link (item 8); empty = not embedded yet.
-VIDEO_ID = os.environ.get("R3_VIDEO_ID", "990LJW3q6UU").strip()  # https://youtu.be/990LJW3q6UU (Nov 26 2026)
+VIDEO_ID = os.environ.get("R3_VIDEO_ID", "yTujm_lTNJE").strip()  # https://youtu.be/yTujm_lTNJE (re-recorded, Nov 26 2026); 990LJW3q6UU retired
+VIDEO_UPLOADED = "2026-11-26T11:01:58-08:00"  # from the public YouTube watch page
+VIDEO_DURATION = "PT2M25S"
+CAPTIONS = [l.strip() for l in open(os.path.join(ROOT, "docs/launch/aeo-release-3/assets/Video-Captions-AS-SPOKEN.txt"), encoding="utf-8") if l.strip()]
 IMG = "/press/release-3"
 HERO = f"{IMG}/AEO-Analyzers-Hero-1600x900.png"
 ORG = {"@type": "Organization", "@id": "https://pigenai.com/#org", "name": "PIGENAI LLC", "url": "https://pigenai.com"}
@@ -146,9 +149,16 @@ def video_ld():
         return []
     return [{"@context": "https://schema.org", "@type": "VideoObject", "name": "When Buyers Ask AI, Does It Name You? | AEO Analyzers",
              "description": "Website readiness and observed AI answers: the AEO Score and the Citation Sweep.",
-             "thumbnailUrl": SITE + f"{IMG}/AEO-Analyzers-YouTube-Thumbnail-1280x720.png", "uploadDate": "2026-11-26T06:38:04-08:00",
+             "thumbnailUrl": SITE + f"{IMG}/AEO-Analyzers-YouTube-Thumbnail-1280x720.png", "uploadDate": VIDEO_UPLOADED, "duration": VIDEO_DURATION, "transcript": " ".join(CAPTIONS),
              "embedUrl": f"https://www.youtube-nocookie.com/embed/{VIDEO_ID}", "contentUrl": f"https://youtu.be/{VIDEO_ID}",
              "publisher": ORG}]
+
+
+def transcript_block():
+    if not VIDEO_ID:
+        return ""
+    return ('<section class="transcript" aria-labelledby="video-transcript"><h2 id="video-transcript">Video transcript</h2>'
+            '<p><em>The words spoken in the overview video.</em></p>' + "".join(f"<p>{esc(l)}</p>" for l in CAPTIONS) + "</section>")
 
 
 def page(path, title, description, og_image, og_alt, body, lds, og_type="article", published=None, crumbs=None, doc_title=None):
@@ -234,6 +244,7 @@ rel_body = f"""    <div class="posteyebrow">AEO Analyzers · Press release</div>
 {video_block()}
 {md_blocks(rest, rel_after)}
 <p class="jumpcue">Read the founder's note: <a href="{FOUNDER_URL}">Being Found Is Not the Same as Being Recommended</a>. See a real stored sweep: <a href="{DEMO_URL}">a Citation Sweep example, question by question</a>.</p>
+{transcript_block()}
     </div>"""
 rel_ld = [{"@context": "https://schema.org", "@type": "NewsArticle", "headline": HEADLINE, "description": SUMMARY,
            "datePublished": "2026-12-08", "dateModified": "2026-12-08", "author": PERSON, "publisher": ORG,

@@ -4,12 +4,12 @@ import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRi
 import SEO from './SEO';
 import { getFAQJsonLd, getGraphJsonLd } from '../lib/json-ld';
 
-export const OVERVIEW_VIDEO_ID = '990LJW3q6UU';
+export const OVERVIEW_VIDEO_ID = 'yTujm_lTNJE';
 const OVERVIEW_VIDEO_LD = {
   '@context': 'https://schema.org', '@type': 'VideoObject', name: 'When Buyers Ask AI, Does It Name You? | AEO Analyzers',
   description: 'Website readiness and observed AI answers: the AEO Score and the Citation Sweep.',
   thumbnailUrl: 'https://aeoanalyzers.com/press/release-3/AEO-Analyzers-YouTube-Thumbnail-1280x720.png',
-  uploadDate: '2026-11-26T06:38:04-08:00', embedUrl: `https://www.youtube-nocookie.com/embed/${OVERVIEW_VIDEO_ID}`,
+  uploadDate: '2026-11-26T11:01:58-08:00', duration: 'PT2M25S', embedUrl: `https://www.youtube-nocookie.com/embed/${OVERVIEW_VIDEO_ID}`,
   contentUrl: `https://youtu.be/${OVERVIEW_VIDEO_ID}`,
   publisher: { '@type': 'Organization', '@id': 'https://pigenai.com/#org', name: 'PIGENAI LLC' },
 };
