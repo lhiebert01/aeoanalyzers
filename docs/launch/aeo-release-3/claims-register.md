@@ -28,3 +28,8 @@ Read-only fact check, 2026-11-26. Code is checked at `main` @ `cacf224`, which i
 3. **Claim 4a, retrievability.** It measures whether the engines found or named the business's own domain when asked by name. Whether the answer is substantive is not judged.
 4. **Claim 4b, fidelity.** It checks a fixed set of facts against the customer's live site: brand name, declared founders, published prices, free allowance and namesake confusion. The retired-name ("outdated name") check runs only for aeoanalyzers.com, never for customers.
 5. **Claim 5b, conditional.** TRUE for all sweep reports. It is DIFFERENT only if "every report" includes the AEO Score Word report, which does not name its model.
+
+
+## Resolution, November 26, 2026 (release body v4)
+
+The founder accepted the corrections. Release body v4 states: sub-scores "structure, content density, clarity and entity signals" (timing removed); Retrievability "When asked about your business by name, does the engine find and name your website?"; Fidelity "Does the answer match key facts on your website, such as your company name and founders, or does it confuse you with another business of the same name?" (prices deliberately left out); "Every sweep report names the engines it asked." Each now matches the shipped code as recorded above. The same corrections were applied to the home page, /best-aeo-tools and /blog/how-it-works (before and after in homepage-wording-2a.json). Timing was not measured; no figure is stated.

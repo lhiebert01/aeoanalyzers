@@ -58,5 +58,47 @@
   "file": "src/components/MarketingLanding.tsx (FAQ, also in FAQPage JSON-LD)",
   "before": "Second, it proves the result with live Citation Sweeps:",
   "after": "Second, it records what the engines actually say with live Citation Sweeps:"
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "Diagnose in ~90 seconds; measure the outcome for real.",
+  "after": "Diagnose your site first; then measure what the engines actually say.",
+  "round": "v4 corrections, Nov 26 2026",
+  "occurrences": 1
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "~90 seconds, not hundreds of manual hours.",
+  "after": "A few minutes, not hundreds of manual hours.",
+  "round": "v4 corrections, Nov 26 2026",
+  "occurrences": 1
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "We analyze the structural, content, entity, and authority signals tied to retrievability and citation",
+  "after": "We analyze the structure, content density, clarity and entity signals tied to retrievability and citation",
+  "round": "v4 corrections, Nov 26 2026",
+  "occurrences": 1
+ },
+ {
+  "file": "src/components/MarketingLanding.tsx",
+  "before": "we analyze the structural, content, entity, and authority signals tied to retrievability and citation",
+  "after": "we analyze the structure, content density, clarity and entity signals tied to retrievability and citation",
+  "round": "v4 corrections, Nov 26 2026",
+  "occurrences": 1
+ },
+ {
+  "file": "public/best-aeo-tools/index.html",
+  "before": "a free analysis of structural, content, entity and authority signals",
+  "after": "a free analysis of structure, content density, clarity and entity signals",
+  "round": "v4 corrections, Nov 26 2026",
+  "occurrences": 1
+ },
+ {
+  "file": "public/blog/how-it-works/index.html",
+  "before": "The first look is free and takes about ninety seconds",
+  "after": "The first look is free",
+  "round": "v4 corrections, Nov 26 2026",
+  "occurrences": 1
  }
 ]

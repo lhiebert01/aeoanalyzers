@@ -1,0 +1,40 @@
+{
+ "taken": "2026-11-26T15:41:57.961Z",
+ "site": "https://aeoanalyzers.com (production)",
+ "account": "site owner, signed in; cost and other products’ names hidden before capture and checked absent",
+ "shots": [
+  {
+   "file": "01-free-checker-url-typed-1920x1080.png",
+   "label": "The free AEO checker with a website address typed in",
+   "hidden": []
+  },
+  {
+   "file": "03-citation-sweep-three-layers-1920x1080.png",
+   "label": "A saved Citation Sweep of aeoanalyzers.com: retrievability, fidelity and citation win",
+   "hidden": [
+    "name: 1 .  Otterly AI",
+    "name: 2 .  Profound",
+    "name: 3 .  Peec AI",
+    "name: 4 .  Semrush",
+    "name: 5 .  HubSpot AEO",
+    "cost: Engines know AEO Analyzers: asked for it by name, 80% of 50 ",
+    "name: 3 .  Get named on the pages that already answer your categor"
+   ]
+  },
+  {
+   "file": "04-stored-transcript-1920x1080.png",
+   "label": "One stored answer from the sweep, as the engine returned it",
+   "hidden": []
+  },
+  {
+   "file": "05-cited-sources-1920x1080.png",
+   "label": "The sources cited in stored answers",
+   "hidden": []
+  },
+  {
+   "file": "02-aeo-score-subscores-1920x1080.png",
+   "label": "An AEO Score result for aeoanalyzers.com with its sub-scores",
+   "hidden": []
+  }
+ ]
+}

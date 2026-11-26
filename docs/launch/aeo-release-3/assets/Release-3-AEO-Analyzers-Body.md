@@ -6,17 +6,17 @@ AEO Analyzers brings website diagnostics and direct tests of AI answers together
 
 **Two Measurements, Two Different Questions**
 
-The free AEO Score examines a website for structural, content, entity and authority signals. It provides a score, sub-scores and specific gaps, typically in about 90 seconds. It is a diagnostic assessment, not a measurement of actual recommendations.
+The free AEO Score examines a website for structure, content density, clarity and entity signals. It provides a score, sub-scores and specific gaps. It is a diagnostic assessment, not a measurement of actual recommendations.
 
 The paid Citation Sweep asks AI answer engines the questions a prospective buyer might ask and keeps the transcript of every answer. The sweep measures three separate outcomes.
 
-Retrievability: Does the engine return a substantive answer when asked about your business by name?
+Retrievability: When asked about your business by name, does the engine find and name your website?
 
-Fidelity: Does the answer describe your business accurately when compared with the information on your website, or does it contain outdated or confused details?
+Fidelity: Does the answer match key facts on your website, such as your company name and founders, or does it confuse you with another business of the same name?
 
 Citation Win: Does the engine recommend your business when asked about your category without naming your brand, and which businesses or sources does it cite instead?
 
-Pro and Business plans ask five answer engines: ChatGPT, Claude, Perplexity, Gemini and Grok. The no-subscription Day Pass asks four. Every report names the engines it asked.
+Pro and Business plans ask five answer engines: ChatGPT, Claude, Perplexity, Gemini and Grok. The no-subscription Day Pass asks four. Every sweep report names the engines it asked.
 
 **See the Evidence Before You Spend**
 

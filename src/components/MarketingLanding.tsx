@@ -4,6 +4,33 @@ import { Search, ShieldCheck, Zap, BarChart3, AlertCircle, CheckCircle2, ArrowRi
 import SEO from './SEO';
 import { getFAQJsonLd, getGraphJsonLd } from '../lib/json-ld';
 
+export const OVERVIEW_VIDEO_ID = '990LJW3q6UU';
+const OVERVIEW_VIDEO_LD = {
+  '@context': 'https://schema.org', '@type': 'VideoObject', name: 'When Buyers Ask AI, Does It Name You? | AEO Analyzers',
+  description: 'Website readiness and observed AI answers: the AEO Score and the Citation Sweep.',
+  thumbnailUrl: 'https://aeoanalyzers.com/press/release-3/AEO-Analyzers-YouTube-Thumbnail-1280x720.png',
+  uploadDate: '2026-11-26T06:38:04-08:00', embedUrl: `https://www.youtube-nocookie.com/embed/${OVERVIEW_VIDEO_ID}`,
+  contentUrl: `https://youtu.be/${OVERVIEW_VIDEO_ID}`,
+  publisher: { '@type': 'Organization', '@id': 'https://pigenai.com/#org', name: 'PIGENAI LLC' },
+};
+
+/** Click-to-load YouTube: no request to YouTube until the visitor presses play. */
+function OverviewVideo() {
+  const [play, setPlay] = React.useState(false);
+  return (
+    <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-zinc-300 bg-black shadow-sm">
+      {play ? (
+        <iframe className="absolute inset-0 w-full h-full" src={`https://www.youtube-nocookie.com/embed/${OVERVIEW_VIDEO_ID}?autoplay=1&rel=0`} title="AEO Analyzers overview" allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen />
+      ) : (
+        <button type="button" onClick={() => setPlay(true)} aria-label="Play the AEO Analyzers overview video" className="absolute inset-0 w-full h-full">
+          <img src="/press/release-3/AEO-Analyzers-YouTube-Thumbnail-1280x720.png" alt="AEO Analyzers overview video: When buyers ask AI, does it name you?" width={1280} height={720} loading="lazy" className="w-full h-full object-cover" />
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 text-white font-bold text-sm px-5 py-3 rounded-full">Play the overview</span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 interface MarketingLandingProps {
   onGetStarted: () => void;
 }
@@ -88,7 +115,8 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         publishedDate="2026-03-22T00:00:00Z"
         jsonLd={[
           getGraphJsonLd(),
-          getFAQJsonLd(faqs.map(f => ({ question: f.q, answer: f.a })))
+          getFAQJsonLd(faqs.map(f => ({ question: f.q, answer: f.a }))),
+          OVERVIEW_VIDEO_LD
         ]}
       />
 
@@ -125,7 +153,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
           transition={{ delay: 0.1 }}
           className="text-zinc-500 text-xl md:text-2xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium"
         >
-          <strong>AEO Analyzers is answer engine optimization (AEO) software — a tool that measures whether ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, retrieve your site, describe it accurately, and cite it for category questions.</strong> Search is becoming answers. An AI answer often names only a few businesses, and a buyer may never see one that is left out. AEO Analyzers shows you exactly <em>why</em> AI overlooks you and gives you the fixes — then you re-run the sweep to check, with live Citation Sweeps across ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, showing who they actually cite. Diagnose in ~90 seconds; measure the outcome for real.
+          <strong>AEO Analyzers is answer engine optimization (AEO) software — a tool that measures whether ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, retrieve your site, describe it accurately, and cite it for category questions.</strong> Search is becoming answers. An AI answer often names only a few businesses, and a buyer may never see one that is left out. AEO Analyzers shows you exactly <em>why</em> AI overlooks you and gives you the fixes — then you re-run the sweep to check, with live Citation Sweeps across ChatGPT, Claude, Perplexity and Gemini, plus Grok on Pro and Business, showing who they actually cite. Diagnose your site first; then measure what the engines actually say.
         </motion.p>
         {/* Founder ruling, 1 Nov 2026: the promise line, true today (no outcome claim). */}
         <p className="text-zinc-900 text-lg md:text-xl max-w-2xl mx-auto -mt-8 mb-14 leading-relaxed font-semibold">
@@ -167,6 +195,12 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         {/* Founder-approved 13 Oct 2026 (WO-006 positioning + independence lines). Verbatim. */}
         <p className="text-zinc-800 text-lg md:text-xl font-semibold mt-10 max-w-2xl mx-auto">A URL, a few minutes, and every transcript behind every number. You decide what to fix, and who fixes it.</p>
         <p className="text-zinc-600 text-base mt-2 max-w-2xl mx-auto">We do not sell the fix, so the measurement has nothing to prove.</p>
+      </section>
+
+      {/* WO-AEO-EIN-READY-001 item 8: the overview video. The YouTube player loads only after a click. */}
+      <section className="max-w-3xl mx-auto px-6 pb-16" aria-labelledby="overview-video-title">
+        <h2 id="overview-video-title" className="text-xl md:text-2xl font-bold text-zinc-900 mb-4 text-center">Watch the overview</h2>
+        <OverviewVideo />
       </section>
 
       {/* WO-009 C: the current piece from the blog, one card. Update when a new post becomes current. */}
@@ -279,7 +313,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
         <div className="text-center mb-16">
           <h2 id="trust-title" className="text-4xl md:text-6xl font-black tracking-tight mb-6">Why <span className="text-zinc-400">Analyzers</span>, Plural?</h2>
           <p className="text-zinc-500 text-xl max-w-3xl mx-auto leading-relaxed">
-            Keywords answer a different question. We analyze the structural, content, entity, and authority signals tied to retrievability and citation — then test the outcome directly with Citation Sweeps across five answer engines on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass. We don't claim to know their algorithms; we measure what they actually do. That's why it's Analyzer<strong>s</strong>.
+            Keywords answer a different question. We analyze the structure, content density, clarity and entity signals tied to retrievability and citation — then test the outcome directly with Citation Sweeps across five answer engines on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass. We don't claim to know their algorithms; we measure what they actually do. That's why it's Analyzer<strong>s</strong>.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
@@ -295,7 +329,7 @@ export default function MarketingLanding({ onGetStarted }: MarketingLandingProps
               <Target className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-black mb-4">Built for Every Answer Engine</h3>
-            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini, we analyze the structural, content, entity, and authority signals tied to retrievability and citation, then test the outcome directly with Citation Sweeps across five answer engines on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass — measuring what they actually do, not guessing their algorithms. ~90 seconds, not hundreds of manual hours.</p>
+            <p className="text-zinc-500 text-sm leading-relaxed">Powered by Google Gemini, we analyze the structure, content density, clarity and entity signals tied to retrievability and citation, then test the outcome directly with Citation Sweeps across five answer engines on Pro and Business (ChatGPT, Claude, Perplexity, Gemini and Grok), four on the Day Pass — measuring what they actually do, not guessing their algorithms. A few minutes, not hundreds of manual hours.</p>
           </div>
           <div className="p-10 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all">
             <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center text-white mb-6">

@@ -20,7 +20,7 @@ TEMPLATE = open(os.path.join(ROOT, "public/blog/the-fifth-engine/index.html"), e
 STYLE = re.search(r"<style>[\s\S]*?</style>", TEMPLATE).group(0)
 HEADER = re.search(r"<!--wo016:header-->[\s\S]*?<!--/wo016:header-->", TEMPLATE).group(0)
 # YouTube overview: set the id when Lindsay sends the link (item 8); empty = not embedded yet.
-VIDEO_ID = os.environ.get("R3_VIDEO_ID", "").strip()
+VIDEO_ID = os.environ.get("R3_VIDEO_ID", "990LJW3q6UU").strip()  # https://youtu.be/990LJW3q6UU (Nov 26 2026)
 IMG = "/press/release-3"
 HERO = f"{IMG}/AEO-Analyzers-Hero-1600x900.png"
 ORG = {"@type": "Organization", "@id": "https://pigenai.com/#org", "name": "PIGENAI LLC", "url": "https://pigenai.com"}
@@ -144,9 +144,9 @@ def video_block():
 def video_ld():
     if not VIDEO_ID:
         return []
-    return [{"@context": "https://schema.org", "@type": "VideoObject", "name": "AEO Analyzers overview",
+    return [{"@context": "https://schema.org", "@type": "VideoObject", "name": "When Buyers Ask AI, Does It Name You? | AEO Analyzers",
              "description": "Website readiness and observed AI answers: the AEO Score and the Citation Sweep.",
-             "thumbnailUrl": SITE + f"{IMG}/AEO-Analyzers-YouTube-Thumbnail-1280x720.png", "uploadDate": "2026-12-08",
+             "thumbnailUrl": SITE + f"{IMG}/AEO-Analyzers-YouTube-Thumbnail-1280x720.png", "uploadDate": "2026-11-26T06:38:04-08:00",
              "embedUrl": f"https://www.youtube-nocookie.com/embed/{VIDEO_ID}", "contentUrl": f"https://youtu.be/{VIDEO_ID}",
              "publisher": ORG}]
 
@@ -320,7 +320,7 @@ demo_body = f"""    <div class="posteyebrow">AEO Analyzers · A real Citation Sw
 <h2 id="limits">Limits of this example</h2>
 <div class="note">
 <p>This is one sweep on one date. Answers change as the engines change, so another run can read differently.</p>
-<p>The fidelity check compares an answer with the facts recorded from the site: the company, the founder and the stated facts. It does not check every detail. Several stored answers in this sweep quote plan prices from an earlier version of the pricing page, and the check did not flag them.</p>
+<p>The fidelity check compares an answer with the facts recorded from the site: the company, the founder and the stated facts. It does not check every detail. Some stored answers from this sweep quote plan prices that have since changed, and the fidelity check did not flag them. Those answers are not shown here.</p>
 <p>The sweep also asked category questions that do not name the site. Those questions and answers name other products, so they are not reproduced here. The monthly results for category questions are published on <a href="/evidence">the Honest-Zero ledger</a>.</p>
 <p>A sweep records what was observed in tested answers. It is not a guarantee of future visibility.</p>
 </div>
@@ -343,6 +343,14 @@ downloads = [
     ("AEO-Analyzers-LinkedIn-Card-1200x630.png", "Social card, 1200 by 630"),
     ("AEO-Analyzers-YouTube-Thumbnail-1280x720.png", "Video thumbnail, 1280 by 720"),
 ]
+SHOT_LIST = [
+    ("01-free-checker-url-typed-1920x1080.jpg", "The free AEO checker with a website address typed in"),
+    ("02-aeo-score-subscores-1920x1080.jpg", "An AEO Score result with its four sub-scores: entity, density, clarity and structure"),
+    ("03-citation-sweep-three-layers-1920x1080.jpg", "A saved Citation Sweep: found when asked by name, recommended to new buyers, own site cited"),
+    ("04-stored-transcript-1920x1080.jpg", "Stored answers from the sweep, as the engine returned them, with their sources"),
+    ("05-cited-sources-1920x1080.jpg", "More stored answers and the sources each one cited"),
+]
+SHOTS = "".join(f'<a href="{IMG}/screenshots/{f}" download><img src="{IMG}/screenshots/{f}" alt="{esc(c)}" loading="lazy">{esc(c)}</a>' for f, c in SHOT_LIST)
 dl_html = "".join(f'<a href="{IMG}/{f}" download><img src="{IMG}/{f}" alt="{esc(c)}" loading="lazy">{esc(c)}</a>' for f, c in downloads)
 press_body = f"""    <div class="posteyebrow">AEO Analyzers</div>
     <h1 class="posttitle">Press</h1>
@@ -358,6 +366,9 @@ press_body = f"""    <div class="posteyebrow">AEO Analyzers</div>
 <h2 id="images">Images</h2>
 <p>Free to use with coverage of AEO Analyzers. The transcript concept card is an illustration, not a product screenshot.</p>
 <div class="dl">{dl_html}</div>
+<h2 id="screenshots">Product screenshots</h2>
+<p>Taken on production on November 26, 2026, at 1920 by 1080 pixels, using aeoanalyzers.com's own data. Sweep cost is never shown. In the Citation Sweep screenshot, the list of other products named in category answers and one action line that names other sites are hidden.</p>
+<div class="dl">{SHOTS}</div>
 <h2 id="media-contact">Media contact</h2>
 <p>Lindsay Hiebert, Founder and CEO, PIGENAI LLC<br>
 <a href="https://www.linkedin.com/in/lindsayhiebert">https://www.linkedin.com/in/lindsayhiebert</a><br>
