@@ -4,6 +4,7 @@
 // Flat vector — no gradients/glow/mockups/stock. No invented numbers on the card.
 //
 //   node scripts/gen-og-cards.mjs      → writes public/og-blog-*.png
+//   node scripts/gen-og-cards.mjs og-blog-how-it-works.png   → writes only the named card(s)
 //
 // Uses the same puppeteer-core + @sparticuz/chromium engine as the prerender.
 
@@ -18,7 +19,7 @@ const CARDS = [
   { file: 'og-blog-i-scored-zero.png', title: 'I Ran My Own Tool on My Own Site. It Scored <span class="hot">0%.</span>' },
   { file: 'og-blog-what-you-actually-get.png', title: 'What You Actually Get: The Action Plan Inside Every Citation Sweep' },
   { file: 'og-blog-are-you-the-answer.png', title: 'Is Your Brand the Answer AI Gives — or Is a Competitor?' },
-  { file: 'og-blog-how-it-works.png', title: 'How AEO Analyzers Works: The 90-Second Tour of a <span class="hot">Hundred-Hour Analysis</span>' },
+  { file: 'og-blog-how-it-works.png', title: 'How AEO Analyzers Works: The Quick Tour of a <span class="hot">Hundred-Hour Analysis</span>' },
   { file: 'og-blog-reading-isnt-citing.png', title: 'The Engines Read My Site 265 Times. <span class="hot">Reading Isn\'t Citing.</span>' },
 ];
 
@@ -59,7 +60,8 @@ const browser = await puppeteer.launch({
 try {
   const page = await browser.newPage();
   await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1 }); // exact 1200×630
-  for (const c of CARDS) {
+  const only = process.argv.slice(2);
+  for (const c of CARDS.filter((x) => !only.length || only.includes(x.file))) {
     // 'load' (not networkidle0) — the Google Fonts <link> keeps a connection open
     // so networkidle0 can hang; we wait on document.fonts.ready explicitly instead.
     await page.setContent(html(c.title), { waitUntil: 'load', timeout: 20000 });
